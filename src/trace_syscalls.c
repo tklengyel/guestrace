@@ -150,7 +150,7 @@ int main (int argc, char *argv[]) {
 
 	/* get the input arguments for the function */
 	if (argc < 2) {
-		printf("Not enough arguments\nUsage: trace_syscalls <vm name>\n");
+		printf("Not enough arguments\nUsage: %s <vm name>\n", argv[0]);
 		return 1;
 	}
 	
