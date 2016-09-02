@@ -1,0 +1,18 @@
+On DomU (monitoring target):
+
+1. Build and run linux-offset-finder on the Xen DomU guest which you would
+like to monitor. See the README and source code in the libvmi source
+tree for how to do this.
+
+2. Copy the running kernel's System.map file from /boot to the Xen
+Dom0 guest.
+
+3. Restart the Xen DomU guest.
+
+On Dom0 (monitor):
+
+4. Build trace_syscalls and run "trace_syscalls <guest name>" on the
+Xen Dom0 guest.
+
+5. Update /etc/libvmi.conf on the Xen Dom0 guest based on the previous
+output from linux-offset-finder and the path to the System.map file.
