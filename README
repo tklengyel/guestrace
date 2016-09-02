@@ -11,8 +11,8 @@ Dom0 guest.
 
 On Dom0 (monitor):
 
-4. Build trace_syscalls and run "trace_syscalls <guest name>" on the
-Xen Dom0 guest.
-
-5. Update /etc/libvmi.conf on the Xen Dom0 guest based on the previous
+4. Update /etc/libvmi.conf on the Xen Dom0 guest based on the previous
 output from linux-offset-finder and the path to the System.map file.
+
+5. Build guestrace and run "guestrace <guest name>" on the
+Xen Dom0 guest.
