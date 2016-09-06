@@ -1,5 +1,23 @@
 #!/usr/bin/python
 
+"""
+                              INFO
+                            --------
+This file when run as a script will look at a Linux operating system
+and gather several pieces of information. It will gather the mapping 
+between system call numbers and system call names through the use of 
+ausyscall. It will also attempt to pull several headers from the 
+Linux kernel source tree of the specific version of the kernel
+running in order to gather information on the arguments of the
+system calls on the system. This will generate a C enum in the form
+of a header file and a file with a program to translate raw information
+from registers to a formatted string in a C source file. These files
+can be used with the guesttrace tool, but the included files have been
+hand modified to support more formatted printing of each system call.
+"""
+
+
+
 import subprocess
 import urllib2
 import re
