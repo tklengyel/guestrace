@@ -95,8 +95,7 @@ event_response_t int3_cb(vmi_instance_t vmi, vmi_event_t *event) {
  	 */
 	reg_t rip = event->regs.x86->rip; 					/* get the instruction pointer to determine if we are initiating or returning from syscall */
 
-	vmi_pidcache_flush(vmi);
-	vmi_v2pcache_flush(vmi);
+	vmi_pidcache_flush(vmi);						/* flush the pid to page table cache to ensure we are looking at the correct page for the running process */
 	/* 
          *  We do not want to reinject the event because we want the program to continue
  	 *  and not actually process the software breakpoint, therfore we set the
