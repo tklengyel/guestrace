@@ -1015,8 +1015,8 @@ void print_syscall_info(vmi_instance_t vmi, vmi_event_t *event) {
 			reg_t rdi = event->regs.x86->rdi;		/* const char __user * oldname */
 			reg_t rsi = event->regs.x86->rsi;		/* const char __user * newname */
 			
-			char * oldname = vmi_read_str_va(vmi, rdi, pid);
-			char * newname = vmi_read_str_va(vmi, rsi, pid);
+			char *oldname = vmi_read_str_va(vmi, rdi, pid);
+			char *newname = vmi_read_str_va(vmi, rsi, pid);
 
 			if (NULL == oldname || NULL == newname) {
 				printf("pid: %u ( %s ) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n",  pid, proc, name, (unsigned long)rdi, (unsigned long)rsi);
@@ -1051,8 +1051,8 @@ void print_syscall_info(vmi_instance_t vmi, vmi_event_t *event) {
 			reg_t rdi = event->regs.x86->rdi;		/* const char __user * old */
 			reg_t rsi = event->regs.x86->rsi;		/* const char __user * new */
 			
-			char * oldname = vmi_read_str_va(vmi, rdi, pid);
-			char * newname = vmi_read_str_va(vmi, rsi, pid);
+			char *oldname = vmi_read_str_va(vmi, rdi, pid);
+			char *newname = vmi_read_str_va(vmi, rsi, pid);
 
 			if (NULL == oldname || NULL == newname) {
 				printf("pid: %u ( %s ) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n",  pid, proc, name, (unsigned long)rdi, (unsigned long)rsi);
@@ -2080,9 +2080,6 @@ void print_syscall_info(vmi_instance_t vmi, vmi_event_t *event) {
 			break;
 		}
 
-/****************/
-/* STOPPED HERE */
-/****************/
 		case SYS_SETXATTR:
 		{
 			name = "sys_setxattr";
