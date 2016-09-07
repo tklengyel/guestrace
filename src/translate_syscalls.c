@@ -677,7 +677,12 @@ void print_syscall_info(vmi_instance_t vmi, vmi_event_t *event) {
 		case SYS_CLONE:
 		{
 			name = "sys_clone";
-			printf("pid: %u ( %s ) syscall: %s()\n",  pid, proc, name);
+			reg_t rdi = event->regs.x86->rdi;		/* unsigned long flags */
+			reg_t rsi = event->regs.x86->rsi;		/* void *child_stack */
+			reg_t rdx = event->regs.x86->rdx;		/* void *ptid */
+			reg_t r10 = event->regs.x86->r10;		/* void *ctid */
+			reg_t r8 = event->regs.x86->r8;		/* struct pt_retgs *regs */
+			printf("pid: %u ( %s ) syscall: %s(%lu, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n",  pid, proc, name, (unsigned long)rdi, (unsigned long)rsi, (unsigned long)rdx, (unsigned long)r10, (unsigned long)r8);
 			break;
 		}
 

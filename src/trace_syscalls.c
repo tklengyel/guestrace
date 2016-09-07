@@ -60,6 +60,9 @@ event_response_t step_cb(vmi_instance_t vmi, vmi_event_t *event) {
  	 *  to place the break point instruction back at the syscall handler 
  	 *  location (physical address from lstar), and to turn off single stepping.
 	 */	
+
+	vmi_pause_vm(vmi);
+
 	if (VMI_FAILURE == vmi_write_8_pa(vmi, phys_lstar, &bp)) {
 		fprintf(stderr, "Failed to write the breakpoint to syscall at 0x%"PRIx64" in step_cb!\n", phys_lstar);
 		interrupted = 1; 			/* This will kill the event listen loop */
@@ -71,6 +74,8 @@ event_response_t step_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		interrupted = 1;
 		return VMI_EVENT_RESPONSE_NONE;
 	}
+
+	vmi_resume_vm(vmi);
 	
 	/* The follow turns single stepping off */
 	return (1u << VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP);
@@ -90,12 +95,16 @@ event_response_t int3_cb(vmi_instance_t vmi, vmi_event_t *event) {
  	 */
 	reg_t rip = event->regs.x86->rip; 					/* get the instruction pointer to determine if we are initiating or returning from syscall */
 
+	vmi_pidcache_flush(vmi);
+	vmi_v2pcache_flush(vmi);
 	/* 
          *  We do not want to reinject the event because we want the program to continue
  	 *  and not actually process the software breakpoint, therfore we set the
  	 *  reinject value to 0.
  	 */	
 	event->interrupt_event.reinject = 0;
+
+	vmi_pause_vm(vmi);
 
 	if (rip == virt_lstar) {
 		
@@ -119,9 +128,12 @@ event_response_t int3_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		print_sysret_info(vmi, event);					/* function found in translate_syscalls.c */
 	}
 
-	else {									/* if neither of the previous is true, we have an INT3 event that did not occur from a syscall or return */
+	else {		
+		vmi_resume_vm(vmi);							/* if neither of the previous is true, we have an INT3 event that did not occur from a syscall or return */
 		return VMI_EVENT_RESPONSE_NONE;
 	}
+	
+	vmi_resume_vm(vmi);
 
 	/* 
  	 *  The following turns single stepping on allowing us
