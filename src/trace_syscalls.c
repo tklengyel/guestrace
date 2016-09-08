@@ -108,7 +108,7 @@ event_response_t int3_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	if (rip == virt_lstar) {
 		
 		if (VMI_FAILURE == vmi_write_8_pa(vmi, phys_lstar, &orig_syscall_inst)) {		/* set the entry to syscall handler  to its original instruction */
-			fprintf(stderr, "Failed to rewrite original syscall instruction at 0x%"PRIx64" in int3_cb!\n");
+			fprintf(stderr, "Failed to rewrite original syscall instruction at 0x%"PRIx64" in int3_cb!\n", phys_lstar);
 			interrupted = 1;								/* This will kill the event listen loop */
 			return VMI_EVENT_RESPONSE_NONE;
 		}
@@ -119,7 +119,7 @@ event_response_t int3_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	else if (rip == virt_sysret) {
 		
 		if (VMI_FAILURE == vmi_write_8_pa(vmi, phys_sysret, &orig_sysret_inst)) {	/* set the entry to the ret_from_sys_call instruction to its original instruction */ 
-			fprintf(stderr, "Failed to write the original sysret instruction at 0x%"PRIx64" in int3_cb!\n");
+			fprintf(stderr, "Failed to write the original sysret instruction at 0x%"PRIx64" in int3_cb!\n", phys_sysret);
 			interrupted = 1;
 			return VMI_EVENT_RESPONSE_NONE;	
 		}
@@ -241,13 +241,13 @@ int main (int argc, char *argv[]) {
 	}
 
 	if (VMI_FAILURE == vmi_read_8_pa(vmi, phys_sysret, &orig_sysret_inst)) {    	/* get the original instruction for ret_from_sys_call */
-		fprintf(stderr, "Failed to read original instruction from 0x%"PRIx64"!\n");
+		fprintf(stderr, "Failed to read original instruction from 0x%"PRIx64"!\n", phys_sysret);
 		goto done;
 	}
 
 
 	if (VMI_FAILURE == vmi_write_8_pa(vmi, phys_sysret, &bp)) {				/* write the break point at ret_from_sys_call */
-		fprintf(stderr, "Failed to write the break point to sysret at 0x%"PRIx64"!\n");
+		fprintf(stderr, "Failed to write the break point to sysret at 0x%"PRIx64"!\n", phys_sysret);
 		goto done;
 	}
 
