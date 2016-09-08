@@ -163,7 +163,7 @@ main (int argc, char *argv[])
 {
 	
 	vmi_instance_t vmi = NULL; 	/* will store the vmi instance instance information */	
-	char *name;			/* will stores the name of the vm to introspect which is argv[1] */
+	char *guest_name;		/* will stores the name of the vm to introspect which is argv[1] */
 	struct sigaction act;		/* initializes sigaction struct to handle signals */
 	int status = VMI_FAILURE;	/* status for vmi_events_listen in loop */
 
@@ -173,7 +173,7 @@ main (int argc, char *argv[])
 		return 1;
 	}
 	
-	name = argv[1];
+	guest_name = argv[1];
 
 	/* creates the signal handler that allows us to cleanly exit*/
 	act.sa_handler = close_handler;		/* sets the sigaction handler to close_handler */
@@ -185,7 +185,7 @@ main (int argc, char *argv[])
 	sigaction(SIGALRM, &act, NULL);		/* calls act signal handler on SIGALRM */
 
 	/* initialize the vmi instance with the given flags and exit cleanly on failure */
-	if (VMI_FAILURE == vmi_init(&vmi, VMI_XEN | VMI_INIT_COMPLETE | VMI_INIT_EVENTS, name)) {	/* call vmi_init on the vm and store in vmi */
+	if (VMI_FAILURE == vmi_init(&vmi, VMI_XEN | VMI_INIT_COMPLETE | VMI_INIT_EVENTS, guest_name)) {	/* call vmi_init on the vm and store in vmi */
 		fprintf(stderr, "Failed to initialize LibVMI library!\n");						/* check to see if it fails */
 		goto init_fail;
 	}
