@@ -2,6 +2,9 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	$(LIBVMI_CFLAGS)
 
+AM_CFLAGS = \
+	-Wall
+
 AM_LDFLAGS = \
 	$(LIBVMI_LIBS)
 
