@@ -45,7 +45,9 @@ static addr_t phys_sysret;		/* stores the physical address on ret_from_sys_call 
  */
 static int interrupted = 0; 	/* tracks interrupts from signals and error handling*/
 
-static void close_handler(int sig) {
+static void 
+close_handler(int sig) 
+{
 	interrupted = sig; 	/* set interrupted to the signal value (sig) on receipt of a signal */
 }
 
@@ -54,7 +56,9 @@ static void close_handler(int sig) {
  *  The call back functions handle a vmi_event, that is registered, once
  *  it occurs. Each function has a description of what it is doing.
  */
-event_response_t step_cb(vmi_instance_t vmi, vmi_event_t *event) {
+event_response_t 
+step_cb(vmi_instance_t vmi, vmi_event_t *event) 
+{
 	/* 
  	 *  This function is called on single_step events. We use this function
  	 *  to place the break point instruction back at the syscall handler 
@@ -81,7 +85,9 @@ event_response_t step_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	return (1u << VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP);
 }
 
-event_response_t int3_cb(vmi_instance_t vmi, vmi_event_t *event) {
+event_response_t 
+int3_cb(vmi_instance_t vmi, vmi_event_t *event) 
+{
 	/* 
  	 *  Anytime an int3_event occurs we call this function.
  	 *  It determines whether the event was triggered by a syscall
@@ -152,7 +158,9 @@ event_response_t int3_cb(vmi_instance_t vmi, vmi_event_t *event) {
  *  cleanly exit our program
  */
 
-int main (int argc, char *argv[]) {
+int 
+main (int argc, char *argv[]) 
+{
 	
 	vmi_instance_t vmi = NULL; 	/* will store the vmi instance instance information */	
 	char *name;			/* will stores the name of the vm to introspect which is argv[1] */
