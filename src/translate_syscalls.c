@@ -8,7 +8,9 @@
 #include <libvmi/events.h>
 #include "syscall_enum.h"
 
-char *get_proc_name(vmi_instance_t vmi, vmi_pid_t pid) {
+char *
+get_proc_name(vmi_instance_t vmi, vmi_pid_t pid) 
+{
 	/* Gets the process name of the process with the input pid */
 	/* offsets from the LibVMI config file */	
 	unsigned long task_offset = vmi_get_offset(vmi, "linux_tasks");
@@ -62,7 +64,9 @@ done:
 }
 
 
-void print_syscall_info(vmi_instance_t vmi, vmi_event_t *event) {
+void 
+print_syscall_info(vmi_instance_t vmi, vmi_event_t *event) 
+{
 	/* 
  	 *  This function is used to translate the 
  	 *  raw values found in registers on a syscall to a readable string
@@ -3823,7 +3827,9 @@ void print_syscall_info(vmi_instance_t vmi, vmi_event_t *event) {
 	free(proc);	/* free the memory stored by proc as it was allocated using realloc from a call to vmi_read_str_va */
 }
 
-void print_sysret_info(vmi_instance_t vmi, vmi_event_t *event) {
+void 
+print_sysret_info(vmi_instance_t vmi, vmi_event_t *event) 
+{
 	/* Print the pid, process name and return value of a system call */
 	reg_t syscall_return = event->regs.x86->rax;			/* get the return value out of rax */
 	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->regs.x86->cr3);	/* get the pid of the process */
