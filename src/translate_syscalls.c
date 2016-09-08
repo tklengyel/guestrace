@@ -3060,7 +3060,7 @@ void print_syscall_info(vmi_instance_t vmi, vmi_event_t *event) {
 				printf("pid: %u ( %s ) syscall: %s(%i, 0x%"PRIx64", %i, 0x%"PRIx64")\n",  pid, proc, name, (int)rdi, (unsigned long)rsi, (int)rdx, (unsigned long)r10);
 			}
 			else {
-				printf("pid: %u ( %s ) syscall: %s(%i, \"%s\", %i, %s)\n",  pid, proc, name, (int)rdi, oldname, (int)rdx, newname);
+				printf("pid: %u ( %s ) syscall: %s(%i, \"%s\", %i, \"%s\")\n",  pid, proc, name, (int)rdi, oldname, (int)rdx, newname);
 				free(oldname);
 				free(newname);
 			}
@@ -3099,10 +3099,10 @@ void print_syscall_info(vmi_instance_t vmi, vmi_event_t *event) {
 			char *oldname = vmi_read_str_va(vmi, rdi, pid);
 			char *newname = vmi_read_str_va(vmi, rdx, pid);
 			if (NULL == oldname || NULL == newname) {
-				printf("pid: %u ( %s ) syscall: %s(%i, 0x%"PRIx64", %i, 0x%"PRIx64")\n",  pid, proc, name, (unsigned long)rdi, (int)rsi, (unsigned long)rdx);
+				printf("pid: %u ( %s ) syscall: %s(0x%"PRIx64", %i, 0x%"PRIx64")\n",  pid, proc, name, (unsigned long)rdi, (int)rsi, (unsigned long)rdx);
 			}
 			else {
-				printf("pid: %u ( %s ) syscall: %s(%i, \"%s\", %i, %s)\n",  pid, proc, name, oldname, (int)rsi, newname);
+				printf("pid: %u ( %s ) syscall: %s(\"%s\", %i, \"%s\")\n",  pid, proc, name, oldname, (int)rsi, newname);
 				free(oldname);
 				free(newname);
 			}
