@@ -11,9 +11,9 @@
 /* 			
  *  			EVENT DECLARATIONS
  *		      ----------------------
- *  Pre-defines the events that we use throught the VMI
- *  program. In this isntance we define a vmi_event named
- *  int3_event that causes a VMEXIT on all
+ *  Pre-defines the events that we use throughout the VMI
+ *  program. In this instance we define a vmi_event named
+ *  int3_event that causes a VM_EXIT on all
  *  int 3 instructions.
  */
 vmi_event_t int3_event;		/* event to trap on interrupt 3 events */
@@ -22,12 +22,12 @@ vmi_event_t step_event;		/* event to trap on single-step events */
 /*			
  *			STATIC VARIABLE DEFINITIONS
  * 		      -------------------------------
- *  Static variables we use thorughout the program which stay constant once
+ *  Static variables we use throughout the program which stay constant once
  *  set in main. The following variables reduce the number of memory and register
- *  lookups required on each system call
+ *  look ups required on each system call
  */
-static uint8_t bp = 0xcc;		/* set the breakpoint instruction value (0xCC) */
-static uint8_t orig_syscall_inst;	/* stores the original instruction for the syscall handlerthat we replace with bp */
+static uint8_t bp = 0xcc;		/* set the break point instruction value (0xCC) */
+static uint8_t orig_syscall_inst;	/* stores the original instruction for the syscall handler that we replace with bp */
 static uint8_t orig_sysret_inst;	/* stores the original instruction for ret_from_sys_call that we replace with bp */
 
 static reg_t virt_lstar;		/* stores the virtual address found in MSR_LSTAR */
@@ -40,13 +40,13 @@ static addr_t phys_sysret;		/* stores the physical address on ret_from_sys_call 
  * 			SIGNAL HANDLER DECLARATIONS
  * 		      -------------------------------
  *  The signal handler uses the following declarations in order for us to catch signals to 
- *  terminate the program and destory the vmi instance for a clean exit and keeping the 
+ *  terminate the program and destroy the vmi instance for a clean exit and keeping the 
  *  guest machine in a usable state
  */
 static int interrupted = 0; 	/* tracks interrupts from signals and error handling*/
 
 static void close_handler(int sig) {
-	interrupted = sig; 	/* set interrupted to the signal vlaue (sig) on reciept of a signal */
+	interrupted = sig; 	/* set interrupted to the signal value (sig) on receipt of a signal */
 }
 
 /*			EVENT CALLBACK FUNCTIONS
@@ -64,13 +64,13 @@ event_response_t step_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	vmi_pause_vm(vmi);
 
 	if (VMI_FAILURE == vmi_write_8_pa(vmi, phys_lstar, &bp)) {
-		fprintf(stderr, "Failed to write the breakpoint to syscall at 0x%"PRIx64" in step_cb!\n", phys_lstar);
+		fprintf(stderr, "Failed to write the break point to syscall at 0x%"PRIx64" in step_cb!\n", phys_lstar);
 		interrupted = 1; 			/* This will kill the event listen loop */
 		return VMI_EVENT_RESPONSE_NONE;		/* return no response to the event response handler */
 	}
 	
 	if (VMI_FAILURE == vmi_write_8_pa(vmi, phys_sysret, &bp)) {
-		fprintf(stderr, "Failed to write the breakpoint to ret_from_sys_call at 0x%"PRIx64" in step_cb!\n", phys_sysret);
+		fprintf(stderr, "Failed to write the break point to ret_from_sys_call at 0x%"PRIx64" in step_cb!\n", phys_sysret);
 		interrupted = 1;
 		return VMI_EVENT_RESPONSE_NONE;
 	}
@@ -84,11 +84,11 @@ event_response_t step_cb(vmi_instance_t vmi, vmi_event_t *event) {
 event_response_t int3_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	/* 
  	 *  Anytime an int3_event occurs we call this function.
- 	 *  It deteremines whether the event was triggered by a syscall
+ 	 *  It determines whether the event was triggered by a syscall
  	 *  or by a return from a syscall by examining the value of 
  	 *  the RIP register and comparing it to the virtual addresses
  	 *  of the two instructions. It then, depending on which type of
- 	 *  call was made, calls teh correct function to print pertinent
+ 	 *  call was made, calls the correct function to print pertinent
  	 *  information about the call, for syscalls we print the pid, name
  	 *  and all arguments, and for returns we print the pid and the return
  	 *  value.
@@ -97,9 +97,9 @@ event_response_t int3_cb(vmi_instance_t vmi, vmi_event_t *event) {
 
 	vmi_pidcache_flush(vmi);						/* flush the pid to page table cache to ensure we are looking at the correct page for the running process */
 	/* 
-         *  We do not want to reinject the event because we want the program to continue
- 	 *  and not actually process the software breakpoint, therfore we set the
- 	 *  reinject value to 0.
+         *  We do not want to re-inject the event because we want the program to continue
+ 	 *  and not actually process the software break point, therefore we set the
+ 	 *  re-inject value to 0.
  	 */	
 	event->interrupt_event.reinject = 0;
 
@@ -194,7 +194,7 @@ int main (int argc, char *argv[]) {
 
 	SETUP_SINGLESTEP_EVENT(&step_event, 1, step_cb, 0);		/* setup the single step event */
 
-	if (VMI_FAILURE == vmi_register_event(vmi, &step_event)) {	/* register the singlestep event */
+	if (VMI_FAILURE == vmi_register_event(vmi, &step_event)) {	/* register the single step event */
 		fprintf(stderr, "Failed to register the single step event!\n");
 		goto done;
 	}	
@@ -235,8 +235,8 @@ int main (int argc, char *argv[]) {
 		goto done;
 	}
 
-	if (VMI_FAILURE == vmi_write_8_pa(vmi, phys_lstar, &bp)) {				/* write the breakpoint at the syscall handler */
-		fprintf(stderr, "Failed to write the breakpoint to syscall at 0x%"PRIx64"!\n", phys_lstar);
+	if (VMI_FAILURE == vmi_write_8_pa(vmi, phys_lstar, &bp)) {				/* write the break point at the syscall handler */
+		fprintf(stderr, "Failed to write the break point to syscall at 0x%"PRIx64"!\n", phys_lstar);
 		goto done;
 	}
 
@@ -246,8 +246,8 @@ int main (int argc, char *argv[]) {
 	}
 
 
-	if (VMI_FAILURE == vmi_write_8_pa(vmi, phys_sysret, &bp)) {				/* write the breakpoint ar ret_from_sys_call */
-		fprintf(stderr, "Failes to write the breakpoint to sysret at 0x%"PRIx64"!\n");
+	if (VMI_FAILURE == vmi_write_8_pa(vmi, phys_sysret, &bp)) {				/* write the break point at ret_from_sys_call */
+		fprintf(stderr, "Failed to write the break point to sysret at 0x%"PRIx64"!\n");
 		goto done;
 	}
 
@@ -269,7 +269,7 @@ done:
 	/*  
  	 *  we need to clean up memory before exiting by ensuring that the
  	 *  original instruction for the syscall handler is in place and
- 	 *  we dont destroy our guest machine
+ 	 *  we don't destroy our guest machine
  	 */
 	if (VMI_FAILURE == vmi_write_8_pa(vmi, phys_lstar, &orig_syscall_inst)) {
 		fprintf(stderr, "Failed to write original syscall instruction back to memory, your VM may need to be restarted!\n");
