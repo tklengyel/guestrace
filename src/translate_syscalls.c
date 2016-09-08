@@ -2805,7 +2805,6 @@ void print_syscall_info(vmi_instance_t vmi, vmi_event_t *event) {
 			reg_t rdx = event->regs.x86->rdx;		/* const void __user * _payload */
 			reg_t r10 = event->regs.x86->r10;		/* size_t plen */
 			reg_t r8 = event->regs.x86->r8;		/* key_serial_t destringid */
-
 			char *type = vmi_read_str_va(vmi, rdi, pid);
 			char *desc = vmi_read_str_va(vmi, rsi, pid);
 			if (NULL == type || NULL == desc) {
@@ -2826,14 +2825,14 @@ void print_syscall_info(vmi_instance_t vmi, vmi_event_t *event) {
 			reg_t rsi = event->regs.x86->rsi;		/* const char __user * _description */
 			reg_t rdx = event->regs.x86->rdx;		/* const char __user * _callout_info */
 			reg_t r10 = event->regs.x86->r10;		/* key_serial_t destringid */
-			printf("pid: %u ( %s ) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %i)\n",  pid, proc, name, (unsigned long)rdi, (unsigned long)rsi, (unsigned long)rdx, (int)r10);
 			char *type = vmi_read_str_va(vmi, rdi, pid);
 			char *desc = vmi_read_str_va(vmi, rsi, pid);
+			char *callout = vmi_read_str_va(vmi, rdx, pid);
 			if (NULL == type || NULL == desc) {
-				printf("pid: %u ( %s ) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %lu, %i)\n",  pid, proc, name, (unsigned long)rdi, (unsigned long)rsi, (unsigned long)rdx, (unsigned long)r10);
+				printf("pid: %u ( %s ) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %lu)\n",  pid, proc, name, (unsigned long)rdi, (unsigned long)rsi, (unsigned long)rdx, (unsigned long)r10);
 			}
 			else {
-				printf("pid: %u ( %s ) syscall: %s(\"%s\", \"%s\", 0x%"PRIx64", %lu, %i)\n",  pid, proc, name, type, desc, (unsigned long)rdx, (unsigned long)r10);
+				printf("pid: %u ( %s ) syscall: %s(\"%s\", \"%s\", \"%s\", %lu)\n",  pid, proc, name, type, desc, callout, (unsigned long)r10);
 				free(type);
 				free(desc);
 			}
@@ -3077,14 +3076,13 @@ void print_syscall_info(vmi_instance_t vmi, vmi_event_t *event) {
 			reg_t r10 = event->regs.x86->r10;		/* const char __user * newname */
 			reg_t r8 = event->regs.x86->r8;		/* int flags */
 
-
 			char *oldname = vmi_read_str_va(vmi, rsi, pid);
 			char *newname = vmi_read_str_va(vmi, r10, pid);
 			if (NULL == oldname || NULL == newname) {
-				printf("pid: %u ( %s ) syscall: %s(%i, 0x%"PRIx64", %i, 0x%"PRIx64")\n",  pid, proc, name, (int)rdi, (unsigned long)rsi, (int)rdx, (unsigned long)r10, (int)r8);
+				printf("pid: %u ( %s ) syscall: %s(%i, 0x%"PRIx64", %i, 0x%"PRIx64", %i)\n",  pid, proc, name, (int)rdi, (unsigned long)rsi, (int)rdx, (unsigned long)r10, (int)r8);
 			}
 			else {
-				printf("pid: %u ( %s ) syscall: %s(%i, \"%s\", %i, %s)\n",  pid, proc, name, (int)rdi, oldname, (int)rdx, newname, (int)r8);
+				printf("pid: %u ( %s ) syscall: %s(%i, \"%s\", %i, \"%s\", %i)\n",  pid, proc, name, (int)rdi, oldname, (int)rdx, newname, (int)r8);
 				free(oldname);
 				free(newname);
 			}
