@@ -34,7 +34,7 @@ char *get_proc_name(vmi_instance_t vmi, vmi_pid_t pid) {
 
 	do{
 		curr_proc = list_curr - task_offset;						/* subtract the task offset to get to the start of the task_struct */
-		if (VMI_FAILURE == vmi_read_32_va(vmi, curr_proc + pid_offset, 0, (uint32_t*)&curr_pid)) {		/* read the current pid usinng the pid offset from the start of the task struct */
+		if (VMI_FAILURE == vmi_read_32_va(vmi, curr_proc + pid_offset, 0, (uint32_t*)&curr_pid)) {		/* read the current pid using the pid offset from the start of the task struct */
 			printf("Failed to get the pid of the process we are examining!\n");
 			goto done;
 		}
@@ -53,7 +53,7 @@ char *get_proc_name(vmi_instance_t vmi, vmi_pid_t pid) {
 												/* process list is doubly linked and circular */
 
 done:
-	if (NULL == proc) {		/* if proc is NULL we dont know the process name */
+	if (NULL == proc) {		/* if proc is NULL we don't know the process name */
 		return "unknown";
 	}
 	
