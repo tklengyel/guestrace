@@ -1,7 +1,5 @@
 /* Generated on Linux_4.6.7-300.fc24.x86_64 on 30 Aug 2016o 16:18:03 */
 
-/* ASK MAJ P ABOUT EXECVE CHAR POINTER ARRAY */
-
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
