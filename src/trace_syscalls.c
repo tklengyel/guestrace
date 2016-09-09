@@ -23,6 +23,20 @@ static addr_t phys_system_call_entry_addr;
 static reg_t virt_sysret_addr;
 static addr_t phys_sysret_addr;
 
+struct int3_event_data {
+	uint8_t orig_syscall_inst;	
+	uint8_t orig_sysret_inst;	
+	reg_t virt_system_call_entry_addr;	
+	addr_t phys_system_call_entry_addr; 
+	reg_t virt_sysret_addr;
+	addr_t phys_sysret_addr;
+};
+
+struct step_event_data {
+	uint8_t breakpoint_inst;
+	addr_t phys_system_call_entry_addr; 
+	addr_t phys_sysret_addr;
+};
 /* 
  * 			SIGNAL HANDLER DECLARATIONS
  * 		      -------------------------------
@@ -335,8 +349,10 @@ main (int argc, char *argv[])
 	char *guest_name;		
 	struct sigaction act;	
 	int status = VMI_SUCCESS;	
-	vmi_event_t int3_event;		/* event to register waiting for int3 events to occur */
-	vmi_event_t step_event;		/* event to register waiting for single-step events to occur */
+	vmi_event_t int3_event;			/* event to register waiting for int3 events to occur */\
+	struct int3_event_data int3_data;
+	vmi_event_t step_event;			/* event to register waiting for single-step events to occur */
+	struct step_event_data step_data;
 
 	if (argc < 2) {
 		printf("Not enough arguments\nUsage: %s <vm name>\n", argv[0]);
