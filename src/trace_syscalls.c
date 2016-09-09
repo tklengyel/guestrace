@@ -46,7 +46,7 @@ static addr_t phys_sysret_addr;		/* stores the physical address of ret_from_sys_
 static int interrupted = 0; 	/* tracks interrupts from signals and error handling*/
 
 static void 
-close_handler(int sig) 
+close_handler (int sig) 
 {
 	interrupted = sig; 	/* set interrupted to the signal value (sig) on receipt of a signal */
 }
@@ -57,7 +57,7 @@ close_handler(int sig)
  *  it occurs. Each function has a description of what it is doing.
  */
 event_response_t 
-step_cb(vmi_instance_t vmi, vmi_event_t *event) 
+step_cb (vmi_instance_t vmi, vmi_event_t *event) 
 {
 	/* 
  	 *  This function is called on single_step events. We use this function
@@ -86,7 +86,7 @@ step_cb(vmi_instance_t vmi, vmi_event_t *event)
 }
 
 event_response_t 
-int3_cb(vmi_instance_t vmi, vmi_event_t *event) 
+int3_cb (vmi_instance_t vmi, vmi_event_t *event) 
 {
 	/* 
  	 *  Anytime an int3_event occurs we call this function.
@@ -148,6 +148,51 @@ int3_cb(vmi_instance_t vmi, vmi_event_t *event)
 	return 1u << VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP;		
 }
 
+status_t
+set_up_exit_handler (struct sigaction act)
+{
+	int status = 0;
+	/* creates the signal handler that allows us to cleanly exit*/
+	act.sa_handler = close_handler;		/* sets the sigaction handler to close_handler */
+	act.sa_flags = 0;			/* clears out the sigaction flags */
+
+	status = sigemptyset(&act.sa_mask);		/* initializes the sa_mask man sigaction(2) */
+	if (-1 == status) {
+		goto done;
+	}
+ 
+	status = sigaction(SIGHUP,  &act, NULL);		/* calls act signal handler on SIGHUP */
+	if (-1 == status) {
+		goto done;
+	}
+
+	status = sigaction(SIGTERM, &act, NULL);		/* calls act signal handler on SIGTERM */
+	if (-1 == status) {
+		goto done;
+	}
+
+	status = sigaction(SIGINT,  &act, NULL);		/* calls act signal handler on SIGINT */
+	if (-1 == status) {
+		goto done;
+	}
+	
+	status = sigaction(SIGALRM, &act, NULL);		/* calls act signal handler on SIGALRM */	
+	if (-1 == status) {
+		goto done;
+	}
+
+done:
+	if (-1 == status) {
+		return VMI_FAILURE;
+	}
+
+	else {
+		return VMI_SUCCESS;
+	}
+}
+
+
+
 /* 			
  *  			MAIN FUNCTION 
  *  		      -----------------
@@ -175,14 +220,11 @@ main (int argc, char *argv[])
 	
 	guest_name = argv[1];
 
-	/* creates the signal handler that allows us to cleanly exit*/
-	act.sa_handler = close_handler;		/* sets the sigaction handler to close_handler */
-	act.sa_flags = 0;			/* clears out the sigaction flags */
-	sigemptyset(&act.sa_mask);		/* initializes the sa_mask man sigaction(2) */
-	sigaction(SIGHUP,  &act, NULL);		/* calls act signal handler on SIGHUP */
-	sigaction(SIGTERM, &act, NULL);		/* calls act signal handler on SIGTERM */
-	sigaction(SIGINT,  &act, NULL);		/* calls act signal handler on SIGINT */
-	sigaction(SIGALRM, &act, NULL);		/* calls act signal handler on SIGALRM */
+	//SET UP EXIT
+	status = set_up_exit_handler(act);
+	if (VMI_FAILURE == status) {
+		goto init_fail;
+	}
 
 	/* initialize the vmi instance with the given flags and exit cleanly on failure */
 	if (VMI_FAILURE == vmi_init(&vmi, VMI_XEN | VMI_INIT_COMPLETE | VMI_INIT_EVENTS, guest_name)) {	/* call vmi_init on the vm and store in vmi */
