@@ -191,7 +191,14 @@ done:
 	}
 }
 
-
+status_t
+set_up_int3_event (vmi_instance_t vmi)
+{
+	memset(&int3_event, 0, sizeof(vmi_event_t));			/* set memory to 0 at &int3_syscall_event for sizeof(vmi_event_t) bytes */
+	SETUP_INTERRUPT_EVENT(&int3_event, 0, int3_cb);			/* setup the int3_syscall interrupt event */
+	
+	return vmi_register_event(vmi, &int3_event);
+}
 
 /* 			
  *  			MAIN FUNCTION 
@@ -234,15 +241,14 @@ main (int argc, char *argv[])
 		goto init_fail;
 	}
 
-	memset(&int3_event, 0, sizeof(vmi_event_t));			/* set memory to 0 at &int3_syscall_event for sizeof(vmi_event_t) bytes */
-	memset(&step_event, 0, sizeof(vmi_event_t));			/* set memory to 0 at &step_event for sizeof(vmi_event_t) bytes	*/
-
-	SETUP_INTERRUPT_EVENT(&int3_event, 0, int3_cb);			/* setup the int3_syscall interrupt event */
-	
-	if (VMI_FAILURE == vmi_register_event(vmi, &int3_event)) {	/* register the int3 event */
-		fprintf(stderr, "Failed to register the int 3 event!\n");
+	status = set_up_int3_event(vmi);
+	if (VMI_FAILURE == status) {
+		fprintf(stderr, "Failed to setup the int3 event!");
 		goto done;
-	}								 
+	}
+
+	memset(&step_event, 0, sizeof(vmi_event_t));			/* set memory to 0 at &step_event for sizeof(vmi_event_t) bytes	*/
+								 
 
 	SETUP_SINGLESTEP_EVENT(&step_event, 1, step_cb, 0);		/* setup the single step event */
 
