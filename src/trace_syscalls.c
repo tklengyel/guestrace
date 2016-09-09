@@ -208,6 +208,52 @@ set_up_single_step_event (vmi_instance_t vmi)
 
 	return vmi_register_event(vmi, &step_event);
 }
+
+status_t
+get_system_call_entry_addrs (vmi_instance_t vmi)
+{
+	status_t status = VMI_SUCCESS;
+
+	status = vmi_get_vcpureg(vmi, &virt_system_call_entry_addr, MSR_LSTAR, 0);
+	if (VMI_FAILURE == status) {		/* get the lstar value */
+		fprintf(stderr, "Failed to get the system_call() function entry address from MSR_LSTAR!\n");
+		goto done;
+	}
+
+	phys_system_call_entry_addr = vmi_translate_kv2p(vmi, virt_system_call_entry_addr);		/* get the physical address of lstar */	
+	if (0 == phys_system_call_entry_addr) {
+		fprintf(stderr, "Failed to get the physical address of the system_call() function\n");
+		status = VMI_FAILURE;
+		goto done;
+	}
+
+done:
+	return status;
+}
+
+status_t
+get_sysret_entry_addrs (vmi_instance_t vmi)
+{
+	status_t status = VMI_SUCCESS;
+
+	virt_sysret_addr = vmi_translate_ksym2v(vmi, "ret_from_sys_call");	/* get the virtual address of the ret_from_sys_call kernel symbol */
+	if (0 == virt_sysret_addr) {
+		fprintf(stderr, "Failed to get the virtual address of ret_from_sys_call\n");
+		status = VMI_FAILURE;
+		goto done;
+	}
+
+	phys_sysret_addr = vmi_translate_kv2p(vmi, virt_sysret_addr);		/* get the physical address of the kernel symbol */
+	if (0 == phys_sysret_addr) {
+		fprintf(stderr, "Failed to get the physical address of ret_from_sys_call\n");
+		status = VMI_FAILURE;
+		goto done;
+	}
+
+done:
+	return status;
+}
+
 /* 			
  *  			MAIN FUNCTION 
  *  		      -----------------
@@ -258,31 +304,15 @@ main (int argc, char *argv[])
 	if (VMI_FAILURE == status) {
 		fprintf(stderr, "Failed to setup the single step event!");
 		goto done;
-	}
-
-	if (VMI_FAILURE == vmi_get_vcpureg(vmi, &virt_system_call_entry_addr, MSR_LSTAR, 0)) {		/* get the lstar value */
-		fprintf(stderr, "Failed to get the lstar register value!\n");
-		goto done;
-	}
-
-	phys_system_call_entry_addr = vmi_translate_kv2p(vmi, virt_system_call_entry_addr);		/* get the physical address of lstar */
+	}	
 	
-	if (0 == phys_system_call_entry_addr) {
-		fprintf(stderr, "Failed to get the physical address of syscall()\n");
+	status = get_system_call_entry_addrs(vmi);
+	if (VMI_FAILURE == status) {
 		goto done;
 	}
 
-	virt_sysret_addr = vmi_translate_ksym2v(vmi, "ret_from_sys_call");	/* get the virtual address of the ret_from_sys_call kernel symbol */
-
-	if (0 == virt_sysret_addr) {
-		fprintf(stderr, "Failed to get the virtual address of ret_from_sys_call\n");
-		goto done;
-	}
-
-	phys_sysret_addr = vmi_translate_kv2p(vmi, virt_sysret_addr);		/* get the physical address of the kernel symbol */
-
-	if (0 == phys_sysret_addr) {
-		fprintf(stderr, "Failed to get the physical address of ret_from_sys_call\n");
+	status = get_sysret_entry_addrs(vmi);
+	if (VMI_FAILURE == status) {
 		goto done;
 	}
 
