@@ -223,12 +223,14 @@ main (int argc, char *argv[])
 	//SET UP EXIT
 	status = set_up_exit_handler(act);
 	if (VMI_FAILURE == status) {
+		fprintf(stderr, "Failed to set up the exit handler!");
 		goto init_fail;
 	}
 
 	/* initialize the vmi instance with the given flags and exit cleanly on failure */
-	if (VMI_FAILURE == vmi_init(&vmi, VMI_XEN | VMI_INIT_COMPLETE | VMI_INIT_EVENTS, guest_name)) {	/* call vmi_init on the vm and store in vmi */
-		fprintf(stderr, "Failed to initialize LibVMI library!\n");						/* check to see if it fails */
+	status = vmi_init(&vmi, VMI_XEN | VMI_INIT_COMPLETE | VMI_INIT_EVENTS, guest_name);
+	if (VMI_FAILURE == status) {	
+		fprintf(stderr, "Failed to initialize LibVMI library!\n");			
 		goto init_fail;
 	}
 
