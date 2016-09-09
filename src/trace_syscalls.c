@@ -283,6 +283,22 @@ done:
 	return status;
 }
 
+void
+restore_original_instructions (vmi_instance_t vmi)
+{
+	status_t status = VMI_SUCCESS;
+	
+	status = vmi_write_8_pa(vmi, phys_system_call_entry_addr, &orig_syscall_inst);
+	if (VMI_FAILURE == status) {
+		fprintf(stderr, "Failed to write original syscall instruction back to memory, your VM may need to be restarted!\n");
+	}
+	
+	status = vmi_write_8_pa(vmi, phys_sysret_addr, &orig_sysret_inst);
+	if (VMI_FAILURE == status) {	/* write the original instructions back to memory */
+		fprintf(stderr, "Failed to write the original sysret instruction back to memory, your VM may need to be restarted!\n");
+	}
+}
+
 /* 			
  *  			MAIN FUNCTION 
  *  		      -----------------
@@ -300,7 +316,7 @@ main (int argc, char *argv[])
 	vmi_instance_t vmi = NULL; 	/* will store the vmi instance instance information */	
 	char *guest_name;		/* will stores the name of the vm to introspect which is argv[1] */
 	struct sigaction act;		/* initializes sigaction struct to handle signals */
-	int status = VMI_FAILURE;	/* status for vmi_events_listen in loop */
+	int status = VMI_SUCCESS;	/* status for vmi_events_listen in loop */
 
 	/* get the input arguments for the function */
 	if (argc < 2) {
@@ -312,14 +328,14 @@ main (int argc, char *argv[])
 
 	status = set_up_exit_handler(act);
 	if (VMI_FAILURE == status) {
-		goto init_fail;
+		goto done;
 	}
 
 	/* initialize the vmi instance with the given flags and exit cleanly on failure */
 	status = vmi_init(&vmi, VMI_XEN | VMI_INIT_COMPLETE | VMI_INIT_EVENTS, guest_name);
 	if (VMI_FAILURE == status) {	
 		fprintf(stderr, "Failed to initialize LibVMI library!\n");			
-		goto init_fail;
+		goto done;
 	}
 
 	status = set_up_int3_event(vmi);
@@ -364,27 +380,16 @@ main (int argc, char *argv[])
 		}
 	}
 	
-done:
 	/*  
  	 *  we need to clean up memory before exiting by ensuring that the
  	 *  original instruction for the syscall handler is in place and
  	 *  we don't destroy our guest machine
  	 */
-	if (VMI_FAILURE == vmi_write_8_pa(vmi, phys_system_call_entry_addr, &orig_syscall_inst)) {
-		fprintf(stderr, "Failed to write original syscall instruction back to memory, your VM may need to be restarted!\n");
-		status = VMI_FAILURE;
-	}
-	
-	if (VMI_FAILURE == vmi_write_8_pa(vmi, phys_sysret_addr, &orig_sysret_inst)) {	/* write the original instructions back to memory */
-		fprintf(stderr, "Failed to write the original sysret instruction back to memory, your VM may need to be restarted!\n");
-		status = VMI_FAILURE;
-	}
-
-init_fail:	
-	if (NULL != vmi && VMI_FAILURE == vmi_destroy(vmi)) { 		/* destroy the vmi instance */							
-		printf("Failed to destroy the VMI instance!\n");
-		status = VMI_FAILURE;
-	}
+done:
+	if (NULL != vmi) {
+		restore_original_instructions(vmi);
+		status = vmi_destroy(vmi);
+	} 
 
 	exit(status);				/* return the status*/
 }
