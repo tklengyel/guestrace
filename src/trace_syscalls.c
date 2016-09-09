@@ -12,12 +12,12 @@
  *			STATIC VARIABLE DEFINITIONS
  * 		      -------------------------------
  *  Static variables we use throughout the program which stay constant once
- *  set in main. The following variables reduce the number of memory and register
+ *  set in main. Making these static reduces the number of memory and register
  *  look ups required on each system call
  */
-static uint8_t bp = 0xcc;		/* set the break point instruction value (0xCC) */
-static uint8_t orig_syscall_inst;	/* stores the original instruction for the syscall handler that we replace with bp */
-static uint8_t orig_sysret_inst;	/* stores the original instruction for ret_from_sys_call that we replace with bp */
+static uint8_t breakpoint_inst = 0xcc;		/* set the break point instruction value (0xCC) */
+static uint8_t orig_syscall_inst;	/* stores the original instruction for the syscall handler that we replace with breakpoint_inst */
+static uint8_t orig_sysret_inst;	/* stores the original instruction for ret_from_sys_call that we replace with breakpoint_inst */
 
 static reg_t virt_system_call_entry_addr;	/* stores the virtual address of the entry to the system_call() function which is found in MSR_LSTAR */
 static addr_t phys_system_call_entry_addr; 	/* stores the physical address that is derived from the virtual address p fthe system_call() function */
@@ -55,13 +55,13 @@ step_cb (vmi_instance_t vmi, vmi_event_t *event)
 
 	vmi_pause_vm(vmi);
 
-	if (VMI_FAILURE == vmi_write_8_pa(vmi, phys_system_call_entry_addr, &bp)) {
+	if (VMI_FAILURE == vmi_write_8_pa(vmi, phys_system_call_entry_addr, &breakpoint_inst)) {
 		fprintf(stderr, "Failed to write the break point to syscall at 0x%"PRIx64" in step_cb!\n", phys_system_call_entry_addr);
 		interrupted = 1; 			/* This will kill the event listen loop */
 		return VMI_EVENT_RESPONSE_NONE;		/* return no response to the event response handler */
 	}
 	
-	if (VMI_FAILURE == vmi_write_8_pa(vmi, phys_sysret_addr, &bp)) {
+	if (VMI_FAILURE == vmi_write_8_pa(vmi, phys_sysret_addr, &breakpoint_inst)) {
 		fprintf(stderr, "Failed to write the break point to ret_from_sys_call at 0x%"PRIx64" in step_cb!\n", phys_sysret_addr);
 		interrupted = 1;
 		return VMI_EVENT_RESPONSE_NONE;
@@ -233,7 +233,7 @@ set_up_system_call_entry_int3 (vmi_instance_t vmi)
 		goto done;
 	}
 
-	status = vmi_write_8_pa(vmi, phys_system_call_entry_addr, &bp);
+	status = vmi_write_8_pa(vmi, phys_system_call_entry_addr, &breakpoint_inst);
 	if (VMI_FAILURE == status) {				/* write the break point at the syscall handler */
 		fprintf(stderr, "Failed to write the break point to syscall at 0x%"PRIx64"!\n", phys_system_call_entry_addr);
 		goto done;
@@ -268,7 +268,7 @@ set_up_sysret_entry_int3 (vmi_instance_t vmi)
 		goto done;
 	}
 
-	status = vmi_write_8_pa(vmi, phys_sysret_addr, &bp);
+	status = vmi_write_8_pa(vmi, phys_sysret_addr, &breakpoint_inst);
 	if (VMI_FAILURE == status) {				/* write the break point at ret_from_sys_call */
 		fprintf(stderr, "Failed to write the break point to sysret at 0x%"PRIx64"!\n", phys_sysret_addr);
 		goto done;
