@@ -30,11 +30,11 @@ static uint8_t bp = 0xcc;		/* set the break point instruction value (0xCC) */
 static uint8_t orig_syscall_inst;	/* stores the original instruction for the syscall handler that we replace with bp */
 static uint8_t orig_sysret_inst;	/* stores the original instruction for ret_from_sys_call that we replace with bp */
 
-static reg_t virt_system_call_entry_addr;		/* stores the virtual address found in MSR_LSTAR */
-static addr_t phys_system_call_entry_addr; 		/* stores the physical address that is derived from the virtual address in lstar */
+static reg_t virt_system_call_entry_addr;	/* stores the virtual address of the entry to the system_call() function which is found in MSR_LSTAR */
+static addr_t phys_system_call_entry_addr; 	/* stores the physical address that is derived from the virtual address p fthe system_call() function */
 
 static reg_t virt_sysret_addr;		/* stores the virtual address found at the kernel symbol ret_from_sys_call */
-static addr_t phys_sysret_addr;		/* stores the physical address on ret_from_sys_call */
+static addr_t phys_sysret_addr;		/* stores the physical address of ret_from_sys_call */
 
 /* 
  * 			SIGNAL HANDLER DECLARATIONS
