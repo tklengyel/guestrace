@@ -295,5 +295,5 @@ init_fail:
 		status = VMI_FAILURE;
 	}
 
-	return status;				/* return the status*/
+	exit(status);				/* return the status*/
 }
