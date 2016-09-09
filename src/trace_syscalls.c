@@ -9,6 +9,8 @@
 #include "translate_syscalls.h"
 
 /*
+ * 			STRUCT DECLARATION
+ * 		      ----------------------	
  *  struct used to store the physical and virtual addresses of system_call() and ret_from_sys_call() as
  *  well as the original instructions and the break point instruction to be passed along in event.
  */
