@@ -113,7 +113,7 @@ int3_cb(vmi_instance_t vmi, vmi_event_t *event)
 
 	if (rip == virt_system_call_entry_addr) {
 		
-		if (VMI_FAILURE == vmi_write_8_pa(vmi, phys_system_call_entry_addr, &orig_syscall_inst)) {		/* set the entry to syscall handler  to its original instruction */
+		if (VMI_FAILURE == vmi_write_8_pa(vmi, phys_system_call_entry_addr, &orig_syscall_inst)) {		/* restore the entry to system_call()  to its original instruction */
 			fprintf(stderr, "Failed to rewrite original syscall instruction at 0x%"PRIx64" in int3_cb!\n", phys_system_call_entry_addr);
 			interrupted = 1;								/* This will kill the event listen loop */
 			return VMI_EVENT_RESPONSE_NONE;
@@ -124,7 +124,7 @@ int3_cb(vmi_instance_t vmi, vmi_event_t *event)
 
 	else if (rip == virt_sysret_addr) {
 		
-		if (VMI_FAILURE == vmi_write_8_pa(vmi, phys_sysret_addr, &orig_sysret_inst)) {	/* set the entry to the ret_from_sys_call instruction to its original instruction */ 
+		if (VMI_FAILURE == vmi_write_8_pa(vmi, phys_sysret_addr, &orig_sysret_inst)) {	/* restore the entry to the ret_from_sys_call() to its original instruction */ 
 			fprintf(stderr, "Failed to write the original sysret instruction at 0x%"PRIx64" in int3_cb!\n", phys_sysret_addr);
 			interrupted = 1;
 			return VMI_EVENT_RESPONSE_NONE;	
