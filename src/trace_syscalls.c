@@ -200,6 +200,14 @@ set_up_int3_event (vmi_instance_t vmi)
 	return vmi_register_event(vmi, &int3_event);
 }
 
+status_t
+set_up_single_step_event (vmi_instance_t vmi)
+{
+	memset(&step_event, 0, sizeof(vmi_event_t));			/* set memory to 0 at &step_event for sizeof(vmi_event_t) bytes	*/								
+	SETUP_SINGLESTEP_EVENT(&step_event, 1, step_cb, 0);		/* setup the single step event */
+
+	return vmi_register_event(vmi, &step_event);
+}
 /* 			
  *  			MAIN FUNCTION 
  *  		      -----------------
@@ -227,7 +235,6 @@ main (int argc, char *argv[])
 	
 	guest_name = argv[1];
 
-	//SET UP EXIT
 	status = set_up_exit_handler(act);
 	if (VMI_FAILURE == status) {
 		fprintf(stderr, "Failed to set up the exit handler!");
@@ -245,17 +252,13 @@ main (int argc, char *argv[])
 	if (VMI_FAILURE == status) {
 		fprintf(stderr, "Failed to setup the int3 event!");
 		goto done;
-	}
-
-	memset(&step_event, 0, sizeof(vmi_event_t));			/* set memory to 0 at &step_event for sizeof(vmi_event_t) bytes	*/
-								 
-
-	SETUP_SINGLESTEP_EVENT(&step_event, 1, step_cb, 0);		/* setup the single step event */
-
-	if (VMI_FAILURE == vmi_register_event(vmi, &step_event)) {	/* register the single step event */
-		fprintf(stderr, "Failed to register the single step event!\n");
-		goto done;
 	}	
+
+	status = set_up_single_step_event(vmi);
+	if (VMI_FAILURE == status) {
+		fprintf(stderr, "Failed to setup the single step event!");
+		goto done;
+	}
 
 	if (VMI_FAILURE == vmi_get_vcpureg(vmi, &virt_system_call_entry_addr, MSR_LSTAR, 0)) {		/* get the lstar value */
 		fprintf(stderr, "Failed to get the lstar register value!\n");
