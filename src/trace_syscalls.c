@@ -82,7 +82,7 @@ step_cb(vmi_instance_t vmi, vmi_event_t *event)
 	vmi_resume_vm(vmi);
 	
 	/* The follow turns single stepping off */
-	return (1u << VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP);
+	return 1u << VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP;
 }
 
 event_response_t 
@@ -145,7 +145,7 @@ int3_cb(vmi_instance_t vmi, vmi_event_t *event)
  	 *  to move one instruction past the syscall handler
  	 *  entry point and triggering our single step event
  	 */
-	return (1u << VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP);		
+	return 1u << VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP;		
 }
 
 /* 			
