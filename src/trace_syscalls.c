@@ -44,7 +44,7 @@ event_response_t
 step_cb (vmi_instance_t vmi, vmi_event_t *event) 
 {
 	/* 
- 	 *  This function writes the breakpoint instruction to system_call()
+ 	 *  This function writes the break point instruction to system_call()
  	 *  and ret_from_sys_call() on a single step event. 
 	 */
 	status_t status = VMI_SUCCESS;
