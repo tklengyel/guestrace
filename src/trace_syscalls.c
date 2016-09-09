@@ -323,25 +323,21 @@ restore_original_instructions (vmi_instance_t vmi)
 /* 			
  *  			MAIN FUNCTION 
  *  		      -----------------
- *  The main function modifies the signal handler allowing for a clean
- *  exit, creates our VMI instance allowing us to introspect into the guest,
- *  sets up our vmi_events that we wish to trap on, runs the main loop
- *  to listen for vmi_events and handles them with callback functions and
- *  cleanly exit our program
+ *  The main function sets up all events and memory and runs the main loop
+ *  listening for events until VMI_FAILURE or the loop is interrupted by
+ *  a signal.
  */
 
 int 
 main (int argc, char *argv[]) 
 {
-	
-	vmi_instance_t vmi = NULL; 	/* will store the vmi instance instance information */	
-	char *guest_name;		/* will stores the name of the vm to introspect which is argv[1] */
-	struct sigaction act;		/* initializes sigaction struct to handle signals */
-	int status = VMI_SUCCESS;	/* status for vmi_events_listen in loop */
-	vmi_event_t int3_event;		/* event to trap on interrupt 3 events */
-	vmi_event_t step_event;		/* event to trap on single-step events */
+	vmi_instance_t vmi = NULL; 		
+	char *guest_name;		
+	struct sigaction act;	
+	int status = VMI_SUCCESS;	
+	vmi_event_t int3_event;		/* event to register waiting for int3 events to occur */
+	vmi_event_t step_event;		/* event to register waiting for single-step events to occur */
 
-	/* get the input arguments for the function */
 	if (argc < 2) {
 		printf("Not enough arguments\nUsage: %s <vm name>\n", argv[0]);
 		return 1;
@@ -403,11 +399,6 @@ main (int argc, char *argv[])
 		}
 	}
 	
-	/*  
- 	 *  we need to clean up memory before exiting by ensuring that the
- 	 *  original instruction for the syscall handler is in place and
- 	 *  we don't destroy our guest machine
- 	 */
 done:
 	if (NULL != vmi) {
 		restore_original_instructions(vmi);
