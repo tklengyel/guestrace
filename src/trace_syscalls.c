@@ -8,17 +8,6 @@
 #include <libvmi/events.h>	
 #include "translate_syscalls.h"
 
-/* 			
- *  			EVENT DECLARATIONS
- *		      ----------------------
- *  Pre-defines the events that we use throughout the VMI
- *  program. In this instance we define a vmi_event named
- *  int3_event that causes a VM_EXIT on all
- *  int 3 instructions.
- */
-vmi_event_t int3_event;		/* event to trap on interrupt 3 events */
-vmi_event_t step_event;		/* event to trap on single-step events */
-
 /*			
  *			STATIC VARIABLE DEFINITIONS
  * 		      -------------------------------
@@ -39,9 +28,9 @@ static addr_t phys_sysret_addr;		/* stores the physical address of ret_from_sys_
 /* 
  * 			SIGNAL HANDLER DECLARATIONS
  * 		      -------------------------------
- *  The signal handler uses the following declarations in order for us to catch signals to 
- *  terminate the program and destroy the vmi instance for a clean exit and keeping the 
- *  guest machine in a usable state
+ *  Signal handler declarations to catch signals in order to 
+ *  terminate the program and destroy the vmi instance for a clean exit 
+ *  and keeping the guest machine in a usable state
  */
 static int interrupted = 0; 	/* tracks interrupts from signals and error handling*/
 
@@ -53,8 +42,7 @@ close_handler (int sig)
 
 /*			EVENT CALLBACK FUNCTIONS
  *		      ----------------------------
- *  The call back functions handle a vmi_event, that is registered, once
- *  it occurs. Each function has a description of what it is doing.
+ *  Functions to handle a registered  vmi_events on occurrence of the event.
  */
 event_response_t 
 step_cb (vmi_instance_t vmi, vmi_event_t *event) 
@@ -148,6 +136,13 @@ int3_cb (vmi_instance_t vmi, vmi_event_t *event)
 	return 1u << VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP;		
 }
 
+/* 
+ * 			SETUP FUNCTIONS
+ *  		      -------------------
+ *  Functions used in the setting up the events and memory
+ *  in the guest needed to trace all system calls.
+ */
+
 status_t
 set_up_exit_handler (struct sigaction act)
 {
@@ -197,7 +192,7 @@ done:
 }
 
 status_t
-set_up_int3_event (vmi_instance_t vmi)
+set_up_int3_event (vmi_instance_t vmi, vmi_event_t int3_event)
 {
 	memset(&int3_event, 0, sizeof(vmi_event_t));			/* set memory to 0 at &int3_syscall_event for sizeof(vmi_event_t) bytes */
 	SETUP_INTERRUPT_EVENT(&int3_event, 0, int3_cb);			/* setup the int3_syscall interrupt event */
@@ -206,7 +201,7 @@ set_up_int3_event (vmi_instance_t vmi)
 }
 
 status_t
-set_up_single_step_event (vmi_instance_t vmi)
+set_up_single_step_event (vmi_instance_t vmi, vmi_event_t step_event)
 {
 	memset(&step_event, 0, sizeof(vmi_event_t));			/* set memory to 0 at &step_event for sizeof(vmi_event_t) bytes	*/								
 	SETUP_SINGLESTEP_EVENT(&step_event, 1, step_cb, 0);		/* setup the single step event */
@@ -283,6 +278,11 @@ done:
 	return status;
 }
 
+/*
+ * 			CLEANUP FUNCTIONS
+ * 		      ---------------------
+ *  Functions used to clean up memory before exiting the program
+ */
 void
 restore_original_instructions (vmi_instance_t vmi)
 {
@@ -317,6 +317,8 @@ main (int argc, char *argv[])
 	char *guest_name;		/* will stores the name of the vm to introspect which is argv[1] */
 	struct sigaction act;		/* initializes sigaction struct to handle signals */
 	int status = VMI_SUCCESS;	/* status for vmi_events_listen in loop */
+	vmi_event_t int3_event;		/* event to trap on interrupt 3 events */
+	vmi_event_t step_event;		/* event to trap on single-step events */
 
 	/* get the input arguments for the function */
 	if (argc < 2) {
@@ -338,13 +340,13 @@ main (int argc, char *argv[])
 		goto done;
 	}
 
-	status = set_up_int3_event(vmi);
+	status = set_up_int3_event(vmi, int3_event);
 	if (VMI_FAILURE == status) {	
 		fprintf(stderr, "Failed to setup the int3 event!");
 		goto done;
 	}	
 
-	status = set_up_single_step_event(vmi);
+	status = set_up_single_step_event(vmi, step_event);
 	if (VMI_FAILURE == status) {
 		fprintf(stderr, "Failed to setup the single step event!");
 		goto done;
