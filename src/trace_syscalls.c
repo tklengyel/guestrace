@@ -158,26 +158,31 @@ set_up_exit_handler (struct sigaction act)
 
 	status = sigemptyset(&act.sa_mask);		/* initializes the sa_mask man sigaction(2) */
 	if (-1 == status) {
+		fprintf(stderr, "sigempty set failed while setting up the exit handler!\n");
 		goto done;
 	}
  
 	status = sigaction(SIGHUP,  &act, NULL);		/* calls act signal handler on SIGHUP */
-	if (-1 == status) {
+	if (-1 == status) {	
+		fprintf(stderr, "Failed to register act as the handler for the signal SIGHUP!\n");
 		goto done;
 	}
 
 	status = sigaction(SIGTERM, &act, NULL);		/* calls act signal handler on SIGTERM */
 	if (-1 == status) {
+		fprintf(stderr, "Failed to register act as the handler for the signal SIGTERM!\n");
 		goto done;
 	}
 
 	status = sigaction(SIGINT,  &act, NULL);		/* calls act signal handler on SIGINT */
 	if (-1 == status) {
+		fprintf(stderr, "Failed to register act as the handler for the signal SIGINT!\n");
 		goto done;
 	}
 	
 	status = sigaction(SIGALRM, &act, NULL);		/* calls act signal handler on SIGALRM */	
 	if (-1 == status) {
+		fprintf(stderr, "Failed to register act as the handler for the signal SIGALRM!\n");
 		goto done;
 	}
 
@@ -210,7 +215,7 @@ set_up_single_step_event (vmi_instance_t vmi)
 }
 
 status_t
-get_system_call_entry_addrs (vmi_instance_t vmi)
+set_up_system_call_entry_int3 (vmi_instance_t vmi)
 {
 	status_t status = VMI_SUCCESS;
 
@@ -227,12 +232,24 @@ get_system_call_entry_addrs (vmi_instance_t vmi)
 		goto done;
 	}
 
+	status = vmi_read_8_pa(vmi, phys_system_call_entry_addr, &orig_syscall_inst);
+	if (VMI_FAILURE == status) {		/* get the original instruction for the syscall handler */
+		fprintf(stderr, "Failed to read original instruction from 0x%"PRIx64"!\n", phys_system_call_entry_addr);
+		goto done;
+	}
+
+	status = vmi_write_8_pa(vmi, phys_system_call_entry_addr, &bp);
+	if (VMI_FAILURE == status) {				/* write the break point at the syscall handler */
+		fprintf(stderr, "Failed to write the break point to syscall at 0x%"PRIx64"!\n", phys_system_call_entry_addr);
+		goto done;
+	}
+
 done:
 	return status;
 }
 
 status_t
-get_sysret_entry_addrs (vmi_instance_t vmi)
+set_up_sysret_entry_int3 (vmi_instance_t vmi)
 {
 	status_t status = VMI_SUCCESS;
 
@@ -247,6 +264,18 @@ get_sysret_entry_addrs (vmi_instance_t vmi)
 	if (0 == phys_sysret_addr) {
 		fprintf(stderr, "Failed to get the physical address of ret_from_sys_call\n");
 		status = VMI_FAILURE;
+		goto done;
+	}
+
+	status = vmi_read_8_pa(vmi, phys_sysret_addr, &orig_sysret_inst);
+	if (VMI_FAILURE == status) {    	/* get the original instruction for ret_from_sys_call */
+		fprintf(stderr, "Failed to read original instruction from 0x%"PRIx64"!\n", phys_sysret_addr);
+		goto done;
+	}
+
+	status = vmi_write_8_pa(vmi, phys_sysret_addr, &bp);
+	if (VMI_FAILURE == status) {				/* write the break point at ret_from_sys_call */
+		fprintf(stderr, "Failed to write the break point to sysret at 0x%"PRIx64"!\n", phys_sysret_addr);
 		goto done;
 	}
 
@@ -283,7 +312,6 @@ main (int argc, char *argv[])
 
 	status = set_up_exit_handler(act);
 	if (VMI_FAILURE == status) {
-		fprintf(stderr, "Failed to set up the exit handler!");
 		goto init_fail;
 	}
 
@@ -295,7 +323,7 @@ main (int argc, char *argv[])
 	}
 
 	status = set_up_int3_event(vmi);
-	if (VMI_FAILURE == status) {
+	if (VMI_FAILURE == status) {	
 		fprintf(stderr, "Failed to setup the int3 event!");
 		goto done;
 	}	
@@ -306,44 +334,24 @@ main (int argc, char *argv[])
 		goto done;
 	}	
 	
-	status = get_system_call_entry_addrs(vmi);
-	if (VMI_FAILURE == status) {
-		goto done;
-	}
-
-	status = get_sysret_entry_addrs(vmi);
-	if (VMI_FAILURE == status) {
-		goto done;
-	}
-
-	if (VMI_FAILURE == vmi_pause_vm(vmi)) {						/* pause the vm for writing memory */
+	status = vmi_pause_vm(vmi);
+	if (VMI_FAILURE == status) {						/* pause the vm for writing memory */
 		fprintf(stderr, "Failed to pause the VM!\n");
 		goto done;
 	}
 
-	if (VMI_FAILURE == vmi_read_8_pa(vmi, phys_system_call_entry_addr, &orig_syscall_inst)) {		/* get the original instruction for the syscall handler */
-		fprintf(stderr, "Failed to read original instruction from 0x%"PRIx64"!\n", phys_system_call_entry_addr);
+	status = set_up_system_call_entry_int3(vmi);
+	if (VMI_FAILURE == status) {
 		goto done;
 	}
 
-	if (VMI_FAILURE == vmi_write_8_pa(vmi, phys_system_call_entry_addr, &bp)) {				/* write the break point at the syscall handler */
-		fprintf(stderr, "Failed to write the break point to syscall at 0x%"PRIx64"!\n", phys_system_call_entry_addr);
+	status = set_up_sysret_entry_int3(vmi);
+	if (VMI_FAILURE == status) {
 		goto done;
-	}
+	}	
 
-	if (VMI_FAILURE == vmi_read_8_pa(vmi, phys_sysret_addr, &orig_sysret_inst)) {    	/* get the original instruction for ret_from_sys_call */
-		fprintf(stderr, "Failed to read original instruction from 0x%"PRIx64"!\n", phys_sysret_addr);
-		goto done;
-	}
-
-
-	if (VMI_FAILURE == vmi_write_8_pa(vmi, phys_sysret_addr, &bp)) {				/* write the break point at ret_from_sys_call */
-		fprintf(stderr, "Failed to write the break point to sysret at 0x%"PRIx64"!\n", phys_sysret_addr);
-		goto done;
-	}
-
-
-	if (VMI_FAILURE == vmi_resume_vm(vmi)) {						/* resume the vm */
+	status = vmi_resume_vm(vmi);
+	if (VMI_FAILURE == status) {						/* resume the vm */
 		fprintf(stderr, "Failed to resume the VM!\n");
 		goto done;
 	}
