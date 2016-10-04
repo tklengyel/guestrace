@@ -314,14 +314,18 @@ restore_original_instructions (vmi_instance_t vmi, struct vm_syscall_handling_in
  	 */
 	status_t status = VMI_SUCCESS;
 	
-	status = vmi_write_8_pa(vmi, vm_info->phys_system_call_entry_addr, &vm_info->orig_syscall_inst);	/* restore the original byte of system_call */
-	if (VMI_FAILURE == status) {
-		fprintf(stderr, "Failed to write original syscall instruction back to memory, your VM may need to be restarted!\n");
+	if (0 != vm_info->phys_system_call_entry_addr) {
+		status = vmi_write_8_pa(vmi, vm_info->phys_system_call_entry_addr, &vm_info->orig_syscall_inst);	/* restore the original byte of system_call */
+		if (VMI_FAILURE == status) {
+			fprintf(stderr, "Failed to write original syscall instruction back to memory, your VM may need to be restarted!\n");
+		}
 	}
 	
-	status = vmi_write_8_pa(vmi, vm_info->phys_sysret_addr, &vm_info->orig_sysret_inst);	/* restore the original byte of ret_from_sys_call */
-	if (VMI_FAILURE == status) {
-		fprintf(stderr, "Failed to write the original sysret instruction back to memory, your VM may need to be restarted!\n");
+	if (0 != vm_info->phys_sysret_addr) {
+		status = vmi_write_8_pa(vmi, vm_info->phys_sysret_addr, &vm_info->orig_sysret_inst);	/* restore the original byte of ret_from_sys_call */
+		if (VMI_FAILURE == status) {
+			fprintf(stderr, "Failed to write the original sysret instruction back to memory, your VM may need to be restarted!\n");
+		}
 	}
 }
 
@@ -344,6 +348,8 @@ main (int argc, char *argv[])
 	vmi_event_t int3_event;			/* event to register waiting for int3 events to occur */\
 	vmi_event_t step_event;			/* event to register waiting for single-step events to occur */
 	struct vm_syscall_handling_information vm_info;
+
+	memset(&vm_info, 0x00, sizeof(vm_info));
 	vm_info.breakpoint_inst = 0xCC;
 
 	if (argc < 2) {
@@ -409,7 +415,8 @@ main (int argc, char *argv[])
 done:
 	if (NULL != vmi) {
 		restore_original_instructions(vmi, &vm_info);
-		status = vmi_destroy(vmi);
+		vmi_resume_vm(vmi);
+		vmi_destroy(vmi);
 	} 
 
 	exit(status);				/* return the status*/
