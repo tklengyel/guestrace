@@ -21,10 +21,9 @@ struct  vm_syscall_handling_information {
 	addr_t phys_sysret_addr;
 };
 
-/* 
- * 			SIGNAL HANDLER DECLARATIONS
- * 		      -------------------------------
- *  Signal handler declarations used by the signal handle in main
+/*
+ * Handle terminating signals by setting interrupted flag. This allows
+ * a graceful exit.
  */
 static int interrupted = 0; 
 
@@ -34,10 +33,49 @@ close_handler (int sig)
 	interrupted = sig; 	
 }
 
-/*			EVENT CALLBACK FUNCTIONS
- *		      ----------------------------
- *  Functions to handle a registered  vmi_events on occurrence of the event.
- */
+bool
+set_up_signal_handler (struct sigaction act)
+{
+	int status = 0;
+
+	act.sa_handler = close_handler;
+	act.sa_flags = 0;
+
+	status = sigemptyset(&act.sa_mask);	
+	if (-1 == status) {
+		fprintf(stderr, "sigemptyset failed to initialize handler.\n");
+		goto done;
+	}
+ 
+	status = sigaction(SIGHUP,  &act, NULL);
+	if (-1 == status) {	
+		fprintf(stderr, "Failed to register SIGHUP handler.\n");
+		goto done;
+	}
+
+	status = sigaction(SIGTERM, &act, NULL);		
+	if (-1 == status) {
+		fprintf(stderr, "Failed to register SIGTERM handler.\n");
+		goto done;
+	}
+
+	status = sigaction(SIGINT,  &act, NULL);		
+	if (-1 == status) {
+		fprintf(stderr, "Failed to register SIGINT handler.\n");
+		goto done;
+	}
+	
+	status = sigaction(SIGALRM, &act, NULL);		
+	if (-1 == status) {
+		fprintf(stderr, "Failed to register SIGALRM handler.\n");
+		goto done;
+	}
+
+done:
+	return -1 != status;
+}
+
+/* Single-step callback. */
 event_response_t 
 step_cb (vmi_instance_t vmi, vmi_event_t *event) 
 {
@@ -79,6 +117,7 @@ step_cb (vmi_instance_t vmi, vmi_event_t *event)
 	return 1u << VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP;	/* turns single stepping off */
 }
 
+/* INT 3 callback. */
 event_response_t 
 int3_cb (vmi_instance_t vmi, vmi_event_t *event) 
 {
@@ -140,65 +179,8 @@ int3_cb (vmi_instance_t vmi, vmi_event_t *event)
 		return VMI_EVENT_RESPONSE_NONE;
 	}
 
-	return 1u << VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP;				/* enables single stepping allowing us to move one instruction */
-}
-
-/* 
- * 			SETUP FUNCTIONS
- *  		      -------------------
- *  Functions used in the setting up the events and memory
- *  in the guest needed to trace all system calls.
- */
-
-status_t
-set_up_exit_handler (struct sigaction act)
-{
-	/*  
-	 *  Creates a signal handler in order to allow for us to clean up memory and
- 	 *  gracefully exit when a signal occurs.
- 	 */
-	int status = 0;
-	act.sa_handler = close_handler;		/* sets the sigaction handler to close_handler */
-	act.sa_flags = 0;			/* clears out the sigaction flags */
-
-	status = sigemptyset(&act.sa_mask);	
-	if (-1 == status) {
-		fprintf(stderr, "sigempty set failed while setting up the exit handler!\n");
-		goto done;
-	}
- 
-	status = sigaction(SIGHUP,  &act, NULL);	/* sets the handler for the signal to our handler */		
-	if (-1 == status) {	
-		fprintf(stderr, "Failed to register act as the handler for the signal SIGHUP!\n");
-		goto done;
-	}
-
-	status = sigaction(SIGTERM, &act, NULL);		
-	if (-1 == status) {
-		fprintf(stderr, "Failed to register act as the handler for the signal SIGTERM!\n");
-		goto done;
-	}
-
-	status = sigaction(SIGINT,  &act, NULL);		
-	if (-1 == status) {
-		fprintf(stderr, "Failed to register act as the handler for the signal SIGINT!\n");
-		goto done;
-	}
-	
-	status = sigaction(SIGALRM, &act, NULL);		
-	if (-1 == status) {
-		fprintf(stderr, "Failed to register act as the handler for the signal SIGALRM!\n");
-		goto done;
-	}
-
-done:
-	if (-1 == status) {
-		return VMI_FAILURE;
-	}
-
-	else {
-		return VMI_SUCCESS;
-	}
+	/* Start single stepping after return to VM.*/
+	return 1u << VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP;
 }
 
 status_t
@@ -340,7 +322,7 @@ main (int argc, char *argv[])
 	vmi_instance_t vmi = NULL; 		
 	char *guest_name;		
 	struct sigaction act;	
-	int status = VMI_SUCCESS;	
+	int status = EXIT_SUCCESS;	
 	
 	vmi_event_t int3_event;			/* event to register waiting for int3 events to occur */\
 	vmi_event_t step_event;			/* event to register waiting for single-step events to occur */
@@ -355,8 +337,8 @@ main (int argc, char *argv[])
 	
 	guest_name = argv[1];
 
-	status = set_up_exit_handler(act);
-	if (VMI_FAILURE == status) {
+	if (! set_up_signal_handler(act)) {
+		status = EXIT_FAILURE;
 		goto done;
 	}
 
