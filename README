@@ -1,8 +1,8 @@
 On DomU (monitoring target):
 
-1. Build and run linux-offset-finder on the Xen DomU guest which you would
-like to monitor. See the README and source code in the libvmi source
-tree for how to do this.
+1. Build and run libvmi's linux-offset-finder on the Xen DomU guest which
+you would like to monitor. See the README and source code in the libvmi
+source tree for how to do this.
 
 2. Copy the running kernel's System.map file from /boot to the Xen
 Dom0 guest.
