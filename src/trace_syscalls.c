@@ -33,7 +33,7 @@ close_handler (int sig)
 	interrupted = sig; 	
 }
 
-bool
+static bool
 set_up_signal_handler (struct sigaction act)
 {
 	int status = 0;
@@ -80,7 +80,7 @@ done:
  * replace instruction with breakpoint again. Replace both call and return
  * breakpoint every time. (See also int3_cb.)
  */
-event_response_t 
+static event_response_t 
 step_cb (vmi_instance_t vmi, vmi_event_t *event) 
 {
 	status_t status = VMI_SUCCESS;
@@ -141,7 +141,7 @@ is_sysret(reg_t rip, struct vm_syscall_handling_information *vm_info)
  * step on instruction past the restored instruction and then again replace its
  * first byte with an INT 3. (See also step_cb.)
  */
-event_response_t 
+static event_response_t 
 int3_cb (vmi_instance_t vmi, vmi_event_t *event) 
 {
 	status_t status = VMI_SUCCESS;
@@ -211,7 +211,7 @@ done:
 	}
 }
 
-status_t
+static status_t
 set_up_int3_event (vmi_instance_t vmi,
                    vmi_event_t int3_event,
                    struct vm_syscall_handling_information *vm_info)
@@ -223,7 +223,7 @@ set_up_int3_event (vmi_instance_t vmi,
 	return vmi_register_event(vmi, &int3_event);
 }
 
-status_t
+static status_t
 set_up_single_step_event (vmi_instance_t vmi,
                           vmi_event_t step_event,
                           struct vm_syscall_handling_information *vm_info)
@@ -239,7 +239,7 @@ set_up_single_step_event (vmi_instance_t vmi,
  * Replace the first byte of the system-call handler with INT 3. The address of
  * the system call handler is available in MSR_LSTAR.
  */
-status_t
+static status_t
 set_up_syscall_int3 (vmi_instance_t vmi,
                      struct vm_syscall_handling_information *vm_info)
 {
@@ -280,7 +280,7 @@ done:
 }
 
 /* Replace the first byte of ret_from_sys_call with INT 3. */
-status_t
+static status_t
 set_up_sysret_entry_int3 (vmi_instance_t vmi,
                           struct vm_syscall_handling_information *vm_info)
 {
@@ -325,7 +325,7 @@ done:
  * 		      ---------------------
  *  Functions used to clean up memory before exiting the program.
  */
-void
+static void
 restore_original_instructions (vmi_instance_t vmi, struct vm_syscall_handling_information *vm_info)
 {
 	/*
