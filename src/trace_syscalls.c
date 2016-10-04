@@ -15,8 +15,8 @@ static uint8_t BREAKPOINT_INST = 0xCC;
 struct  vm_syscall_handling_information {
 	uint8_t orig_syscall_inst;	
 	uint8_t orig_sysret_inst;	
-	reg_t virt_system_call_entry_addr;	
-	addr_t phys_system_call_entry_addr; 
+	reg_t virt_syscall_addr;
+	addr_t phys_syscall_addr;
 	reg_t virt_sysret_addr;
 	addr_t phys_sysret_addr;
 };
@@ -75,112 +75,140 @@ done:
 	return -1 != status;
 }
 
-/* Single-step callback. */
+/*
+ * Single-step callback. After single step beyond restored instruction,
+ * replace instruction with breakpoint again. Replace both call and return
+ * breakpoint every time. (See also int3_cb.)
+ */
 event_response_t 
 step_cb (vmi_instance_t vmi, vmi_event_t *event) 
 {
-	/* 
- 	 *  This function writes the break point instruction to system_call()
- 	 *  and ret_from_sys_call() on a single step event. 
-	 */
 	status_t status = VMI_SUCCESS;
-	struct vm_syscall_handling_information *vm_info = (struct vm_syscall_handling_information *)event->data;
+	struct vm_syscall_handling_information *vm_info =
+		(struct vm_syscall_handling_information *) event->data;
 
 	status = vmi_pause_vm(vmi);
 	if (VMI_FAILURE == status) {
-		fprintf(stderr, "Failed to pause the vm while in step_cb!\n");
-		interrupted = 1;						/* kills the main loop */
+		fprintf(stderr, "failed to pause the VM while in step_cb.\n");
+		interrupted = 1;
 		return VMI_EVENT_RESPONSE_NONE;	
 	}
 
-	status = vmi_write_8_pa(vmi, vm_info->phys_system_call_entry_addr, &BREAKPOINT_INST);
+	status = vmi_write_8_pa(vmi, vm_info->phys_syscall_addr, &BREAKPOINT_INST);
 	if (VMI_FAILURE == status) {
-		fprintf(stderr, "Failed to write the break point to syscall at 0x%"PRIx64" in step_cb!\n", vm_info->phys_system_call_entry_addr);
+		fprintf(stderr, "failed to reset syscall breakpoint at 0x%"PRIx64" "
+		                "in step_cb.\n",
+		                 vm_info->phys_syscall_addr);
 		interrupted = 1; 		
 		return VMI_EVENT_RESPONSE_NONE;	
 	}
 	
 	status = vmi_write_8_pa(vmi, vm_info->phys_sysret_addr, &BREAKPOINT_INST);
 	if (VMI_FAILURE == status) {
-		fprintf(stderr, "Failed to write the break point to ret_from_sys_call at 0x%"PRIx64" in step_cb!\n", vm_info->phys_sysret_addr);
+		fprintf(stderr, "failed to reset sysret breakpoint at 0x%"PRIx64" "
+		                "in step_cb.\n",
+		                 vm_info->phys_sysret_addr);
 		interrupted = 1;
 		return VMI_EVENT_RESPONSE_NONE;
 	}
 
 	status = vmi_resume_vm(vmi);
 	if (VMI_FAILURE == status) {
-		fprintf(stderr, "Failed to resume the vm while in step_cb!\n");
+		fprintf(stderr, "failed to resume the vm while in step_cb.\n");
 		interrupted = 1;
 		return VMI_EVENT_RESPONSE_NONE;
 	}
 	
-	return 1u << VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP;	/* turns single stepping off */
+	/* Turn off single step. */
+	return 1u << VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP;
 }
 
-/* INT 3 callback. */
+static bool
+is_syscall(reg_t rip, struct vm_syscall_handling_information *vm_info)
+{
+	return rip == vm_info->virt_syscall_addr;
+}
+
+static bool
+is_sysret(reg_t rip, struct vm_syscall_handling_information *vm_info)
+{
+	return rip == vm_info->virt_sysret_addr;
+}
+
+/* 
+ * INT 3 callback. Print a syscall or sysret, restore the original instuction
+ * fragment which we replaced with INT 3, and turn on single stepping. We will
+ * step on instruction past the restored instruction and then again replace its
+ * first byte with an INT 3. (See also step_cb.)
+ */
 event_response_t 
 int3_cb (vmi_instance_t vmi, vmi_event_t *event) 
 {
-	/* 
- 	 *  Prints out information on system calls and return values an restores the
- 	 *  original instruction to whichever function was called (system_call or ret_from_sys_call.
- 	 */
 	status_t status = VMI_SUCCESS;
+	addr_t  orig_inst_addr;
+	uint8_t orig_inst_frag;
 	reg_t rip = event->regs.x86->rip;
-	struct vm_syscall_handling_information *vm_info = (struct vm_syscall_handling_information *)event->data; 
-	vmi_pidcache_flush(vmi);	/* flush the pid to page table cache to ensure we are looking at the correct page for the running process */
+	struct vm_syscall_handling_information *vm_info =
+		(struct vm_syscall_handling_information *) event->data; 
+
+	/*
+	 * Flush the PID to page table cache to ensure we are looking at the
+	 * correct page for the running process.
+	 */
+	vmi_pidcache_flush(vmi);
 	
-	event->interrupt_event.reinject = 0;	/* don't re-inject the interrupt as we placed it in memory */
+	/*
+	 * Do not re-inject the interrupt we are handling here.
+	 */
+	event->interrupt_event.reinject = 0;
 
 	status = vmi_pause_vm(vmi);
 	if (VMI_FAILURE == status) {
-		fprintf(stderr, "Failed to pause the vm while in int3_cb!\n");
+		fprintf(stderr, "failed to pause the vm while in int3_cb.\n");
 		interrupted = 1;
-		return VMI_EVENT_RESPONSE_NONE;
+		goto done;
 	}
 
-	if (rip == vm_info->virt_system_call_entry_addr) {
+	if (is_syscall(rip, vm_info)) {
+		orig_inst_addr = vm_info->phys_syscall_addr;
+		orig_inst_frag = vm_info->orig_syscall_inst;
+	} else if (is_sysret(rip, vm_info)) {
+		orig_inst_addr = vm_info->phys_sysret_addr;
+		orig_inst_frag = vm_info->orig_sysret_inst;
+	} else {
+		fprintf(stderr, "bad RIP while in int3_cb.\n");
+		interrupted = 1;
+		goto done;
+	}
+
+	/* Restore original instruction fragment. */
+	status = vmi_write_8_pa(vmi, orig_inst_addr, &orig_inst_frag);
+	if (VMI_FAILURE == status) {
+		fprintf(stderr, "failed to rewrite original instruction at 0x%"
+		                 PRIx64" in int3_cb.\n", orig_inst_addr);
+		interrupted = 1;
+		goto done;
+	}
 		
-		status = vmi_write_8_pa(vmi, vm_info->phys_system_call_entry_addr, &vm_info->orig_syscall_inst);		/* restore the original instruction for system_call */
-		if (VMI_FAILURE == status) {						
-			fprintf(stderr, "Failed to rewrite original syscall instruction at 0x%"PRIx64" in int3_cb!\n", vm_info->phys_system_call_entry_addr);
-			interrupted = 1;								
-			return VMI_EVENT_RESPONSE_NONE;
-		}
-		
+	if (is_syscall(rip, vm_info)) {
 		print_syscall_info(vmi, event);
-	}
-
-	else if (rip == vm_info->virt_sysret_addr) {
-		
-		status = vmi_write_8_pa(vmi, vm_info->phys_sysret_addr, &vm_info->orig_sysret_inst);	/* restore the original instruction for ret_from_sys_call */
-		if (VMI_FAILURE == status) {					
-			fprintf(stderr, "Failed to write the original sysret instruction at 0x%"PRIx64" in int3_cb!\n", vm_info->phys_sysret_addr);
-			interrupted = 1;
-			return VMI_EVENT_RESPONSE_NONE;	
-		}
-		
+	} else {
 		print_sysret_info(vmi, event);	
-	}
+	} /* NOTE: would not get this far in any other case. */
 
-	else {		
-		status = vmi_resume_vm(vmi);
-		if (VMI_FAILURE == status) {
-			fprintf(stderr, "Failed to resume the vm in int3_cb!\n");
-			interrupted = 1;
-		}	
-		return VMI_EVENT_RESPONSE_NONE;
-	}
-	
+done:
 	status = vmi_resume_vm(vmi);
 	if (VMI_FAILURE == status) {
-		fprintf(stderr, "Failed to resume the vm in int3_cb!\n");
+		fprintf(stderr, "failed to resume the VM in int3_cb.\n");
 		interrupted = 1;
-		return VMI_EVENT_RESPONSE_NONE;
 	}
 
-	/* Start single stepping after return to VM.*/
-	return 1u << VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP;
+	if (VMI_SUCCESS == status) {
+		/* Turn on single step. */
+		return 1u << VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP;
+	} else {
+		return VMI_EVENT_RESPONSE_NONE;
+	}
 }
 
 status_t
@@ -204,7 +232,7 @@ set_up_single_step_event (vmi_instance_t vmi, vmi_event_t step_event, struct vm_
 }
 
 status_t
-set_up_system_call_entry_int3 (vmi_instance_t vmi, struct vm_syscall_handling_information *vm_info)
+set_up_syscall_int3 (vmi_instance_t vmi, struct vm_syscall_handling_information *vm_info)
 {
 	/*
  	 *  Gets all necessary addresses and writes the break point instruction
@@ -212,28 +240,28 @@ set_up_system_call_entry_int3 (vmi_instance_t vmi, struct vm_syscall_handling_in
  	 */
 	status_t status = VMI_SUCCESS;
 
-	status = vmi_get_vcpureg(vmi, &vm_info->virt_system_call_entry_addr, MSR_LSTAR, 0);	/* get and store the virtual address for the system_call function which is stored in MSR_LSTAR */
-	if (VMI_FAILURE == status) {	
+	status = vmi_get_vcpureg(vmi, &vm_info->virt_syscall_addr, MSR_LSTAR, 0);	/* get and store the virtual address for the system_call function which is stored in MSR_LSTAR */
+	if (VMI_FAILURE == status) {
 		fprintf(stderr, "Failed to get the system_call() function entry address from MSR_LSTAR!\n");
 		goto done;
 	}
 
-	vm_info->phys_system_call_entry_addr = vmi_translate_kv2p(vmi, vm_info->virt_system_call_entry_addr);	/* get and store the physical address of the system_call function form the virtual address*/	
-	if (0 == vm_info->phys_system_call_entry_addr) {
+	vm_info->phys_syscall_addr = vmi_translate_kv2p(vmi, vm_info->virt_syscall_addr);	/* get and store the physical address of the system_call function form the virtual address*/	
+	if (0 == vm_info->phys_syscall_addr) {
 		fprintf(stderr, "Failed to get the physical address of the system_call() function\n");
 		status = VMI_FAILURE;
 		goto done;
 	}
 
-	status = vmi_read_8_pa(vmi, vm_info->phys_system_call_entry_addr, &vm_info->orig_syscall_inst);	/* get and store the original first 8 bits of the system_call function */
-	if (VMI_FAILURE == status) {		
-		fprintf(stderr, "Failed to read original instruction from 0x%"PRIx64"!\n", vm_info->phys_system_call_entry_addr);
+	status = vmi_read_8_pa(vmi, vm_info->phys_syscall_addr, &vm_info->orig_syscall_inst);	/* get and store the original first 8 bits of the system_call function */
+	if (VMI_FAILURE == status) {
+		fprintf(stderr, "Failed to read original instruction from 0x%"PRIx64"!\n", vm_info->phys_syscall_addr);
 		goto done;
 	}
 
-	status = vmi_write_8_pa(vmi, vm_info->phys_system_call_entry_addr, &BREAKPOINT_INST);	/* write the break point instruction to the first byte of the system_call function */
-	if (VMI_FAILURE == status) {				
-		fprintf(stderr, "Failed to write the break point to syscall at 0x%"PRIx64"!\n", vm_info->phys_system_call_entry_addr);
+	status = vmi_write_8_pa(vmi, vm_info->phys_syscall_addr, &BREAKPOINT_INST);	/* write the break point instruction to the first byte of the system_call function */
+	if (VMI_FAILURE == status) {
+		fprintf(stderr, "Failed to write the break point to syscall at 0x%"PRIx64"!\n", vm_info->phys_syscall_addr);
 		goto done;
 	}
 
@@ -265,7 +293,7 @@ set_up_sysret_entry_int3 (vmi_instance_t vmi, struct vm_syscall_handling_informa
 	}
 
 	status = vmi_read_8_pa(vmi, vm_info->phys_sysret_addr, &vm_info->orig_sysret_inst);	/* get and store the first byte of ret_from_sys_call */
-	if (VMI_FAILURE == status) {   	
+	if (VMI_FAILURE == status) {
 		fprintf(stderr, "Failed to read original instruction from 0x%"PRIx64"!\n", vm_info->phys_sysret_addr);
 		goto done;
 	}
@@ -293,8 +321,8 @@ restore_original_instructions (vmi_instance_t vmi, struct vm_syscall_handling_in
  	 */
 	status_t status = VMI_SUCCESS;
 	
-	if (0 != vm_info->phys_system_call_entry_addr) {
-		status = vmi_write_8_pa(vmi, vm_info->phys_system_call_entry_addr, &vm_info->orig_syscall_inst);	/* restore the original byte of system_call */
+	if (0 != vm_info->phys_syscall_addr) {
+		status = vmi_write_8_pa(vmi, vm_info->phys_syscall_addr, &vm_info->orig_syscall_inst);	/* restore the original byte of system_call */
 		if (VMI_FAILURE == status) {
 			fprintf(stderr, "Failed to write original syscall instruction back to memory, your VM may need to be restarted!\n");
 		}
@@ -344,7 +372,7 @@ main (int argc, char *argv[])
 
 	/* initialize the vmi instance with the given flags and exit cleanly on failure */
 	status = vmi_init(&vmi, VMI_XEN | VMI_INIT_COMPLETE | VMI_INIT_EVENTS, guest_name);
-	if (VMI_FAILURE == status) {	
+	if (VMI_FAILURE == status) {
 		fprintf(stderr, "Failed to initialize LibVMI library!\n");			
 		goto done;
 	}
@@ -355,7 +383,7 @@ main (int argc, char *argv[])
 		goto done;
 	}
 
-	status = set_up_system_call_entry_int3(vmi, &vm_info);
+	status = set_up_syscall_int3(vmi, &vm_info);
 	if (VMI_FAILURE == status) {
 		goto done;
 	}
@@ -365,7 +393,7 @@ main (int argc, char *argv[])
 		goto done;
 	}
 	status = set_up_int3_event(vmi, int3_event, &vm_info);
-	if (VMI_FAILURE == status) {	
+	if (VMI_FAILURE == status) {
 		fprintf(stderr, "Failed to setup the int3 event!");
 		goto done;
 	}	
