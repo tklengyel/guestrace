@@ -354,50 +354,43 @@ restore_original_instructions (vmi_instance_t vmi,
 	}
 }
 
-/* 			
- *  			MAIN FUNCTION 
- *  		      -----------------
- *  The main function sets up all events and memory and runs the main loop
- *  listening for events until VMI_FAILURE or the loop is interrupted by
- *  a signal.
- */
-
 int 
 main (int argc, char *argv[]) 
 {
-	vmi_instance_t vmi = NULL; 		
 	char *guest_name;		
 	struct sigaction act;	
-	int status = EXIT_SUCCESS;	
-	
-	vmi_event_t int3_event;			/* event to register waiting for int3 events to occur */\
-	vmi_event_t step_event;			/* event to register waiting for single-step events to occur */
+	vmi_event_t int3_event;
+	vmi_event_t step_event;
+	int exitcode = EXIT_FAILURE;	
+	int status = VMI_FAILURE;
+	vmi_instance_t vmi = NULL; 		
 	struct vm_syscall_handling_information vm_info;
 
 	memset(&vm_info, 0x00, sizeof(vm_info));
 
 	if (argc < 2) {
-		printf("Not enough arguments\nUsage: %s <vm name>\n", argv[0]);
-		return 1;
+		fprintf(stderr, "usage: %s <VM name>\n", argv[0]);
+		goto done;
 	}
 	
 	guest_name = argv[1];
 
-	if (! set_up_signal_handler(act)) {
-		status = EXIT_FAILURE;
+	if (!set_up_signal_handler(act)) {
+		fprintf(stderr, "error setting up signal handlers\n");
 		goto done;
 	}
 
-	/* initialize the vmi instance with the given flags and exit cleanly on failure */
-	status = vmi_init(&vmi, VMI_XEN | VMI_INIT_COMPLETE | VMI_INIT_EVENTS, guest_name);
+	status = vmi_init(&vmi,
+	                   VMI_XEN | VMI_INIT_COMPLETE | VMI_INIT_EVENTS,
+	                   guest_name);
 	if (VMI_FAILURE == status) {
-		fprintf(stderr, "Failed to initialize LibVMI library!\n");			
+		fprintf(stderr, "failed to initialize LibVMI library.\n");
 		goto done;
 	}
 
 	status = vmi_pause_vm(vmi);
-	if (VMI_FAILURE == status) {						/* pause the vm for writing memory */
-		fprintf(stderr, "Failed to pause the VM!\n");
+	if (VMI_FAILURE == status) {
+		fprintf(stderr, "failed to pause VM.\n");
 		goto done;
 	}
 
@@ -412,29 +405,31 @@ main (int argc, char *argv[])
 	}
 	status = set_up_int3_event(vmi, int3_event, &vm_info);
 	if (VMI_FAILURE == status) {
-		fprintf(stderr, "Failed to setup the int3 event!");
+		fprintf(stderr, "failed to setup the int3 event.");
 		goto done;
 	}	
 
 	status = set_up_single_step_event(vmi, step_event, &vm_info);
 	if (VMI_FAILURE == status) {
-		fprintf(stderr, "Failed to setup the single step event!");
+		fprintf(stderr, "failed to setup the single-step event.");
 		goto done;
 	}		
 
 	status = vmi_resume_vm(vmi);
-	if (VMI_FAILURE == status) {						/* resume the vm */
-		fprintf(stderr, "Failed to resume the VM!\n");
+	if (VMI_FAILURE == status) {
+		fprintf(stderr, "failed to resume the VM.\n");
 		goto done;
 	}
 
-	while(!interrupted) {						/* loop while interrupted is 0 */
-		status = vmi_events_listen(vmi, 500);			/* listen for vmi events with a 500ms timeout */
-		if (VMI_FAILURE == status) {				/* check for errors waiting on events */
-			fprintf(stderr, "Error waiting for events!\n");	
+	while(!interrupted) {
+		status = vmi_events_listen(vmi, 500);
+		if (VMI_FAILURE == status) {
+			fprintf(stderr, "error waiting for event.\n");	
 			goto done;				
 		}
 	}
+
+	exitcode = EXIT_SUCCESS;
 	
 done:
 	if (NULL != vmi) {
@@ -443,5 +438,5 @@ done:
 		vmi_destroy(vmi);
 	} 
 
-	exit(status);				/* return the status*/
+	exit(exitcode);
 }
