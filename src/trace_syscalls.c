@@ -8,14 +8,11 @@
 
 #include "translate_syscalls.h"
 
-/*
- * 			STRUCT DECLARATION
- * 		      ----------------------	
- *  struct used to store the physical and virtual addresses of system_call() and ret_from_sys_call() as
- *  well as the original instructions and the break point instruction to be passed along in event.
- */
+/* Intel breakpoint interrupt (INT 3) instruction. */
+static uint8_t BREAKPOINT_INST = 0xCC;
+
+/* Maintains state for libvmi callbacks. */
 struct  vm_syscall_handling_information {
-	uint8_t breakpoint_inst;
 	uint8_t orig_syscall_inst;	
 	uint8_t orig_sysret_inst;	
 	reg_t virt_system_call_entry_addr;	
@@ -58,14 +55,14 @@ step_cb (vmi_instance_t vmi, vmi_event_t *event)
 		return VMI_EVENT_RESPONSE_NONE;	
 	}
 
-	status = vmi_write_8_pa(vmi, vm_info->phys_system_call_entry_addr, &vm_info->breakpoint_inst);
+	status = vmi_write_8_pa(vmi, vm_info->phys_system_call_entry_addr, &BREAKPOINT_INST);
 	if (VMI_FAILURE == status) {
 		fprintf(stderr, "Failed to write the break point to syscall at 0x%"PRIx64" in step_cb!\n", vm_info->phys_system_call_entry_addr);
 		interrupted = 1; 		
 		return VMI_EVENT_RESPONSE_NONE;	
 	}
 	
-	status = vmi_write_8_pa(vmi, vm_info->phys_sysret_addr, &vm_info->breakpoint_inst);
+	status = vmi_write_8_pa(vmi, vm_info->phys_sysret_addr, &BREAKPOINT_INST);
 	if (VMI_FAILURE == status) {
 		fprintf(stderr, "Failed to write the break point to ret_from_sys_call at 0x%"PRIx64" in step_cb!\n", vm_info->phys_sysret_addr);
 		interrupted = 1;
@@ -252,7 +249,7 @@ set_up_system_call_entry_int3 (vmi_instance_t vmi, struct vm_syscall_handling_in
 		goto done;
 	}
 
-	status = vmi_write_8_pa(vmi, vm_info->phys_system_call_entry_addr, &vm_info->breakpoint_inst);	/* write the break point instruction to the first byte of the system_call function */
+	status = vmi_write_8_pa(vmi, vm_info->phys_system_call_entry_addr, &BREAKPOINT_INST);	/* write the break point instruction to the first byte of the system_call function */
 	if (VMI_FAILURE == status) {				
 		fprintf(stderr, "Failed to write the break point to syscall at 0x%"PRIx64"!\n", vm_info->phys_system_call_entry_addr);
 		goto done;
@@ -291,7 +288,7 @@ set_up_sysret_entry_int3 (vmi_instance_t vmi, struct vm_syscall_handling_informa
 		goto done;
 	}
 
-	status = vmi_write_8_pa(vmi, vm_info->phys_sysret_addr, &vm_info->breakpoint_inst);
+	status = vmi_write_8_pa(vmi, vm_info->phys_sysret_addr, &BREAKPOINT_INST);
 	if (VMI_FAILURE == status) {				/* write the break point to the firt byte of ret_from_sys_call */
 		fprintf(stderr, "Failed to write the break point to sysret at 0x%"PRIx64"!\n", vm_info->phys_sysret_addr);
 		goto done;
@@ -350,7 +347,6 @@ main (int argc, char *argv[])
 	struct vm_syscall_handling_information vm_info;
 
 	memset(&vm_info, 0x00, sizeof(vm_info));
-	vm_info.breakpoint_inst = 0xCC;
 
 	if (argc < 2) {
 		printf("Not enough arguments\nUsage: %s <vm name>\n", argv[0]);
