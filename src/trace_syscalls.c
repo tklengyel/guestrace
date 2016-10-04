@@ -212,97 +212,109 @@ done:
 }
 
 status_t
-set_up_int3_event (vmi_instance_t vmi, vmi_event_t int3_event, struct vm_syscall_handling_information *vm_info)
+set_up_int3_event (vmi_instance_t vmi,
+                   vmi_event_t int3_event,
+                   struct vm_syscall_handling_information *vm_info)
 {
-	memset(&int3_event, 0, sizeof(vmi_event_t));			
-	SETUP_INTERRUPT_EVENT(&int3_event, 0, int3_cb);	
+	memset(&int3_event, 0, sizeof(vmi_event_t));
+	SETUP_INTERRUPT_EVENT(&int3_event, 0, int3_cb);
 	int3_event.data = vm_info;
 
 	return vmi_register_event(vmi, &int3_event);
 }
 
 status_t
-set_up_single_step_event (vmi_instance_t vmi, vmi_event_t step_event, struct vm_syscall_handling_information *vm_info)
+set_up_single_step_event (vmi_instance_t vmi,
+                          vmi_event_t step_event,
+                          struct vm_syscall_handling_information *vm_info)
 {
-	memset(&step_event, 0, sizeof(vmi_event_t));								
-	SETUP_SINGLESTEP_EVENT(&step_event, 1, step_cb, 0);		
+	memset(&step_event, 0, sizeof(vmi_event_t));
+	SETUP_SINGLESTEP_EVENT(&step_event, 1, step_cb, 0);
 	step_event.data = vm_info;
 
 	return vmi_register_event(vmi, &step_event);
 }
 
+/* 
+ * Replace the first byte of the system-call handler with INT 3. The address of
+ * the system call handler is available in MSR_LSTAR.
+ */
 status_t
-set_up_syscall_int3 (vmi_instance_t vmi, struct vm_syscall_handling_information *vm_info)
+set_up_syscall_int3 (vmi_instance_t vmi,
+                     struct vm_syscall_handling_information *vm_info)
 {
-	/*
- 	 *  Gets all necessary addresses and writes the break point instruction
- 	 *  to the system_call function.
- 	 */
-	status_t status = VMI_SUCCESS;
+	status_t status = VMI_FAILURE;
 
-	status = vmi_get_vcpureg(vmi, &vm_info->virt_syscall_addr, MSR_LSTAR, 0);	/* get and store the virtual address for the system_call function which is stored in MSR_LSTAR */
+	status = vmi_get_vcpureg(vmi, &vm_info->virt_syscall_addr, MSR_LSTAR, 0);
 	if (VMI_FAILURE == status) {
-		fprintf(stderr, "Failed to get the system_call() function entry address from MSR_LSTAR!\n");
+		fprintf(stderr, "failed to read MSR_LSTAR.\n");
 		goto done;
 	}
 
-	vm_info->phys_syscall_addr = vmi_translate_kv2p(vmi, vm_info->virt_syscall_addr);	/* get and store the physical address of the system_call function form the virtual address*/	
+	vm_info->phys_syscall_addr = vmi_translate_kv2p(vmi,
+	                                                vm_info->virt_syscall_addr);
 	if (0 == vm_info->phys_syscall_addr) {
-		fprintf(stderr, "Failed to get the physical address of the system_call() function\n");
-		status = VMI_FAILURE;
+		fprintf(stderr, "failed to get phy. address of syscall handler.\n");
 		goto done;
 	}
 
-	status = vmi_read_8_pa(vmi, vm_info->phys_syscall_addr, &vm_info->orig_syscall_inst);	/* get and store the original first 8 bits of the system_call function */
+	status = vmi_read_8_pa(vmi, vm_info->phys_syscall_addr,
+	                      &vm_info->orig_syscall_inst);
 	if (VMI_FAILURE == status) {
-		fprintf(stderr, "Failed to read original instruction from 0x%"PRIx64"!\n", vm_info->phys_syscall_addr);
+		fprintf(stderr, "failed to read original instruction from 0x%"
+		                 PRIx64".\n", vm_info->phys_syscall_addr);
 		goto done;
 	}
 
-	status = vmi_write_8_pa(vmi, vm_info->phys_syscall_addr, &BREAKPOINT_INST);	/* write the break point instruction to the first byte of the system_call function */
+	status = vmi_write_8_pa(vmi, vm_info->phys_syscall_addr, &BREAKPOINT_INST);
 	if (VMI_FAILURE == status) {
-		fprintf(stderr, "Failed to write the break point to syscall at 0x%"PRIx64"!\n", vm_info->phys_syscall_addr);
+		fprintf(stderr, "failed to write syscall breakpoint at 0x%"
+		                 PRIx64".\n", vm_info->phys_syscall_addr);
 		goto done;
 	}
+
+	status = VMI_SUCCESS;
 
 done:
 	return status;
 }
 
+/* Replace the first byte of ret_from_sys_call with INT 3. */
 status_t
-set_up_sysret_entry_int3 (vmi_instance_t vmi, struct vm_syscall_handling_information *vm_info)
+set_up_sysret_entry_int3 (vmi_instance_t vmi,
+                          struct vm_syscall_handling_information *vm_info)
 {
-	/*
- 	 *  Gets all necessary addresses and writes the break point instruction
- 	 *  to the ret_from_sys_call function.
- 	 */
-	status_t status = VMI_SUCCESS;
+	status_t status = VMI_FAILURE;
 
-	vm_info->virt_sysret_addr = vmi_translate_ksym2v(vmi, "ret_from_sys_call");	/* get and store the virtual address of the ret_from_sys_call function */
+	vm_info->virt_sysret_addr = vmi_translate_ksym2v(vmi, "ret_from_sys_call");
 	if (0 == vm_info->virt_sysret_addr) {
-		fprintf(stderr, "Failed to get the virtual address of ret_from_sys_call\n");
-		status = VMI_FAILURE;
+		fprintf(stderr, "Failed to get virt. addr. of ret_from_sys_call.\n");
 		goto done;
 	}
 
-	vm_info->phys_sysret_addr = vmi_translate_kv2p(vmi, vm_info->virt_sysret_addr);		/* get and store the physical address of ret_from_syscall */
+	vm_info->phys_sysret_addr = vmi_translate_kv2p(vmi,
+	                                               vm_info->virt_sysret_addr);
 	if (0 == vm_info->phys_sysret_addr) {
-		fprintf(stderr, "Failed to get the physical address of ret_from_sys_call\n");
-		status = VMI_FAILURE;
+		fprintf(stderr, "failed to get the phy. addr. of ret_from_sys_call\n");
 		goto done;
 	}
 
-	status = vmi_read_8_pa(vmi, vm_info->phys_sysret_addr, &vm_info->orig_sysret_inst);	/* get and store the first byte of ret_from_sys_call */
+	status = vmi_read_8_pa(vmi, vm_info->phys_sysret_addr,
+	                      &vm_info->orig_sysret_inst);
 	if (VMI_FAILURE == status) {
-		fprintf(stderr, "Failed to read original instruction from 0x%"PRIx64"!\n", vm_info->phys_sysret_addr);
+		fprintf(stderr, "failed to read original instruction from 0x%"
+		                 PRIx64".\n", vm_info->phys_sysret_addr);
 		goto done;
 	}
 
 	status = vmi_write_8_pa(vmi, vm_info->phys_sysret_addr, &BREAKPOINT_INST);
-	if (VMI_FAILURE == status) {				/* write the break point to the firt byte of ret_from_sys_call */
-		fprintf(stderr, "Failed to write the break point to sysret at 0x%"PRIx64"!\n", vm_info->phys_sysret_addr);
+	if (VMI_FAILURE == status) {
+		fprintf(stderr, "failed to write sysret breakpoint at 0x%"
+		                 PRIx64".\n", vm_info->phys_sysret_addr);
 		goto done;
 	}
+
+	status = VMI_SUCCESS;
 
 done:
 	return status;
