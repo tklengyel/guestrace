@@ -121,7 +121,7 @@ set_up_syscall_int3 (vmi_instance_t vmi,
 	vm_info->phys_syscall_addr = vmi_translate_kv2p(vmi,
 	                                                vm_info->virt_syscall_addr);
 	if (0 == vm_info->phys_syscall_addr) {
-		fprintf(stderr, "failed to get the phy. addr. of syscall "
+		fprintf(stderr, "failed to get phy. addr. of syscall "
 		                "fn at 0x%"PRIx64".\n", vm_info->virt_syscall_addr);
 		goto done;
 	}
@@ -149,8 +149,9 @@ done:
 
 
 /*
- * Replace the first byte of ret_from_sys_call (or newer equivalent)
- * with INT 3. The actual symbol name changes across Linux kernels.
+ * Replace the first byte of ret_from_sys_call (or equivalent)
+ * with INT 3. The actual symbol name appears to change across Linux kernels
+ * and architectures.
  */
 static status_t
 set_up_sysret_entry_int3 (vmi_instance_t vmi,
@@ -180,10 +181,12 @@ set_up_sysret_entry_int3 (vmi_instance_t vmi,
 		goto done;
 	}
 
+	printf("using sysret function %s\n", *name);
+
 	vm_info->phys_sysret_addr = vmi_translate_kv2p(vmi,
 	                                               vm_info->virt_sysret_addr);
 	if (0 == vm_info->phys_sysret_addr) {
-		fprintf(stderr, "failed to get the phy. addr. of sysret "
+		fprintf(stderr, "failed to get phy. addr. of sysret "
 		                "fn (%s) at 0x%"PRIx64".\n",
 		                 *name,
 		                 vm_info->virt_sysret_addr);
