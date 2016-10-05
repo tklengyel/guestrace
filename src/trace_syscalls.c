@@ -254,7 +254,7 @@ step_cb (vmi_instance_t vmi, vmi_event_t *event)
 	}
 	
 	/* Turn off single step. */
-	return 1u << VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP;
+	return VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP;
 }
 
 static bool
@@ -281,7 +281,7 @@ int3_cb (vmi_instance_t vmi, vmi_event_t *event)
 	status_t status = VMI_SUCCESS;
 	addr_t  orig_inst_addr;
 	uint8_t orig_inst_frag;
-	reg_t rip = event->regs.x86->rip;
+	reg_t rip = event->x86_regs->rip;
 	struct vm_syscall_handling_information *vm_info =
 		(struct vm_syscall_handling_information *) event->data; 
 
@@ -339,7 +339,7 @@ done:
 
 	if (VMI_SUCCESS == status) {
 		/* Turn on single step. */
-		return 1u << VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP;
+		return VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP;
 	} else {
 		return VMI_EVENT_RESPONSE_NONE;
 	}

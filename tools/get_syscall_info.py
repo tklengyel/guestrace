@@ -364,8 +364,8 @@ def create_syscall_translations(syscall_map, syscall_order,  kernel_info):
     # generate the print_syscall_info functions
     func_str += "void print_syscall_info(vmi_instance_t vmi, vmi_event_t *event) {\n\n"
     func_str += "\tchar *name;\n"                                                   # name used by every case
-    func_str += "\treg_t syscall_number= event->regs.x86->rax;\n"                   # rax used by every case
-    func_str += "\tvmi_pid_t pid = vmi_dtb_to_pid(vmi, event->regs.x86->cr3);\n\n"  # pid used by every case
+    func_str += "\treg_t syscall_number= event->x86_regs->rax;\n"                   # rax used by every case
+    func_str += "\tvmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);\n\n"  # pid used by every case
     func_str += "\tswitch (syscall_number) {\n\n"                                   # start the giant switch
 
     # generate the case statement for each syscall
@@ -382,8 +382,8 @@ def create_syscall_translations(syscall_map, syscall_order,  kernel_info):
 
     # generate the print_sysret_info function
     func_str += "void print_sysret_info(vmi_instance_t vmi, vmi_event_t *event) {\n"
-    func_str += "\treg_t syscall_return = event->regs.x86->rax;\n"
-    func_str += "\tvmi_pid_t pid = vmi_dtb_to_pid(vmi, event->regs.x86->cr3);\n"
+    func_str += "\treg_t syscall_return = event->x86_regs->rax;\n"
+    func_str += "\tvmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);\n"
     func_str += '\tprintf("pid: %u return: 0x%"PRIx64"\\n", pid, syscall_return);\n'
     func_str += "}"
 
@@ -426,7 +426,7 @@ def create_case_statement(syscall_data):
 # of args of the syscall
  
 def create_printf_statement_1(syscall_data):
-    func_str = '\t\t\treg_t rdi = event->regs.x86->rdi;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(0), syscall_data.get_arg_name(0))
+    func_str = '\t\t\treg_t rdi = event->x86_regs->rdi;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(0), syscall_data.get_arg_name(0))
     
     func_str += '\t\t\tprintf("pid: %u syscall: %s'
     func_str += '({0})'.format(syscall_data.get_arg_format(0))
@@ -436,8 +436,8 @@ def create_printf_statement_1(syscall_data):
     return func_str
 
 def create_printf_statement_2(syscall_data):
-    func_str = '\t\t\treg_t rdi = event->regs.x86->rdi;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(0), syscall_data.get_arg_name(0))
-    func_str += '\t\t\treg_t rsi = event->regs.x86->rsi;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(1), syscall_data.get_arg_name(1))
+    func_str = '\t\t\treg_t rdi = event->x86_regs->rdi;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(0), syscall_data.get_arg_name(0))
+    func_str += '\t\t\treg_t rsi = event->x86_regs->rsi;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(1), syscall_data.get_arg_name(1))
 
     func_str += '\t\t\tprintf("pid: %u syscall: %s'
     func_str += '({0}, {1})'.format(syscall_data.get_arg_format(0), syscall_data.get_arg_format(1))
@@ -447,9 +447,9 @@ def create_printf_statement_2(syscall_data):
     return func_str
 
 def create_printf_statement_3(syscall_data):
-    func_str = '\t\t\treg_t rdi = event->regs.x86->rdi;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(0), syscall_data.get_arg_name(0))
-    func_str += '\t\t\treg_t rsi = event->regs.x86->rsi;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(1), syscall_data.get_arg_name(1))
-    func_str += '\t\t\treg_t rdx = event->regs.x86->rdx;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(2), syscall_data.get_arg_name(2))
+    func_str = '\t\t\treg_t rdi = event->x86_regs->rdi;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(0), syscall_data.get_arg_name(0))
+    func_str += '\t\t\treg_t rsi = event->x86_regs->rsi;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(1), syscall_data.get_arg_name(1))
+    func_str += '\t\t\treg_t rdx = event->x86_regs->rdx;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(2), syscall_data.get_arg_name(2))
 
     func_str += '\t\t\tprintf("pid: %u syscall: %s'
     func_str += '({0}, {1}, '.format(syscall_data.get_arg_format(0), syscall_data.get_arg_format(1))
@@ -461,10 +461,10 @@ def create_printf_statement_3(syscall_data):
     return func_str
 
 def create_printf_statement_4(syscall_data):
-    func_str = '\t\t\treg_t rdi = event->regs.x86->rdi;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(0), syscall_data.get_arg_name(0))    
-    func_str += '\t\t\treg_t rsi = event->regs.x86->rsi;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(1), syscall_data.get_arg_name(1))
-    func_str += '\t\t\treg_t rdx = event->regs.x86->rdx;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(2), syscall_data.get_arg_name(2))
-    func_str += '\t\t\treg_t r10 = event->regs.x86->r10;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(3), syscall_data.get_arg_name(3))
+    func_str = '\t\t\treg_t rdi = event->x86_regs->rdi;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(0), syscall_data.get_arg_name(0))    
+    func_str += '\t\t\treg_t rsi = event->x86_regs->rsi;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(1), syscall_data.get_arg_name(1))
+    func_str += '\t\t\treg_t rdx = event->x86_regs->rdx;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(2), syscall_data.get_arg_name(2))
+    func_str += '\t\t\treg_t r10 = event->x86_regs->r10;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(3), syscall_data.get_arg_name(3))
 
     func_str += '\t\t\tprintf("pid: %u syscall: %s'
     func_str += '({0}, {1}, '.format(syscall_data.get_arg_format(0), syscall_data.get_arg_format(1))
@@ -476,11 +476,11 @@ def create_printf_statement_4(syscall_data):
     return func_str
 
 def create_printf_statement_5(syscall_data):
-    func_str = '\t\t\treg_t rdi = event->regs.x86->rdi;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(0), syscall_data.get_arg_name(0))    
-    func_str += '\t\t\treg_t rsi = event->regs.x86->rsi;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(1), syscall_data.get_arg_name(1))
-    func_str += '\t\t\treg_t rdx = event->regs.x86->rdx;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(2), syscall_data.get_arg_name(2))
-    func_str += '\t\t\treg_t r10 = event->regs.x86->r10;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(3), syscall_data.get_arg_name(3))
-    func_str += '\t\t\treg_t r8 = event->regs.x86->r8;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(4), syscall_data.get_arg_name(4))
+    func_str = '\t\t\treg_t rdi = event->x86_regs->rdi;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(0), syscall_data.get_arg_name(0))    
+    func_str += '\t\t\treg_t rsi = event->x86_regs->rsi;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(1), syscall_data.get_arg_name(1))
+    func_str += '\t\t\treg_t rdx = event->x86_regs->rdx;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(2), syscall_data.get_arg_name(2))
+    func_str += '\t\t\treg_t r10 = event->x86_regs->r10;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(3), syscall_data.get_arg_name(3))
+    func_str += '\t\t\treg_t r8 = event->x86_regs->r8;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(4), syscall_data.get_arg_name(4))
 
     func_str += '\t\t\tprintf("pid: %u syscall: %s'
     func_str += '({0}, {1}, '.format(syscall_data.get_arg_format(0), syscall_data.get_arg_format(1))
@@ -494,12 +494,12 @@ def create_printf_statement_5(syscall_data):
     return func_str
 
 def create_printf_statement_6(syscall_data):
-    func_str = '\t\t\treg_t rdi = event->regs.x86->rdi;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(0), syscall_data.get_arg_name(0))    
-    func_str += '\t\t\treg_t rsi = event->regs.x86->rsi;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(1), syscall_data.get_arg_name(1))
-    func_str += '\t\t\treg_t rdx = event->regs.x86->rdx;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(2), syscall_data.get_arg_name(2))
-    func_str += '\t\t\treg_t r10 = event->regs.x86->r10;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(3), syscall_data.get_arg_name(3))
-    func_str += '\t\t\treg_t r8 = event->regs.x86->r8;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(4), syscall_data.get_arg_name(4))
-    func_str += '\t\t\treg_t r9 = event->regs.x86->r9;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(5), syscall_data.get_arg_name(5))
+    func_str = '\t\t\treg_t rdi = event->x86_regs->rdi;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(0), syscall_data.get_arg_name(0))    
+    func_str += '\t\t\treg_t rsi = event->x86_regs->rsi;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(1), syscall_data.get_arg_name(1))
+    func_str += '\t\t\treg_t rdx = event->x86_regs->rdx;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(2), syscall_data.get_arg_name(2))
+    func_str += '\t\t\treg_t r10 = event->x86_regs->r10;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(3), syscall_data.get_arg_name(3))
+    func_str += '\t\t\treg_t r8 = event->x86_regs->r8;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(4), syscall_data.get_arg_name(4))
+    func_str += '\t\t\treg_t r9 = event->x86_regs->r9;\t\t/* {0} {1} */\n'.format(syscall_data.get_arg_type(5), syscall_data.get_arg_name(5))
 
     func_str += '\t\t\tprintf("pid: %u syscall: %s'
     func_str += '({0}, {1}, '.format(syscall_data.get_arg_format(0), syscall_data.get_arg_format(1))
