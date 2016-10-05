@@ -156,20 +156,20 @@ static status_t
 set_up_sysret_entry_int3 (vmi_instance_t vmi,
                           struct vm_syscall_handling_information *vm_info)
 {
-	int i;
 	status_t status = VMI_FAILURE;
-	char *name[] = {
+	char *option[] = {
 		"ret_from_sys_call",
 		"return_from_SYSCALL_64",
 		 NULL
 	};
+	char **name;
 
 	/*
 	 * Find right sysret function by searching for each symbol in
 	 * name array.
 	 */
-	for (i = 0; NULL != name[i]; i++) {
-		vm_info->virt_sysret_addr = vmi_translate_ksym2v(vmi, name[i]);
+	for (name = option; NULL != *name; name++) {
+		vm_info->virt_sysret_addr = vmi_translate_ksym2v(vmi, *name);
 		if (0 != vm_info->virt_sysret_addr) {
 			break;
 		}
@@ -184,7 +184,9 @@ set_up_sysret_entry_int3 (vmi_instance_t vmi,
 	                                               vm_info->virt_sysret_addr);
 	if (0 == vm_info->phys_sysret_addr) {
 		fprintf(stderr, "failed to get the phy. addr. of sysret "
-		                "fn at 0x%"PRIx64".\n", vm_info->virt_sysret_addr);
+		                "fn (%s) at 0x%"PRIx64".\n",
+		                 *name,
+		                 vm_info->virt_sysret_addr);
 		goto done;
 	}
 
