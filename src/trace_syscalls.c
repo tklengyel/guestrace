@@ -121,7 +121,8 @@ set_up_syscall_int3 (vmi_instance_t vmi,
 	vm_info->phys_syscall_addr = vmi_translate_kv2p(vmi,
 	                                                vm_info->virt_syscall_addr);
 	if (0 == vm_info->phys_syscall_addr) {
-		fprintf(stderr, "failed to get phy. address of syscall handler.\n");
+		fprintf(stderr, "failed to get the phy. addr. of syscall "
+		                "fn at 0x%"PRIx64".\n", vm_info->virt_syscall_addr);
 		goto done;
 	}
 
@@ -146,23 +147,44 @@ done:
 	return status;
 }
 
-/* Replace the first byte of ret_from_sys_call with INT 3. */
+
+/*
+ * Replace the first byte of ret_from_sys_call (or newer equivalent)
+ * with INT 3. The actual symbol name changes across Linux kernels.
+ */
 static status_t
 set_up_sysret_entry_int3 (vmi_instance_t vmi,
                           struct vm_syscall_handling_information *vm_info)
 {
+	int i;
 	status_t status = VMI_FAILURE;
+	char *name[] = {
+		"ret_from_sys_call",
+		"return_from_SYSCALL_64",
+		 NULL
+	};
 
-	vm_info->virt_sysret_addr = vmi_translate_ksym2v(vmi, "ret_from_sys_call");
+	/*
+	 * Find right sysret function by searching for each symbol in
+	 * name array.
+	 */
+	for (i = 0; NULL != name[i]; i++) {
+		vm_info->virt_sysret_addr = vmi_translate_ksym2v(vmi, name[i]);
+		if (0 != vm_info->virt_sysret_addr) {
+			break;
+		}
+	}
+
 	if (0 == vm_info->virt_sysret_addr) {
-		fprintf(stderr, "Failed to get virt. addr. of ret_from_sys_call.\n");
+		fprintf(stderr, "failted to find sysret function.\n");
 		goto done;
 	}
 
 	vm_info->phys_sysret_addr = vmi_translate_kv2p(vmi,
 	                                               vm_info->virt_sysret_addr);
 	if (0 == vm_info->phys_sysret_addr) {
-		fprintf(stderr, "failed to get the phy. addr. of ret_from_sys_call\n");
+		fprintf(stderr, "failed to get the phy. addr. of sysret "
+		                "fn at 0x%"PRIx64".\n", vm_info->virt_sysret_addr);
 		goto done;
 	}
 
@@ -403,6 +425,7 @@ main (int argc, char *argv[])
 	if (VMI_FAILURE == status) {
 		goto done;
 	}
+
 	status = set_up_int3_event(vmi, int3_event, &vm_info);
 	if (VMI_FAILURE == status) {
 		fprintf(stderr, "failed to setup the int3 event.");
