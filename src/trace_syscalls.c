@@ -177,7 +177,7 @@ set_up_sysret_entry_int3 (vmi_instance_t vmi,
 	}
 
 	if (0 == vm_info->virt_sysret_addr) {
-		fprintf(stderr, "failted to find sysret function.\n");
+		fprintf(stderr, "failed to find sysret function.\n");
 		goto done;
 	}
 
