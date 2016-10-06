@@ -160,6 +160,7 @@ set_up_sysret_entry_int3 (vmi_instance_t vmi,
 	status_t status = VMI_FAILURE;
 	char *option[] = {
 		"ret_from_sys_call",
+		"int_ret_from_sys_call",
 		"return_from_SYSCALL_64",
 		 NULL
 	};
