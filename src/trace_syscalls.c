@@ -16,7 +16,7 @@ static event_response_t int3_cb (vmi_instance_t vmi, vmi_event_t *event);
 static uint8_t BREAKPOINT_INST = 0xCC;
 
 /* Maintains state for libvmi callbacks. */
-struct  vm_syscall_handling_information {
+struct gs_state {
 	uint8_t orig_syscall_inst;	
 	uint8_t orig_sysret_inst;	
 	reg_t virt_syscall_addr;
@@ -82,7 +82,7 @@ done:
 static status_t
 set_up_int3_event (vmi_instance_t vmi,
                    vmi_event_t int3_event,
-                   struct vm_syscall_handling_information *vm_info)
+                   struct gs_state *vm_info)
 {
 	memset(&int3_event, 0, sizeof(vmi_event_t));
 	SETUP_INTERRUPT_EVENT(&int3_event, 0, int3_cb);
@@ -94,7 +94,7 @@ set_up_int3_event (vmi_instance_t vmi,
 static status_t
 set_up_single_step_event (vmi_instance_t vmi,
                           vmi_event_t step_event,
-                          struct vm_syscall_handling_information *vm_info)
+                          struct gs_state *vm_info)
 {
 	memset(&step_event, 0, sizeof(vmi_event_t));
 	SETUP_SINGLESTEP_EVENT(&step_event, 1, step_cb, 0);
@@ -108,8 +108,7 @@ set_up_single_step_event (vmi_instance_t vmi,
  * the system call handler is available in MSR_LSTAR.
  */
 static status_t
-set_up_syscall_int3 (vmi_instance_t vmi,
-                     struct vm_syscall_handling_information *vm_info)
+set_up_syscall_int3 (vmi_instance_t vmi, struct gs_state *vm_info)
 {
 	status_t status = VMI_FAILURE;
 
@@ -156,8 +155,7 @@ done:
  * We find the address of the CALL instruction by disassembling the kernel core.
  */
 static status_t
-set_up_sysret_entry_int3 (vmi_instance_t vmi,
-                          struct vm_syscall_handling_information *vm_info)
+set_up_sysret_entry_int3 (vmi_instance_t vmi, struct gs_state *vm_info)
 {
 	csh handle;
 	cs_insn *inst;
@@ -242,8 +240,7 @@ static event_response_t
 step_cb (vmi_instance_t vmi, vmi_event_t *event) 
 {
 	status_t status = VMI_SUCCESS;
-	struct vm_syscall_handling_information *vm_info =
-		(struct vm_syscall_handling_information *) event->data;
+	struct gs_state *vm_info = (struct gs_state *) event->data;
 
 	status = vmi_pause_vm(vmi);
 	if (VMI_FAILURE == status) {
@@ -282,13 +279,13 @@ step_cb (vmi_instance_t vmi, vmi_event_t *event)
 }
 
 static bool
-is_syscall(reg_t rip, struct vm_syscall_handling_information *vm_info)
+is_syscall(reg_t rip, struct gs_state *vm_info)
 {
 	return rip == vm_info->virt_syscall_addr;
 }
 
 static bool
-is_sysret(reg_t rip, struct vm_syscall_handling_information *vm_info)
+is_sysret(reg_t rip, struct gs_state *vm_info)
 {
 	return rip == vm_info->virt_sysret_addr;
 }
@@ -306,8 +303,7 @@ int3_cb (vmi_instance_t vmi, vmi_event_t *event)
 	addr_t  orig_inst_addr;
 	uint8_t orig_inst_frag;
 	reg_t rip = event->x86_regs->rip;
-	struct vm_syscall_handling_information *vm_info =
-		(struct vm_syscall_handling_information *) event->data; 
+	struct gs_state *vm_info = (struct gs_state *) event->data; 
 
 	/*
 	 * Flush the PID to page table cache to ensure we are looking at the
@@ -374,8 +370,7 @@ done:
  * fragments, but only if we were able to find them in the first place.
  */
 static void
-restore_original_instructions (vmi_instance_t vmi,
-                               struct vm_syscall_handling_information *vm_info)
+restore_original_instructions (vmi_instance_t vmi, struct gs_state *vm_info)
 {
 	status_t status = VMI_SUCCESS;
 	
@@ -410,7 +405,7 @@ main (int argc, char *argv[])
 	int exitcode = EXIT_FAILURE;	
 	int status = VMI_FAILURE;
 	vmi_instance_t vmi = NULL; 		
-	struct vm_syscall_handling_information vm_info;
+	struct gs_state vm_info;
 
 	memset(&vm_info, 0x00, sizeof(vm_info));
 
