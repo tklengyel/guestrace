@@ -1,12 +1,14 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
-	$(LIBVMI_CFLAGS)
+	$(LIBVMI_CFLAGS) \
+	$(CAPSTONE_CFLAGS)
 
 AM_CFLAGS = \
 	-Wall
 
 AM_LDFLAGS = \
-	$(LIBVMI_LIBS)
+	$(LIBVMI_LIBS) \
+	$(CAPSTONE_LIBS)
 
 bin_PROGRAMS = \
 	guestrace

@@ -1,5 +1,6 @@
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>	
+#include <capstone/capstone.h>
 #include <inttypes.h>
 #include <signal.h>
 #include <stdio.h>
@@ -129,7 +130,7 @@ set_up_syscall_int3 (vmi_instance_t vmi,
 	status = vmi_read_8_pa(vmi, vm_info->phys_syscall_addr,
 	                      &vm_info->orig_syscall_inst);
 	if (VMI_FAILURE == status) {
-		fprintf(stderr, "failed to read original instruction from 0x%"
+		fprintf(stderr, "failed to read original syscall inst. from 0x%"
 		                 PRIx64".\n", vm_info->phys_syscall_addr);
 		goto done;
 	}
@@ -149,47 +150,66 @@ done:
 
 
 /*
- * Replace the first byte of ret_from_sys_call (or equivalent)
- * with INT 3. The actual symbol name appears to change across Linux kernels
- * and architectures.
+ * Replace the first byte of the instruction following the CALL instruction
+ * in the kernel's system-call handler with INT 3. This is the first
+ * practical point at which we have access to the system call's return value
+ * We find the address of the CALL instruction by disassembling the kernel core.
  */
 static status_t
 set_up_sysret_entry_int3 (vmi_instance_t vmi,
                           struct vm_syscall_handling_information *vm_info)
 {
+	csh handle;
+	cs_insn *inst;
+	size_t count, call_offset = ~0;
 	status_t status = VMI_FAILURE;
-	char *option[] = {
-		"ret_from_sys_call",
-		"int_ret_from_sys_call",
-		"return_from_SYSCALL_64",
-		 NULL
-	};
-	char **name;
+	uint8_t code[1024]; /* Assume CALL is within first KB. */
 
-	/*
-	 * Find right sysret function by searching for each symbol in
-	 * name array.
-	 */
-	for (name = option; NULL != *name; name++) {
-		vm_info->virt_sysret_addr = vmi_translate_ksym2v(vmi, *name);
-		if (0 != vm_info->virt_sysret_addr) {
-			break;
-		}
-	}
-
-	if (0 == vm_info->virt_sysret_addr) {
-		fprintf(stderr, "failed to find sysret function.\n");
+	/* Read kernel instructions into code. */
+	status = vmi_read_pa(vmi, vm_info->phys_syscall_addr,
+	                     code, sizeof(code));
+	if (VMI_FAILURE == status) {
+		fprintf(stderr, "failed to read instructions from 0x%"
+		                 PRIx64".\n", vm_info->phys_syscall_addr);
 		goto done;
 	}
 
-	printf("using sysret function %s\n", *name);
+	if (cs_open(CS_ARCH_X86, CS_MODE_64, &handle) != CS_ERR_OK) {
+		fprintf(stderr, "failed to open capstone\n");
+		goto done;
+	}
 
+	/* Find CALL inst. and note address of inst. which follows. */
+	count = cs_disasm(handle, code, sizeof(code), 0, 0, &inst);
+	if (count > 0) {
+		size_t i;
+		for (i = 0; i < count; i++) {
+			if (!strcmp(inst[i].mnemonic, "call")) {
+				call_offset = inst[i + 1].address;
+				break;
+			}
+		}
+		cs_free(inst, count);
+	} else {
+		fprintf(stderr, "failed to disassemble system-call handler\n");
+		goto done;
+	}
+
+	if (~0 == call_offset) {
+		fprintf(stderr, "did not find call in system-call handler\n");
+		goto done;
+	}
+
+	cs_close(&handle);
+
+	status = VMI_SUCCESS;
+
+	vm_info->virt_sysret_addr = vm_info->virt_syscall_addr + call_offset;
 	vm_info->phys_sysret_addr = vmi_translate_kv2p(vmi,
 	                                               vm_info->virt_sysret_addr);
 	if (0 == vm_info->phys_sysret_addr) {
 		fprintf(stderr, "failed to get phy. addr. of sysret "
-		                "fn (%s) at 0x%"PRIx64".\n",
-		                 *name,
+		                "at 0x%"PRIx64".\n",
 		                 vm_info->virt_sysret_addr);
 		goto done;
 	}
@@ -197,7 +217,7 @@ set_up_sysret_entry_int3 (vmi_instance_t vmi,
 	status = vmi_read_8_pa(vmi, vm_info->phys_sysret_addr,
 	                      &vm_info->orig_sysret_inst);
 	if (VMI_FAILURE == status) {
-		fprintf(stderr, "failed to read original instruction from 0x%"
+		fprintf(stderr, "failed to read original sysret inst. from 0x%"
 		                 PRIx64".\n", vm_info->phys_sysret_addr);
 		goto done;
 	}
@@ -208,8 +228,6 @@ set_up_sysret_entry_int3 (vmi_instance_t vmi,
 		                 PRIx64".\n", vm_info->phys_sysret_addr);
 		goto done;
 	}
-
-	status = VMI_SUCCESS;
 
 done:
 	return status;
