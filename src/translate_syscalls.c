@@ -17,12 +17,52 @@ struct win32_obj_attr {
 	uint32_t security_quality_of_service; // see microsoft documentation
 };
 
+struct win32_obj_attr * obj_attr_from_va(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid);
+uint8_t * filename_from_arg(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid) ;
+
 const char * symbol_from_syscall_num(unsigned int sysnum) {
-	if (sysnum >= NUM_SYSCALLS || NUM_TO_SYSCALL[sysnum] == NULL) {
+	if (sysnum >= NUM_SYSCALLS || sysnum < 0 || NUM_TO_SYSCALL[sysnum] == NULL) {
 		return NULL;
 	} else {
 		return NUM_TO_SYSCALL[sysnum];
 	}
+}
+
+/*
+ * Tries to return a UTF-8 string representing the filename of an ObjectAttribute
+ * vaddr must point to an ObjectAttribute virtual address
+ * Must free what it returns
+ */
+
+uint8_t * filename_from_arg(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid) {
+	struct win32_obj_attr * obj_attr = obj_attr_from_va(vmi, vaddr, pid);
+
+	uint8_t * res = NULL;
+
+	if (obj_attr == NULL) {
+		goto done;
+	}
+
+	unicode_string_t * filename = vmi_read_unicode_str_va(vmi, obj_attr->object_name, pid);
+
+	if (filename == NULL) {
+		free(obj_attr);
+		goto done;
+	}
+
+	unicode_string_t nfilename;
+	if (VMI_SUCCESS != vmi_convert_str_encoding(filename, &nfilename, "UTF-8")) {
+		free(obj_attr);
+		vmi_free_unicode_str(filename);
+		goto done;
+	}
+
+	res = nfilename.contents; // points to malloc'd memory
+	free(obj_attr);
+	vmi_free_unicode_str(filename);
+
+done:
+	return res;
 }
 
 /*
@@ -135,29 +175,23 @@ print_syscall(vmi_instance_t vmi, vmi_event_t *event)
 	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 	char *proc_name = get_process_name(vmi, pid);
 	
-	if (strcmp(proc_name, "cmd.exe") == 0) {
-		fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
+	//if (strcmp(proc_name, "cmd.exe") == 0) {
+		// fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
 
-		unsigned int args[16] = {0};
-		vmi_read_va(vmi, event->x86_regs->rdx, pid, args, sizeof(args));
+		unsigned int raw_args[16] = {0};
+		vmi_read_va(vmi, event->x86_regs->rdx, pid, raw_args, sizeof(raw_args));
+		unsigned int * args = &raw_args[2]; /* don't know what the first two arguments are yet, so let's ignore them */
 
 		switch (win_syscall) {
 
 			case NTOPENFILE:
 			{
-				struct win32_obj_attr * obj_attr = obj_attr_from_va(vmi, args[4], pid);
+				fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
 
-				if (obj_attr != NULL) {
-					unicode_string_t * filename = vmi_read_unicode_str_va(vmi, obj_attr->object_name, pid);
+				uint8_t * filename = filename_from_arg(vmi, args[2], pid);
 
-					unicode_string_t nfilename;
-					vmi_convert_str_encoding(filename, &nfilename, "UTF-8");
-
-					fprintf(stderr, "%s\n", nfilename.contents);
-
-					free(nfilename.contents);
-					vmi_free_unicode_str(filename);
-					free(obj_attr);
+				if (filename != NULL) {
+					fprintf(stderr, "%s\n", filename);
 				}
 
 				break;
@@ -165,19 +199,12 @@ print_syscall(vmi_instance_t vmi, vmi_event_t *event)
 
 			case NTOPENSYMBOLICLINKOBJECT:
 			{
-				struct win32_obj_attr * obj_attr = obj_attr_from_va(vmi, args[4], pid);
+				fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
 
-				if (obj_attr != NULL) {
-					unicode_string_t * filename = vmi_read_unicode_str_va(vmi, obj_attr->object_name, pid);
+				uint8_t * filename = filename_from_arg(vmi, args[2], pid);
 
-					unicode_string_t nfilename;
-					vmi_convert_str_encoding(filename, &nfilename, "UTF-8");
-
-					fprintf(stderr, "%s\n", nfilename.contents);
-
-					free(nfilename.contents);
-					vmi_free_unicode_str(filename);
-					free(obj_attr);
+				if (filename != NULL) {
+					fprintf(stderr, "%s\n", filename);
 				}
 
 				break;
@@ -185,19 +212,38 @@ print_syscall(vmi_instance_t vmi, vmi_event_t *event)
 
 			case NTCREATEFILE:
 			{
-				struct win32_obj_attr * obj_attr = obj_attr_from_va(vmi, args[4], pid);
+				fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
 
-				if (obj_attr != NULL) {
-					unicode_string_t * filename = vmi_read_unicode_str_va(vmi, obj_attr->object_name, pid);
+				uint8_t * filename = filename_from_arg(vmi, args[2], pid);
 
-					unicode_string_t nfilename;
-					vmi_convert_str_encoding(filename, &nfilename, "UTF-8");
+				if (filename != NULL) {
+					fprintf(stderr, "%s\n", filename);
+				}
 
-					fprintf(stderr, "%s\n", nfilename.contents);
+				break;
+			}
 
-					free(nfilename.contents);
-					vmi_free_unicode_str(filename);
-					free(obj_attr);
+			case NTOPENDIRECTORYOBJECT:
+			{
+				fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
+
+				uint8_t * filename = filename_from_arg(vmi, args[2], pid);
+
+				if (filename != NULL) {
+					fprintf(stderr, "%s\n", filename);
+				}
+
+				break;
+			}
+
+			case NTOPENPROCESS:
+			{
+				fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
+
+				uint8_t * filename = filename_from_arg(vmi, args[2], pid);
+
+				if (filename != NULL) {
+					fprintf(stderr, "%s\n", filename);
 				}
 
 				break;
@@ -208,7 +254,7 @@ print_syscall(vmi_instance_t vmi, vmi_event_t *event)
 				/* do something here? */
 			}
 		}
-	}
+	//}
 
 	free(proc_name);
 }
