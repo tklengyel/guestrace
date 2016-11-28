@@ -1,5 +1,3 @@
-/* Generated on Linux_4.6.7-300.fc24.x86_64 on 01 Sep 2016 14:33:41*/
-
 #ifndef SYSCALL_ENUM_H
 #define SYSCALL_ENUM_H
 
@@ -10,333 +8,814 @@
  */
 
 enum syscalls {
-	SYS_READ,			/* 0 */
-	SYS_WRITE,			/* 1 */
-	SYS_OPEN,			/* 2 */
-	SYS_CLOSE,			/* 3 */
-	SYS_STAT,			/* 4 */
-	SYS_FSTAT,			/* 5 */
-	SYS_LSTAT,			/* 6 */
-	SYS_POLL,			/* 7 */
-	SYS_LSEEK,			/* 8 */
-	SYS_MMAP,			/* 9 */
-	SYS_MPROTECT,			/* 10 */
-	SYS_MUNMAP,			/* 11 */
-	SYS_BRK,			/* 12 */
-	SYS_RT_SIGACTION,		/* 13 */
-	SYS_RT_SIGPROCMASK,		/* 14 */
-	SYS_RT_SIGRETURN,		/* 15 */
-	SYS_IOCTL,			/* 16 */
-	SYS_PREAD,			/* 17 */
-	SYS_PWRITE,			/* 18 */
-	SYS_READV,			/* 19 */
-	SYS_WRITEV,			/* 20 */
-	SYS_ACCESS,			/* 21 */
-	SYS_PIPE,			/* 22 */
-	SYS_SELECT,			/* 23 */
-	SYS_SCHED_YIELD,		/* 24 */
-	SYS_MREMAP,			/* 25 */
-	SYS_MSYNC,			/* 26 */
-	SYS_MINCORE,			/* 27 */
-	SYS_MADVISE,			/* 28 */
-	SYS_SHMGET,			/* 29 */
-	SYS_SHMAT,			/* 30 */
-	SYS_SHMCTL,			/* 31 */
-	SYS_DUP,			/* 32 */
-	SYS_DUP2,			/* 33 */
-	SYS_PAUSE,			/* 34 */
-	SYS_NANOSLEEP,			/* 35 */
-	SYS_GETITIMER,			/* 36 */
-	SYS_ALARM,			/* 37 */
-	SYS_SETITIMER,			/* 38 */
-	SYS_GETPID,			/* 39 */
-	SYS_SENDFILE,			/* 40 */
-	SYS_SOCKET,			/* 41 */
-	SYS_CONNECT,			/* 42 */
-	SYS_ACCEPT,			/* 43 */
-	SYS_SENDTO,			/* 44 */
-	SYS_RECVFROM,			/* 45 */
-	SYS_SENDMSG,			/* 46 */
-	SYS_RECVMSG,			/* 47 */
-	SYS_SHUTDOWN,			/* 48 */
-	SYS_BIND,			/* 49 */
-	SYS_LISTEN,			/* 50 */
-	SYS_GETSOCKNAME,		/* 51 */
-	SYS_GETPEERNAME,		/* 52 */
-	SYS_SOCKETPAIR,			/* 53 */
-	SYS_SETSOCKOPT,			/* 54 */
-	SYS_GETSOCKOPT,			/* 55 */
-	SYS_CLONE,			/* 56 */
-	SYS_FORK,			/* 57 */
-	SYS_VFORK,			/* 58 */
-	SYS_EXECVE,			/* 59 */
-	SYS_EXIT,			/* 60 */
-	SYS_WAIT4,			/* 61 */
-	SYS_KILL,			/* 62 */
-	SYS_UNAME,			/* 63 */
-	SYS_SEMGET,			/* 64 */
-	SYS_SEMOP,			/* 65 */
-	SYS_SEMCTL,			/* 66 */
-	SYS_SHMDT,			/* 67 */
-	SYS_MSGGET,			/* 68 */
-	SYS_MSGSND,			/* 69 */
-	SYS_MSGRCV,			/* 70 */
-	SYS_MSGCTL,			/* 71 */
-	SYS_FCNTL,			/* 72 */
-	SYS_FLOCK,			/* 73 */
-	SYS_FSYNC,			/* 74 */
-	SYS_FDATASYNC,			/* 75 */
-	SYS_TRUNCATE,			/* 76 */
-	SYS_FTRUNCATE,			/* 77 */
-	SYS_GETDENTS,			/* 78 */
-	SYS_GETCWD,			/* 79 */
-	SYS_CHDIR,			/* 80 */
-	SYS_FCHDIR,			/* 81 */
-	SYS_RENAME,			/* 82 */
-	SYS_MKDIR,			/* 83 */
-	SYS_RMDIR,			/* 84 */
-	SYS_CREAT,			/* 85 */
-	SYS_LINK,			/* 86 */
-	SYS_UNLINK,			/* 87 */
-	SYS_SYMLINK,			/* 88 */
-	SYS_READLINK,			/* 89 */
-	SYS_CHMOD,			/* 90 */
-	SYS_FCHMOD,			/* 91 */
-	SYS_CHOWN,			/* 92 */
-	SYS_FCHOWN,			/* 93 */
-	SYS_LCHOWN,			/* 94 */
-	SYS_UMASK,			/* 95 */
-	SYS_GETTIMEOFDAY,		/* 96 */
-	SYS_GETRLIMIT,			/* 97 */
-	SYS_GETRUSAGE,			/* 98 */
-	SYS_SYSINFO,			/* 99 */
-	SYS_TIMES,			/* 100 */
-	SYS_PTRACE,			/* 101 */
-	SYS_GETUID,			/* 102 */
-	SYS_SYSLOG,			/* 103 */
-	SYS_GETGID,			/* 104 */
-	SYS_SETUID,			/* 105 */
-	SYS_SETGID,			/* 106 */
-	SYS_GETEUID,			/* 107 */
-	SYS_GETEGID,			/* 108 */
-	SYS_SETPGID,			/* 109 */
-	SYS_GETPPID,			/* 110 */
-	SYS_GETPGRP,			/* 111 */
-	SYS_SETSID,			/* 112 */
-	SYS_SETREUID,			/* 113 */
-	SYS_SETREGID,			/* 114 */
-	SYS_GETGROUPS,			/* 115 */
-	SYS_SETGROUPS,			/* 116 */
-	SYS_SETRESUID,			/* 117 */
-	SYS_GETRESUID,			/* 118 */
-	SYS_SETRESGID,			/* 119 */
-	SYS_GETRESGID,			/* 120 */
-	SYS_GETPGID,			/* 121 */
-	SYS_SETFSUID,			/* 122 */
-	SYS_SETFSGID,			/* 123 */
-	SYS_GETSID,			/* 124 */
-	SYS_CAPGET,			/* 125 */
-	SYS_CAPSET,			/* 126 */
-	SYS_RT_SIGPENDING,		/* 127 */
-	SYS_RT_SIGTIMEDWAIT,		/* 128 */
-	SYS_RT_SIGQUEUEINFO,		/* 129 */
-	SYS_RT_SIGSUSPEND,		/* 130 */
-	SYS_SIGALTSTACK,		/* 131 */
-	SYS_UTIME,			/* 132 */
-	SYS_MKNOD,			/* 133 */
-	SYS_USELIB,			/* 134 */
-	SYS_PERSONALITY,		/* 135 */
-	SYS_USTAT,			/* 136 */
-	SYS_STATFS,			/* 137 */
-	SYS_FSTATFS,			/* 138 */
-	SYS_SYSFS,			/* 139 */
-	SYS_GETPRIORITY,		/* 140 */
-	SYS_SETPRIORITY,		/* 141 */
-	SYS_SCHED_SETPARAM,		/* 142 */
-	SYS_SCHED_GETPARAM,		/* 143 */
-	SYS_SCHED_SETSCHEDULER,		/* 144 */
-	SYS_SCHED_GETSCHEDULER,		/* 145 */
-	SYS_SCHED_GET_PRIORITY_MAX,	/* 146 */
-	SYS_SCHED_GET_PRIORITY_MIN,	/* 147 */
-	SYS_SCHED_RR_GET_INTERVAL,	/* 148 */
-	SYS_MLOCK,			/* 149 */
-	SYS_MUNLOCK,			/* 150 */
-	SYS_MLOCKALL,			/* 151 */
-	SYS_MUNLOCKALL,			/* 152 */
-	SYS_VHANGUP,			/* 153 */
-	SYS_MODIFY_LDT,			/* 154 */
-	SYS_PIVOT_ROOT,			/* 155 */
-	SYS_SYSCTL,			/* 156 */
-	SYS_PRCTL,			/* 157 */
-	SYS_ARCH_PRCTL,			/* 158 */
-	SYS_ADJTIMEX,			/* 159 */
-	SYS_SETRLIMIT,			/* 160 */
-	SYS_CHROOT,			/* 161 */
-	SYS_SYNC,			/* 162 */
-	SYS_ACCT,			/* 163 */
-	SYS_SETTIMEOFDAY,		/* 164 */
-	SYS_MOUNT,			/* 165 */
-	SYS_UMOUNT2,			/* 166 */
-	SYS_SWAPON,			/* 167 */
-	SYS_SWAPOFF,			/* 168 */
-	SYS_REBOOT,			/* 169 */
-	SYS_SETHOSTNAME,		/* 170 */
-	SYS_SETDOMAINNAME,		/* 171 */
-	SYS_IOPL,			/* 172 */
-	SYS_IOPERM,			/* 173 */
-	SYS_CREATE_MODULE,		/* 174 */
-	SYS_INIT_MODULE,		/* 175 */
-	SYS_DELETE_MODULE,		/* 176 */
-	SYS_GET_KERNEL_SYMS,		/* 177 */
-	SYS_QUERY_MODULE,		/* 178 */
-	SYS_QUOTACTL,			/* 179 */
-	SYS_NFSSERVCTL,			/* 180 */
-	SYS_GETPMSG,			/* 181 */
-	SYS_PUTPMSG,			/* 182 */
-	SYS_AFS_SYSCALL,		/* 183 */
-	SYS_TUXCALL,			/* 184 */
-	SYS_SECURITY,			/* 185 */
-	SYS_GETTID,			/* 186 */
-	SYS_READAHEAD,			/* 187 */
-	SYS_SETXATTR,			/* 188 */
-	SYS_LSETXATTR,			/* 189 */
-	SYS_FSETXATTR,			/* 190 */
-	SYS_GETXATTR,			/* 191 */
-	SYS_LGETXATTR,			/* 192 */
-	SYS_FGETXATTR,			/* 193 */
-	SYS_LISTXATTR,			/* 194 */
-	SYS_LLISTXATTR,			/* 195 */
-	SYS_FLISTXATTR,			/* 196 */
-	SYS_REMOVEXATTR,		/* 197 */
-	SYS_LREMOVEXATTR,		/* 198 */
-	SYS_FREMOVEXATTR,		/* 199 */
-	SYS_TKILL,			/* 200 */
-	SYS_TIME,			/* 201 */
-	SYS_FUTEX,			/* 202 */
-	SYS_SCHED_SETAFFINITY,		/* 203 */
-	SYS_SCHED_GETAFFINITY,		/* 204 */
-	SYS_SET_THREAD_AREA,		/* 205 */
-	SYS_IO_SETUP,			/* 206 */
-	SYS_IO_DESTROY,			/* 207 */
-	SYS_IO_GETEVENTS,		/* 208 */
-	SYS_IO_SUBMIT,			/* 209 */
-	SYS_IO_CANCEL,			/* 210 */
-	SYS_GET_THREAD_AREA,		/* 211 */
-	SYS_LOOKUP_DCOOKIE,		/* 212 */
-	SYS_EPOLL_CREATE,		/* 213 */
-	SYS_EPOLL_CTL_OLD,		/* 214 */
-	SYS_EPOLL_WAIT_OLD,		/* 215 */
-	SYS_REMAP_FILE_PAGES,		/* 216 */
-	SYS_GETDENTS64,			/* 217 */
-	SYS_SET_TID_ADDRESS,		/* 218 */
-	SYS_RESTART_SYSCALL,		/* 219 */
-	SYS_SEMTIMEDOP,			/* 220 */
-	SYS_FADVISE64,			/* 221 */
-	SYS_TIMER_CREATE,		/* 222 */
-	SYS_TIMER_SETTIME,		/* 223 */
-	SYS_TIMER_GETTIME,		/* 224 */
-	SYS_TIMER_GETOVERRUN,		/* 225 */
-	SYS_TIMER_DELETE,		/* 226 */
-	SYS_CLOCK_SETTIME,		/* 227 */
-	SYS_CLOCK_GETTIME,		/* 228 */
-	SYS_CLOCK_GETRES,		/* 229 */
-	SYS_CLOCK_NANOSLEEP,		/* 230 */
-	SYS_EXIT_GROUP,			/* 231 */
-	SYS_EPOLL_WAIT,			/* 232 */
-	SYS_EPOLL_CTL,			/* 233 */
-	SYS_TGKILL,			/* 234 */
-	SYS_UTIMES,			/* 235 */
-	SYS_VSERVER,			/* 236 */
-	SYS_MBIND,			/* 237 */
-	SYS_SET_MEMPOLICY,		/* 238 */
-	SYS_GET_MEMPOLICY,		/* 239 */
-	SYS_MQ_OPEN,			/* 240 */
-	SYS_MQ_UNLINK,			/* 241 */
-	SYS_MQ_TIMEDSEND,		/* 242 */
-	SYS_MQ_TIMEDRECEIVE,		/* 243 */
-	SYS_MQ_NOTIFY,			/* 244 */
-	SYS_MQ_GETSETATTR,		/* 245 */
-	SYS_KEXEC_LOAD,			/* 246 */
-	SYS_WAITID,			/* 247 */
-	SYS_ADD_KEY,			/* 248 */
-	SYS_REQUEST_KEY,		/* 249 */
-	SYS_KEYCTL,			/* 250 */
-	SYS_IOPRIO_SET,			/* 251 */
-	SYS_IOPRIO_GET,			/* 252 */
-	SYS_INOTIFY_INIT,		/* 253 */
-	SYS_INOTIFY_ADD_WATCH,		/* 254 */
-	SYS_INOTIFY_RM_WATCH,		/* 255 */
-	SYS_MIGRATE_PAGES,		/* 256 */
-	SYS_OPENAT,			/* 257 */
-	SYS_MKDIRAT,			/* 258 */
-	SYS_MKNODAT,			/* 259 */
-	SYS_FCHOWNAT,			/* 260 */
-	SYS_FUTIMESAT,			/* 261 */
-	SYS_NEWFSTATAT,			/* 262 */
-	SYS_UNLINKAT,			/* 263 */
-	SYS_RENAMEAT,			/* 264 */
-	SYS_LINKAT,			/* 265 */
-	SYS_SYMLINKAT,			/* 266 */
-	SYS_READLINKAT,			/* 267 */
-	SYS_FCHMODAT,			/* 268 */
-	SYS_FACCESSAT,			/* 269 */
-	SYS_PSELECT6,			/* 270 */
-	SYS_PPOLL,			/* 271 */
-	SYS_UNSHARE,			/* 272 */
-	SYS_SET_ROBUST_LIST,		/* 273 */
-	SYS_GET_ROBUST_LIST,		/* 274 */
-	SYS_SPLICE,			/* 275 */
-	SYS_TEE,			/* 276 */
-	SYS_SYNC_FILE_RANGE,		/* 277 */
-	SYS_VMSPLICE,			/* 278 */
-	SYS_MOVE_PAGES,			/* 279 */
-	SYS_UTIMENSAT,			/* 280 */
-	SYS_EPOLL_PWAIT,		/* 281 */
-	SYS_SIGNALFD,			/* 282 */
-	SYS_TIMERFD,			/* 283 */
-	SYS_EVENTFD,			/* 284 */
-	SYS_FALLOCATE,			/* 285 */
-	SYS_TIMERFD_SETTIME,		/* 286 */
-	SYS_TIMERFD_GETTIME,		/* 287 */
-	SYS_ACCEPT4,			/* 288 */
-	SYS_SIGNALFD4,			/* 289 */
-	SYS_EVENTFD2,			/* 290 */
-	SYS_EPOLL_CREATE1,		/* 291 */
-	SYS_DUP3,			/* 292 */
-	SYS_PIPE2,			/* 293 */
-	SYS_INOTIFY_INIT1,		/* 294 */
-	SYS_PREADV,			/* 295 */
-	SYS_PWRITEV,			/* 296 */
-	SYS_RT_TGSIGQUEUEINFO,		/* 297 */
-	SYS_PERF_EVENT_OPEN,		/* 298 */
-	SYS_RECVMMSG,			/* 299 */
-	SYS_FANOTIFY_INIT,		/* 300 */
-	SYS_FANOTIFY_MARK,		/* 301 */
-	SYS_PRLIMIT64,			/* 302 */
-	SYS_NAME_TO_HANDLE_AT,		/* 303 */
-	SYS_OPEN_BY_HANDLE_AT,		/* 304 */
-	SYS_CLOCK_ADJTIME,		/* 305 */
-	SYS_SYNCFS,			/* 306 */
-	SYS_SENDMMSG,			/* 307 */
-	SYS_SETNS,			/* 308 */
-	SYS_GETCPU,			/* 309 */
-	SYS_PROCESS_VM_READV,		/* 310 */
-	SYS_PROCESS_VM_WRITEV,		/* 311 */
-	SYS_KCMP,			/* 312 */
-	SYS_FINIT_MODULE,		/* 313 */
-	SYS_SCHED_SETATTR,		/* 314 */
-	SYS_SCHED_GETATTR,		/* 315 */
-	SYS_RENAMEAT2,			/* 316 */
-	SYS_SECCOMP,			/* 317 */
-	SYS_GETRANDOM,			/* 318 */
-	SYS_MEMFD_CREATE,		/* 319 */
-	SYS_KEXEC_FILE_LOAD,		/* 320 */
-	SYS_BPF,			/* 321 */
-	SYS_EXECVEAT,			/* 322 */
-	SYS_USERFAULTFD,		/* 323 */
-	SYS_MEMBARRIER,			/* 324 */
-	SYS_MLOCK2,			/* 325 */
-	SYS_COPY_FILE_RANGE,		/* 326 */
+	NTACCEPTCONNECTPORT = 0x0,
+	NTACCESSCHECK = 0x1,
+	NTACCESSCHECKANDAUDITALARM = 0x2,
+	NTACCESSCHECKBYTYPE = 0x3,
+	NTACCESSCHECKBYTYPEANDAUDITALARM = 0x4,
+	NTACCESSCHECKBYTYPERESULTLIST = 0x5,
+	NTACCESSCHECKBYTYPERESULTLISTANDAUDITALARM = 0x6,
+	NTACCESSCHECKBYTYPERESULTLISTANDAUDITALARMBYHANDLE = 0x7,
+	NTADDATOM = 0x8,
+	NTADDBOOTENTRY = 0x9,
+	NTADDDRIVERENTRY = 0xa,
+	NTADJUSTGROUPSTOKEN = 0xb,
+	NTADJUSTPRIVILEGESTOKEN = 0xc,
+	NTALERTRESUMETHREAD = 0xd,
+	NTALERTTHREAD = 0xe,
+	NTALLOCATELOCALLYUNIQUEID = 0xf,
+	NTALLOCATERESERVEOBJECT = 0x10,
+	NTALLOCATEUSERPHYSICALPAGES = 0x11,
+	NTALLOCATEUUIDS = 0x12,
+	NTALLOCATEVIRTUALMEMORY = 0x13,
+	NTALPCACCEPTCONNECTPORT = 0x14,
+	NTALPCCANCELMESSAGE = 0x15,
+	NTALPCCONNECTPORT = 0x16,
+	NTALPCCREATEPORT = 0x17,
+	NTALPCCREATEPORTSECTION = 0x18,
+	NTALPCCREATERESOURCERESERVE = 0x19,
+	NTALPCCREATESECTIONVIEW = 0x1a,
+	NTALPCCREATESECURITYCONTEXT = 0x1b,
+	NTALPCDELETEPORTSECTION = 0x1c,
+	NTALPCDELETERESOURCERESERVE = 0x1d,
+	NTALPCDELETESECTIONVIEW = 0x1e,
+	NTALPCDELETESECURITYCONTEXT = 0x1f,
+	NTALPCDISCONNECTPORT = 0x20,
+	NTALPCIMPERSONATECLIENTOFPORT = 0x21,
+	NTALPCOPENSENDERPROCESS = 0x22,
+	NTALPCOPENSENDERTHREAD = 0x23,
+	NTALPCQUERYINFORMATION = 0x24,
+	NTALPCQUERYINFORMATIONMESSAGE = 0x25,
+	NTALPCREVOKESECURITYCONTEXT = 0x26,
+	NTALPCSENDWAITRECEIVEPORT = 0x27,
+	NTALPCSETINFORMATION = 0x28,
+	NTAPPHELPCACHECONTROL = 0x29,
+	NTAREMAPPEDFILESTHESAME = 0x2a,
+	NTASSIGNPROCESSTOJOBOBJECT = 0x2b,
+	NTCALLBACKRETURN = 0x2c,
+	NTCANCELIOFILE = 0x2d,
+	NTCANCELIOFILEEX = 0x2e,
+	NTCANCELSYNCHRONOUSIOFILE = 0x2f,
+	NTCANCELTIMER = 0x30,
+	NTCLEAREVENT = 0x31,
+	NTCLOSE = 0x32,
+	NTCLOSEOBJECTAUDITALARM = 0x33,
+	NTCOMMITCOMPLETE = 0x34,
+	NTCOMMITENLISTMENT = 0x35,
+	NTCOMMITTRANSACTION = 0x36,
+	NTCOMPACTKEYS = 0x37,
+	NTCOMPARETOKENS = 0x38,
+	NTCOMPLETECONNECTPORT = 0x39,
+	NTCOMPRESSKEY = 0x3a,
+	NTCONNECTPORT = 0x3b,
+	NTCONTINUE = 0x3c,
+	NTCREATEDEBUGOBJECT = 0x3d,
+	NTCREATEDIRECTORYOBJECT = 0x3e,
+	NTCREATEENLISTMENT = 0x3f,
+	NTCREATEEVENT = 0x40,
+	NTCREATEEVENTPAIR = 0x41,
+	NTCREATEFILE = 0x42,
+	NTCREATEIOCOMPLETION = 0x43,
+	NTCREATEJOBOBJECT = 0x44,
+	NTCREATEJOBSET = 0x45,
+	NTCREATEKEY = 0x46,
+	NTCREATEKEYTRANSACTED = 0x48,
+	NTCREATEKEYEDEVENT = 0x47,
+	NTCREATEMAILSLOTFILE = 0x49,
+	NTCREATEMUTANT = 0x4a,
+	NTCREATENAMEDPIPEFILE = 0x4b,
+	NTCREATEPAGINGFILE = 0x4c,
+	NTCREATEPORT = 0x4d,
+	NTCREATEPRIVATENAMESPACE = 0x4e,
+	NTCREATEPROCESS = 0x4f,
+	NTCREATEPROCESSEX = 0x50,
+	NTCREATEPROFILE = 0x51,
+	NTCREATEPROFILEEX = 0x52,
+	NTCREATERESOURCEMANAGER = 0x53,
+	NTCREATESECTION = 0x54,
+	NTCREATESEMAPHORE = 0x55,
+	NTCREATESYMBOLICLINKOBJECT = 0x56,
+	NTCREATETHREAD = 0x57,
+	NTCREATETHREADEX = 0x58,
+	NTCREATETIMER = 0x59,
+	NTCREATETOKEN = 0x5a,
+	NTCREATETRANSACTION = 0x5b,
+	NTCREATETRANSACTIONMANAGER = 0x5c,
+	NTCREATEUSERPROCESS = 0x5d,
+	NTCREATEWAITABLEPORT = 0x5e,
+	NTCREATEWORKERFACTORY = 0x5f,
+	NTDEBUGACTIVEPROCESS = 0x60,
+	NTDEBUGCONTINUE = 0x61,
+	NTDELAYEXECUTION = 0x62,
+	NTDELETEATOM = 0x63,
+	NTDELETEBOOTENTRY = 0x64,
+	NTDELETEDRIVERENTRY = 0x65,
+	NTDELETEFILE = 0x66,
+	NTDELETEKEY = 0x67,
+	NTDELETEOBJECTAUDITALARM = 0x68,
+	NTDELETEPRIVATENAMESPACE = 0x69,
+	NTDELETEVALUEKEY = 0x6a,
+	NTDEVICEIOCONTROLFILE = 0x6b,
+	NTDISABLELASTKNOWNGOOD = 0x6c,
+	NTDISPLAYSTRING = 0x6d,
+	NTDRAWTEXT = 0x6e,
+	NTDUPLICATEOBJECT = 0x6f,
+	NTDUPLICATETOKEN = 0x70,
+	NTENABLELASTKNOWNGOOD = 0x71,
+	NTENUMERATEBOOTENTRIES = 0x72,
+	NTENUMERATEDRIVERENTRIES = 0x73,
+	NTENUMERATEKEY = 0x74,
+	NTENUMERATESYSTEMENVIRONMENTVALUESEX = 0x75,
+	NTENUMERATETRANSACTIONOBJECT = 0x76,
+	NTENUMERATEVALUEKEY = 0x77,
+	NTEXTENDSECTION = 0x78,
+	NTFILTERTOKEN = 0x79,
+	NTFINDATOM = 0x7a,
+	NTFLUSHBUFFERSFILE = 0x7b,
+	NTFLUSHINSTALLUILANGUAGE = 0x7c,
+	NTFLUSHINSTRUCTIONCACHE = 0x7d,
+	NTFLUSHKEY = 0x7e,
+	NTFLUSHPROCESSWRITEBUFFERS = 0x7f,
+	NTFLUSHVIRTUALMEMORY = 0x80,
+	NTFLUSHWRITEBUFFER = 0x81,
+	NTFREEUSERPHYSICALPAGES = 0x82,
+	NTFREEVIRTUALMEMORY = 0x83,
+	NTFREEZEREGISTRY = 0x84,
+	NTFREEZETRANSACTIONS = 0x85,
+	NTFSCONTROLFILE = 0x86,
+	NTGETCONTEXTTHREAD = 0x87,
+	NTGETCURRENTPROCESSORNUMBER = 0x88,
+	NTGETDEVICEPOWERSTATE = 0x89,
+	NTGETMUIREGISTRYINFO = 0x8a,
+	NTGETNEXTPROCESS = 0x8b,
+	NTGETNEXTTHREAD = 0x8c,
+	NTGETNLSSECTIONPTR = 0x8d,
+	NTGETNOTIFICATIONRESOURCEMANAGER = 0x8e,
+	NTGETPLUGPLAYEVENT = 0x8f,
+	NTGETWRITEWATCH = 0x90,
+	NTIMPERSONATEANONYMOUSTOKEN = 0x91,
+	NTIMPERSONATECLIENTOFPORT = 0x92,
+	NTIMPERSONATETHREAD = 0x93,
+	NTINITIALIZENLSFILES = 0x94,
+	NTINITIALIZEREGISTRY = 0x95,
+	NTINITIATEPOWERACTION = 0x96,
+	NTISPROCESSINJOB = 0x97,
+	NTISSYSTEMRESUMEAUTOMATIC = 0x98,
+	NTISUILANGUAGECOMITTED = 0x99,
+	NTLISTENPORT = 0x9a,
+	NTLOADDRIVER = 0x9b,
+	NTLOADKEY = 0x9c,
+	NTLOADKEY2 = 0x9d,
+	NTLOADKEYEX = 0x9e,
+	NTLOCKFILE = 0x9f,
+	NTLOCKPRODUCTACTIVATIONKEYS = 0xa0,
+	NTLOCKREGISTRYKEY = 0xa1,
+	NTLOCKVIRTUALMEMORY = 0xa2,
+	NTMAKEPERMANENTOBJECT = 0xa3,
+	NTMAKETEMPORARYOBJECT = 0xa4,
+	NTMAPCMFMODULE = 0xa5,
+	NTMAPUSERPHYSICALPAGES = 0xa6,
+	NTMAPUSERPHYSICALPAGESSCATTER = 0xa7,
+	NTMAPVIEWOFSECTION = 0xa8,
+	NTMODIFYBOOTENTRY = 0xa9,
+	NTMODIFYDRIVERENTRY = 0xaa,
+	NTNOTIFYCHANGEDIRECTORYFILE = 0xab,
+	NTNOTIFYCHANGEKEY = 0xac,
+	NTNOTIFYCHANGEMULTIPLEKEYS = 0xad,
+	NTNOTIFYCHANGESESSION = 0xae,
+	NTOPENDIRECTORYOBJECT = 0xaf,
+	NTOPENENLISTMENT = 0xb0,
+	NTOPENEVENT = 0xb1,
+	NTOPENEVENTPAIR = 0xb2,
+	NTOPENFILE = 0xb3,
+	NTOPENIOCOMPLETION = 0xb4,
+	NTOPENJOBOBJECT = 0xb5,
+	NTOPENKEY = 0xb6,
+	NTOPENKEYEX = 0xb7,
+	NTOPENKEYTRANSACTED = 0xb9,
+	NTOPENKEYTRANSACTEDEX = 0xba,
+	NTOPENKEYEDEVENT = 0xb8,
+	NTOPENMUTANT = 0xbb,
+	NTOPENOBJECTAUDITALARM = 0xbc,
+	NTOPENPRIVATENAMESPACE = 0xbd,
+	NTOPENPROCESS = 0xbe,
+	NTOPENPROCESSTOKEN = 0xbf,
+	NTOPENPROCESSTOKENEX = 0xc0,
+	NTOPENRESOURCEMANAGER = 0xc1,
+	NTOPENSECTION = 0xc2,
+	NTOPENSEMAPHORE = 0xc3,
+	NTOPENSESSION = 0xc4,
+	NTOPENSYMBOLICLINKOBJECT = 0xc5,
+	NTOPENTHREAD = 0xc6,
+	NTOPENTHREADTOKEN = 0xc7,
+	NTOPENTHREADTOKENEX = 0xc8,
+	NTOPENTIMER = 0xc9,
+	NTOPENTRANSACTION = 0xca,
+	NTOPENTRANSACTIONMANAGER = 0xcb,
+	NTPLUGPLAYCONTROL = 0xcc,
+	NTPOWERINFORMATION = 0xcd,
+	NTPREPREPARECOMPLETE = 0xd0,
+	NTPREPREPAREENLISTMENT = 0xd1,
+	NTPREPARECOMPLETE = 0xce,
+	NTPREPAREENLISTMENT = 0xcf,
+	NTPRIVILEGECHECK = 0xd2,
+	NTPRIVILEGEOBJECTAUDITALARM = 0xd4,
+	NTPRIVILEGEDSERVICEAUDITALARM = 0xd3,
+	NTPROPAGATIONCOMPLETE = 0xd5,
+	NTPROPAGATIONFAILED = 0xd6,
+	NTPROTECTVIRTUALMEMORY = 0xd7,
+	NTPULSEEVENT = 0xd8,
+	NTQUERYATTRIBUTESFILE = 0xd9,
+	NTQUERYBOOTENTRYORDER = 0xda,
+	NTQUERYBOOTOPTIONS = 0xdb,
+	NTQUERYDEBUGFILTERSTATE = 0xdc,
+	NTQUERYDEFAULTLOCALE = 0xdd,
+	NTQUERYDEFAULTUILANGUAGE = 0xde,
+	NTQUERYDIRECTORYFILE = 0xdf,
+	NTQUERYDIRECTORYOBJECT = 0xe0,
+	NTQUERYDRIVERENTRYORDER = 0xe1,
+	NTQUERYEAFILE = 0xe2,
+	NTQUERYEVENT = 0xe3,
+	NTQUERYFULLATTRIBUTESFILE = 0xe4,
+	NTQUERYINFORMATIONATOM = 0xe5,
+	NTQUERYINFORMATIONENLISTMENT = 0xe6,
+	NTQUERYINFORMATIONFILE = 0xe7,
+	NTQUERYINFORMATIONJOBOBJECT = 0xe8,
+	NTQUERYINFORMATIONPORT = 0xe9,
+	NTQUERYINFORMATIONPROCESS = 0xea,
+	NTQUERYINFORMATIONRESOURCEMANAGER = 0xeb,
+	NTQUERYINFORMATIONTHREAD = 0xec,
+	NTQUERYINFORMATIONTOKEN = 0xed,
+	NTQUERYINFORMATIONTRANSACTION = 0xee,
+	NTQUERYINFORMATIONTRANSACTIONMANAGER = 0xef,
+	NTQUERYINFORMATIONWORKERFACTORY = 0xf0,
+	NTQUERYINSTALLUILANGUAGE = 0xf1,
+	NTQUERYINTERVALPROFILE = 0xf2,
+	NTQUERYIOCOMPLETION = 0xf3,
+	NTQUERYKEY = 0xf4,
+	NTQUERYLICENSEVALUE = 0xf5,
+	NTQUERYMULTIPLEVALUEKEY = 0xf6,
+	NTQUERYMUTANT = 0xf7,
+	NTQUERYOBJECT = 0xf8,
+	NTQUERYOPENSUBKEYS = 0xf9,
+	NTQUERYOPENSUBKEYSEX = 0xfa,
+	NTQUERYPERFORMANCECOUNTER = 0xfb,
+	NTQUERYPORTINFORMATIONPROCESS = 0xfc,
+	NTQUERYQUOTAINFORMATIONFILE = 0xfd,
+	NTQUERYSECTION = 0xfe,
+	NTQUERYSECURITYATTRIBUTESTOKEN = 0xff,
+	NTQUERYSECURITYOBJECT = 0x100,
+	NTQUERYSEMAPHORE = 0x101,
+	NTQUERYSYMBOLICLINKOBJECT = 0x102,
+	NTQUERYSYSTEMENVIRONMENTVALUE = 0x103,
+	NTQUERYSYSTEMENVIRONMENTVALUEEX = 0x104,
+	NTQUERYSYSTEMINFORMATION = 0x105,
+	NTQUERYSYSTEMINFORMATIONEX = 0x106,
+	NTQUERYSYSTEMTIME = 0x107,
+	NTQUERYTIMER = 0x108,
+	NTQUERYTIMERRESOLUTION = 0x109,
+	NTQUERYVALUEKEY = 0x10a,
+	NTQUERYVIRTUALMEMORY = 0x10b,
+	NTQUERYVOLUMEINFORMATIONFILE = 0x10c,
+	NTQUEUEAPCTHREAD = 0x10d,
+	NTQUEUEAPCTHREADEX = 0x10e,
+	NTRAISEEXCEPTION = 0x10f,
+	NTRAISEHARDERROR = 0x110,
+	NTREADFILE = 0x111,
+	NTREADFILESCATTER = 0x112,
+	NTREADONLYENLISTMENT = 0x113,
+	NTREADREQUESTDATA = 0x114,
+	NTREADVIRTUALMEMORY = 0x115,
+	NTRECOVERENLISTMENT = 0x116,
+	NTRECOVERRESOURCEMANAGER = 0x117,
+	NTRECOVERTRANSACTIONMANAGER = 0x118,
+	NTREGISTERPROTOCOLADDRESSINFORMATION = 0x119,
+	NTREGISTERTHREADTERMINATEPORT = 0x11a,
+	NTRELEASEKEYEDEVENT = 0x11b,
+	NTRELEASEMUTANT = 0x11c,
+	NTRELEASESEMAPHORE = 0x11d,
+	NTRELEASEWORKERFACTORYWORKER = 0x11e,
+	NTREMOVEIOCOMPLETION = 0x11f,
+	NTREMOVEIOCOMPLETIONEX = 0x120,
+	NTREMOVEPROCESSDEBUG = 0x121,
+	NTRENAMEKEY = 0x122,
+	NTRENAMETRANSACTIONMANAGER = 0x123,
+	NTREPLACEKEY = 0x124,
+	NTREPLACEPARTITIONUNIT = 0x125,
+	NTREPLYPORT = 0x126,
+	NTREPLYWAITRECEIVEPORT = 0x127,
+	NTREPLYWAITRECEIVEPORTEX = 0x128,
+	NTREPLYWAITREPLYPORT = 0x129,
+	NTREQUESTPORT = 0x12a,
+	NTREQUESTWAITREPLYPORT = 0x12b,
+	NTRESETEVENT = 0x12c,
+	NTRESETWRITEWATCH = 0x12d,
+	NTRESTOREKEY = 0x12e,
+	NTRESUMEPROCESS = 0x12f,
+	NTRESUMETHREAD = 0x130,
+	NTROLLBACKCOMPLETE = 0x131,
+	NTROLLBACKENLISTMENT = 0x132,
+	NTROLLBACKTRANSACTION = 0x133,
+	NTROLLFORWARDTRANSACTIONMANAGER = 0x134,
+	NTSAVEKEY = 0x135,
+	NTSAVEKEYEX = 0x136,
+	NTSAVEMERGEDKEYS = 0x137,
+	NTSECURECONNECTPORT = 0x138,
+	NTSERIALIZEBOOT = 0x139,
+	NTSETBOOTENTRYORDER = 0x13a,
+	NTSETBOOTOPTIONS = 0x13b,
+	NTSETCONTEXTTHREAD = 0x13c,
+	NTSETDEBUGFILTERSTATE = 0x13d,
+	NTSETDEFAULTHARDERRORPORT = 0x13e,
+	NTSETDEFAULTLOCALE = 0x13f,
+	NTSETDEFAULTUILANGUAGE = 0x140,
+	NTSETDRIVERENTRYORDER = 0x141,
+	NTSETEAFILE = 0x142,
+	NTSETEVENT = 0x143,
+	NTSETEVENTBOOSTPRIORITY = 0x144,
+	NTSETHIGHEVENTPAIR = 0x145,
+	NTSETHIGHWAITLOWEVENTPAIR = 0x146,
+	NTSETINFORMATIONDEBUGOBJECT = 0x147,
+	NTSETINFORMATIONENLISTMENT = 0x148,
+	NTSETINFORMATIONFILE = 0x149,
+	NTSETINFORMATIONJOBOBJECT = 0x14a,
+	NTSETINFORMATIONKEY = 0x14b,
+	NTSETINFORMATIONOBJECT = 0x14c,
+	NTSETINFORMATIONPROCESS = 0x14d,
+	NTSETINFORMATIONRESOURCEMANAGER = 0x14e,
+	NTSETINFORMATIONTHREAD = 0x14f,
+	NTSETINFORMATIONTOKEN = 0x150,
+	NTSETINFORMATIONTRANSACTION = 0x151,
+	NTSETINFORMATIONTRANSACTIONMANAGER = 0x152,
+	NTSETINFORMATIONWORKERFACTORY = 0x153,
+	NTSETINTERVALPROFILE = 0x154,
+	NTSETIOCOMPLETION = 0x155,
+	NTSETIOCOMPLETIONEX = 0x156,
+	NTSETLDTENTRIES = 0x157,
+	NTSETLOWEVENTPAIR = 0x158,
+	NTSETLOWWAITHIGHEVENTPAIR = 0x159,
+	NTSETQUOTAINFORMATIONFILE = 0x15a,
+	NTSETSECURITYOBJECT = 0x15b,
+	NTSETSYSTEMENVIRONMENTVALUE = 0x15c,
+	NTSETSYSTEMENVIRONMENTVALUEEX = 0x15d,
+	NTSETSYSTEMINFORMATION = 0x15e,
+	NTSETSYSTEMPOWERSTATE = 0x15f,
+	NTSETSYSTEMTIME = 0x160,
+	NTSETTHREADEXECUTIONSTATE = 0x161,
+	NTSETTIMER = 0x162,
+	NTSETTIMEREX = 0x163,
+	NTSETTIMERRESOLUTION = 0x164,
+	NTSETUUIDSEED = 0x165,
+	NTSETVALUEKEY = 0x166,
+	NTSETVOLUMEINFORMATIONFILE = 0x167,
+	NTSHUTDOWNSYSTEM = 0x168,
+	NTSHUTDOWNWORKERFACTORY = 0x169,
+	NTSIGNALANDWAITFORSINGLEOBJECT = 0x16a,
+	NTSINGLEPHASEREJECT = 0x16b,
+	NTSTARTPROFILE = 0x16c,
+	NTSTOPPROFILE = 0x16d,
+	NTSUSPENDPROCESS = 0x16e,
+	NTSUSPENDTHREAD = 0x16f,
+	NTSYSTEMDEBUGCONTROL = 0x170,
+	NTTERMINATEJOBOBJECT = 0x171,
+	NTTERMINATEPROCESS = 0x172,
+	NTTERMINATETHREAD = 0x173,
+	NTTESTALERT = 0x174,
+	NTTHAWREGISTRY = 0x175,
+	NTTHAWTRANSACTIONS = 0x176,
+	NTTRACECONTROL = 0x177,
+	NTTRACEEVENT = 0x178,
+	NTTRANSLATEFILEPATH = 0x179,
+	NTUMSTHREADYIELD = 0x17a,
+	NTUNLOADDRIVER = 0x17b,
+	NTUNLOADKEY = 0x17c,
+	NTUNLOADKEY2 = 0x17d,
+	NTUNLOADKEYEX = 0x17e,
+	NTUNLOCKFILE = 0x17f,
+	NTUNLOCKVIRTUALMEMORY = 0x180,
+	NTUNMAPVIEWOFSECTION = 0x181,
+	NTVDMCONTROL = 0x182,
+	NTWAITFORDEBUGEVENT = 0x183,
+	NTWAITFORKEYEDEVENT = 0x184,
+	NTWAITFORMULTIPLEOBJECTS = 0x185,
+	NTWAITFORMULTIPLEOBJECTS32 = 0x186,
+	NTWAITFORSINGLEOBJECT = 0x187,
+	NTWAITFORWORKVIAWORKERFACTORY = 0x188,
+	NTWAITHIGHEVENTPAIR = 0x189,
+	NTWAITLOWEVENTPAIR = 0x18a,
+	NTWORKERFACTORYWORKERREADY = 0x18b,
+	NTWRITEFILE = 0x18c,
+	NTWRITEFILEGATHER = 0x18d,
+	NTWRITEREQUESTDATA = 0x18e,
+	NTWRITEVIRTUALMEMORY = 0x18f,
+	NTYIELDEXECUTION = 0x190
 };
+
+#define NUM_SYSCALLS 0x191
+
+const char * NUM_TO_SYSCALL[NUM_SYSCALLS] = {
+	"NtAcceptConnectPort",
+	"NtAccessCheck",
+	"NtAccessCheckAndAuditAlarm",
+	"NtAccessCheckByType",
+	"NtAccessCheckByTypeAndAuditAlarm",
+	"NtAccessCheckByTypeResultList",
+	"NtAccessCheckByTypeResultListAndAuditAlarm",
+	"NtAccessCheckByTypeResultListAndAuditAlarmByHandle",
+	"NtAddAtom",
+	"NtAddBootEntry",
+	"NtAddDriverEntry",
+	"NtAdjustGroupsToken",
+	"NtAdjustPrivilegesToken",
+	"NtAlertResumeThread",
+	"NtAlertThread",
+	"NtAllocateLocallyUniqueId",
+	"NtAllocateReserveObject",
+	"NtAllocateUserPhysicalPages",
+	"NtAllocateUuids",
+	"NtAllocateVirtualMemory",
+	"NtAlpcAcceptConnectPort",
+	"NtAlpcCancelMessage",
+	"NtAlpcConnectPort",
+	"NtAlpcCreatePort",
+	"NtAlpcCreatePortSection",
+	"NtAlpcCreateResourceReserve",
+	"NtAlpcCreateSectionView",
+	"NtAlpcCreateSecurityContext",
+	"NtAlpcDeletePortSection",
+	"NtAlpcDeleteResourceReserve",
+	"NtAlpcDeleteSectionView",
+	"NtAlpcDeleteSecurityContext",
+	"NtAlpcDisconnectPort",
+	"NtAlpcImpersonateClientOfPort",
+	"NtAlpcOpenSenderProcess",
+	"NtAlpcOpenSenderThread",
+	"NtAlpcQueryInformation",
+	"NtAlpcQueryInformationMessage",
+	"NtAlpcRevokeSecurityContext",
+	"NtAlpcSendWaitReceivePort",
+	"NtAlpcSetInformation",
+	"NtApphelpCacheControl",
+	"NtAreMappedFilesTheSame",
+	"NtAssignProcessToJobObject",
+	"NtCallbackReturn",
+	"NtCancelIoFile",
+	"NtCancelIoFileEx",
+	"NtCancelSynchronousIoFile",
+	"NtCancelTimer",
+	"NtClearEvent",
+	"NtClose",
+	"NtCloseObjectAuditAlarm",
+	"NtCommitComplete",
+	"NtCommitEnlistment",
+	"NtCommitTransaction",
+	"NtCompactKeys",
+	"NtCompareTokens",
+	"NtCompleteConnectPort",
+	"NtCompressKey",
+	"NtConnectPort",
+	"NtContinue",
+	"NtCreateDebugObject",
+	"NtCreateDirectoryObject",
+	"NtCreateEnlistment",
+	"NtCreateEvent",
+	"NtCreateEventPair",
+	"NtCreateFile",
+	"NtCreateIoCompletion",
+	"NtCreateJobObject",
+	"NtCreateJobSet",
+	"NtCreateKey",
+	"NtCreateKeyedEvent",
+	"NtCreateKeyTransacted",
+	"NtCreateMailslotFile",
+	"NtCreateMutant",
+	"NtCreateNamedPipeFile",
+	"NtCreatePagingFile",
+	"NtCreatePort",
+	"NtCreatePrivateNamespace",
+	"NtCreateProcess",
+	"NtCreateProcessEx",
+	"NtCreateProfile",
+	"NtCreateProfileEx",
+	"NtCreateResourceManager",
+	"NtCreateSection",
+	"NtCreateSemaphore",
+	"NtCreateSymbolicLinkObject",
+	"NtCreateThread",
+	"NtCreateThreadEx",
+	"NtCreateTimer",
+	"NtCreateToken",
+	"NtCreateTransaction",
+	"NtCreateTransactionManager",
+	"NtCreateUserProcess",
+	"NtCreateWaitablePort",
+	"NtCreateWorkerFactory",
+	"NtDebugActiveProcess",
+	"NtDebugContinue",
+	"NtDelayExecution",
+	"NtDeleteAtom",
+	"NtDeleteBootEntry",
+	"NtDeleteDriverEntry",
+	"NtDeleteFile",
+	"NtDeleteKey",
+	"NtDeleteObjectAuditAlarm",
+	"NtDeletePrivateNamespace",
+	"NtDeleteValueKey",
+	"NtDeviceIoControlFile",
+	"NtDisableLastKnownGood",
+	"NtDisplayString",
+	"NtDrawText",
+	"NtDuplicateObject",
+	"NtDuplicateToken",
+	"NtEnableLastKnownGood",
+	"NtEnumerateBootEntries",
+	"NtEnumerateDriverEntries",
+	"NtEnumerateKey",
+	"NtEnumerateSystemEnvironmentValuesEx",
+	"NtEnumerateTransactionObject",
+	"NtEnumerateValueKey",
+	"NtExtendSection",
+	"NtFilterToken",
+	"NtFindAtom",
+	"NtFlushBuffersFile",
+	"NtFlushInstallUILanguage",
+	"NtFlushInstructionCache",
+	"NtFlushKey",
+	"NtFlushProcessWriteBuffers",
+	"NtFlushVirtualMemory",
+	"NtFlushWriteBuffer",
+	"NtFreeUserPhysicalPages",
+	"NtFreeVirtualMemory",
+	"NtFreezeRegistry",
+	"NtFreezeTransactions",
+	"NtFsControlFile",
+	"NtGetContextThread",
+	"NtGetCurrentProcessorNumber",
+	"NtGetDevicePowerState",
+	"NtGetMUIRegistryInfo",
+	"NtGetNextProcess",
+	"NtGetNextThread",
+	"NtGetNlsSectionPtr",
+	"NtGetNotificationResourceManager",
+	"NtGetPlugPlayEvent",
+	"NtGetWriteWatch",
+	"NtImpersonateAnonymousToken",
+	"NtImpersonateClientOfPort",
+	"NtImpersonateThread",
+	"NtInitializeNlsFiles",
+	"NtInitializeRegistry",
+	"NtInitiatePowerAction",
+	"NtIsProcessInJob",
+	"NtIsSystemResumeAutomatic",
+	"NtIsUILanguageComitted",
+	"NtListenPort",
+	"NtLoadDriver",
+	"NtLoadKey",
+	"NtLoadKey2",
+	"NtLoadKeyEx",
+	"NtLockFile",
+	"NtLockProductActivationKeys",
+	"NtLockRegistryKey",
+	"NtLockVirtualMemory",
+	"NtMakePermanentObject",
+	"NtMakeTemporaryObject",
+	"NtMapCMFModule",
+	"NtMapUserPhysicalPages",
+	"NtMapUserPhysicalPagesScatter",
+	"NtMapViewOfSection",
+	"NtModifyBootEntry",
+	"NtModifyDriverEntry",
+	"NtNotifyChangeDirectoryFile",
+	"NtNotifyChangeKey",
+	"NtNotifyChangeMultipleKeys",
+	"NtNotifyChangeSession",
+	"NtOpenDirectoryObject",
+	"NtOpenEnlistment",
+	"NtOpenEvent",
+	"NtOpenEventPair",
+	"NtOpenFile",
+	"NtOpenIoCompletion",
+	"NtOpenJobObject",
+	"NtOpenKey",
+	"NtOpenKeyEx",
+	"NtOpenKeyedEvent",
+	"NtOpenKeyTransacted",
+	"NtOpenKeyTransactedEx",
+	"NtOpenMutant",
+	"NtOpenObjectAuditAlarm",
+	"NtOpenPrivateNamespace",
+	"NtOpenProcess",
+	"NtOpenProcessToken",
+	"NtOpenProcessTokenEx",
+	"NtOpenResourceManager",
+	"NtOpenSection",
+	"NtOpenSemaphore",
+	"NtOpenSession",
+	"NtOpenSymbolicLinkObject",
+	"NtOpenThread",
+	"NtOpenThreadToken",
+	"NtOpenThreadTokenEx",
+	"NtOpenTimer",
+	"NtOpenTransaction",
+	"NtOpenTransactionManager",
+	"NtPlugPlayControl",
+	"NtPowerInformation",
+	"NtPrepareComplete",
+	"NtPrepareEnlistment",
+	"NtPrePrepareComplete",
+	"NtPrePrepareEnlistment",
+	"NtPrivilegeCheck",
+	"NtPrivilegedServiceAuditAlarm",
+	"NtPrivilegeObjectAuditAlarm",
+	"NtPropagationComplete",
+	"NtPropagationFailed",
+	"NtProtectVirtualMemory",
+	"NtPulseEvent",
+	"NtQueryAttributesFile",
+	"NtQueryBootEntryOrder",
+	"NtQueryBootOptions",
+	"NtQueryDebugFilterState",
+	"NtQueryDefaultLocale",
+	"NtQueryDefaultUILanguage",
+	"NtQueryDirectoryFile",
+	"NtQueryDirectoryObject",
+	"NtQueryDriverEntryOrder",
+	"NtQueryEaFile",
+	"NtQueryEvent",
+	"NtQueryFullAttributesFile",
+	"NtQueryInformationAtom",
+	"NtQueryInformationEnlistment",
+	"NtQueryInformationFile",
+	"NtQueryInformationJobObject",
+	"NtQueryInformationPort",
+	"NtQueryInformationProcess",
+	"NtQueryInformationResourceManager",
+	"NtQueryInformationThread",
+	"NtQueryInformationToken",
+	"NtQueryInformationTransaction",
+	"NtQueryInformationTransactionManager",
+	"NtQueryInformationWorkerFactory",
+	"NtQueryInstallUILanguage",
+	"NtQueryIntervalProfile",
+	"NtQueryIoCompletion",
+	"NtQueryKey",
+	"NtQueryLicenseValue",
+	"NtQueryMultipleValueKey",
+	"NtQueryMutant",
+	"NtQueryObject",
+	"NtQueryOpenSubKeys",
+	"NtQueryOpenSubKeysEx",
+	"NtQueryPerformanceCounter",
+	"NtQueryPortInformationProcess",
+	"NtQueryQuotaInformationFile",
+	"NtQuerySection",
+	"NtQuerySecurityAttributesToken",
+	"NtQuerySecurityObject",
+	"NtQuerySemaphore",
+	"NtQuerySymbolicLinkObject",
+	"NtQuerySystemEnvironmentValue",
+	"NtQuerySystemEnvironmentValueEx",
+	"NtQuerySystemInformation",
+	"NtQuerySystemInformationEx",
+	"NtQuerySystemTime",
+	"NtQueryTimer",
+	"NtQueryTimerResolution",
+	"NtQueryValueKey",
+	"NtQueryVirtualMemory",
+	"NtQueryVolumeInformationFile",
+	"NtQueueApcThread",
+	"NtQueueApcThreadEx",
+	"NtRaiseException",
+	"NtRaiseHardError",
+	"NtReadFile",
+	"NtReadFileScatter",
+	"NtReadOnlyEnlistment",
+	"NtReadRequestData",
+	"NtReadVirtualMemory",
+	"NtRecoverEnlistment",
+	"NtRecoverResourceManager",
+	"NtRecoverTransactionManager",
+	"NtRegisterProtocolAddressInformation",
+	"NtRegisterThreadTerminatePort",
+	"NtReleaseKeyedEvent",
+	"NtReleaseMutant",
+	"NtReleaseSemaphore",
+	"NtReleaseWorkerFactoryWorker",
+	"NtRemoveIoCompletion",
+	"NtRemoveIoCompletionEx",
+	"NtRemoveProcessDebug",
+	"NtRenameKey",
+	"NtRenameTransactionManager",
+	"NtReplaceKey",
+	"NtReplacePartitionUnit",
+	"NtReplyPort",
+	"NtReplyWaitReceivePort",
+	"NtReplyWaitReceivePortEx",
+	"NtReplyWaitReplyPort",
+	"NtRequestPort",
+	"NtRequestWaitReplyPort",
+	"NtResetEvent",
+	"NtResetWriteWatch",
+	"NtRestoreKey",
+	"NtResumeProcess",
+	"NtResumeThread",
+	"NtRollbackComplete",
+	"NtRollbackEnlistment",
+	"NtRollbackTransaction",
+	"NtRollforwardTransactionManager",
+	"NtSaveKey",
+	"NtSaveKeyEx",
+	"NtSaveMergedKeys",
+	"NtSecureConnectPort",
+	"NtSerializeBoot",
+	"NtSetBootEntryOrder",
+	"NtSetBootOptions",
+	"NtSetContextThread",
+	"NtSetDebugFilterState",
+	"NtSetDefaultHardErrorPort",
+	"NtSetDefaultLocale",
+	"NtSetDefaultUILanguage",
+	"NtSetDriverEntryOrder",
+	"NtSetEaFile",
+	"NtSetEvent",
+	"NtSetEventBoostPriority",
+	"NtSetHighEventPair",
+	"NtSetHighWaitLowEventPair",
+	"NtSetInformationDebugObject",
+	"NtSetInformationEnlistment",
+	"NtSetInformationFile",
+	"NtSetInformationJobObject",
+	"NtSetInformationKey",
+	"NtSetInformationObject",
+	"NtSetInformationProcess",
+	"NtSetInformationResourceManager",
+	"NtSetInformationThread",
+	"NtSetInformationToken",
+	"NtSetInformationTransaction",
+	"NtSetInformationTransactionManager",
+	"NtSetInformationWorkerFactory",
+	"NtSetIntervalProfile",
+	"NtSetIoCompletion",
+	"NtSetIoCompletionEx",
+	"NtSetLdtEntries",
+	"NtSetLowEventPair",
+	"NtSetLowWaitHighEventPair",
+	"NtSetQuotaInformationFile",
+	"NtSetSecurityObject",
+	"NtSetSystemEnvironmentValue",
+	"NtSetSystemEnvironmentValueEx",
+	"NtSetSystemInformation",
+	"NtSetSystemPowerState",
+	"NtSetSystemTime",
+	"NtSetThreadExecutionState",
+	"NtSetTimer",
+	"NtSetTimerEx",
+	"NtSetTimerResolution",
+	"NtSetUuidSeed",
+	"NtSetValueKey",
+	"NtSetVolumeInformationFile",
+	"NtShutdownSystem",
+	"NtShutdownWorkerFactory",
+	"NtSignalAndWaitForSingleObject",
+	"NtSinglePhaseReject",
+	"NtStartProfile",
+	"NtStopProfile",
+	"NtSuspendProcess",
+	"NtSuspendThread",
+	"NtSystemDebugControl",
+	"NtTerminateJobObject",
+	"NtTerminateProcess",
+	"NtTerminateThread",
+	"NtTestAlert",
+	"NtThawRegistry",
+	"NtThawTransactions",
+	"NtTraceControl",
+	"NtTraceEvent",
+	"NtTranslateFilePath",
+	"NtUmsThreadYield",
+	"NtUnloadDriver",
+	"NtUnloadKey",
+	"NtUnloadKey2",
+	"NtUnloadKeyEx",
+	"NtUnlockFile",
+	"NtUnlockVirtualMemory",
+	"NtUnmapViewOfSection",
+	"NtVdmControl",
+	"NtWaitForDebugEvent",
+	"NtWaitForKeyedEvent",
+	"NtWaitForMultipleObjects",
+	"NtWaitForMultipleObjects32",
+	"NtWaitForSingleObject",
+	"NtWaitForWorkViaWorkerFactory",
+	"NtWaitHighEventPair",
+	"NtWaitLowEventPair",
+	"NtWorkerFactoryWorkerReady",
+	"NtWriteFile",
+	"NtWriteFileGather",
+	"NtWriteRequestData",
+	"NtWriteVirtualMemory",
+	"NtYieldExecution"
+};
+
 
 #endif
