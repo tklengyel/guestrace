@@ -175,7 +175,7 @@ print_syscall(vmi_instance_t vmi, vmi_event_t *event)
 	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 	char *proc_name = get_process_name(vmi, pid);
 	
-	//if (strcmp(proc_name, "cmd.exe") == 0) {
+	if (strcmp(proc_name, "cmd.exe") == 0) {
 		// fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
 
 		unsigned int raw_args[16] = {0};
@@ -254,18 +254,20 @@ print_syscall(vmi_instance_t vmi, vmi_event_t *event)
 				/* do something here? */
 			}
 		}
-	//}
+	}
 
 	free(proc_name);
 }
 
 void 
-print_sysret_info(vmi_instance_t vmi, vmi_event_t *event) 
+print_sysret(vmi_instance_t vmi, vmi_event_t *event) 
 {
 	/* Print the pid, process name and return value of a system call */
-	//reg_t syscall_return = event->x86_regs->rax;			/* get the return value out of rax */
-	//vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);	/* get the pid of the process */
-	//char *proc = get_proc_name(vmi, pid);				/* get the process name */
+	reg_t syscall_return = event->x86_regs->rax;			/* get the return value out of rax */
+	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);	/* get the pid of the process */
+	char *proc_name = get_process_name(vmi, pid);				/* get the process name */
 
-	//printf("pid: %u ( %s ) return: 0x%"PRIx64"\n",  pid, proc, syscall_return);
+	fprintf(stderr, "pid: %u ( %s ) return: 0x%"PRIx64"\n",  pid, proc_name, syscall_return);
+
+	free(proc_name);
 }

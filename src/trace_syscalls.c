@@ -8,6 +8,8 @@
 #include <string.h>
 #include <time.h>
 
+#include "translate_syscalls.h"
+
 static event_response_t step_cb (vmi_instance_t vmi, vmi_event_t *event);
 static event_response_t int3_cb (vmi_instance_t vmi, vmi_event_t *event);
 
