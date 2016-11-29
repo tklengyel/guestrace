@@ -21,10 +21,21 @@ struct win32_obj_attr * obj_attr_from_va(vmi_instance_t vmi, addr_t vaddr, vmi_p
 uint8_t * filename_from_arg(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid) ;
 
 const char * symbol_from_syscall_num(unsigned int sysnum) {
-	if (sysnum >= NUM_SYSCALLS || sysnum < 0 || NUM_TO_SYSCALL[sysnum] == NULL) {
-		return NULL;
+	if (sysnum >> 12 == 0) { /* normal syscalls lead with 0 */
+		if (sysnum >= NUM_SYSCALLS || sysnum < 0 || NUM_TO_SYSCALL[sysnum] == NULL) {
+			return NULL;
+		} else {
+			return NUM_TO_SYSCALL[sysnum];
+		}
+	} else if (sysnum >> 12 == 1) { /* windows graphical syscalls lead with 1 */
+		sysnum = sysnum & (0x1000 - 1);
+		if (sysnum >= NUM_SYSCALLSK || sysnum < 0 || NUM_TO_SYSCALLK[sysnum] == NULL) {
+			return NULL;
+		} else {
+			return NUM_TO_SYSCALLK[sysnum];
+		}
 	} else {
-		return NUM_TO_SYSCALL[sysnum];
+		return NULL;
 	}
 }
 
@@ -175,8 +186,8 @@ print_syscall(vmi_instance_t vmi, vmi_event_t *event)
 	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 	char *proc_name = get_process_name(vmi, pid);
 	
-	if (strcmp(proc_name, "cmd.exe") == 0) {
-		// fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
+	//if (strcmp(proc_name, "notepad.exe") == 0) {
+		fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
 
 		unsigned int raw_args[16] = {0};
 		vmi_read_va(vmi, event->x86_regs->rdx, pid, raw_args, sizeof(raw_args));
@@ -254,7 +265,7 @@ print_syscall(vmi_instance_t vmi, vmi_event_t *event)
 				/* do something here? */
 			}
 		}
-	}
+	//}
 
 	free(proc_name);
 }
