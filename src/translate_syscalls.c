@@ -20,7 +20,7 @@ struct win32_obj_attr {
 struct win32_obj_attr * obj_attr_from_va(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid);
 uint8_t * filename_from_arg(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid) ;
 
-const char * symbol_from_syscall_num(unsigned int sysnum) {
+const char * symbol_from_syscall_num(uint16_t sysnum) {
 	if (sysnum >> 12 == 0) { /* normal syscalls lead with 0 */
 		if (sysnum >= NUM_SYSCALLS || sysnum < 0 || NUM_TO_SYSCALL[sysnum] == NULL) {
 			return NULL;
@@ -146,11 +146,7 @@ get_process_name(vmi_instance_t vmi, vmi_pid_t pid)
 	} while (list_curr != list_head);							/* next task_struct. Continue the loop until we get back to the beginning as the  */
 												/* process list is doubly linked and circular */
 
-done:
-	if (NULL == proc) {		/* if proc is NULL we don't know the process name */
-		return "unknown";
-	}
-	
+done:	
 	return proc;
 
 }
@@ -171,7 +167,7 @@ print_syscall(vmi_instance_t vmi, vmi_event_t *event)
 
 	reg_t syscall_number = event->x86_regs->rax;			/* stores the syscall number from rax */
 
-	int win_syscall = syscall_number & 0xFFFF;
+	uint16_t win_syscall = syscall_number & 0xFFFF;
 
 	const char * syscall_symbol = symbol_from_syscall_num(win_syscall);
 
@@ -186,7 +182,7 @@ print_syscall(vmi_instance_t vmi, vmi_event_t *event)
 	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 	char *proc_name = get_process_name(vmi, pid);
 	
-	//if (strcmp(proc_name, "notepad.exe") == 0) {
+	if (strcmp(proc_name, "cmd.exe") == 0) {
 		fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
 
 		unsigned int raw_args[16] = {0};
@@ -197,12 +193,12 @@ print_syscall(vmi_instance_t vmi, vmi_event_t *event)
 
 			case NTOPENFILE:
 			{
-				fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
+				//fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
 
 				uint8_t * filename = filename_from_arg(vmi, args[2], pid);
 
 				if (filename != NULL) {
-					fprintf(stderr, "%s\n", filename);
+					fprintf(stderr, "Arguments: %s\n", filename);
 				}
 
 				break;
@@ -210,12 +206,12 @@ print_syscall(vmi_instance_t vmi, vmi_event_t *event)
 
 			case NTOPENSYMBOLICLINKOBJECT:
 			{
-				fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
+				//fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
 
 				uint8_t * filename = filename_from_arg(vmi, args[2], pid);
 
 				if (filename != NULL) {
-					fprintf(stderr, "%s\n", filename);
+					fprintf(stderr, "Arguments: %s\n", filename);
 				}
 
 				break;
@@ -223,12 +219,12 @@ print_syscall(vmi_instance_t vmi, vmi_event_t *event)
 
 			case NTCREATEFILE:
 			{
-				fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
+				//fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
 
 				uint8_t * filename = filename_from_arg(vmi, args[2], pid);
 
 				if (filename != NULL) {
-					fprintf(stderr, "%s\n", filename);
+					fprintf(stderr, "Arguments: %s\n", filename);
 				}
 
 				break;
@@ -236,12 +232,12 @@ print_syscall(vmi_instance_t vmi, vmi_event_t *event)
 
 			case NTOPENDIRECTORYOBJECT:
 			{
-				fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
+				//fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
 
 				uint8_t * filename = filename_from_arg(vmi, args[2], pid);
 
 				if (filename != NULL) {
-					fprintf(stderr, "%s\n", filename);
+					fprintf(stderr, "Arguments: %s\n", filename);
 				}
 
 				break;
@@ -249,12 +245,12 @@ print_syscall(vmi_instance_t vmi, vmi_event_t *event)
 
 			case NTOPENPROCESS:
 			{
-				fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
+				//fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
 
 				uint8_t * filename = filename_from_arg(vmi, args[2], pid);
 
 				if (filename != NULL) {
-					fprintf(stderr, "%s\n", filename);
+					fprintf(stderr, "Arguments: %s\n", filename);
 				}
 
 				break;
@@ -265,7 +261,7 @@ print_syscall(vmi_instance_t vmi, vmi_event_t *event)
 				/* do something here? */
 			}
 		}
-	//}
+	}
 
 	free(proc_name);
 }
@@ -278,7 +274,14 @@ print_sysret(vmi_instance_t vmi, vmi_event_t *event)
 	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);	/* get the pid of the process */
 	char *proc_name = get_process_name(vmi, pid);				/* get the process name */
 
-	fprintf(stderr, "pid: %u ( %s ) return: 0x%"PRIx64"\n",  pid, proc_name, syscall_return);
+	time_t now = time(NULL);
+
+	char * timestamp = ctime(&now); // y u have a newline
+	timestamp[strlen(timestamp)-1] = 0;
+
+	if (strcmp(proc_name, "cmd.exe") == 0) {
+		fprintf(stderr, "[%s] %s (PID: %d) return: 0x%lx\n", timestamp, proc_name, pid, syscall_return);
+	}
 
 	free(proc_name);
 }

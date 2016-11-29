@@ -161,6 +161,101 @@ is_syscall(reg_t rip, struct gs_state *vm_info)
 	return rip == vm_info->virt_syscall_addr;
 }
 
+static bool
+is_sysret(reg_t rip, struct gs_state *vm_info)
+{
+	return rip == vm_info->virt_sysret_addr;
+}
+
+/*
+ * Replace the first byte of the instruction following the CALL instruction
+ * in the kernel's system-call handler with INT 3. This is the first
+ * practical point at which we have access to the system call's return value
+ * We find the address of the CALL instruction by disassembling the kernel core.
+ */
+static status_t
+set_up_sysret_entry_int3 (vmi_instance_t vmi, struct gs_state *vm_info)
+{
+	csh handle;
+	cs_insn *inst;
+	size_t count, call_offset = ~0;
+	status_t status = VMI_FAILURE;
+	uint8_t code[1024]; /* Assume CALL is within first KB. */
+
+	/* Read kernel instructions into code. */
+	status = vmi_read_pa(vmi, vm_info->phys_syscall_addr,
+	                     code, sizeof(code));
+	if (VMI_FAILURE == status) {
+		fprintf(stderr, "failed to read instructions from 0x%"
+		                 PRIx64".\n", vm_info->phys_syscall_addr);
+		goto done;
+	}
+
+	if (cs_open(CS_ARCH_X86, CS_MODE_64, &handle) != CS_ERR_OK) {
+		fprintf(stderr, "failed to open capstone\n");
+		goto done;
+	}
+
+	uint8_t foundit = 0;
+
+	/* Find CALL inst. and note address of inst. which follows. */
+	count = cs_disasm(handle, code, sizeof(code), 0, 0, &inst);
+	if (count > 0) {
+		size_t i;
+		for (i = 0; i < count; i++) {
+			if (!strcmp(inst[i].mnemonic, "call")) {
+				if (foundit == 2) { /* we want to find the 3rd instance of "call" */
+					call_offset = inst[i + 1].address;
+					break;
+				} else {
+					foundit++;
+				}
+			}
+		}
+		cs_free(inst, count);
+	} else {
+		fprintf(stderr, "failed to disassemble system-call handler\n");
+		goto done;
+	}
+
+	if (~0 == call_offset) {
+		fprintf(stderr, "did not find call in system-call handler\n");
+		goto done;
+	}
+
+	cs_close(&handle);
+
+	status = VMI_SUCCESS;
+
+	vm_info->virt_sysret_addr = vm_info->virt_syscall_addr + call_offset;
+	vm_info->phys_sysret_addr = vmi_translate_kv2p(vmi,
+	                                               vm_info->virt_sysret_addr);
+	if (0 == vm_info->phys_sysret_addr) {
+		fprintf(stderr, "failed to get phy. addr. of sysret "
+		                "at 0x%"PRIx64".\n",
+		                 vm_info->virt_sysret_addr);
+		goto done;
+	}
+
+	status = vmi_read_8_pa(vmi, vm_info->phys_sysret_addr,
+	                      &vm_info->orig_sysret_inst);
+	if (VMI_FAILURE == status) {
+		fprintf(stderr, "failed to read original sysret inst. from 0x%"
+		                 PRIx64".\n", vm_info->phys_sysret_addr);
+		goto done;
+	}
+
+	status = vmi_write_8_pa(vmi, vm_info->phys_sysret_addr, &BREAKPOINT_INST);
+	if (VMI_FAILURE == status) {
+		fprintf(stderr, "failed to write sysret breakpoint at 0x%"
+		                 PRIx64".\n", vm_info->phys_sysret_addr);
+		goto done;
+	}
+
+done:
+	return status;
+}
+
 /*
  * Single-step callback. After single step beyond restored instruction,
  * replace instruction with breakpoint again. Replace both call and return
@@ -186,6 +281,15 @@ step_cb (vmi_instance_t vmi, vmi_event_t *event)
 		                 vm_info->phys_syscall_addr);
 		interrupted = 1; 		
 		return VMI_EVENT_RESPONSE_NONE;	
+	}
+
+	status = vmi_write_8_pa(vmi, vm_info->phys_sysret_addr, &BREAKPOINT_INST);
+	if (VMI_FAILURE == status) {
+		fprintf(stderr, "failed to reset sysret breakpoint at 0x%"PRIx64" "
+		                "in step_cb.\n",
+		                 vm_info->phys_sysret_addr);
+		interrupted = 1;
+		return VMI_EVENT_RESPONSE_NONE;
 	}
 
 	status = vmi_resume_vm(vmi);
@@ -232,23 +336,32 @@ int3_cb (vmi_instance_t vmi, vmi_event_t *event)
 		goto done;
 	}
 
-	/* Restore original instruction fragment. */
 	if (is_syscall(rip, vm_info)) {
 		orig_inst_addr = vm_info->phys_syscall_addr;
 		orig_inst_frag = vm_info->orig_syscall_inst;
-
-		status = vmi_write_8_pa(vmi, orig_inst_addr, &orig_inst_frag);
-		if (VMI_FAILURE == status) {
-			fprintf(stderr, "failed to rewrite original instruction at 0x%"
-			                 PRIx64" in int3_cb.\n", orig_inst_addr);
-			interrupted = 1;
-			goto done;
-		}
-
-		print_syscall(vmi, event);
+	} else if (is_sysret(rip, vm_info)) {
+		orig_inst_addr = vm_info->phys_sysret_addr;
+		orig_inst_frag = vm_info->orig_sysret_inst;
+	} else {
+		fprintf(stderr, "bad RIP while in int3_cb.\n");
+		interrupted = 1;
+		goto done;
 	}
 
-	/* NOTE: would not get this far in any other case. */
+	/* Restore original instruction fragment. */
+	status = vmi_write_8_pa(vmi, orig_inst_addr, &orig_inst_frag);
+	if (VMI_FAILURE == status) {
+		fprintf(stderr, "failed to rewrite original instruction at 0x%"
+		                 PRIx64" in int3_cb.\n", orig_inst_addr);
+		interrupted = 1;
+		goto done;
+	}
+		
+	if (is_syscall(rip, vm_info)) {
+		print_syscall(vmi, event);
+	} else {
+		print_sysret(vmi, event);	
+	} /* NOTE: would not get this far in any other case. */
 
 done:
 	status = vmi_resume_vm(vmi);
@@ -330,6 +443,11 @@ main (int argc, char *argv[])
 	}
 
 	status = set_up_syscall_int3(vmi, &vm_info);
+	if (VMI_FAILURE == status) {
+		goto done;
+	}
+
+	status = set_up_sysret_entry_int3(vmi, &vm_info);
 	if (VMI_FAILURE == status) {
 		goto done;
 	}

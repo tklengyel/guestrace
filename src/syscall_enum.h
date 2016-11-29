@@ -413,6 +413,7 @@ enum syscalls {
 
 #define NUM_SYSCALLS 0x191
 
+/* KeServiceDescriptorTable */
 const char * NUM_TO_SYSCALL[NUM_SYSCALLS] = {
 	"NtAcceptConnectPort",
 	"NtAccessCheck",
@@ -819,7 +820,8 @@ const char * NUM_TO_SYSCALL[NUM_SYSCALLS] = {
 
 #define NUM_SYSCALLSK 0x339
 
-const char * NUM_TO_SYSCALLK[] = {
+/* KeServiceDescriptorTableShadow */
+const char * NUM_TO_SYSCALLK[NUM_SYSCALLSK] = {
 	"NtGdiAbortDoc",
 	"NtGdiAbortPath",
 	"NtGdiAddFontResourceW",
