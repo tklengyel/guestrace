@@ -211,6 +211,7 @@ set_up_sysret_entry_int3 (vmi_instance_t vmi, struct gs_state *vm_info)
 					foundit++;
 				}
 			}
+			//fprintf(stderr, "%s %s\n", inst[i].mnemonic, inst[i].op_str);
 		}
 		cs_free(inst, count);
 	} else {

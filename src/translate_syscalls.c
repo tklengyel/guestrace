@@ -17,8 +17,96 @@ struct win32_obj_attr {
 	uint32_t security_quality_of_service; // see microsoft documentation
 };
 
+typedef struct visor_proc {
+	vmi_pid_t pid; /* current process pid */
+	char * name; /* this will be removed automatically */
+	uint16_t sysnum; /* 0xFFFF if not waiting on syscall to finish, otherwise sysnum */
+	uint32_t * args; /* saved arguments to use between syscall start and finish. must be freed in ret */
+	struct visor_proc * next; /* todo: don't use linked list */
+} visor_proc;
+
+#define NUM_SYSCALL_ARGS 16
+
+visor_proc * PROC_HEAD = NULL;
+
 struct win32_obj_attr * obj_attr_from_va(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid);
-uint8_t * filename_from_arg(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid) ;
+uint8_t * filename_from_arg(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid);
+visor_proc * get_process_from_pid(vmi_pid_t pid);
+visor_proc * allocate_process(vmi_pid_t pid, char * name);
+void delete_process(vmi_pid_t pid);
+
+visor_proc * get_process_from_pid(vmi_pid_t pid) {
+	visor_proc * curr = PROC_HEAD;
+
+	while (NULL != curr) {
+		if (curr->pid == pid) {
+			break;
+		}
+		curr = curr->next;
+	}
+
+	return curr;
+}
+
+visor_proc * allocate_process(vmi_pid_t pid, char * name) {
+	visor_proc * result = NULL;
+
+	/* we never delete processes, only replace them if another is allocated with same PID */
+	if (NULL != get_process_from_pid(pid)) {
+		delete_process(pid);
+	}
+
+	result = calloc(1, sizeof(visor_proc));
+
+	if (NULL == result) {
+		goto done;
+	}
+
+	result->pid = pid;
+	result->sysnum = 0xFFFF; /* not waiting on any syscall */
+	result->name = name;
+
+	/* let's append this to the current list */
+	if (NULL == PROC_HEAD) {
+		PROC_HEAD = result;
+	} else {
+		visor_proc * tail = PROC_HEAD;
+
+		while (tail->next != NULL) {
+			tail = tail->next;
+		}
+
+		tail->next = result;
+	}
+
+done:
+	return result;
+}
+
+void delete_process(vmi_pid_t pid) {
+	if (NULL == PROC_HEAD) {
+		return;
+	}
+
+	if (PROC_HEAD->pid == pid) {
+		visor_proc * saved = PROC_HEAD->next;
+		free(PROC_HEAD->name);
+		free(PROC_HEAD);
+		PROC_HEAD = saved;
+	} else {
+		visor_proc * curr = PROC_HEAD;
+
+		while (NULL != curr->next) {
+			if (curr->next->pid == pid) {
+				visor_proc * saved = curr->next->next;
+				free(curr->next->name);
+				free(curr->next);
+				curr->next = saved;
+				return;
+			}
+		}
+	}
+}
 
 const char * symbol_from_syscall_num(uint16_t sysnum) {
 	if (sysnum >> 12 == 0) { /* normal syscalls lead with 0 */
@@ -68,7 +156,7 @@ uint8_t * filename_from_arg(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid) {
 		goto done;
 	}
 
-	res = nfilename.contents; // points to malloc'd memory
+	res = nfilename.contents; /* points to malloc'd memory */
 	free(obj_attr);
 	vmi_free_unicode_str(filename);
 
@@ -155,133 +243,134 @@ done:
 void 
 print_syscall(vmi_instance_t vmi, vmi_event_t *event) 
 {
-	/* 
- 	 *  This function is used to translate the 
- 	 *  raw values found in registers on a syscall to a readable string
- 	 *  that is printed to stdout. It displays the PID, Process name,
- 	 *  and the syscall name with all of its arguments formatted to 
- 	 *  show as an integer, hex value or string if possible.
- 	 */
+	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 
-	/* Every case will make use of the following values */
+	visor_proc * curr_proc = get_process_from_pid(pid);
 
-	reg_t syscall_number = event->x86_regs->rax;			/* stores the syscall number from rax */
+	if (NULL == curr_proc) {
+		char * proc_name = get_process_name(vmi, pid);
 
-	uint16_t win_syscall = syscall_number & 0xFFFF;
+		if (strcmp(proc_name, "cmd.exe") == 0) { /* let's only track cmd.exe for now */
+			curr_proc = allocate_process(pid, proc_name);
 
-	const char * syscall_symbol = symbol_from_syscall_num(win_syscall);
-
-	if (syscall_symbol == NULL) {
-		syscall_symbol = "Unknown Symbol";
+			if (NULL == curr_proc) {
+				free(proc_name);
+			}
+		}
+	}
+	
+	if (NULL == curr_proc) { /* we don't want to track this PID */
+		return;
 	}
 
+	if (0xFFFF != curr_proc->sysnum) {
+		fprintf(stderr, "Warning: system call didn't return before new system call.  Multi-threaded process?\n");
+	}
+
+	reg_t syscall_number = event->x86_regs->rax;
+
+	curr_proc->sysnum = syscall_number & 0xFFFF;
+	
 	time_t now = time(NULL);
 
 	char * timestamp = ctime(&now); // y u have a newline
 	timestamp[strlen(timestamp)-1] = 0;
-	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
-	char *proc_name = get_process_name(vmi, pid);
-	
-	if (strcmp(proc_name, "cmd.exe") == 0) {
-		fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
 
-		unsigned int raw_args[16] = {0};
-		vmi_read_va(vmi, event->x86_regs->rdx, pid, raw_args, sizeof(raw_args));
-		unsigned int * args = &raw_args[2]; /* don't know what the first two arguments are yet, so let's ignore them */
-
-		switch (win_syscall) {
-
-			case NTOPENFILE:
-			{
-				//fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
-
-				uint8_t * filename = filename_from_arg(vmi, args[2], pid);
-
-				if (filename != NULL) {
-					fprintf(stderr, "Arguments: %s\n", filename);
-				}
-
-				break;
-			} 
-
-			case NTOPENSYMBOLICLINKOBJECT:
-			{
-				//fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
-
-				uint8_t * filename = filename_from_arg(vmi, args[2], pid);
-
-				if (filename != NULL) {
-					fprintf(stderr, "Arguments: %s\n", filename);
-				}
-
-				break;
-			}
-
-			case NTCREATEFILE:
-			{
-				//fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
-
-				uint8_t * filename = filename_from_arg(vmi, args[2], pid);
-
-				if (filename != NULL) {
-					fprintf(stderr, "Arguments: %s\n", filename);
-				}
-
-				break;
-			}
-
-			case NTOPENDIRECTORYOBJECT:
-			{
-				//fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
-
-				uint8_t * filename = filename_from_arg(vmi, args[2], pid);
-
-				if (filename != NULL) {
-					fprintf(stderr, "Arguments: %s\n", filename);
-				}
-
-				break;
-			}
-
-			case NTOPENPROCESS:
-			{
-				//fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n", timestamp, proc_name, pid, syscall_symbol, win_syscall);
-
-				uint8_t * filename = filename_from_arg(vmi, args[2], pid);
-
-				if (filename != NULL) {
-					fprintf(stderr, "Arguments: %s\n", filename);
-				}
-
-				break;
-			}
-
-			default:
-			{
-				/* do something here? */
-			}
-		}
+	if (NULL != curr_proc->args) {
+		free(curr_proc->args);
+		curr_proc->args = NULL;
 	}
 
-	free(proc_name);
+	curr_proc->args = calloc(NUM_SYSCALL_ARGS, sizeof(uint32_t));
+	vmi_read_va(vmi, event->x86_regs->rdx, curr_proc->pid, curr_proc->args, NUM_SYSCALL_ARGS * sizeof(uint32_t));
 }
 
 void 
 print_sysret(vmi_instance_t vmi, vmi_event_t *event) 
 {
+	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
+
+	visor_proc * curr_proc = get_process_from_pid(pid);
+
+	if (NULL == curr_proc) { /* not tracking this process */
+		return;
+	}
+
+	if (0xFFFF == curr_proc->sysnum) {
+		fprintf(stderr, "Error: system call returned without setting valid sysnum for PID %d\n", pid);
+		return;
+	}
+
 	/* Print the pid, process name and return value of a system call */
-	reg_t syscall_return = event->x86_regs->rax;			/* get the return value out of rax */
-	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);	/* get the pid of the process */
-	char *proc_name = get_process_name(vmi, pid);				/* get the process name */
+	reg_t ret_status = event->x86_regs->rax;			/* get the return value out of rax */
 
 	time_t now = time(NULL);
 
 	char * timestamp = ctime(&now); // y u have a newline
 	timestamp[strlen(timestamp)-1] = 0;
 
-	if (strcmp(proc_name, "cmd.exe") == 0) {
-		fprintf(stderr, "[%s] %s (PID: %d) return: 0x%lx\n", timestamp, proc_name, pid, syscall_return);
+	const char * syscall_symbol = symbol_from_syscall_num(curr_proc->sysnum);
+
+	if (syscall_symbol == NULL) {
+		syscall_symbol = "Unknown Symbol";
 	}
 
-	free(proc_name);
+	switch (curr_proc->sysnum) {
+
+		case NTOPENFILE:
+		{
+			uint8_t * filename = filename_from_arg(vmi, curr_proc->args[4], curr_proc->pid);
+
+			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status);
+
+			break;
+		} 
+
+		case NTOPENSYMBOLICLINKOBJECT:
+		{
+			uint8_t * filename = filename_from_arg(vmi, curr_proc->args[4], curr_proc->pid);
+
+			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status);
+
+			break;
+		}
+
+		case NTCREATEFILE:
+		{
+			uint8_t * filename = filename_from_arg(vmi, curr_proc->args[4], curr_proc->pid);
+
+			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status);
+
+			break;
+		}
+
+		case NTOPENDIRECTORYOBJECT:
+		{
+			uint8_t * filename = filename_from_arg(vmi, curr_proc->args[4], curr_proc->pid);
+
+			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status);
+
+			break;
+		}
+
+		case NTOPENPROCESS:
+		{
+			uint8_t * filename = filename_from_arg(vmi, curr_proc->args[4], curr_proc->pid);
+
+			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status);
+			break;
+		}
+
+		default:
+		{
+			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\treturn status:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, ret_status);
+		}
+	}
+
+	curr_proc->sysnum = 0xFFFF; /* clean out the syscall */
+
+	if (NULL != curr_proc->args) {
+		free(curr_proc->args);
+		curr_proc->args = NULL;
+	}
 }
