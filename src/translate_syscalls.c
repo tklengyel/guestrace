@@ -245,6 +245,10 @@ print_syscall(vmi_instance_t vmi, vmi_event_t *event)
 {
 	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 
+	if (0 == pid) { /* it can't find the PID sometimes... */
+		return;
+	}
+
 	visor_proc * curr_proc = get_process_from_pid(pid);
 
 	if (NULL == curr_proc) {
@@ -282,13 +286,17 @@ print_syscall(vmi_instance_t vmi, vmi_event_t *event)
 	}
 
 	curr_proc->args = calloc(NUM_SYSCALL_ARGS, sizeof(uint32_t));
-	vmi_read_va(vmi, event->x86_regs->rdx, curr_proc->pid, curr_proc->args, NUM_SYSCALL_ARGS * sizeof(uint32_t));
+	vmi_read_va(vmi, event->x86_regs->rdx + sizeof(uint32_t) * 2, curr_proc->pid, curr_proc->args, NUM_SYSCALL_ARGS * sizeof(uint32_t));
 }
 
 void 
 print_sysret(vmi_instance_t vmi, vmi_event_t *event) 
 {
 	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
+
+	if (0 == pid) { /* it can't find the PID sometimes... */
+		return;
+	}
 
 	visor_proc * curr_proc = get_process_from_pid(pid);
 
@@ -319,45 +327,61 @@ print_sysret(vmi_instance_t vmi, vmi_event_t *event)
 
 		case NTOPENFILE:
 		{
-			uint8_t * filename = filename_from_arg(vmi, curr_proc->args[4], curr_proc->pid);
+			uint8_t * filename = filename_from_arg(vmi, curr_proc->args[2], curr_proc->pid);
 
-			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status);
+			uint32_t handle = 0;
+			vmi_read_32_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
+
+			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n\thandle value:\t0x%x\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status, handle);
 
 			break;
 		} 
 
 		case NTOPENSYMBOLICLINKOBJECT:
 		{
-			uint8_t * filename = filename_from_arg(vmi, curr_proc->args[4], curr_proc->pid);
+			uint8_t * filename = filename_from_arg(vmi, curr_proc->args[2], curr_proc->pid);
 
-			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status);
+			uint32_t handle = 0;
+			vmi_read_32_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
+
+			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n\thandle value:\t0x%x\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status, handle);
 
 			break;
 		}
 
 		case NTCREATEFILE:
 		{
-			uint8_t * filename = filename_from_arg(vmi, curr_proc->args[4], curr_proc->pid);
+			uint8_t * filename = filename_from_arg(vmi, curr_proc->args[2], curr_proc->pid);
 
-			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status);
+			uint32_t handle = 0;
+			vmi_read_32_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
+
+			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n\thandle value:\t0x%x\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status, handle);
 
 			break;
 		}
 
 		case NTOPENDIRECTORYOBJECT:
 		{
-			uint8_t * filename = filename_from_arg(vmi, curr_proc->args[4], curr_proc->pid);
+			uint8_t * filename = filename_from_arg(vmi, curr_proc->args[2], curr_proc->pid);
 
-			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status);
+			uint32_t handle = 0;
+			vmi_read_32_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
+
+			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n\thandle value:\t0x%x\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status, handle);
 
 			break;
 		}
 
 		case NTOPENPROCESS:
 		{
-			uint8_t * filename = filename_from_arg(vmi, curr_proc->args[4], curr_proc->pid);
+			uint8_t * filename = filename_from_arg(vmi, curr_proc->args[2], curr_proc->pid);
 
-			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status);
+			uint32_t handle = 0;
+			vmi_read_32_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
+
+			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n\thandle value:\t0x%x\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status, handle);
+
 			break;
 		}
 
