@@ -385,9 +385,23 @@ print_sysret(vmi_instance_t vmi, vmi_event_t *event)
 			break;
 		}
 
+		case NTREADFILE:
+		{
+			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t0x%x\n\treturn status:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, curr_proc->args[0], ret_status);
+
+			break;
+		}
+
+		case NTWRITEFILE:
+		{
+			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t0x%x\n\treturn status:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, curr_proc->args[0], ret_status);
+
+			break;
+		}
+
 		default:
 		{
-			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\treturn status:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, ret_status);
+			//fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\treturn status:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, ret_status);
 		}
 	}
 
