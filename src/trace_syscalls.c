@@ -196,19 +196,15 @@ set_up_sysret_entry_int3 (vmi_instance_t vmi, struct gs_state *vm_info)
 		goto done;
 	}
 
-	uint8_t foundit = 0;
-
 	/* Find CALL inst. and note address of inst. which follows. */
 	count = cs_disasm(handle, code, sizeof(code), 0, 0, &inst);
 	if (count > 0) {
 		size_t i;
 		for (i = 0; i < count; i++) {
-			if (!strcmp(inst[i].mnemonic, "call")) {
-				if (foundit == 1) { /* we want to find the 3rd instance of "call" */
+			if (strcmp(inst[i].mnemonic, "call") == 0) {
+				if (strcmp(inst[i].op_str, "rbx") == 0) {
 					call_offset = inst[i + 1].address;
 					break;
-				} else {
-					foundit++;
 				}
 			}
 			//fprintf(stderr, "%s %s\n", inst[i].mnemonic, inst[i].op_str);
