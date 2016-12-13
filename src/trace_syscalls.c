@@ -409,7 +409,9 @@ int main (int argc, char **argv) {
     syscall_ret_trap = vf_create_trap(vmi, syscall_ret_addr);
     vf_disable_trap(syscall_ret_trap);
 
-    const char * checkthese[] = {"NtOpenFile", "NtOpenSymbolicLinkObject", "NtCreateFile", "NtOpenDirectoryObject", "NtOpenProcess", "NtReadFile", "NtWriteFile"};
+    //const char * checkthese[] = {"NtOpenFile", "NtOpenSymbolicLinkObject", "NtCreateFile", "NtOpenDirectoryObject", "NtOpenProcess", "NtReadFile", "NtWriteFile"};
+
+    const char * checkthese[] = {"NtCreateFile", "NtOpenSymbolicLinkObject", "NtOpenDirectoryObject", "NtOpenProcess"};
 
     for (int i = 0; i < NUM_SYSCALLS; i++) {
         bool worked = false;
