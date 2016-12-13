@@ -6,30 +6,31 @@
 #include <inttypes.h>
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
+
 #include "syscall_enum.h"
 
-struct win32_obj_attr {
-	uint32_t length; // sizeof given struct
-	uint32_t root_directory; // if not null, object_name is relative to this directory
-	uint32_t object_name; // pointer to unicode string
-	uint32_t attributes; // see microsoft documentation
-	uint32_t security_descriptor; // see microsoft documentation
-	uint32_t security_quality_of_service; // see microsoft documentation
+struct win64_obj_attr {
+	uint64_t length; // sizeof given struct
+	uint64_t root_directory; // if not null, object_name is relative to this directory
+	uint64_t object_name; // pointer to unicode string
+	uint64_t attributes; // see microsoft documentation
+	uint64_t security_descriptor; // see microsoft documentation
+	uint64_t security_quality_of_service; // see microsoft documentation
 };
 
 typedef struct visor_proc {
 	vmi_pid_t pid; /* current process pid */
 	char * name; /* this will be removed automatically */
 	uint16_t sysnum; /* 0xFFFF if not waiting on syscall to finish, otherwise sysnum */
-	uint32_t * args; /* saved arguments to use between syscall start and finish. must be freed in ret */
+	uint64_t * args; /* saved arguments to use between syscall start and finish. must be freed in ret */
 	struct visor_proc * next; /* todo: don't use linked list */
 } visor_proc;
 
-#define NUM_SYSCALL_ARGS 16
+#define NUM_SYSCALL_ARGS 8
 
 visor_proc * PROC_HEAD = NULL;
 
-struct win32_obj_attr * obj_attr_from_va(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid);
+struct win64_obj_attr * obj_attr_from_va(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid);
 uint8_t * filename_from_arg(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid);
 visor_proc * get_process_from_pid(vmi_pid_t pid);
 visor_proc * allocate_process(vmi_pid_t pid, char * name);
@@ -108,24 +109,19 @@ void delete_process(vmi_pid_t pid) {
 	}
 }
 
-const char * symbol_from_syscall_num(uint16_t sysnum) {
-	if (sysnum >> 12 == 0) { /* normal syscalls lead with 0 */
-		if (sysnum >= NUM_SYSCALLS || sysnum < 0 || NUM_TO_SYSCALL[sysnum] == NULL) {
-			return NULL;
-		} else {
-			return NUM_TO_SYSCALL[sysnum];
-		}
-	} else if (sysnum >> 12 == 1) { /* windows graphical syscalls lead with 1 */
-		sysnum = sysnum & (0x1000 - 1);
-		if (sysnum >= NUM_SYSCALLSK || sysnum < 0 || NUM_TO_SYSCALLK[sysnum] == NULL) {
-			return NULL;
-		} else {
-			return NUM_TO_SYSCALLK[sysnum];
-		}
-	} else {
-		return NULL;
-	}
-}
+//const char * symbol_from_syscall_num(uint16_t sysnum) {
+//	if (sysnum >> 12 == 0) { /* normal syscalls lead with 0 */
+//		if (sysnum >= NUM_SYSCALLS || sysnum < 0 || NUM_TO_SYSCALL[sysnum] == NULL) {
+//			return NULL;
+//		} else {
+//			return NUM_TO_SYSCALL[sysnum];
+//		}
+//	} else if (sysnum >> 12 == 1) { /* windows graphical syscalls lead with 1 */
+//		return NULL; /* ignore graphical syscalls for performance */
+//	} else {
+//		return NULL;
+//	}
+//}
 
 /*
  * Tries to return a UTF-8 string representing the filename of an ObjectAttribute
@@ -134,7 +130,7 @@ const char * symbol_from_syscall_num(uint16_t sysnum) {
  */
 
 uint8_t * filename_from_arg(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid) {
-	struct win32_obj_attr * obj_attr = obj_attr_from_va(vmi, vaddr, pid);
+	struct win64_obj_attr * obj_attr = obj_attr_from_va(vmi, vaddr, pid);
 
 	uint8_t * res = NULL;
 
@@ -167,18 +163,18 @@ done:
 /*
  * Get ObjectAttributes struct from virtual address
  */
-struct win32_obj_attr * obj_attr_from_va(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid) {
-	struct win32_obj_attr * buff = NULL;
+struct win64_obj_attr * obj_attr_from_va(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid) {
+	struct win64_obj_attr * buff = NULL;
 
-	unsigned int struct_size = 0;
+	uint64_t struct_size = 0;
 
-	if (VMI_SUCCESS != vmi_read_32_va(vmi, vaddr, pid, &struct_size)) {
+	if (VMI_SUCCESS != vmi_read_64_va(vmi, vaddr, pid, &struct_size)) {
 		goto done;
 	}
 
-	struct_size = struct_size <= sizeof(struct win32_obj_attr) ? struct_size : sizeof(struct win32_obj_attr); // don't wanna read too much data
+	struct_size = struct_size <= sizeof(struct win64_obj_attr) ? struct_size : sizeof(struct win64_obj_attr); // don't wanna read too much data
 
-	buff = calloc(1, sizeof(struct win32_obj_attr));
+	buff = calloc(1, sizeof(struct win64_obj_attr));
 
 	if (struct_size != vmi_read_va(vmi, vaddr, pid, buff, struct_size)) {
 		free(buff);
@@ -241,7 +237,7 @@ done:
 
 
 void 
-print_syscall(vmi_instance_t vmi, vmi_event_t *event) 
+print_syscall(vmi_instance_t vmi, vmi_event_t *event, uint16_t syscall_num) 
 {
 	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 
@@ -254,13 +250,13 @@ print_syscall(vmi_instance_t vmi, vmi_event_t *event)
 	if (NULL == curr_proc) {
 		char * proc_name = get_process_name(vmi, pid);
 
-		if (strcmp(proc_name, "cmd.exe") == 0) { /* let's only track cmd.exe for now */
+		//if (strcmp(proc_name, "cmd.exe") == 0) { /* let's only track cmd.exe for now */
 			curr_proc = allocate_process(pid, proc_name);
 
 			if (NULL == curr_proc) {
 				free(proc_name);
 			}
-		}
+		//}
 	}
 	
 	if (NULL == curr_proc) { /* we don't want to track this PID */
@@ -271,9 +267,7 @@ print_syscall(vmi_instance_t vmi, vmi_event_t *event)
 		fprintf(stderr, "Warning: system call didn't return before new system call.  Multi-threaded process?\n");
 	}
 
-	reg_t syscall_number = event->x86_regs->rax;
-
-	curr_proc->sysnum = syscall_number & 0xFFFF;
+	curr_proc->sysnum = syscall_num;
 	
 	time_t now = time(NULL);
 
@@ -285,8 +279,14 @@ print_syscall(vmi_instance_t vmi, vmi_event_t *event)
 		curr_proc->args = NULL;
 	}
 
-	curr_proc->args = calloc(NUM_SYSCALL_ARGS, sizeof(uint32_t));
-	vmi_read_va(vmi, event->x86_regs->rdx + sizeof(uint32_t) * 2, curr_proc->pid, curr_proc->args, NUM_SYSCALL_ARGS * sizeof(uint32_t));
+	curr_proc->args = calloc(NUM_SYSCALL_ARGS, sizeof(uint64_t));
+	curr_proc->args[0] = event->x86_regs->rcx;
+	curr_proc->args[1] = event->x86_regs->rdx;
+	curr_proc->args[2] = event->x86_regs->r8;
+	curr_proc->args[3] = event->x86_regs->r9;
+
+	/* todo figure out how to get rest of arguments */
+	//vmi_read_va(vmi, event->x86_regs->rdx + sizeof(uint32_t) * 2, curr_proc->pid, curr_proc->args, NUM_SYSCALL_ARGS * sizeof(uint32_t));
 }
 
 void 
@@ -317,11 +317,11 @@ print_sysret(vmi_instance_t vmi, vmi_event_t *event)
 	char * timestamp = ctime(&now); // y u have a newline
 	timestamp[strlen(timestamp)-1] = 0;
 
-	const char * syscall_symbol = symbol_from_syscall_num(curr_proc->sysnum);
+	//const char * syscall_symbol = symbol_from_syscall_num(curr_proc->sysnum);
 
-	if (syscall_symbol == NULL) {
-		syscall_symbol = "Unknown Symbol";
-	}
+	//if (syscall_symbol == NULL) {
+	//	syscall_symbol = "Unknown Symbol";
+	//}
 
 	switch (curr_proc->sysnum) {
 
@@ -329,10 +329,12 @@ print_sysret(vmi_instance_t vmi, vmi_event_t *event)
 		{
 			uint8_t * filename = filename_from_arg(vmi, curr_proc->args[2], curr_proc->pid);
 
-			uint32_t handle = 0;
-			vmi_read_32_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
+			uint64_t handle = 0;
+			vmi_read_64_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
 
-			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n\thandle value:\t0x%x\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status, handle);
+			const char * syscall_symbol = "NtOpenFile";
+
+			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n\thandle value:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status, handle);
 
 			break;
 		} 
@@ -341,10 +343,12 @@ print_sysret(vmi_instance_t vmi, vmi_event_t *event)
 		{
 			uint8_t * filename = filename_from_arg(vmi, curr_proc->args[2], curr_proc->pid);
 
-			uint32_t handle = 0;
-			vmi_read_32_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
+			uint64_t handle = 0;
+			vmi_read_64_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
 
-			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n\thandle value:\t0x%x\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status, handle);
+			const char * syscall_symbol = "NtOpenSymbolicLinkObject";
+
+			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n\thandle value:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status, handle);
 
 			break;
 		}
@@ -353,10 +357,12 @@ print_sysret(vmi_instance_t vmi, vmi_event_t *event)
 		{
 			uint8_t * filename = filename_from_arg(vmi, curr_proc->args[2], curr_proc->pid);
 
-			uint32_t handle = 0;
-			vmi_read_32_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
+			uint64_t handle = 0;
+			vmi_read_64_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
 
-			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n\thandle value:\t0x%x\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status, handle);
+			const char * syscall_symbol = "NtCreateFile";
+
+			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n\thandle value:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status, handle);
 
 			break;
 		}
@@ -365,10 +371,12 @@ print_sysret(vmi_instance_t vmi, vmi_event_t *event)
 		{
 			uint8_t * filename = filename_from_arg(vmi, curr_proc->args[2], curr_proc->pid);
 
-			uint32_t handle = 0;
-			vmi_read_32_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
+			uint64_t handle = 0;
+			vmi_read_64_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
 
-			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n\thandle value:\t0x%x\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status, handle);
+			const char * syscall_symbol = "NtOpenDirectoryObject";
+
+			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n\thandle value:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status, handle);
 
 			break;
 		}
@@ -377,24 +385,30 @@ print_sysret(vmi_instance_t vmi, vmi_event_t *event)
 		{
 			uint8_t * filename = filename_from_arg(vmi, curr_proc->args[2], curr_proc->pid);
 
-			uint32_t handle = 0;
-			vmi_read_32_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
+			uint64_t handle = 0;
+			vmi_read_64_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
 
-			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n\thandle value:\t0x%x\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status, handle);
+			const char * syscall_symbol = "NtOpenProcess";
+
+			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n\thandle value:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status, handle);
 
 			break;
 		}
 
 		case NTREADFILE:
 		{
-			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t0x%x\n\treturn status:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, curr_proc->args[0], ret_status);
+			const char * syscall_symbol = "NtReadFile";
+
+			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t0x%lx\n\treturn status:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, curr_proc->args[0], ret_status);
 
 			break;
 		}
 
 		case NTWRITEFILE:
 		{
-			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t0x%x\n\treturn status:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, curr_proc->args[0], ret_status);
+			const char * syscall_symbol = "NtWriteFile";
+
+			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t0x%lx\n\treturn status:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, curr_proc->args[0], ret_status);
 
 			break;
 		}
