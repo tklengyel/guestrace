@@ -135,7 +135,8 @@ trap_int_reset(vmi_instance_t vmi, vmi_event_t *event) {
 
 	if (curr_trap == NULL) {
 		event->interrupt_event.reinject = 1;
-		status = VMI_EVENT_RESPONSE_EMULATE; /* todo: need to make sure this does the right thing */
+		/* TODO: Ensure this does the right thing: */
+		status = VMI_EVENT_RESPONSE_EMULATE;
 		goto done;
 	}
 
@@ -155,7 +156,8 @@ trap_int_callback(vmi_instance_t vmi, vmi_event_t *event) {
 
 	if (curr_trap == NULL) {
 		event->interrupt_event.reinject = 1;
-		status = VMI_EVENT_RESPONSE_EMULATE; /* todo: need to make sure this does the right thing */
+		/* TODO: Ensure this does the right thing: */
+		status = VMI_EVENT_RESPONSE_EMULATE;
 		goto done;
 	}
 
