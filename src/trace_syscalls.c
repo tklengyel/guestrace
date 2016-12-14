@@ -12,6 +12,27 @@
 
 #include "translate_syscalls.h"
 
+/* The Windows code follows this strategy:
+ *
+ * (1) Set breakpoints on individual system-call functions within the
+ *     kernel instead of in the vicinity of the address in LSTAR. This
+ *     improves performance because it avoids breaking on system calls
+ *     which are not interesting to VisorFlow.
+ *
+ * (2) Trap when an instruction reads from the page containing one of our
+ *     breakpoints. Such reads are likely invoked by Windows's kernel patch
+ *     protection, which checks the integrity of the memory containing kernel
+ *     instructions. When we trap these reads, we replace the breakpoint with
+ *     the original instruction byte, restoring the proper memory contents.
+ *
+ * (3) Trap when an instruction executes from a page which should contain one
+ *     of our breakpoints. In this case, we probably restored the original
+ *     instruction due to a read. Now it is time to re-emplace the breakpoint.
+ *
+ * The traps described by (2) or (3) exist only if we wrote a breakpoint or
+ * restored an original instruction, respectively.
+ */
+
 /* Intel breakpoint interrupt (INT 3) instruction. */
 static uint8_t BREAKPOINT_INST = 0xCC;
 
