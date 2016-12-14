@@ -231,14 +231,16 @@ vf_trap_from_pa(vmi_instance_t vmi, addr_t pa) {
 	addr_t page = pa >> 12;
 
 	/* get page event */
-	curr_page_trap = g_hash_table_lookup(vf_page_traps, (gconstpointer) page);
+	curr_page_trap = g_hash_table_lookup(vf_page_traps,
+	                                    (gconstpointer) page);
 
 	if (NULL == curr_page_trap) { /* make sure we own this interrupt */
 		goto done;
 	}
 
 	/* get individual trap */
-	curr_trap = g_hash_table_lookup(curr_page_trap->children, (gconstpointer) pa);
+	curr_trap = g_hash_table_lookup(curr_page_trap->children,
+	                               (gconstpointer) pa);
 
 done:
 	return curr_trap;
@@ -253,8 +255,12 @@ vf_create_trap(vmi_instance_t vmi, addr_t va) {
 	vf_page_trap *curr_page_trap = NULL;
 	vf_trap *curr_trap = NULL;
 
-	if ((curr_page_trap = g_hash_table_lookup(vf_page_traps, (gconstpointer) page)) != NULL) {
-		if ((curr_trap = g_hash_table_lookup(curr_page_trap->children, (gconstpointer) pa)) != NULL) {
+	curr_page_trap = g_hash_table_lookup(vf_page_traps,
+	                                    (gconstpointer) page);
+	if (NULL != curr_page_trap) {
+		curr_trap = g_hash_table_lookup(curr_page_trap->children,
+		                               (gconstpointer) pa);
+		if (NULL != curr_trap) {
 			goto done;
 		}
 	} else {
@@ -265,13 +271,24 @@ vf_create_trap(vmi_instance_t vmi, addr_t va) {
 		curr_page_trap->mem_event_rw = calloc(1, sizeof(vmi_event_t));
 		curr_page_trap->mem_event_x = calloc(1, sizeof(vmi_event_t));
 
-		SETUP_MEM_EVENT(curr_page_trap->mem_event_rw, page, VMI_MEMACCESS_RW, trap_mem_callback_rw, 0);
-		SETUP_MEM_EVENT(curr_page_trap->mem_event_x, page, VMI_MEMACCESS_X, trap_mem_callback_x, 0);
+		SETUP_MEM_EVENT(curr_page_trap->mem_event_rw,
+		                page,
+		                VMI_MEMACCESS_RW,
+		                trap_mem_callback_rw,
+		                0);
+
+		SETUP_MEM_EVENT(curr_page_trap->mem_event_x,
+		                page, VMI_MEMACCESS_X,
+		                trap_mem_callback_x,
+		                0);
 
 		curr_page_trap->mem_event_rw->data = curr_page_trap;
 		curr_page_trap->mem_event_x->data = curr_page_trap;
 
-		curr_page_trap->children = g_hash_table_new_full(NULL, NULL, NULL, destroy_trap);
+		curr_page_trap->children = g_hash_table_new_full(NULL,
+		                                                 NULL,
+		                                                 NULL,
+		                                                 destroy_trap);
 
 		g_hash_table_insert(vf_page_traps,
 		                   (gpointer) page, curr_page_trap);
@@ -299,9 +316,10 @@ done:
 
 void
 vf_destroy_page_trap(vf_page_trap *curr_page_trap) {
-	fprintf(stderr, "Destroying page trap on 0x%lx\n", curr_page_trap->page);
+	fprintf(stderr, "destroy page trap on 0x%lx\n", curr_page_trap->page);
 
-	g_hash_table_remove(vf_page_traps, (gconstpointer) curr_page_trap->page);
+	g_hash_table_remove(vf_page_traps,
+	                   (gconstpointer) curr_page_trap->page);
 }
 
 void
@@ -333,7 +351,9 @@ void
 destroy_trap(gpointer data) {
 	vf_trap *curr_trap = data;
 
-	vmi_write_8_pa(curr_trap->parent->vmi, curr_trap->breakpoint_pa, &curr_trap->orig_inst);
+	vmi_write_8_pa(curr_trap->parent->vmi,
+	               curr_trap->breakpoint_pa,
+	              &curr_trap->orig_inst);
 
 	free(curr_trap);
 }
