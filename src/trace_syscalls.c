@@ -133,7 +133,7 @@ trap_int_reset(vmi_instance_t vmi, vmi_event_t *event) {
 
 	vf_trap *curr_trap = vf_trap_from_va(vmi, event->interrupt_event.gla);
 
-	if (curr_trap == NULL) {
+	if (NULL == curr_trap) {
 		event->interrupt_event.reinject = 1;
 		/* TODO: Ensure this does the right thing: */
 		status = VMI_EVENT_RESPONSE_EMULATE;
@@ -154,7 +154,7 @@ trap_int_callback(vmi_instance_t vmi, vmi_event_t *event) {
 
 	vf_trap *curr_trap = vf_trap_from_va(vmi, event->interrupt_event.gla);
 
-	if (curr_trap == NULL) {
+	if (NULL == curr_trap) {
 		event->interrupt_event.reinject = 1;
 		/* TODO: Ensure this does the right thing: */
 		status = VMI_EVENT_RESPONSE_EMULATE;
@@ -205,7 +205,7 @@ status_t
 vf_disable_trap(vf_trap *curr_trap) {
 	status_t status = VMI_SUCCESS;
 
-	if (curr_trap->disabled == 0) {
+	if (0 == curr_trap->disabled) {
 		curr_trap->curr_inst = curr_trap->orig_inst;
 		vmi_write_8_pa(curr_trap->parent->vmi,
 		               curr_trap->breakpoint_pa,
@@ -327,7 +327,7 @@ vf_destroy_trap(vf_trap *curr_trap) {
 	g_hash_table_remove(curr_trap->parent->children,
 	                   (gconstpointer) curr_trap->breakpoint_pa);
 
-	if (g_hash_table_size(curr_trap->parent->children) == 0) {
+	if (0 == g_hash_table_size(curr_trap->parent->children)) {
 		vf_destroy_page_trap(curr_trap->parent);
 	}
 }
@@ -397,8 +397,8 @@ setup_syscall_ret(vmi_instance_t vmi, addr_t syscall_start) {
 	if (count > 0) {
 		size_t i;
 		for (i = 0; i < count; i++) {
-			if (strcmp(inst[i].mnemonic, "call") == 0) {
-				if (strcmp(inst[i].op_str, "r10") == 0) {
+			if (0 == strcmp(inst[i].mnemonic, "call")) {
+				if (0 == strcmp(inst[i].op_str, "r10")) {
 					call_offset = inst[i + 1].address;
 					break;
 				}
@@ -441,7 +441,7 @@ main (int argc, char **argv) {
 
 	char *name = NULL;
 
-	if(argc < 2){
+	if (argc < 2){
 		fprintf(stderr, "Usage: syscall_events_example <name of VM>\n");
 		exit(1);
 	}
@@ -450,7 +450,7 @@ main (int argc, char **argv) {
 	name = argv[1];
 
 	// Initialize the libvmi library.
-	if (vmi_init(&vmi, VMI_XEN | VMI_INIT_COMPLETE | VMI_INIT_EVENTS, name) == VMI_FAILURE){
+	if (VMI_SUCCESS != vmi_init(&vmi, VMI_XEN | VMI_INIT_COMPLETE | VMI_INIT_EVENTS, name)) {
 		printf("Failed to init LibVMI library.\n");
 		goto done;
 	} else{
@@ -483,7 +483,7 @@ main (int argc, char **argv) {
 	for (int i = 0; i < NUM_SYSCALLS; i++) {
 	bool worked = false;
 	for (int x = 0; x < sizeof(checkthese) / sizeof(char *); x++) {
-		if (strcmp(NUM_TO_SYSCALL[i], checkthese[x]) == 0) {
+		if (0 == strcmp(NUM_TO_SYSCALL[i], checkthese[x])) {
 			worked = true;
 			break;
 		}
