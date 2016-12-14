@@ -190,7 +190,9 @@ vf_enable_trap(vf_trap *curr_trap) {
 
 	if (curr_trap->disabled != 0) {
 		curr_trap->curr_inst = BREAKPOINT_INST;
-		vmi_write_8_pa(curr_trap->parent->vmi, curr_trap->breakpoint_pa, &curr_trap->curr_inst);
+		vmi_write_8_pa(curr_trap->parent->vmi,
+		               curr_trap->breakpoint_pa,
+		              &curr_trap->curr_inst);
 		curr_trap->disabled = 0;
 	} else {
 		status = VMI_FAILURE;
@@ -205,7 +207,9 @@ vf_disable_trap(vf_trap *curr_trap) {
 
 	if (curr_trap->disabled == 0) {
 		curr_trap->curr_inst = curr_trap->orig_inst;
-		vmi_write_8_pa(curr_trap->parent->vmi, curr_trap->breakpoint_pa, &curr_trap->curr_inst);
+		vmi_write_8_pa(curr_trap->parent->vmi,
+		               curr_trap->breakpoint_pa,
+		              &curr_trap->curr_inst);
 		curr_trap->disabled = 1;
 	} else {
 		status = VMI_FAILURE;
@@ -222,18 +226,19 @@ vf_trap_from_va(vmi_instance_t vmi, addr_t va) {
 vf_trap *
 vf_trap_from_pa(vmi_instance_t vmi, addr_t pa) {
 	vf_trap *curr_trap = NULL;
+	vf_page_trap *curr_page_trap = NULL;
 
 	addr_t page = pa >> 12;
 
 	/* get page event */
-	vf_page_trap *curr_page_trap = g_hash_table_lookup(vf_page_traps, (void*)page);
+	curr_page_trap = g_hash_table_lookup(vf_page_traps, (gconstpointer) page);
 
 	if (NULL == curr_page_trap) { /* make sure we own this interrupt */
 		goto done;
 	}
 
 	/* get individual trap */
-	curr_trap = g_hash_table_lookup(curr_page_trap->children, (void*)pa);
+	curr_trap = g_hash_table_lookup(curr_page_trap->children, (gconstpointer) pa);
 
 done:
 	return curr_trap;
@@ -248,8 +253,8 @@ vf_create_trap(vmi_instance_t vmi, addr_t va) {
 	vf_page_trap *curr_page_trap = NULL;
 	vf_trap *curr_trap = NULL;
 
-	if ((curr_page_trap = g_hash_table_lookup(vf_page_traps, (void*)page)) != NULL) {
-		if ((curr_trap = g_hash_table_lookup(curr_page_trap->children, (void*)pa)) != NULL) {
+	if ((curr_page_trap = g_hash_table_lookup(vf_page_traps, (gconstpointer) page)) != NULL) {
+		if ((curr_trap = g_hash_table_lookup(curr_page_trap->children, (gconstpointer) pa)) != NULL) {
 			goto done;
 		}
 	} else {
@@ -300,7 +305,8 @@ vf_destroy_page_trap(vf_page_trap *curr_page_trap) {
 
 void
 vf_destroy_trap(vf_trap *curr_trap) {
-	g_hash_table_remove(curr_trap->parent->children, (void*)curr_trap->breakpoint_pa);
+	g_hash_table_remove(curr_trap->parent->children,
+	                   (gconstpointer) curr_trap->breakpoint_pa);
 
 	if (g_hash_table_size(curr_trap->parent->children) == 0) {
 		vf_destroy_page_trap(curr_trap->parent);
