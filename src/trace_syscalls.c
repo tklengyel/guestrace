@@ -68,9 +68,6 @@ status_t vf_enable_trap(vf_trap *curr_trap);
 status_t vf_disable_trap(vf_trap *curr_trap);
 void destroy_trap(gpointer data); /* private routine for freeing memory */
 
-event_response_t trap_mem_callback_rw(vmi_instance_t vmi, vmi_event_t *event);
-event_response_t trap_mem_callback_x(vmi_instance_t vmi, vmi_event_t *event);
-
 void
 trap_mem_callback_x_reset(vmi_event_t *event, status_t rc) {
 	vf_page_trap *curr_trap = (vf_page_trap*)event->data;
