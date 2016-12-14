@@ -71,25 +71,29 @@ void destroy_trap(gpointer data); /* private routine for freeing memory */
 event_response_t trap_mem_callback_rw(vmi_instance_t vmi, vmi_event_t *event);
 event_response_t trap_mem_callback_x(vmi_instance_t vmi, vmi_event_t *event);
 
-void trap_mem_callback_x_reset(vmi_event_t *event, status_t rc) {
+void
+trap_mem_callback_x_reset(vmi_event_t *event, status_t rc) {
 	vf_page_trap *curr_trap = (vf_page_trap*)event->data;
 
 	vmi_register_event(curr_trap->vmi, curr_trap->mem_event_rw);
 }
 
-void trap_mem_callback_rw_reset(vmi_event_t *event, status_t rc) {
+void
+trap_mem_callback_rw_reset(vmi_event_t *event, status_t rc) {
 	vf_page_trap *curr_trap = (vf_page_trap*)event->data;
 
 	vmi_register_event(curr_trap->vmi, curr_trap->mem_event_x);
 }
 
-void reset_interrupts_x(gpointer key, gpointer value, gpointer vmi) {
+void
+reset_interrupts_x(gpointer key, gpointer value, gpointer vmi) {
 	vf_trap *curr_trap = (vf_trap*)value;
 
 	vmi_write_8_pa(*(vmi_instance_t*)vmi, curr_trap->breakpoint_pa, &curr_trap->curr_inst);
 }
 
-event_response_t trap_mem_callback_x(vmi_instance_t vmi, vmi_event_t *event) {
+event_response_t
+trap_mem_callback_x(vmi_instance_t vmi, vmi_event_t *event) {
 	fprintf(stderr, "!!! Received mem x callback at %lx\n", event->mem_event.gla);
 
 	vf_page_trap *curr_page_trap = (vf_page_trap*)event->data;
@@ -101,13 +105,15 @@ event_response_t trap_mem_callback_x(vmi_instance_t vmi, vmi_event_t *event) {
 	return VMI_EVENT_RESPONSE_NONE;
 }
 
-void reset_interrupts_rw(gpointer key, gpointer value, gpointer vmi) {
+void
+reset_interrupts_rw(gpointer key, gpointer value, gpointer vmi) {
 	vf_trap *curr_trap = (vf_trap*)value;
 
 	vmi_write_8_pa(*(vmi_instance_t*)vmi, curr_trap->breakpoint_pa, &curr_trap->orig_inst);
 }
 
-event_response_t trap_mem_callback_rw(vmi_instance_t vmi, vmi_event_t *event) {
+event_response_t
+trap_mem_callback_rw(vmi_instance_t vmi, vmi_event_t *event) {
 	fprintf(stderr, "!!! Received mem rw callback at %lx\n", event->mem_event.gla);
 
 	vf_page_trap *curr_page_trap = (vf_page_trap*)event->data;
@@ -119,7 +125,8 @@ event_response_t trap_mem_callback_rw(vmi_instance_t vmi, vmi_event_t *event) {
 	return VMI_EVENT_RESPONSE_NONE;
 }
 
-event_response_t trap_int_reset(vmi_instance_t vmi, vmi_event_t *event) {
+event_response_t
+trap_int_reset(vmi_instance_t vmi, vmi_event_t *event) {
 	event_response_t status = VMI_EVENT_RESPONSE_NONE;
 
 	vf_trap *curr_trap = vf_trap_from_va(vmi, event->interrupt_event.gla);
@@ -138,7 +145,8 @@ done:
 	return status;
 }
 
-event_response_t trap_int_callback(vmi_instance_t vmi, vmi_event_t *event) {
+event_response_t
+trap_int_callback(vmi_instance_t vmi, vmi_event_t *event) {
 	event_response_t status = VMI_EVENT_RESPONSE_NONE;
 
 	vf_trap *curr_trap = vf_trap_from_va(vmi, event->interrupt_event.gla);
@@ -172,7 +180,8 @@ done:
 	return status;
 }
 
-status_t vf_enable_trap(vf_trap *curr_trap) {
+status_t
+vf_enable_trap(vf_trap *curr_trap) {
 	status_t status = VMI_SUCCESS;
 
 	if (curr_trap->disabled != 0) {
@@ -186,7 +195,8 @@ status_t vf_enable_trap(vf_trap *curr_trap) {
 	return status;
 }
 
-status_t vf_disable_trap(vf_trap *curr_trap) {
+status_t
+vf_disable_trap(vf_trap *curr_trap) {
 	status_t status = VMI_SUCCESS;
 
 	if (curr_trap->disabled == 0) {
@@ -200,11 +210,13 @@ status_t vf_disable_trap(vf_trap *curr_trap) {
 	return status;
 }
 
-vf_trap *vf_trap_from_va(vmi_instance_t vmi, addr_t va) {
+vf_trap *
+vf_trap_from_va(vmi_instance_t vmi, addr_t va) {
 	return vf_trap_from_pa(vmi, vmi_translate_kv2p(vmi, va));
 }
 
-vf_trap *vf_trap_from_pa(vmi_instance_t vmi, addr_t pa) {
+vf_trap *
+vf_trap_from_pa(vmi_instance_t vmi, addr_t pa) {
 	vf_trap *curr_trap = NULL;
 
 	addr_t page = pa >> 12;
@@ -224,7 +236,8 @@ done:
 }
 
 /* TODO: Error handling */
-vf_trap *vf_create_trap(vmi_instance_t vmi, addr_t va) {
+vf_trap *
+vf_create_trap(vmi_instance_t vmi, addr_t va) {
 	addr_t pa = vmi_translate_kv2p(vmi, va);
 	addr_t page = pa >> 12;
 
@@ -274,13 +287,15 @@ done:
 	return curr_trap;
 }
 
-void vf_destroy_page_trap(vf_page_trap *curr_page_trap) {
+void
+vf_destroy_page_trap(vf_page_trap *curr_page_trap) {
 	fprintf(stderr, "Destroying page trap on 0x%lx\n", curr_page_trap->page);
 
 	g_hash_table_remove(vf_page_traps, (void*)curr_page_trap->page);
 }
 
-void vf_destroy_trap(vf_trap *curr_trap) {
+void
+vf_destroy_trap(vf_trap *curr_trap) {
 	g_hash_table_remove(curr_trap->parent->children, (void*)curr_trap->breakpoint_pa);
 
 	if (g_hash_table_size(curr_trap->parent->children) == 0) {
@@ -288,7 +303,8 @@ void vf_destroy_trap(vf_trap *curr_trap) {
 	}
 }
 
-void destroy_page_trap(gpointer data) {
+void
+destroy_page_trap(gpointer data) {
 	vf_page_trap *curr_page_trap = (vf_page_trap*)data;
 
 	vmi_clear_event(curr_page_trap->vmi, curr_page_trap->mem_event_rw, NULL);
@@ -302,7 +318,8 @@ void destroy_page_trap(gpointer data) {
 	free(curr_page_trap);
 }
 
-void destroy_trap(gpointer data) {
+void
+destroy_trap(gpointer data) {
 	vf_trap *curr_trap = (vf_trap*)data;
 
 	vmi_write_8_pa(curr_trap->parent->vmi, curr_trap->breakpoint_pa, &curr_trap->orig_inst);
@@ -311,11 +328,13 @@ void destroy_trap(gpointer data) {
 }
 
 static int interrupted = 0;
-static void close_handler(int sig){
+static void
+close_handler(int sig){
 	interrupted = sig;
 }
 
-addr_t setup_syscall_ret(vmi_instance_t vmi, addr_t syscall_start) {
+addr_t
+setup_syscall_ret(vmi_instance_t vmi, addr_t syscall_start) {
 	csh handle;
 	cs_insn *inst;
 	size_t count, call_offset = ~0;
@@ -374,7 +393,8 @@ done:
 	return ret;
 }
 
-int main (int argc, char **argv) {
+int
+main (int argc, char **argv) {
 	status_t status = VMI_SUCCESS;
 	vmi_instance_t vmi;
 	struct sigaction act;
