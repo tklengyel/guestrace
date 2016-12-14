@@ -894,4 +894,4 @@ const char *NUM_TO_SYSCALL[NUM_SYSCALLS] = {
 	"NtWaitHighEventPair",
 	"NtWaitLowEventPair",
 	"NtWorkerFactoryWorkerReady"
-	};
+};
