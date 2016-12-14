@@ -62,13 +62,10 @@ typedef struct vf_trap {
 vmi_event_t trap_int_event;
 vf_trap *syscall_ret_trap;
 
-vf_trap *vf_create_trap(vmi_instance_t vmi, addr_t va);
-void vf_destroy_trap(vf_trap *curr_trap);
 vf_trap *vf_trap_from_va(vmi_instance_t vmi, addr_t va);
 vf_trap *vf_trap_from_pa(vmi_instance_t vmi, addr_t pa);
 status_t vf_enable_trap(vf_trap *curr_trap);
 status_t vf_disable_trap(vf_trap *curr_trap);
-void destroy_page_trap(gpointer data); /* private routine for freeing memory */
 void destroy_trap(gpointer data); /* private routine for freeing memory */
 
 event_response_t trap_mem_callback_rw(vmi_instance_t vmi, vmi_event_t *event);
