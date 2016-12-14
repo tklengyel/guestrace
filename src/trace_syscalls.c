@@ -86,15 +86,16 @@ trap_mem_callback_rw_reset(vmi_event_t *event, status_t rc) {
 }
 
 void
-reset_interrupts_x(gpointer key, gpointer value, gpointer vmi) {
-	vf_trap *curr_trap = (vf_trap*)value;
+reset_interrupts_x(gpointer key, gpointer value, gpointer user_data) {
+	vf_trap *curr_trap  = value;
+	vmi_instance_t *vmi = user_data;
 
-	vmi_write_8_pa(*(vmi_instance_t*)vmi, curr_trap->breakpoint_pa, &curr_trap->curr_inst);
+	vmi_write_8_pa(*vmi, curr_trap->breakpoint_pa, &curr_trap->curr_inst);
 }
 
 event_response_t
 trap_mem_callback_x(vmi_instance_t vmi, vmi_event_t *event) {
-	fprintf(stderr, "!!! Received mem x callback at %lx\n", event->mem_event.gla);
+	fprintf(stderr, "mem exe at %lx\n", event->mem_event.gla);
 
 	vf_page_trap *curr_page_trap = (vf_page_trap*)event->data;
 
@@ -106,15 +107,16 @@ trap_mem_callback_x(vmi_instance_t vmi, vmi_event_t *event) {
 }
 
 void
-reset_interrupts_rw(gpointer key, gpointer value, gpointer vmi) {
-	vf_trap *curr_trap = (vf_trap*)value;
+reset_interrupts_rw(gpointer key, gpointer value, gpointer user_data) {
+	vf_trap *curr_trap = value;
+	vmi_instance_t *vmi = user_data;
 
-	vmi_write_8_pa(*(vmi_instance_t*)vmi, curr_trap->breakpoint_pa, &curr_trap->orig_inst);
+	vmi_write_8_pa(*vmi, curr_trap->breakpoint_pa, &curr_trap->orig_inst);
 }
 
 event_response_t
 trap_mem_callback_rw(vmi_instance_t vmi, vmi_event_t *event) {
-	fprintf(stderr, "!!! Received mem rw callback at %lx\n", event->mem_event.gla);
+	fprintf(stderr, "mem r/w at %lx\n", event->mem_event.gla);
 
 	vf_page_trap *curr_page_trap = (vf_page_trap*)event->data;
 
@@ -305,7 +307,7 @@ vf_destroy_trap(vf_trap *curr_trap) {
 
 void
 destroy_page_trap(gpointer data) {
-	vf_page_trap *curr_page_trap = (vf_page_trap*)data;
+	vf_page_trap *curr_page_trap = data;
 
 	vmi_clear_event(curr_page_trap->vmi, curr_page_trap->mem_event_rw, NULL);
 	vmi_clear_event(curr_page_trap->vmi, curr_page_trap->mem_event_x, NULL);
@@ -320,7 +322,7 @@ destroy_page_trap(gpointer data) {
 
 void
 destroy_trap(gpointer data) {
-	vf_trap *curr_trap = (vf_trap*)data;
+	vf_trap *curr_trap = data;
 
 	vmi_write_8_pa(curr_trap->parent->vmi, curr_trap->breakpoint_pa, &curr_trap->orig_inst);
 
