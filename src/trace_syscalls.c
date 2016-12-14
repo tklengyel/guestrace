@@ -273,7 +273,8 @@ vf_create_trap(vmi_instance_t vmi, addr_t va) {
 
 		curr_page_trap->children = g_hash_table_new_full(NULL, NULL, NULL, destroy_trap);
 
-		g_hash_table_insert(vf_page_traps, (void*)page, curr_page_trap);
+		g_hash_table_insert(vf_page_traps,
+		                   (gpointer) page, curr_page_trap);
 
 		vmi_register_event(vmi, curr_page_trap->mem_event_rw);
 	}
@@ -290,7 +291,7 @@ vf_create_trap(vmi_instance_t vmi, addr_t va) {
 	vmi_read_8_pa(vmi, pa, &curr_trap->orig_inst);
 	vmi_write_8_pa(vmi, pa, &curr_trap->curr_inst);
 
-	g_hash_table_insert(curr_page_trap->children, (void*)pa, curr_trap);
+	g_hash_table_insert(curr_page_trap->children, (gpointer) pa, curr_trap);
 
 done:
 	return curr_trap;
@@ -300,7 +301,7 @@ void
 vf_destroy_page_trap(vf_page_trap *curr_page_trap) {
 	fprintf(stderr, "Destroying page trap on 0x%lx\n", curr_page_trap->page);
 
-	g_hash_table_remove(vf_page_traps, (void*)curr_page_trap->page);
+	g_hash_table_remove(vf_page_traps, (gconstpointer) curr_page_trap->page);
 }
 
 void
