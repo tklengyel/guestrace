@@ -508,7 +508,6 @@ main (int argc, char **argv) {
 	fprintf(stderr, "%lx\n", lstar);
 
 	addr_t syscall_ret_addr = setup_syscall_ret(vmi, lstar);
-
 	if (0 == syscall_ret_addr) {
 		goto done;
 	}
