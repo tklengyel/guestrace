@@ -904,7 +904,8 @@ main (int argc, char **argv) {
 
 
 	/* Initialize the libvmi library. */
-	if (VMI_SUCCESS != vmi_init(&vmi, VMI_XEN | VMI_INIT_COMPLETE | VMI_INIT_EVENTS, name)) {
+	status = vmi_init(&vmi, VMI_XEN | VMI_INIT_COMPLETE | VMI_INIT_EVENTS, name);
+	if (VMI_SUCCESS != status) {
 		fprintf(stderr, "failed to init LibVMI library.\n");
 		goto done;
 	} else {
