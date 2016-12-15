@@ -558,7 +558,7 @@ done:
 		vmi_destroy(vmi);
 	}
 
-	return 0;
+	exit(VMI_SUCCESS == status ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
 /* KeServiceDescriptorTable */
