@@ -394,13 +394,11 @@ setup_syscall_ret(vmi_instance_t vmi, addr_t syscall_start) {
 	if (count > 0) {
 		size_t i;
 		for (i = 0; i < count; i++) {
-			if (0 == strcmp(inst[i].mnemonic, "call")) {
-				if (0 == strcmp(inst[i].op_str, "r10")) {
-					call_offset = inst[i + 1].address;
-					break;
-				}
+			if (0 == strcmp(inst[i].mnemonic, "call")
+			 && 0 == strcmp(inst[i].op_str, "r10")) {
+				call_offset = inst[i + 1].address;
+				break;
 			}
-			//fprintf(stderr, "%lx: %s %s\n", inst[i].address + syscall_start, inst[i].mnemonic, inst[i].op_str);
 		}
 		cs_free(inst, count);
 	} else {
