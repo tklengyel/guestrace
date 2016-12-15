@@ -42,6 +42,17 @@ AC_SUBST(CAPSTONE_LIBS)
 
 AC_DEFINE(HAVE_CAPSTONE,1,[Defined when capstone was found])
 
+PKG_CHECK_MODULES(GLIB, glib-2.0, HAVE_GLIB=yes,HAVE_GLIB=no)
+
+if test "x$HAVE_GLIB" = "xno"; then
+  AC_MSG_ERROR(you need glib installed)
+fi
+
+AC_SUBST(GLIB_CFLAGS)
+AC_SUBST(BLIG_LIBS)
+
+AC_DEFINE(HAVE_GLIB,1,[Defined when glib was found])
+
 AM_CONDITIONAL(FLYN, test "$FLYN")
 
 AC_OUTPUT([
