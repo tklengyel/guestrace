@@ -262,11 +262,11 @@ vf_create_trap(vmi_instance_t vmi, addr_t va) {
 		}
 	} else {
 		fprintf(stderr, "Creating new page trap on 0x%lx\n", page);
-		curr_page_trap = calloc(1, sizeof(vf_page_trap));
+		curr_page_trap = g_new0(vf_page_trap, 1);
 		curr_page_trap->page = page;
 		curr_page_trap->vmi = vmi;
-		curr_page_trap->mem_event_rw = calloc(1, sizeof(vmi_event_t));
-		curr_page_trap->mem_event_x = calloc(1, sizeof(vmi_event_t));
+		curr_page_trap->mem_event_rw = g_new0(vmi_event_t, 1);
+		curr_page_trap->mem_event_x = g_new0(vmi_event_t, 1);
 
 		SETUP_MEM_EVENT(curr_page_trap->mem_event_rw,
 		                page,
@@ -293,7 +293,7 @@ vf_create_trap(vmi_instance_t vmi, addr_t va) {
 		vmi_register_event(vmi, curr_page_trap->mem_event_rw);
 	}
 
-	curr_trap = calloc(1, sizeof(vf_trap));
+	curr_trap = g_new0(vf_trap, 1);
 
 	curr_trap->breakpoint_va = va;
 	curr_trap->breakpoint_pa = pa;
