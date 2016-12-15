@@ -683,7 +683,8 @@ done:
  * corresponding to va to the page record's collection of children.
  */
 vf_paddr_record *
-vf_setup_trap(vmi_instance_t vmi, addr_t va) {
+vf_setup_paddr_trap(vmi_instance_t vmi, addr_t va) {
+	status_t status = VMI_FAILURE;
 	vf_page_record  *page_record  = NULL;
 	vf_paddr_record *paddr_record = NULL;
 
@@ -729,7 +730,10 @@ vf_setup_trap(vmi_instance_t vmi, addr_t va) {
 		                trap_mem_callback_x,
 		                0);
 
-		vmi_register_event(vmi, page_record->mem_event_rw);
+		status = vmi_register_event(vmi, page_record->mem_event_rw);
+		if (VMI_SUCCESS != status) {
+			goto done;
+		}
 	} else {
 		/* We already have a page record for this page in collection. */
 		paddr_record = g_hash_table_lookup(page_record->children,
@@ -749,14 +753,24 @@ vf_setup_trap(vmi_instance_t vmi, addr_t va) {
 	paddr_record->disabled      =  0; /* default enabled */
 	paddr_record->identifier    = ~0; /* default 0xFFFF */
 
-	vmi_read_8_pa(vmi, pa,  &paddr_record->orig_inst);
-	vmi_write_8_pa(vmi, pa, &paddr_record->curr_inst);
+	status = vmi_read_8_pa(vmi, pa,  &paddr_record->orig_inst);
+	if (VMI_SUCCESS != status) {
+		paddr_record = NULL;
+		goto done;
+	}
+
+	status = vmi_write_8_pa(vmi, pa, &paddr_record->curr_inst);
+	if (VMI_SUCCESS != status) {
+		paddr_record = NULL;
+		goto done;
+	}
 
 	g_hash_table_insert(page_record->children,
 	                    GSIZE_TO_POINTER(pa),
 	                    paddr_record);
 
 done:
+	/* TODO: Should undo state (e.g., remove from hash tables) on error */
 	return paddr_record;
 }
 
@@ -965,7 +979,11 @@ main (int argc, char **argv) {
 		goto done;
 	}
 
-	syscall_ret_trap = vf_setup_trap(vmi, syscall_ret_addr);
+	syscall_ret_trap = vf_setup_paddr_trap(vmi, syscall_ret_addr);
+	if (NULL == syscall_ret_trap) {
+		fprintf(stderr, "failed to set memory trap on syscall return\n");
+	}
+
 	vf_disable_trap(syscall_ret_trap);
 
 	for (int i = 0; i < countof(SYSCALLS); i++) {
@@ -980,7 +998,11 @@ main (int argc, char **argv) {
 			addr_t sysaddr = vmi_translate_ksym2v(vmi, SYSCALLS[i]);
 
 			if (sysaddr != 0) {
-				vf_paddr_record *syscall_trap = vf_setup_trap(vmi, sysaddr);
+				vf_paddr_record *syscall_trap = vf_setup_paddr_trap(vmi, sysaddr);
+				if (NULL == syscall_ret_trap) {
+					fprintf(stderr, "failed to set memory trap on %s\n",
+					                 SYSCALLS[i]);
+				}
 				syscall_trap->identifier = i;
 			}
 		}
