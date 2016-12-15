@@ -36,6 +36,12 @@
 /* Intel breakpoint interrupt (INT 3) instruction. */
 static uint8_t BREAKPOINT_INST = 0xCC;
 
+/*
+ * Handle terminating signals by setting interrupted flag. This allows
+ * a graceful exit.
+ */
+static int interrupted = 0;
+
 #define NUM_SYSCALLS 0x191
 const char *NUM_TO_SYSCALL[NUM_SYSCALLS];
 
@@ -355,12 +361,6 @@ destroy_trap(gpointer data) {
 	free(curr_trap);
 }
 
-static int interrupted = 0;
-static void
-close_handler(int sig){
-	interrupted = sig;
-}
-
 addr_t
 setup_syscall_ret(vmi_instance_t vmi, addr_t syscall_start) {
 	csh handle;
@@ -421,21 +421,59 @@ done:
 	return ret;
 }
 
-int
-main (int argc, char **argv) {
-	status_t status = VMI_SUCCESS;
-	vmi_instance_t vmi;
-	struct sigaction act;
+static void 
+close_handler (int sig) 
+{
+	interrupted = sig; 	
+}
+
+static bool
+set_up_signal_handler (struct sigaction act)
+{
+	int status = 0;
+
 	act.sa_handler = close_handler;
 	act.sa_flags = 0;
-	sigemptyset(&act.sa_mask);
-	sigaction(SIGHUP,  &act, NULL);
-	sigaction(SIGTERM, &act, NULL);
-	sigaction(SIGINT,  &act, NULL);
-	sigaction(SIGALRM, &act, NULL);
 
-	vf_page_traps = g_hash_table_new_full(NULL, NULL, NULL, destroy_page_trap);
+	status = sigemptyset(&act.sa_mask);	
+	if (-1 == status) {
+		perror("failed to initialize signal handler.\n");
+		goto done;
+	}
+ 
+	status = sigaction(SIGHUP,  &act, NULL);
+	if (-1 == status) {	
+		perror("failed to register SIGHUP handler.\n");
+		goto done;
+	}
 
+	status = sigaction(SIGTERM, &act, NULL);		
+	if (-1 == status) {
+		perror("failed to register SIGTERM handler.\n");
+		goto done;
+	}
+
+	status = sigaction(SIGINT,  &act, NULL);		
+	if (-1 == status) {
+		perror("failed to register SIGINT handler.\n");
+		goto done;
+	}
+	
+	status = sigaction(SIGALRM, &act, NULL);		
+	if (-1 == status) {
+		perror("failed to register SIGALRM handler.\n");
+		goto done;
+	}
+
+done:
+	return -1 != status;
+}
+
+int
+main (int argc, char **argv) {
+	struct sigaction act;
+	status_t status = VMI_SUCCESS;
+	vmi_instance_t vmi;
 	char *name = NULL;
 
 	if (argc < 2){
@@ -445,6 +483,13 @@ main (int argc, char **argv) {
 
 	// Arg 1 is the VM name.
 	name = argv[1];
+
+	if (!set_up_signal_handler(act)) {
+		goto done;
+	}
+
+	vf_page_traps = g_hash_table_new_full(NULL, NULL, NULL, destroy_page_trap);
+
 
 	// Initialize the libvmi library.
 	if (VMI_SUCCESS != vmi_init(&vmi, VMI_XEN | VMI_INIT_COMPLETE | VMI_INIT_EVENTS, name)) {
