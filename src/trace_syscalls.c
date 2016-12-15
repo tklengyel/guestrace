@@ -235,7 +235,7 @@ vf_trap_from_pa(vmi_instance_t vmi, addr_t pa) {
 
 	/* get page event */
 	curr_page_trap = g_hash_table_lookup(vf_page_traps,
-	                                    (gconstpointer) page);
+	                                     GSIZE_TO_POINTER(page));
 
 	if (NULL == curr_page_trap) { /* make sure we own this interrupt */
 		goto done;
@@ -243,7 +243,7 @@ vf_trap_from_pa(vmi_instance_t vmi, addr_t pa) {
 
 	/* get individual trap */
 	curr_trap = g_hash_table_lookup(curr_page_trap->children,
-	                               (gconstpointer) pa);
+	                                GSIZE_TO_POINTER(pa));
 
 done:
 	return curr_trap;
@@ -259,10 +259,10 @@ vf_create_trap(vmi_instance_t vmi, addr_t va) {
 	vf_trap *curr_trap = NULL;
 
 	curr_page_trap = g_hash_table_lookup(vf_page_traps,
-	                                    (gconstpointer) page);
+	                                     GSIZE_TO_POINTER(page));
 	if (NULL != curr_page_trap) {
 		curr_trap = g_hash_table_lookup(curr_page_trap->children,
-		                               (gconstpointer) pa);
+		                                GSIZE_TO_POINTER(pa));
 		if (NULL != curr_trap) {
 			goto done;
 		}
@@ -294,7 +294,8 @@ vf_create_trap(vmi_instance_t vmi, addr_t va) {
 		                                                 destroy_trap);
 
 		g_hash_table_insert(vf_page_traps,
-		                   (gpointer) page, curr_page_trap);
+		                    GSIZE_TO_POINTER(page),
+		                    curr_page_trap);
 
 		vmi_register_event(vmi, curr_page_trap->mem_event_rw);
 	}
@@ -311,7 +312,9 @@ vf_create_trap(vmi_instance_t vmi, addr_t va) {
 	vmi_read_8_pa(vmi, pa, &curr_trap->orig_inst);
 	vmi_write_8_pa(vmi, pa, &curr_trap->curr_inst);
 
-	g_hash_table_insert(curr_page_trap->children, (gpointer) pa, curr_trap);
+	g_hash_table_insert(curr_page_trap->children,
+	                    GSIZE_TO_POINTER(pa),
+	                    curr_trap);
 
 done:
 	return curr_trap;
@@ -322,13 +325,13 @@ vf_destroy_page_trap(vf_page_trap *curr_page_trap) {
 	fprintf(stderr, "destroy page trap on 0x%lx\n", curr_page_trap->page);
 
 	g_hash_table_remove(vf_page_traps,
-	                   (gconstpointer) curr_page_trap->page);
+	                    GSIZE_TO_POINTER(curr_page_trap->page));
 }
 
 void
 vf_destroy_trap(vf_trap *curr_trap) {
 	g_hash_table_remove(curr_trap->parent->children,
-	                   (gconstpointer) curr_trap->breakpoint_pa);
+	                    GSIZE_TO_POINTER(curr_trap->breakpoint_pa));
 
 	if (0 == g_hash_table_size(curr_trap->parent->children)) {
 		vf_destroy_page_trap(curr_trap->parent);
