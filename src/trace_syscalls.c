@@ -496,7 +496,7 @@ main (int argc, char **argv) {
 	if (VMI_SUCCESS != vmi_init(&vmi, VMI_XEN | VMI_INIT_COMPLETE | VMI_INIT_EVENTS, name)) {
 		printf("Failed to init LibVMI library.\n");
 		goto done;
-	} else{
+	} else {
 		printf("LibVMI init succeeded!\n");
 	}
 
