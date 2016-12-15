@@ -482,7 +482,7 @@ main (int argc, char **argv) {
 		exit(EXIT_FAILURE);
 	}
 
-	// Arg 1 is the VM name.
+	/* Arg 1 is the VM name. */
 	name = argv[1];
 
 	if (!set_up_signal_handler(act)) {
@@ -492,7 +492,7 @@ main (int argc, char **argv) {
 	vf_page_traps = g_hash_table_new_full(NULL, NULL, NULL, destroy_page_trap);
 
 
-	// Initialize the libvmi library.
+	/* Initialize the libvmi library. */
 	if (VMI_SUCCESS != vmi_init(&vmi, VMI_XEN | VMI_INIT_COMPLETE | VMI_INIT_EVENTS, name)) {
 		printf("Failed to init LibVMI library.\n");
 		goto done;
@@ -517,8 +517,6 @@ main (int argc, char **argv) {
 
 	syscall_ret_trap = vf_create_trap(vmi, syscall_ret_addr);
 	vf_disable_trap(syscall_ret_trap);
-
-	//const char *checkthese[] = {"NtOpenFile", "NtOpenSymbolicLinkObject", "NtCreateFile", "NtOpenDirectoryObject", "NtOpenProcess", "NtReadFile", "NtWriteFile"};
 
 	const char *checkthese[] = {"NtCreateFile", "NtOpenSymbolicLinkObject", "NtOpenDirectoryObject", "NtOpenProcess"};
 
