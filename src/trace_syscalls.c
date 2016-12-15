@@ -470,13 +470,13 @@ done:
 int
 main (int argc, char **argv) {
 	struct sigaction act;
-	status_t status = VMI_SUCCESS;
+	status_t status = VMI_FAILURE;
 	vmi_instance_t vmi;
 	char *name = NULL;
 
 	if (argc < 2){
 		fprintf(stderr, "Usage: syscall_events_example <name of VM>\n");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 
 	// Arg 1 is the VM name.
