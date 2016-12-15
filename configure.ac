@@ -20,7 +20,7 @@ fi
 
 PKG_PROG_PKG_CONFIG
 
-PKG_CHECK_MODULES(LIBVMI, libvmi >= 0.11.0, HAVE_LIBVMI=yes,HAVE_LIBVMI=no)
+PKG_CHECK_MODULES(LIBVMI, libvmi >= 0.11.0, HAVE_LIBVMI=yes, HAVE_LIBVMI=no)
 
 if test "x$HAVE_LIBVMI" = "xno"; then
   AC_MSG_ERROR(you need libvmi 0.11.0+ installed)
@@ -29,9 +29,9 @@ fi
 AC_SUBST(LIBVMI_CFLAGS)
 AC_SUBST(LIBVMI_LIBS)
 
-AC_DEFINE(HAVE_LIBVMI,1,[Defined when libvmi was found])
+AC_DEFINE(HAVE_LIBVMI, 1, [Defined when libvmi was found])
 
-PKG_CHECK_MODULES(CAPSTONE, capstone, HAVE_CAPSTONE=yes,HAVE_CAPSTONE=no)
+PKG_CHECK_MODULES(CAPSTONE, capstone, HAVE_CAPSTONE=yes, HAVE_CAPSTONE=no)
 
 if test "x$HAVE_CAPSTONE" = "xno"; then
   AC_MSG_ERROR(you need capstone installed)
@@ -40,9 +40,9 @@ fi
 AC_SUBST(CAPSTONE_CFLAGS)
 AC_SUBST(CAPSTONE_LIBS)
 
-AC_DEFINE(HAVE_CAPSTONE,1,[Defined when capstone was found])
+AC_DEFINE(HAVE_CAPSTONE, 1, [Defined when capstone was found])
 
-PKG_CHECK_MODULES(GLIB, glib-2.0, HAVE_GLIB=yes,HAVE_GLIB=no)
+PKG_CHECK_MODULES(GLIB, glib-2.0, HAVE_GLIB=yes, HAVE_GLIB=no)
 
 if test "x$HAVE_GLIB" = "xno"; then
   AC_MSG_ERROR(you need glib installed)
@@ -51,7 +51,7 @@ fi
 AC_SUBST(GLIB_CFLAGS)
 AC_SUBST(BLIG_LIBS)
 
-AC_DEFINE(HAVE_GLIB,1,[Defined when glib was found])
+AC_DEFINE(HAVE_GLIB, 1, [Defined when glib was found])
 
 AM_CONDITIONAL(FLYN, test "$FLYN")
 
