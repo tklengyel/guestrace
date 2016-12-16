@@ -87,6 +87,28 @@ typedef struct vf_paddr_record {
 
 vf_paddr_record *syscall_ret_trap;
 
+/*
+ * Emplace the breakpoint associated with paddr_record.
+ */
+static status_t
+emplace_breakpoint(vf_paddr_record *paddr_record) {
+	paddr_record->curr_inst = BREAKPOINT_INST;
+	return vmi_write_8_pa(paddr_record->parent->vmi,
+	                      paddr_record->breakpoint_pa,
+	                     &paddr_record->curr_inst);
+}
+
+/*
+ * Remove the breakpoint associated with paddr_record.
+ */
+static status_t
+remove_breakpoint(vf_paddr_record *paddr_record) {
+	paddr_record->curr_inst = paddr_record->orig_inst;
+	return vmi_write_8_pa(paddr_record->parent->vmi,
+	                      paddr_record->breakpoint_pa,
+	                     &paddr_record->curr_inst);
+}
+
 static void
 destroy_page_record(gpointer data) {
 	vf_page_record *page_record = data;
@@ -106,65 +128,71 @@ static void
 destroy_paddr_record(gpointer data) {
 	vf_paddr_record *paddr_record = data;
 
-	vmi_write_8_pa(paddr_record->parent->vmi,
-	               paddr_record->breakpoint_pa,
-	              &paddr_record->orig_inst);
+	remove_breakpoint(paddr_record);
 
 	g_free(paddr_record);
 }
 
 static void
-trap_mem_cb_x_reset(vmi_event_t *event, status_t rc) {
+mem_x_switch_trap_to_rw_cb(vmi_event_t *event, status_t rc) {
 	vf_page_record *paddr_record = (vf_page_record *) event->data;
 
 	vmi_register_event(paddr_record->vmi, paddr_record->mem_event_rw);
 }
 
 static void
-trap_mem_cb_rw_reset(vmi_event_t *event, status_t rc) {
+mem_rw_switch_trap_to_x_cb(vmi_event_t *event, status_t rc) {
 	vf_page_record *paddr_record = (vf_page_record *) event->data;
 
 	vmi_register_event(paddr_record->vmi, paddr_record->mem_event_x);
 }
 
 static void
-reset_interrupts_x(gpointer key, gpointer value, gpointer user_data) {
+emplace_breakpoint_cb(gpointer key, gpointer value, gpointer user_data) {
 	vf_paddr_record *paddr_record = value;
-	vmi_instance_t *vmi = user_data;
 
-	vmi_write_8_pa(*vmi, paddr_record->breakpoint_pa, &paddr_record->curr_inst);
+	emplace_breakpoint(paddr_record);
 }
 
+/*
+ * Callback invoked on an execute in a monitored page.
+ * Replace the original instruction fragment/byte with a breakpoint and
+ * set guest to trap on R/W of monitored page.
+ */
 static event_response_t
-trap_mem_cb_x(vmi_instance_t vmi, vmi_event_t *event) {
+mem_x_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	fprintf(stderr, "mem exe at %lx\n", event->mem_event.gla);
 
 	vf_page_record *trapped_page_record = (vf_page_record *) event->data;
 
-	g_hash_table_foreach(trapped_page_record->children, reset_interrupts_x, &vmi);
+	g_hash_table_foreach(trapped_page_record->children, emplace_breakpoint_cb, NULL);
 
-	vmi_clear_event(vmi, event, &trap_mem_cb_x_reset);
+	vmi_clear_event(vmi, event, &mem_x_switch_trap_to_rw_cb);
 
 	return VMI_EVENT_RESPONSE_NONE;
 }
 
 static void
-reset_interrupts_rw(gpointer key, gpointer value, gpointer user_data) {
+remove_breakpoint_cb(gpointer key, gpointer value, gpointer user_data) {
 	vf_paddr_record *paddr_record = value;
-	vmi_instance_t *vmi = user_data;
 
-	vmi_write_8_pa(*vmi, paddr_record->breakpoint_pa, &paddr_record->orig_inst);
+	remove_breakpoint(paddr_record);
 }
 
+/*
+ * Callback invoked on a R/W of a monitored page (likely kernel patch protection).
+ * Replace the related breakpoint with the original instruction fragment/byte and
+ * set guest to trap on execute of monitored page.
+ */
 static event_response_t
-trap_mem_cb_rw(vmi_instance_t vmi, vmi_event_t *event) {
+mem_rw_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	fprintf(stderr, "mem r/w at %lx\n", event->mem_event.gla);
 
 	vf_page_record *trapped_page_record = (vf_page_record *) event->data;
 
-	g_hash_table_foreach(trapped_page_record->children, reset_interrupts_rw, &vmi);
+	g_hash_table_foreach(trapped_page_record->children, remove_breakpoint_cb, NULL);
 
-	vmi_clear_event(vmi, event, &trap_mem_cb_rw_reset);
+	vmi_clear_event(vmi, event, &mem_rw_switch_trap_to_x_cb);
 
 	return VMI_EVENT_RESPONSE_NONE;
 }
@@ -204,23 +232,12 @@ vf_paddr_record_from_va(vmi_instance_t vmi, addr_t va) {
 }
 
 /*
- * Emplace the breakpoint associated with paddr_record.
- */
-static status_t
-emplace_breakpoint(vf_paddr_record *paddr_record) {
-	paddr_record->curr_inst = BREAKPOINT_INST;
-	return vmi_write_8_pa(paddr_record->parent->vmi,
-	                      paddr_record->breakpoint_pa,
-	                     &paddr_record->curr_inst);
-}
-
-/*
  * Callback wrapper around emplace_breakpoint. Used to emplace the breakpoint
  * after single stepping past the original instruction the breakpoint with
  * replace.
  */
 static event_response_t
-emplace_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
+emplace_breakpoint_vmi_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	event_response_t status = VMI_EVENT_RESPONSE_NONE;
 
 	vf_paddr_record *paddr_record = vf_paddr_record_from_va(vmi,
@@ -256,16 +273,6 @@ vf_enable_breakpoint(vf_paddr_record *paddr_record) {
 	return status;
 }
 
-/*
- * Remove the breakpoint associated with paddr_record.
- */
-static status_t
-remove_breakpoint(vf_paddr_record *paddr_record) {
-	paddr_record->curr_inst = paddr_record->orig_inst;
-	return vmi_write_8_pa(paddr_record->parent->vmi,
-	                      paddr_record->breakpoint_pa,
-	                     &paddr_record->curr_inst);
-}
 
 /*
  * Disable/remove the breakpoint associated with paddr_record. The breakpoint
@@ -322,7 +329,7 @@ interrupt_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	if (paddr_record != syscall_ret_trap) {
 		print_syscall(vmi, event, paddr_record->identifier);
 		vf_enable_breakpoint(syscall_ret_trap);
-		vmi_step_event(vmi, event, event->vcpu_id, 1, emplace_breakpoint_cb);
+		vmi_step_event(vmi, event, event->vcpu_id, 1, emplace_breakpoint_vmi_cb);
 	} else {
 		print_sysret(vmi, event);
 		vf_disable_breakpoint(syscall_ret_trap);
@@ -377,12 +384,12 @@ vf_setup_mem_trap(vmi_instance_t vmi, addr_t va) {
 		SETUP_MEM_EVENT(page_record->mem_event_rw,
 		                page,
 		                VMI_MEMACCESS_RW,
-		                trap_mem_cb_rw,
+		                mem_rw_cb,
 		                0);
 
 		SETUP_MEM_EVENT(page_record->mem_event_x,
 		                page, VMI_MEMACCESS_X,
-		                trap_mem_cb_x,
+		                mem_x_cb,
 		                0);
 
 		status = vmi_register_event(vmi, page_record->mem_event_rw);
