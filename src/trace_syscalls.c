@@ -114,14 +114,14 @@ destroy_paddr_record(gpointer data) {
 }
 
 static void
-trap_mem_callback_x_reset(vmi_event_t *event, status_t rc) {
+trap_mem_cb_x_reset(vmi_event_t *event, status_t rc) {
 	vf_page_record *paddr_record = (vf_page_record *) event->data;
 
 	vmi_register_event(paddr_record->vmi, paddr_record->mem_event_rw);
 }
 
 static void
-trap_mem_callback_rw_reset(vmi_event_t *event, status_t rc) {
+trap_mem_cb_rw_reset(vmi_event_t *event, status_t rc) {
 	vf_page_record *paddr_record = (vf_page_record *) event->data;
 
 	vmi_register_event(paddr_record->vmi, paddr_record->mem_event_x);
@@ -136,14 +136,14 @@ reset_interrupts_x(gpointer key, gpointer value, gpointer user_data) {
 }
 
 static event_response_t
-trap_mem_callback_x(vmi_instance_t vmi, vmi_event_t *event) {
+trap_mem_cb_x(vmi_instance_t vmi, vmi_event_t *event) {
 	fprintf(stderr, "mem exe at %lx\n", event->mem_event.gla);
 
 	vf_page_record *trapped_page_record = (vf_page_record *) event->data;
 
 	g_hash_table_foreach(trapped_page_record->children, reset_interrupts_x, &vmi);
 
-	vmi_clear_event(vmi, event, &trap_mem_callback_x_reset);
+	vmi_clear_event(vmi, event, &trap_mem_cb_x_reset);
 
 	return VMI_EVENT_RESPONSE_NONE;
 }
@@ -157,14 +157,14 @@ reset_interrupts_rw(gpointer key, gpointer value, gpointer user_data) {
 }
 
 static event_response_t
-trap_mem_callback_rw(vmi_instance_t vmi, vmi_event_t *event) {
+trap_mem_cb_rw(vmi_instance_t vmi, vmi_event_t *event) {
 	fprintf(stderr, "mem r/w at %lx\n", event->mem_event.gla);
 
 	vf_page_record *trapped_page_record = (vf_page_record *) event->data;
 
 	g_hash_table_foreach(trapped_page_record->children, reset_interrupts_rw, &vmi);
 
-	vmi_clear_event(vmi, event, &trap_mem_callback_rw_reset);
+	vmi_clear_event(vmi, event, &trap_mem_cb_rw_reset);
 
 	return VMI_EVENT_RESPONSE_NONE;
 }
@@ -297,7 +297,7 @@ vf_disable_breakpoint(vf_paddr_record *paddr_record) {
  * the next system call enables it.
  */
 static event_response_t
-interrupt_callback(vmi_instance_t vmi, vmi_event_t *event) {
+interrupt_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	event_response_t status = VMI_EVENT_RESPONSE_NONE;
 
 	vf_paddr_record *paddr_record = vf_paddr_record_from_va(vmi,
@@ -377,12 +377,12 @@ vf_setup_mem_trap(vmi_instance_t vmi, addr_t va) {
 		SETUP_MEM_EVENT(page_record->mem_event_rw,
 		                page,
 		                VMI_MEMACCESS_RW,
-		                trap_mem_callback_rw,
+		                trap_mem_cb_rw,
 		                0);
 
 		SETUP_MEM_EVENT(page_record->mem_event_x,
 		                page, VMI_MEMACCESS_X,
-		                trap_mem_callback_x,
+		                trap_mem_cb_x,
 		                0);
 
 		status = vmi_register_event(vmi, page_record->mem_event_rw);
@@ -551,8 +551,8 @@ vf_find_syscall_ret_setup_disabled_breakpoint_and_mem_trap(vmi_instance_t vmi)
 {
 	status_t status;
 
-	/* Call interrupt_callback in response to an interrupt event. */
-	SETUP_INTERRUPT_EVENT(&trap_int_event, 0, interrupt_callback);
+	/* Call interrupt_cb in response to an interrupt event. */
+	SETUP_INTERRUPT_EVENT(&trap_int_event, 0, interrupt_cb);
 	status = vmi_register_event(vmi, &trap_int_event);
 	if (VMI_SUCCESS != status) {
 		fprintf(stderr, "failed to setup interrupt event\n");
