@@ -43,8 +43,8 @@ static uint8_t BREAKPOINT_INST = 0xCC;
  */
 static int interrupted = 0;
 
-GHashTable      *vf_page_record_collection;
-vmi_event_t      trap_int_event;
+static GHashTable  *vf_page_record_collection;
+static vmi_event_t  trap_int_event;
 
 const char *MONITORED_SYSCALLS[] = {
 	"NtCreateFile",
