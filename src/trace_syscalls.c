@@ -169,6 +169,14 @@ trap_mem_callback_rw(vmi_instance_t vmi, vmi_event_t *event) {
 	return VMI_EVENT_RESPONSE_NONE;
 }
 
+/*
+ * Return the paddr_record associated with the given physical address.
+ *
+ * First obtain the page record associated with the physical address's
+ * page, and then obtain the child within that record which is associated
+ * with the physical address. Recall that a given page might contain
+ * multiple breakpoints.
+ */
 static vf_paddr_record *
 vf_paddr_record_from_pa(vmi_instance_t vmi, addr_t pa) {
 	vf_paddr_record *paddr_record = NULL;
@@ -176,15 +184,12 @@ vf_paddr_record_from_pa(vmi_instance_t vmi, addr_t pa) {
 
 	addr_t page = pa >> 12;
 
-	/* get page event */
 	page_record = g_hash_table_lookup(vf_page_record_collection,
 	                                          GSIZE_TO_POINTER(page));
-
-	if (NULL == page_record) { /* make sure we own this interrupt */
+	if (NULL == page_record) {
 		goto done;
 	}
 
-	/* get individual trap */
 	paddr_record = g_hash_table_lookup(page_record->children,
 	                                   GSIZE_TO_POINTER(pa));
 
@@ -192,11 +197,15 @@ done:
 	return paddr_record;
 }
 
+/* Return the paddr_record associated with the given virtual address. */
 static vf_paddr_record *
 vf_paddr_record_from_va(vmi_instance_t vmi, addr_t va) {
 	return vf_paddr_record_from_pa(vmi, vmi_translate_kv2p(vmi, va));
 }
 
+/*
+ * Emplace the breakpoint associated with paddr_record.
+ */
 static status_t
 emplace_breakpoint(vf_paddr_record *paddr_record) {
 	paddr_record->curr_inst = BREAKPOINT_INST;
@@ -205,6 +214,11 @@ emplace_breakpoint(vf_paddr_record *paddr_record) {
 	                     &paddr_record->curr_inst);
 }
 
+/*
+ * Callback wrapper around emplace_breakpoint. Used to emplace the breakpoint
+ * after single stepping past the original instruction the breakpoint with
+ * replace.
+ */
 static event_response_t
 emplace_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	event_response_t status = VMI_EVENT_RESPONSE_NONE;
@@ -225,6 +239,10 @@ done:
 	return status;
 }
 
+/*
+ * Enable/emplace the breakpoint associated with paddr_record. The breakpoint
+ * must be disabled upon calling this function.
+ */
 static status_t
 vf_enable_breakpoint(vf_paddr_record *paddr_record) {
 	status_t status = VMI_SUCCESS;
@@ -238,6 +256,9 @@ vf_enable_breakpoint(vf_paddr_record *paddr_record) {
 	return status;
 }
 
+/*
+ * Remove the breakpoint associated with paddr_record.
+ */
 static status_t
 remove_breakpoint(vf_paddr_record *paddr_record) {
 	paddr_record->curr_inst = paddr_record->orig_inst;
@@ -246,6 +267,10 @@ remove_breakpoint(vf_paddr_record *paddr_record) {
 	                     &paddr_record->curr_inst);
 }
 
+/*
+ * Disable/remove the breakpoint associated with paddr_record. The breakpoint
+ * must be enabled upon calling this function.
+ */
 static status_t
 vf_disable_breakpoint(vf_paddr_record *paddr_record) {
 	status_t status = VMI_SUCCESS;
