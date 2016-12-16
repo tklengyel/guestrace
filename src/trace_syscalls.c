@@ -73,7 +73,7 @@ typedef struct vf_paddr_record {
 	uint8_t orig_inst;
 	uint8_t curr_inst;
 	vf_page_record *parent;
-	gboolean disabled;
+	gboolean enabled;
 	uint16_t identifier; /* syscall identifier because we nix RAX */
 } vf_paddr_record;
 
@@ -598,7 +598,7 @@ interrupt_callback(vmi_instance_t vmi, vmi_event_t *event) {
 
 	vmi_write_8_pa(vmi, paddr_record->breakpoint_pa, &paddr_record->curr_inst);
 
-	if (paddr_record->disabled) {
+	if (!paddr_record->enabled) {
 		goto done;
 	}
 
@@ -619,12 +619,12 @@ status_t
 vf_enable_trap(vf_paddr_record *paddr_record) {
 	status_t status = VMI_SUCCESS;
 
-	if (paddr_record->disabled) {
+	if (!paddr_record->enabled) {
 		paddr_record->curr_inst = BREAKPOINT_INST;
 		vmi_write_8_pa(paddr_record->parent->vmi,
 		               paddr_record->breakpoint_pa,
 		              &paddr_record->curr_inst);
-		paddr_record->disabled = FALSE;
+		paddr_record->enabled = TRUE;
 	} else {
 		status = VMI_FAILURE;
 	}
@@ -636,12 +636,12 @@ status_t
 vf_disable_trap(vf_paddr_record *paddr_record) {
 	status_t status = VMI_SUCCESS;
 
-	if (!paddr_record->disabled) {
+	if (paddr_record->enabled) {
 		paddr_record->curr_inst = paddr_record->orig_inst;
 		vmi_write_8_pa(paddr_record->parent->vmi,
 		               paddr_record->breakpoint_pa,
 		              &paddr_record->curr_inst);
-		paddr_record->disabled = TRUE;
+		paddr_record->enabled = FALSE;
 	} else {
 		status = VMI_FAILURE;
 	}
@@ -750,7 +750,7 @@ vf_setup_paddr_trap(vmi_instance_t vmi, addr_t va) {
 	paddr_record->breakpoint_pa =  pa;
 	paddr_record->parent        =  page_record;
 	paddr_record->curr_inst     =  BREAKPOINT_INST;
-	paddr_record->disabled      =  FALSE;
+	paddr_record->enabled       =  TRUE;
 	paddr_record->identifier    = ~0; /* default 0xFFFF */
 
 	status = vmi_read_8_pa(vmi, pa,  &paddr_record->orig_inst);
