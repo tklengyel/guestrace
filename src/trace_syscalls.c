@@ -197,8 +197,16 @@ vf_paddr_record_from_va(vmi_instance_t vmi, addr_t va) {
 	return vf_paddr_record_from_pa(vmi, vmi_translate_kv2p(vmi, va));
 }
 
+static status_t
+emplace_breakpoint(vf_paddr_record *paddr_record) {
+	paddr_record->curr_inst = BREAKPOINT_INST;
+	return vmi_write_8_pa(paddr_record->parent->vmi,
+	                      paddr_record->breakpoint_pa,
+	                     &paddr_record->curr_inst);
+}
+
 static event_response_t
-emplace_breakpoint(vmi_instance_t vmi, vmi_event_t *event) {
+emplace_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	event_response_t status = VMI_EVENT_RESPONSE_NONE;
 
 	vf_paddr_record *paddr_record = vf_paddr_record_from_va(vmi,
@@ -211,8 +219,7 @@ emplace_breakpoint(vmi_instance_t vmi, vmi_event_t *event) {
 		goto done;
 	}
 
-	paddr_record->curr_inst = BREAKPOINT_INST;
-	vmi_write_8_pa(vmi, paddr_record->breakpoint_pa, &paddr_record->curr_inst);
+	status = emplace_breakpoint(paddr_record);
 
 done:
 	return status;
@@ -223,14 +230,20 @@ vf_enable_breakpoint(vf_paddr_record *paddr_record) {
 	status_t status = VMI_SUCCESS;
 
 	g_assert(!paddr_record->enabled);
+	g_assert(paddr_record->curr_inst != paddr_record->orig_inst);
 
-	paddr_record->curr_inst = BREAKPOINT_INST;
-	vmi_write_8_pa(paddr_record->parent->vmi,
-		       paddr_record->breakpoint_pa,
-		      &paddr_record->curr_inst);
+	emplace_breakpoint(paddr_record);
 	paddr_record->enabled = TRUE;
 
 	return status;
+}
+
+static status_t
+remove_breakpoint(vf_paddr_record *paddr_record) {
+	paddr_record->curr_inst = paddr_record->orig_inst;
+	return vmi_write_8_pa(paddr_record->parent->vmi,
+	                      paddr_record->breakpoint_pa,
+	                     &paddr_record->curr_inst);
 }
 
 static status_t
@@ -238,11 +251,9 @@ vf_disable_breakpoint(vf_paddr_record *paddr_record) {
 	status_t status = VMI_SUCCESS;
 
 	g_assert(paddr_record->enabled);
+	g_assert(paddr_record->curr_inst == paddr_record->orig_inst);
 
-	paddr_record->curr_inst = paddr_record->orig_inst;
-	vmi_write_8_pa(paddr_record->parent->vmi,
-		       paddr_record->breakpoint_pa,
-		      &paddr_record->curr_inst);
+	remove_breakpoint(paddr_record);
 	paddr_record->enabled = FALSE;
 
 	return status;
@@ -286,7 +297,7 @@ interrupt_callback(vmi_instance_t vmi, vmi_event_t *event) {
 	if (paddr_record != syscall_ret_trap) {
 		print_syscall(vmi, event, paddr_record->identifier);
 		vf_enable_breakpoint(syscall_ret_trap);
-		vmi_step_event(vmi, event, event->vcpu_id, 1, emplace_breakpoint);
+		vmi_step_event(vmi, event, event->vcpu_id, 1, emplace_breakpoint_cb);
 	} else {
 		print_sysret(vmi, event);
 		vf_disable_breakpoint(syscall_ret_trap);
