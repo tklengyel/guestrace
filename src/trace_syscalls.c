@@ -43,6 +43,16 @@ static uint8_t BREAKPOINT_INST = 0xCC;
  */
 static int interrupted = 0;
 
+GHashTable      *vf_page_record_collection;
+vmi_event_t      trap_int_event;
+
+const char *MONITORED_SYSCALLS[] = {
+	"NtCreateFile",
+	"NtOpenSymbolicLinkObject",
+	"NtOpenDirectoryObject",
+	"NtOpenProcess"
+};
+
 /*
  * Guestrace maintains two collections:
  *
@@ -75,18 +85,33 @@ typedef struct vf_paddr_record {
 	uint16_t identifier; /* syscall identifier because we nix RAX */
 } vf_paddr_record;
 
-const char *MONITORED_SYSCALLS[] = {
-	"NtCreateFile",
-	"NtOpenSymbolicLinkObject",
-	"NtOpenDirectoryObject",
-	"NtOpenProcess"
-};
-
-GHashTable      *vf_page_record_collection;
-vmi_event_t      trap_int_event;
 vf_paddr_record *syscall_ret_trap;
 
-#define countof(array) (sizeof(array) / sizeof((array)[0]))
+static void
+destroy_page_record(gpointer data) {
+	vf_page_record *page_record = data;
+
+	vmi_clear_event(page_record->vmi, page_record->mem_event_rw, NULL);
+	vmi_clear_event(page_record->vmi, page_record->mem_event_x, NULL);
+
+	g_free(page_record->mem_event_rw);
+	g_free(page_record->mem_event_x);
+
+	g_hash_table_destroy(page_record->children);
+
+	g_free(page_record);
+}
+
+static void
+destroy_paddr_record(gpointer data) {
+	vf_paddr_record *paddr_record = data;
+
+	vmi_write_8_pa(paddr_record->parent->vmi,
+	               paddr_record->breakpoint_pa,
+	              &paddr_record->orig_inst);
+
+	g_free(paddr_record);
+}
 
 static void
 trap_mem_callback_x_reset(vmi_event_t *event, status_t rc) {
@@ -221,32 +246,6 @@ vf_disable_breakpoint(vf_paddr_record *paddr_record) {
 	paddr_record->enabled = FALSE;
 
 	return status;
-}
-
-static void
-destroy_page_record(gpointer data) {
-	vf_page_record *page_record = data;
-
-	vmi_clear_event(page_record->vmi, page_record->mem_event_rw, NULL);
-	vmi_clear_event(page_record->vmi, page_record->mem_event_x, NULL);
-
-	g_free(page_record->mem_event_rw);
-	g_free(page_record->mem_event_x);
-
-	g_hash_table_destroy(page_record->children);
-
-	g_free(page_record);
-}
-
-static void
-destroy_paddr_record(gpointer data) {
-	vf_paddr_record *paddr_record = data;
-
-	vmi_write_8_pa(paddr_record->parent->vmi,
-	               paddr_record->breakpoint_pa,
-	              &paddr_record->orig_inst);
-
-	g_free(paddr_record);
 }
 
 /*
@@ -549,6 +548,8 @@ vf_find_syscall_ret_setup_disabled_breakpoint_and_mem_trap(vmi_instance_t vmi)
 done:
 	return status;
 }
+
+#define countof(array) (sizeof(array) / sizeof((array)[0]))
 
 /*
  * For each of the system calls libvmi is interested in, establish a memory trap
