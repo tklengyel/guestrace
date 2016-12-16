@@ -350,7 +350,6 @@ vf_setup_mem_trap(vmi_instance_t vmi, addr_t va) {
 
 	addr_t page = pa >> 12;
 
-printf("SETUP PAGE %ld\n", page);
 	page_record = g_hash_table_lookup(vf_page_record_collection,
 	                                  GSIZE_TO_POINTER(page));
 	if (NULL == page_record) {
@@ -385,7 +384,6 @@ printf("SETUP PAGE %ld\n", page);
 		                mem_x_cb,
 		                0);
 
-printf("REGISTER EVENT PAGE %ld\n", page);
 		status = vmi_register_event(vmi, page_record->mem_event_rw);
 		if (VMI_SUCCESS != status) {
 			fprintf(stderr, "failed to register event\n");
