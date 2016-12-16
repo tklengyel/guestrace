@@ -173,7 +173,7 @@ vf_paddr_record_from_va(vmi_instance_t vmi, addr_t va) {
 }
 
 static event_response_t
-trap_int_reset(vmi_instance_t vmi, vmi_event_t *event) {
+emplace_breakpoint(vmi_instance_t vmi, vmi_event_t *event) {
 	event_response_t status = VMI_EVENT_RESPONSE_NONE;
 
 	vf_paddr_record *paddr_record = vf_paddr_record_from_va(vmi,
@@ -187,7 +187,6 @@ trap_int_reset(vmi_instance_t vmi, vmi_event_t *event) {
 	}
 
 	paddr_record->curr_inst = BREAKPOINT_INST;
-
 	vmi_write_8_pa(vmi, paddr_record->breakpoint_pa, &paddr_record->curr_inst);
 
 done:
@@ -268,6 +267,18 @@ destroy_trap(gpointer data) {
 	free(paddr_record);
 }
 
+/*
+ * Service a triggered breakpoint. Replace the breakpoint with the original
+ * instruction fragment/byte and possibly print the system call parameters
+ * or return value.
+ *
+ * In the case of a system call, enable the syscall ret
+ * breakpoint and schedule the syscall breakpoint to be emplaced after a single
+ * stepping beyond the original instruction.
+ *
+ * In the case of a system return, disable the system return breakpoint until
+ * the next system call enables it.
+ */
 static event_response_t
 interrupt_callback(vmi_instance_t vmi, vmi_event_t *event) {
 	event_response_t status = VMI_EVENT_RESPONSE_NONE;
@@ -285,7 +296,6 @@ interrupt_callback(vmi_instance_t vmi, vmi_event_t *event) {
 	event->interrupt_event.reinject = 0;
 
 	paddr_record->curr_inst = paddr_record->orig_inst;
-
 	vmi_write_8_pa(vmi, paddr_record->breakpoint_pa, &paddr_record->curr_inst);
 
 	if (!paddr_record->enabled) {
@@ -295,7 +305,7 @@ interrupt_callback(vmi_instance_t vmi, vmi_event_t *event) {
 	if (paddr_record != syscall_ret_trap) {
 		print_syscall(vmi, event, paddr_record->identifier);
 		vf_enable_breakpoint(syscall_ret_trap);
-		vmi_step_event(vmi, event, event->vcpu_id, 1, trap_int_reset);
+		vmi_step_event(vmi, event, event->vcpu_id, 1, emplace_breakpoint);
 	} else {
 		print_sysret(vmi, event);
 		vf_disable_breakpoint(syscall_ret_trap);
