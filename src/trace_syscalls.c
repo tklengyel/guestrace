@@ -88,21 +88,21 @@ vf_paddr_record *syscall_ret_trap;
 
 #define countof(array) (sizeof(array) / sizeof((array)[0]))
 
-void
+static void
 trap_mem_callback_x_reset(vmi_event_t *event, status_t rc) {
 	vf_page_record *paddr_record = (vf_page_record *) event->data;
 
 	vmi_register_event(paddr_record->vmi, paddr_record->mem_event_rw);
 }
 
-void
+static void
 trap_mem_callback_rw_reset(vmi_event_t *event, status_t rc) {
 	vf_page_record *paddr_record = (vf_page_record *) event->data;
 
 	vmi_register_event(paddr_record->vmi, paddr_record->mem_event_x);
 }
 
-void
+static void
 reset_interrupts_x(gpointer key, gpointer value, gpointer user_data) {
 	vf_paddr_record *paddr_record = value;
 	vmi_instance_t *vmi = user_data;
@@ -110,7 +110,7 @@ reset_interrupts_x(gpointer key, gpointer value, gpointer user_data) {
 	vmi_write_8_pa(*vmi, paddr_record->breakpoint_pa, &paddr_record->curr_inst);
 }
 
-event_response_t
+static event_response_t
 trap_mem_callback_x(vmi_instance_t vmi, vmi_event_t *event) {
 	fprintf(stderr, "mem exe at %lx\n", event->mem_event.gla);
 
@@ -123,7 +123,7 @@ trap_mem_callback_x(vmi_instance_t vmi, vmi_event_t *event) {
 	return VMI_EVENT_RESPONSE_NONE;
 }
 
-void
+static void
 reset_interrupts_rw(gpointer key, gpointer value, gpointer user_data) {
 	vf_paddr_record *paddr_record = value;
 	vmi_instance_t *vmi = user_data;
@@ -131,7 +131,7 @@ reset_interrupts_rw(gpointer key, gpointer value, gpointer user_data) {
 	vmi_write_8_pa(*vmi, paddr_record->breakpoint_pa, &paddr_record->orig_inst);
 }
 
-event_response_t
+static event_response_t
 trap_mem_callback_rw(vmi_instance_t vmi, vmi_event_t *event) {
 	fprintf(stderr, "mem r/w at %lx\n", event->mem_event.gla);
 
@@ -144,7 +144,7 @@ trap_mem_callback_rw(vmi_instance_t vmi, vmi_event_t *event) {
 	return VMI_EVENT_RESPONSE_NONE;
 }
 
-vf_paddr_record *
+static vf_paddr_record *
 vf_paddr_record_from_pa(vmi_instance_t vmi, addr_t pa) {
 	vf_paddr_record *paddr_record = NULL;
 	vf_page_record  *page_record  = NULL;
@@ -167,12 +167,12 @@ done:
 	return paddr_record;
 }
 
-vf_paddr_record *
+static vf_paddr_record *
 vf_paddr_record_from_va(vmi_instance_t vmi, addr_t va) {
 	return vf_paddr_record_from_pa(vmi, vmi_translate_kv2p(vmi, va));
 }
 
-event_response_t
+static event_response_t
 trap_int_reset(vmi_instance_t vmi, vmi_event_t *event) {
 	event_response_t status = VMI_EVENT_RESPONSE_NONE;
 
@@ -194,7 +194,7 @@ done:
 	return status;
 }
 
-status_t
+static status_t
 vf_enable_breakpoint(vf_paddr_record *paddr_record) {
 	status_t status = VMI_SUCCESS;
 
@@ -209,7 +209,7 @@ vf_enable_breakpoint(vf_paddr_record *paddr_record) {
 	return status;
 }
 
-status_t
+static status_t
 vf_disable_breakpoint(vf_paddr_record *paddr_record) {
 	status_t status = VMI_SUCCESS;
 
@@ -224,7 +224,7 @@ vf_disable_breakpoint(vf_paddr_record *paddr_record) {
 	return status;
 }
 
-void
+static void
 vf_destroy_page_record(vf_page_record *page_record) {
 	fprintf(stderr, "destroy page trap on 0x%lx\n", page_record->page);
 
@@ -232,7 +232,7 @@ vf_destroy_page_record(vf_page_record *page_record) {
 	                    GSIZE_TO_POINTER(page_record->page));
 }
 
-void
+static void
 vf_destroy_trap(vf_paddr_record *paddr_record) {
 	g_hash_table_remove(paddr_record->parent->children,
 	                    GSIZE_TO_POINTER(paddr_record->breakpoint_pa));
@@ -242,7 +242,7 @@ vf_destroy_trap(vf_paddr_record *paddr_record) {
 	}
 }
 
-void
+static void
 destroy_page_record(gpointer data) {
 	vf_page_record *page_record = data;
 
@@ -257,7 +257,7 @@ destroy_page_record(gpointer data) {
 	free(page_record);
 }
 
-void
+static void
 destroy_trap(gpointer data) {
 	vf_paddr_record *paddr_record = data;
 
@@ -268,7 +268,7 @@ destroy_trap(gpointer data) {
 	free(paddr_record);
 }
 
-event_response_t
+static event_response_t
 interrupt_callback(vmi_instance_t vmi, vmi_event_t *event) {
 	event_response_t status = VMI_EVENT_RESPONSE_NONE;
 
@@ -310,7 +310,7 @@ done:
  * and create a page record if it does not yet exist. Add a physical-address record
  * corresponding to va to the page record's collection of children.
  */
-vf_paddr_record *
+static vf_paddr_record *
 vf_setup_mem_trap(vmi_instance_t vmi, addr_t va) {
 	status_t status = VMI_FAILURE;
 	vf_page_record  *page_record  = NULL;
@@ -407,7 +407,7 @@ done:
  * which allows guestrace to determine a system call's return value. Return
  * the address.
  */
-addr_t
+static addr_t
 get_syscall_ret_addr(vmi_instance_t vmi, addr_t syscall_start) {
 	csh handle;
 	cs_insn *inst;
@@ -519,7 +519,7 @@ done:
  * a memory trap. Leave the breakpoint disabled; guestrace will enable it
  * upon an execution of the return-value page.
  */
-status_t
+static status_t
 vf_find_syscall_ret_setup_disabled_breakpoint_and_mem_trap(vmi_instance_t vmi)
 {
 	status_t status;
@@ -565,7 +565,7 @@ done:
  * (i.e., kernel patch protection) will cause guestrace to restore the original
  * instruction.
  */
-status_t
+static status_t
 vf_find_syscalls_and_setup_mem_trap(vmi_instance_t vmi)
 {
 	status_t status = VMI_SUCCESS;
