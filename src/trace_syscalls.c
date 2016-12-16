@@ -224,47 +224,29 @@ vf_disable_breakpoint(vf_paddr_record *paddr_record) {
 }
 
 static void
-vf_destroy_page_record(vf_page_record *page_record) {
-	fprintf(stderr, "destroy page trap on 0x%lx\n", page_record->page);
-
-	g_hash_table_remove(vf_page_record_collection,
-	                    GSIZE_TO_POINTER(page_record->page));
-}
-
-static void
-vf_destroy_trap(vf_paddr_record *paddr_record) {
-	g_hash_table_remove(paddr_record->parent->children,
-	                    GSIZE_TO_POINTER(paddr_record->breakpoint_pa));
-
-	if (0 == g_hash_table_size(paddr_record->parent->children)) {
-		vf_destroy_page_record(paddr_record->parent);
-	}
-}
-
-static void
 destroy_page_record(gpointer data) {
 	vf_page_record *page_record = data;
 
 	vmi_clear_event(page_record->vmi, page_record->mem_event_rw, NULL);
 	vmi_clear_event(page_record->vmi, page_record->mem_event_x, NULL);
 
-	free(page_record->mem_event_rw);
-	free(page_record->mem_event_x);
+	g_free(page_record->mem_event_rw);
+	g_free(page_record->mem_event_x);
 
 	g_hash_table_destroy(page_record->children);
 
-	free(page_record);
+	g_free(page_record);
 }
 
 static void
-destroy_trap(gpointer data) {
+destroy_paddr_record(gpointer data) {
 	vf_paddr_record *paddr_record = data;
 
 	vmi_write_8_pa(paddr_record->parent->vmi,
 	               paddr_record->breakpoint_pa,
 	              &paddr_record->orig_inst);
 
-	free(paddr_record);
+	g_free(paddr_record);
 }
 
 /*
@@ -351,7 +333,7 @@ vf_setup_mem_trap(vmi_instance_t vmi, addr_t va) {
 		page_record->children = g_hash_table_new_full(NULL,
 		                                              NULL,
 		                                              NULL,
-		                                              destroy_trap);
+		                                              destroy_paddr_record);
 
 		g_hash_table_insert(vf_page_record_collection,
 		                    GSIZE_TO_POINTER(page),
