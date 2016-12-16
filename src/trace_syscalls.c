@@ -57,8 +57,6 @@ static int interrupted = 0;
  * sets within a page.
  */
 
-GHashTable *vf_page_record_collection;
-
 typedef struct vf_page_record {
 	addr_t page;
 	vmi_event_t *mem_event_rw;
@@ -77,15 +75,16 @@ typedef struct vf_paddr_record {
 	uint16_t identifier; /* syscall identifier because we nix RAX */
 } vf_paddr_record;
 
-vmi_event_t trap_int_event;
-vf_paddr_record *syscall_ret_trap;
-
 const char *MONITORED_SYSCALLS[] = {
 	"NtCreateFile",
 	"NtOpenSymbolicLinkObject",
 	"NtOpenDirectoryObject",
 	"NtOpenProcess"
 };
+
+GHashTable      *vf_page_record_collection;
+vmi_event_t      trap_int_event;
+vf_paddr_record *syscall_ret_trap;
 
 #define countof(array) (sizeof(array) / sizeof((array)[0]))
 
