@@ -283,7 +283,6 @@ vf_disable_breakpoint(vf_paddr_record *paddr_record) {
 	status_t status = VMI_SUCCESS;
 
 	g_assert(paddr_record->enabled);
-	g_assert(paddr_record->curr_inst == paddr_record->orig_inst);
 
 	remove_breakpoint(paddr_record);
 	paddr_record->enabled = FALSE;
