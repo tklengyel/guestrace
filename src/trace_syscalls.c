@@ -80,11 +80,6 @@ typedef struct vf_paddr_record {
 vmi_event_t trap_int_event;
 vf_paddr_record *syscall_ret_trap;
 
-vf_paddr_record *vf_paddr_record_from_va(vmi_instance_t vmi, addr_t va);
-vf_paddr_record *vf_paddr_record_from_pa(vmi_instance_t vmi, addr_t pa);
-status_t vf_enable_trap(vf_paddr_record *paddr_record);
-void destroy_trap(gpointer data); /* private routine for freeing memory */
-
 const char *MONITORED_SYSCALLS[] = {
 	"NtCreateFile",
 	"NtOpenSymbolicLinkObject",
@@ -150,6 +145,34 @@ trap_mem_callback_rw(vmi_instance_t vmi, vmi_event_t *event) {
 	return VMI_EVENT_RESPONSE_NONE;
 }
 
+vf_paddr_record *
+vf_paddr_record_from_pa(vmi_instance_t vmi, addr_t pa) {
+	vf_paddr_record *paddr_record = NULL;
+	vf_page_record  *page_record  = NULL;
+
+	addr_t page = pa >> 12;
+
+	/* get page event */
+	page_record = g_hash_table_lookup(vf_page_record_collection,
+	                                          GSIZE_TO_POINTER(page));
+
+	if (NULL == page_record) { /* make sure we own this interrupt */
+		goto done;
+	}
+
+	/* get individual trap */
+	paddr_record = g_hash_table_lookup(page_record->children,
+	                                   GSIZE_TO_POINTER(pa));
+
+done:
+	return paddr_record;
+}
+
+vf_paddr_record *
+vf_paddr_record_from_va(vmi_instance_t vmi, addr_t va) {
+	return vf_paddr_record_from_pa(vmi, vmi_translate_kv2p(vmi, va));
+}
+
 event_response_t
 trap_int_reset(vmi_instance_t vmi, vmi_event_t *event) {
 	event_response_t status = VMI_EVENT_RESPONSE_NONE;
@@ -202,6 +225,50 @@ vf_disable_breakpoint(vf_paddr_record *paddr_record) {
 	return status;
 }
 
+void
+vf_destroy_page_record(vf_page_record *page_record) {
+	fprintf(stderr, "destroy page trap on 0x%lx\n", page_record->page);
+
+	g_hash_table_remove(vf_page_record_collection,
+	                    GSIZE_TO_POINTER(page_record->page));
+}
+
+void
+vf_destroy_trap(vf_paddr_record *paddr_record) {
+	g_hash_table_remove(paddr_record->parent->children,
+	                    GSIZE_TO_POINTER(paddr_record->breakpoint_pa));
+
+	if (0 == g_hash_table_size(paddr_record->parent->children)) {
+		vf_destroy_page_record(paddr_record->parent);
+	}
+}
+
+void
+destroy_page_record(gpointer data) {
+	vf_page_record *page_record = data;
+
+	vmi_clear_event(page_record->vmi, page_record->mem_event_rw, NULL);
+	vmi_clear_event(page_record->vmi, page_record->mem_event_x, NULL);
+
+	free(page_record->mem_event_rw);
+	free(page_record->mem_event_x);
+
+	g_hash_table_destroy(page_record->children);
+
+	free(page_record);
+}
+
+void
+destroy_trap(gpointer data) {
+	vf_paddr_record *paddr_record = data;
+
+	vmi_write_8_pa(paddr_record->parent->vmi,
+	               paddr_record->breakpoint_pa,
+	              &paddr_record->orig_inst);
+
+	free(paddr_record);
+}
+
 event_response_t
 interrupt_callback(vmi_instance_t vmi, vmi_event_t *event) {
 	event_response_t status = VMI_EVENT_RESPONSE_NONE;
@@ -237,34 +304,6 @@ interrupt_callback(vmi_instance_t vmi, vmi_event_t *event) {
 
 done:
 	return status;
-}
-
-vf_paddr_record *
-vf_paddr_record_from_va(vmi_instance_t vmi, addr_t va) {
-	return vf_paddr_record_from_pa(vmi, vmi_translate_kv2p(vmi, va));
-}
-
-vf_paddr_record *
-vf_paddr_record_from_pa(vmi_instance_t vmi, addr_t pa) {
-	vf_paddr_record *paddr_record = NULL;
-	vf_page_record  *page_record  = NULL;
-
-	addr_t page = pa >> 12;
-
-	/* get page event */
-	page_record = g_hash_table_lookup(vf_page_record_collection,
-	                                          GSIZE_TO_POINTER(page));
-
-	if (NULL == page_record) { /* make sure we own this interrupt */
-		goto done;
-	}
-
-	/* get individual trap */
-	paddr_record = g_hash_table_lookup(page_record->children,
-	                                   GSIZE_TO_POINTER(pa));
-
-done:
-	return paddr_record;
 }
 
 /*
@@ -362,50 +401,6 @@ vf_setup_mem_trap(vmi_instance_t vmi, addr_t va) {
 done:
 	/* TODO: Should undo state (e.g., remove from hash tables) on error */
 	return paddr_record;
-}
-
-void
-vf_destroy_page_record(vf_page_record *page_record) {
-	fprintf(stderr, "destroy page trap on 0x%lx\n", page_record->page);
-
-	g_hash_table_remove(vf_page_record_collection,
-	                    GSIZE_TO_POINTER(page_record->page));
-}
-
-void
-vf_destroy_trap(vf_paddr_record *paddr_record) {
-	g_hash_table_remove(paddr_record->parent->children,
-	                    GSIZE_TO_POINTER(paddr_record->breakpoint_pa));
-
-	if (0 == g_hash_table_size(paddr_record->parent->children)) {
-		vf_destroy_page_record(paddr_record->parent);
-	}
-}
-
-void
-destroy_page_record(gpointer data) {
-	vf_page_record *page_record = data;
-
-	vmi_clear_event(page_record->vmi, page_record->mem_event_rw, NULL);
-	vmi_clear_event(page_record->vmi, page_record->mem_event_x, NULL);
-
-	free(page_record->mem_event_rw);
-	free(page_record->mem_event_x);
-
-	g_hash_table_destroy(page_record->children);
-
-	free(page_record);
-}
-
-void
-destroy_trap(gpointer data) {
-	vf_paddr_record *paddr_record = data;
-
-	vmi_write_8_pa(paddr_record->parent->vmi,
-	               paddr_record->breakpoint_pa,
-	              &paddr_record->orig_inst);
-
-	free(paddr_record);
 }
 
 /*
