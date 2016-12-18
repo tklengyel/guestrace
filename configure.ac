@@ -20,7 +20,7 @@ fi
 
 PKG_PROG_PKG_CONFIG
 
-PKG_CHECK_MODULES(LIBVMI, libvmi >= 0.11.0, HAVE_LIBVMI=yes, HAVE_LIBVMI=no)
+PKG_CHECK_MODULES(LIBVMI, libvmi, HAVE_LIBVMI=yes, HAVE_LIBVMI=no)
 
 if test "x$HAVE_LIBVMI" = "xno"; then
   AC_MSG_ERROR(you need libvmi 0.11.0+ installed)

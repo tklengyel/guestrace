@@ -38,6 +38,11 @@
 static const uint8_t VF_BREAKPOINT_INST = 0xCC;
 
 /*
+ * Global interrupt event that gets trigged on any VF_BREAKPOINT_INST callback
+ */
+static vmi_event_t vf_breakpoint_event;
+
+/*
  * Handle terminating signals by setting interrupted flag. This allows
  * a graceful exit.
  */
@@ -105,6 +110,8 @@ static void
 vf_destroy_page_record(gpointer data) {
 	vf_page_record *page_record = data;
 
+	fprintf(stderr, "Destroying page_record on page %lx\n", page_record->page);
+
 	vmi_clear_event(page_record->vmi, page_record->mem_event_rw, NULL);
 	vmi_clear_event(page_record->vmi, page_record->mem_event_x, NULL);
 
@@ -119,6 +126,8 @@ vf_destroy_page_record(gpointer data) {
 static void
 vf_destroy_paddr_record(gpointer data) {
 	vf_paddr_record *paddr_record = data;
+
+	fprintf(stderr, "Destroying paddr_record on va %lx\n", paddr_record->breakpoint_va);
 
 	vf_remove_breakpoint(paddr_record);
 
@@ -256,12 +265,19 @@ static status_t
 vf_enable_breakpoint(vf_paddr_record *paddr_record) {
 	status_t status = VMI_SUCCESS;
 
-	g_assert(!paddr_record->enabled);
-	g_assert(paddr_record->curr_inst != paddr_record->orig_inst);
+	/* assertion here breaks on multiple threads? */
+	if (paddr_record->enabled) {
+		goto done;
+	}
 
-	vf_emplace_breakpoint(paddr_record);
+	/* this check is purely for optimization, so we don't overwrite the same thing */
+	if (paddr_record->curr_inst == paddr_record->orig_inst) {
+		vf_emplace_breakpoint(paddr_record);
+	}
+
 	paddr_record->enabled = TRUE;
 
+done:
 	return status;
 }
 
@@ -274,11 +290,19 @@ static status_t
 vf_disable_breakpoint(vf_paddr_record *paddr_record) {
 	status_t status = VMI_SUCCESS;
 
-	g_assert(paddr_record->enabled);
+	/* assertion here breaks on multiple threads? */
+	if (!paddr_record->enabled) {
+		goto done;
+	}
 
-	vf_remove_breakpoint(paddr_record);
+	/* this check is purely for optimization, so we don't overwrite the same thing */
+	if (paddr_record->curr_inst != paddr_record->orig_inst) {
+		vf_remove_breakpoint(paddr_record);
+	}
+
 	paddr_record->enabled = FALSE;
 
+done:
 	return status;
 }
 
@@ -373,13 +397,14 @@ vf_setup_mem_trap(vmi_instance_t vmi, addr_t va) {
 		                    page_record);
 
 		SETUP_MEM_EVENT(page_record->mem_event_rw,
-		                pa,
+		                page_record->page,
 		                VMI_MEMACCESS_RW,
 		                vf_mem_rw_cb,
 		                0);
 
 		SETUP_MEM_EVENT(page_record->mem_event_x,
-		                pa, VMI_MEMACCESS_X,
+		                page_record->page,
+		                VMI_MEMACCESS_X,
 		                vf_mem_x_cb,
 		                0);
 
@@ -410,6 +435,7 @@ vf_setup_mem_trap(vmi_instance_t vmi, addr_t va) {
 	status = vmi_read_8_pa(vmi, pa, &paddr_record->orig_inst);
 	if (VMI_SUCCESS != status) {
 		fprintf(stderr, "failed to read original instruction fragment %lx\n", pa);
+		g_free(paddr_record);
 		paddr_record = NULL;
 		goto done;
 	}
@@ -417,6 +443,7 @@ vf_setup_mem_trap(vmi_instance_t vmi, addr_t va) {
 	status = vmi_write_8_pa(vmi, pa, &paddr_record->curr_inst);
 	if (VMI_SUCCESS != status) {
 		fprintf(stderr, "failed to write breakpoint at %lx\n", pa);
+		g_free(paddr_record);
 		paddr_record = NULL;
 		goto done;
 	}
@@ -551,7 +578,6 @@ static status_t
 vf_find_syscall_ret_setup_disabled_breakpoint_and_mem_trap(vmi_instance_t vmi)
 {
 	status_t status;
-	vmi_event_t vf_breakpoint_event;
 
 	/* Call vf_breakpoint_cb in response to an interrupt event. */
 	SETUP_INTERRUPT_EVENT(&vf_breakpoint_event, 0, vf_breakpoint_cb);
@@ -564,7 +590,7 @@ vf_find_syscall_ret_setup_disabled_breakpoint_and_mem_trap(vmi_instance_t vmi)
 	addr_t lstar = 0;
 	status = vmi_get_vcpureg(vmi, &lstar, MSR_LSTAR, 0);
 	if (VMI_SUCCESS != status) {
-		fprintf(stderr, "failed to setup interrupt event\n");
+		fprintf(stderr, "failed to get MSR_LSTAR address\n");
 		goto done;
 	}
 
@@ -1008,8 +1034,6 @@ vf_find_syscalls_and_setup_mem_trap(vmi_instance_t vmi)
 
 	static const char *MONITORED_SYSCALLS[] = {
 		"NtCreateFile",
-		"NtOpenSymbolicLinkObject",
-		"NtOpenDirectoryObject",
 		"NtOpenProcess"
 	};
 
@@ -1034,7 +1058,8 @@ vf_find_syscalls_and_setup_mem_trap(vmi_instance_t vmi)
 				goto done;
 			}
 
-			syscall_trap->identifier = j;
+			/* set identifier to what RAX would be during syscall */
+			syscall_trap->identifier = i;
 
 			break;
 		}
