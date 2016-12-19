@@ -10,10 +10,10 @@
 #include "syscall_enum.h"
 
 struct win64_obj_attr {
-	uint64_t length; // sizeof given struct
+	uint32_t length; // sizeof given struct
 	uint64_t root_directory; // if not null, object_name is relative to this directory
 	uint64_t object_name; // pointer to unicode string
-	uint64_t attributes; // see microsoft documentation
+	uint32_t attributes; // see microsoft documentation
 	uint64_t security_descriptor; // see microsoft documentation
 	uint64_t security_quality_of_service; // see microsoft documentation
 };
@@ -166,9 +166,9 @@ done:
 struct win64_obj_attr * obj_attr_from_va(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid) {
 	struct win64_obj_attr * buff = NULL;
 
-	uint64_t struct_size = 0;
+	uint32_t struct_size = 0;
 
-	if (VMI_SUCCESS != vmi_read_64_va(vmi, vaddr, pid, &struct_size)) {
+	if (VMI_SUCCESS != vmi_read_32_va(vmi, vaddr, pid, &struct_size)) {
 		goto done;
 	}
 
