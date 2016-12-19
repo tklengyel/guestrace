@@ -18,6 +18,11 @@ struct win64_obj_attr {
 	uint64_t security_quality_of_service; // see microsoft documentation
 };
 
+struct win64_client_id {
+	uint64_t unique_process; /* process id */
+	uint64_t unique_thread; /* thread id */
+};
+
 typedef struct visor_proc {
 	vmi_pid_t pid; /* current process pid */
 	char * name; /* this will be removed automatically */
@@ -28,6 +33,7 @@ typedef struct visor_proc {
 
 #define NUM_SYSCALL_ARGS 8
 
+/* todo: use glibc */
 visor_proc * PROC_HEAD = NULL;
 
 struct win64_obj_attr * obj_attr_from_va(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid);
@@ -286,7 +292,7 @@ print_syscall(vmi_instance_t vmi, vmi_event_t *event, uint16_t syscall_num)
 	curr_proc->args[3] = event->x86_regs->r9;
 
 	/* todo figure out how to get rest of arguments */
-	//vmi_read_va(vmi, event->x86_regs->rdx + sizeof(uint32_t) * 2, curr_proc->pid, curr_proc->args, NUM_SYSCALL_ARGS * sizeof(uint32_t));
+	vmi_read_va(vmi, event->x86_regs->rsp, curr_proc->pid, &curr_proc->args[4], (NUM_SYSCALL_ARGS - 4) * sizeof(uint64_t));
 }
 
 void 
@@ -381,16 +387,18 @@ print_sysret(vmi_instance_t vmi, vmi_event_t *event)
 			break;
 		}
 
+		/* opens a handle with given permissions to a process given a process id */
 		case NTOPENPROCESS:
 		{
-			uint8_t * filename = filename_from_arg(vmi, curr_proc->args[2], curr_proc->pid);
+			struct win64_client_id client_id = {0};
+			vmi_read_va(vmi, curr_proc->args[3], curr_proc->pid, &client_id, sizeof(struct win64_client_id));
 
 			uint64_t handle = 0;
 			vmi_read_64_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
 
 			const char * syscall_symbol = "NtOpenProcess";
 
-			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n\thandle value:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, ret_status, handle);
+			fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t0x%lx\n\treturn status:\t0x%lx\n\thandle value:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, client_id.unique_process, ret_status, handle);
 
 			break;
 		}
