@@ -28,6 +28,9 @@
 /* Intel breakpoint interrupt (INT 3) instruction. */
 static uint8_t VF_BREAKPOINT_INST = 0xCC;
 
+addr_t phys_lstar;
+uint8_t orig_inst;
+
 /*
  * Global interrupt event that gets trigged on any VF_BREAKPOINT_INST callback
  */
@@ -110,9 +113,32 @@ done:
 static void
 vf_close_config(vf_config * conf)
 {
+	status_t ret = vmi_write_8_pa(conf->vmi, phys_lstar, &orig_inst);
+	if (VMI_SUCCESS != ret) {
+		fprintf(stderr, "Failed to write original instruction into syscall page\n");
+	}
+
+	int xc_status = xc_altp2m_switch_to_view(conf->xch, conf->domid, 0);
+	if (0 > xc_status) {
+		fprintf(stderr, "Failed to reset EPT to point to default table\n");
+	}
+
+	xc_status = xc_altp2m_destroy_view(conf->xch, conf->domid, conf->shadow_view);
+	if (0 > xc_status) {
+		fprintf(stderr, "Failed to destroy shadow view\n");
+	}
+
+	xc_status = xc_altp2m_set_domain_state(conf->xch, conf->domid, 0);
+	if (0 > xc_status) {
+		fprintf(stderr, "Failed to turn off altp2m on guest\n");
+	}
+
+	xc_status = xc_domain_setmaxmem(conf->xch, conf->domid, conf->init_mem_size);
+	if (0 > xc_status) {
+		fprintf(stderr, "Failed to reset max memory on guest");
+	}
+
 	libxl_ctx_free(conf->ctx);
-	xc_altp2m_switch_to_view(conf->xch, conf->domid, 0);
-	xc_altp2m_set_domain_state(conf->xch, conf->domid, 0);
 	xc_interface_close(conf->xch);
 }
 
@@ -165,16 +191,25 @@ vf_destroy_pages (vf_config * conf)
 	for(elem = vf_allocated_pages; elem; elem = elem->next) {
 		xen_pfn_t curr = (xen_pfn_t)elem->data;
 
-		if (xc_domain_decrease_reservation_exact(conf->xch, conf->domid, 1, 0, &curr)) {
+		int xc_status = xc_altp2m_change_gfn(conf->xch, conf->domid, conf->shadow_view, curr, ~0);
+		if (0 > xc_status) {
+			fprintf(stderr, "Failed to reset GFN to ~0\n");
+		}
+
+		xc_status = xc_domain_decrease_reservation_exact(conf->xch, conf->domid, 1, 0, &curr);
+		if (0 > xc_status) {
 			fprintf(stderr, "Could not destroy GFN at 0x%lx\n", curr);
 		}
 	}
 
-	if (xc_domain_setmaxmem(conf->xch, conf->domid, conf->init_mem_size)) {
-		fprintf(stderr, "Could not reset max memory on guest");
-	}
-
 	g_slist_free(vf_allocated_pages);
+}
+
+static event_response_t
+vf_breakpoint_cb_reset(vmi_instance_t vmi, vmi_event_t *event) {
+	fprintf(stderr, "Syscall reset!!\n");
+
+	return VMI_EVENT_RESPONSE_NONE;
 }
 
 /*
@@ -191,6 +226,8 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 
 	event->slat_id = conf->shadow_view;
 	status = VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
+
+	vmi_step_event(vmi, event, event->vcpu_id, 1, vf_breakpoint_cb_reset);
 
 	return status;
 }
@@ -220,7 +257,7 @@ vf_set_up_syscall_handler (vf_config * conf)
 		goto done;
 	}
 
-	addr_t phys_lstar = vmi_translate_kv2p(conf->vmi, lstar);
+	phys_lstar = vmi_translate_kv2p(conf->vmi, lstar);
 	if (0 == phys_lstar) {
 		fprintf(stderr, "failed to translate MSR_LSTAR into physical address\n");
 		goto done;
@@ -250,20 +287,20 @@ vf_set_up_syscall_handler (vf_config * conf)
 	 */
 
 	int xc_status = xc_altp2m_set_domain_state(conf->xch, conf->domid, 1);
-	if (xc_status < 0) {
+	if (0 > xc_status) {
 		fprintf(stderr, "Failed to enable altp2m on guest\n");
 		goto done;
 	}
 
 	xc_status = xc_altp2m_create_view(conf->xch, conf->domid, 0, &conf->shadow_view);
-	if (xc_status < 0) {
+	if (0 > xc_status) {
 		fprintf(stderr, "Failed to create view for shadow page\n");
 		goto done;
 	}
 
 	/* this adds our remapping into our shadow view */
 	xc_status = xc_altp2m_change_gfn(conf->xch, conf->domid, conf->shadow_view, syscall_page, shadow);
-	if (xc_status < 0) {
+	if (0 > xc_status) {
 		fprintf(stderr, "Failed to change GFN to shadow\n");
 		goto done;
 	}
@@ -273,6 +310,12 @@ vf_set_up_syscall_handler (vf_config * conf)
 	ret = vmi_register_event(conf->vmi, &vf_breakpoint_event);
 	if (VMI_SUCCESS != ret) {
 		fprintf(stderr, "Failed to setup interrupt event\n");
+		goto done;
+	}
+
+	ret = vmi_read_8_pa(conf->vmi, phys_lstar, &orig_inst);
+	if (VMI_SUCCESS != ret) {
+		fprintf(stderr, "Failed to read original instruction from syscall page\n");
 		goto done;
 	}
 
@@ -392,8 +435,12 @@ main (int argc, char **argv) {
 done:
 	printf("Shutting down guestrace\n");
 
+	vmi_pause_vm(vmi);
+
 	vf_destroy_pages(&config);
 	vf_close_config(&config);
+
+	vmi_resume_vm(vmi);
 
 	if (vmi != NULL) {
 		vmi_destroy(vmi);
