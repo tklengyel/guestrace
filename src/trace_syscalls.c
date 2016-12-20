@@ -14,21 +14,35 @@
 
 #include "translate_syscalls.h"
 
-
-/* Intel breakpoint interrupt (INT 3) instruction. */
-//static const uint8_t VF_BREAKPOINT_INST = 0xCC;
+/*
+ * Before running, you must add
+ * GRUB_CMDLINE_XEN_DEFAULT="altp2m=1"
+ * to /etc/default/grub and add
+ * altp2mhvm = 1
+ * to the xen config file of a guest
+ */
 
 /* Default page size on our domain */
 #define VF_PAGE_SIZE 0x1000
+
+/* Intel breakpoint interrupt (INT 3) instruction. */
+static uint8_t VF_BREAKPOINT_INST = 0xCC;
+
+/*
+ * Global interrupt event that gets trigged on any VF_BREAKPOINT_INST callback
+ */
+static vmi_event_t vf_breakpoint_event;
 
 /* Data structure used to interact directly with Xen driver */
 typedef struct vf_config {
 	xc_interface *xch;
 	libxl_ctx *ctx;
+	xentoollog_logger *logger;
 	uint32_t domid;
 	uint64_t init_mem_size;
 	uint64_t curr_mem_size;
 	vmi_instance_t vmi;
+	uint16_t shadow_view;
 } vf_config;
 
 /*
@@ -61,7 +75,13 @@ vf_init_config (vmi_instance_t vmi, char * name, vf_config * conf)
 
 	conf->xch = xch;
 
-	if (libxl_ctx_alloc(&conf->ctx, LIBXL_VERSION, 0, 0)) {
+	conf->logger = (xentoollog_logger *)xtl_createlogger_stdiostream(stderr, XTL_PROGRESS, 0);
+	if (conf->logger == NULL) {
+		fprintf(stderr, "Could not create libxl logger\n");
+		goto done;
+	}
+
+	if (libxl_ctx_alloc(&conf->ctx, LIBXL_VERSION, 0, conf->logger)) {
 		fprintf(stderr, "Could not create libxl context\n");
 		goto done;
 	}
@@ -85,6 +105,15 @@ vf_init_config (vmi_instance_t vmi, char * name, vf_config * conf)
 
 done:
 	return status;
+}
+
+static void
+vf_close_config(vf_config * conf)
+{
+	libxl_ctx_free(conf->ctx);
+	xc_altp2m_switch_to_view(conf->xch, conf->domid, 0);
+	xc_altp2m_set_domain_state(conf->xch, conf->domid, 0);
+	xc_interface_close(conf->xch);
 }
 
 /*
@@ -149,6 +178,24 @@ vf_destroy_pages (vf_config * conf)
 }
 
 /*
+ * Service an INT CC breakpoint
+ */
+static event_response_t
+vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
+	event_response_t status = VMI_EVENT_RESPONSE_NONE;
+	event->interrupt_event.reinject = 0;
+
+	vf_config *conf = (vf_config*)event->data;
+
+	fprintf(stderr, "Syscall!!\n");
+
+	event->slat_id = conf->shadow_view;
+	status = VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
+
+	return status;
+}
+
+/*
  * Create a shadow copy of our syscall routine into a newly
  * allocated page, then modify the original to have interrupts
  * Returns true if successful
@@ -183,15 +230,15 @@ vf_set_up_syscall_handler (vf_config * conf)
 
 	/* store current page on the stack */
 	uint8_t buff[VF_PAGE_SIZE] = {0};
-	ret = vmi_read_pa(conf->vmi, syscall_page, buff, VF_PAGE_SIZE);
+	ret = vmi_read_pa(conf->vmi, syscall_page << 12, buff, VF_PAGE_SIZE);
 	if (0 == ret) {
-		fprintf(stderr, "Failed to read in shadow page\n");
+		fprintf(stderr, "Failed to read in syscall page\n");
 		goto done;
 	}
 
-	ret = vmi_write_pa(conf->vmi, shadow, buff, VF_PAGE_SIZE);
+	ret = vmi_write_pa(conf->vmi, shadow << 12, buff, VF_PAGE_SIZE);
 	if (0 == ret) {
-		fprintf(stderr, "Failed to read in shadow page\n");
+		fprintf(stderr, "Failed to write to shadow page\n");
 		goto done;
 	}
 
@@ -201,6 +248,41 @@ vf_set_up_syscall_handler (vf_config * conf)
 	 * page whenever we get interrupt callbacks.  Since this is vcpu-specific, we no
 	 * longer have a race-condition in single-step mode between different vcpus
 	 */
+
+	int xc_status = xc_altp2m_set_domain_state(conf->xch, conf->domid, 1);
+	if (xc_status < 0) {
+		fprintf(stderr, "Failed to enable altp2m on guest\n");
+		goto done;
+	}
+
+	xc_status = xc_altp2m_create_view(conf->xch, conf->domid, 0, &conf->shadow_view);
+	if (xc_status < 0) {
+		fprintf(stderr, "Failed to create view for shadow page\n");
+		goto done;
+	}
+
+	/* this adds our remapping into our shadow view */
+	xc_status = xc_altp2m_change_gfn(conf->xch, conf->domid, conf->shadow_view, syscall_page, shadow);
+	if (xc_status < 0) {
+		fprintf(stderr, "Failed to change GFN to shadow\n");
+		goto done;
+	}
+
+	SETUP_INTERRUPT_EVENT(&vf_breakpoint_event, 0, vf_breakpoint_cb);
+	vf_breakpoint_event.data = conf;
+	ret = vmi_register_event(conf->vmi, &vf_breakpoint_event);
+	if (VMI_SUCCESS != ret) {
+		fprintf(stderr, "Failed to setup interrupt event\n");
+		goto done;
+	}
+
+	ret = vmi_write_8_pa(conf->vmi, phys_lstar, &VF_BREAKPOINT_INST);
+	if (VMI_SUCCESS != ret) {
+		fprintf(stderr, "Failed to write interrupt to syscall page\n");
+		goto done;
+	}
+
+	status = true;
 
 done:
 	return status;
@@ -283,13 +365,17 @@ main (int argc, char **argv) {
 		printf("LibVMI init succeeded!\n");
 	}
 
+	vmi_pause_vm(vmi);
+
 	if (!vf_init_config(vmi, name, &config)) {
+		vmi_resume_vm(vmi);
 		goto done;
 	}
 
-	vmi_pause_vm(vmi);
-
-	vf_set_up_syscall_handler(&config);
+	if (!vf_set_up_syscall_handler(&config)) {
+		vmi_resume_vm(vmi);
+		goto done;
+	}
 
 	vmi_resume_vm(vmi);
 
@@ -307,6 +393,7 @@ done:
 	printf("Shutting down guestrace\n");
 
 	vf_destroy_pages(&config);
+	vf_close_config(&config);
 
 	if (vmi != NULL) {
 		vmi_destroy(vmi);
