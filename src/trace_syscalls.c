@@ -30,6 +30,8 @@ typedef struct vf_config {
 	uint64_t curr_mem_size;
 } vf_config;
 
+GSList * vf_allocated_pages;
+
 /*
  * Handle terminating signals by setting interrupted flag. This allows
  * a graceful exit.
@@ -112,8 +114,33 @@ vf_allocate_page (vmi_instance_t vmi, vf_config * conf)
 		goto done;
 	}
 
+	vf_allocated_pages = g_slist_prepend(vf_allocated_pages, (void*)gfn);
+
 done:
 	return gfn;
+}
+
+/*
+ * Removes any extra pages we added to the guest
+ */
+static void
+vf_destroy_pages (vf_config * conf)
+{
+	GSList * elem;
+
+	for(elem = vf_allocated_pages; elem; elem = elem->next) {
+		xen_pfn_t curr = (xen_pfn_t)elem->data;
+
+		if (xc_domain_decrease_reservation_exact(conf->xch, conf->domid, 1, 0, &curr)) {
+			fprintf(stderr, "Could not destroy GFN at 0x%lx\n", curr);
+		}
+	}
+
+	if (xc_domain_setmaxmem(conf->xch, conf->domid, conf->init_mem_size)) {
+		fprintf(stderr, "Could not reset max memory on guest");
+	}
+
+	g_slist_free(vf_allocated_pages);
 }
 
 static void
@@ -201,7 +228,6 @@ main (int argc, char **argv) {
 
 	xen_pfn_t new_page = vf_allocate_page(vmi, &config);
 
-	fprintf(stderr, "Ayy lmao: 0x%lx\n", new_page);
 
 	vmi_resume_vm(vmi);
 
@@ -217,6 +243,8 @@ main (int argc, char **argv) {
 
 done:
 	printf("Shutting down guestrace\n");
+
+	vf_destroy_pages(&config);
 
 	if (vmi != NULL) {
 		vmi_destroy(vmi);
