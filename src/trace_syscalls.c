@@ -20,6 +20,8 @@
  * to /etc/default/grub and add
  * altp2mhvm = 1
  * to the xen config file of a guest
+ *
+ * You must also add -lxenlight when building and linking
  */
 
 /* Default page size on our domain */
@@ -31,15 +33,14 @@
 /* Intel breakpoint interrupt (INT 3) instruction. */
 static uint8_t VF_BREAKPOINT_INST = 0xCC;
 
+/* Array to hold our step events for each VCPU */
 static vmi_event_t vf_step_events[VF_MAX_VCPUS];
 
-addr_t phys_lstar;
-uint8_t orig_inst;
-
-/*
- * Global interrupt event that gets trigged on any VF_BREAKPOINT_INST callback
- */
+/* Global interrupt event that gets triggered on any VF_BREAKPOINT_INST callback */
 static vmi_event_t vf_breakpoint_event;
+
+/* Global memory event that gets triggered on memory events */
+static vmi_event_t vf_memory_event;
 
 /* Data structure used to interact directly with Xen driver */
 typedef struct vf_config {
@@ -53,15 +54,31 @@ typedef struct vf_config {
 	uint16_t shadow_view;
 } vf_config;
 
-/* contains the translation from guest address to newly allocated pages */
 static GHashTable *vf_page_translation;
-
 static GHashTable *vf_page_record_collection;
+
+/*
+ * Guestrace maintains three collections:
+ *
+ * The first collection contains a mapping from page numbers to shadow page
+ * numbers. Given a physical page, this will translate it into a shadow page
+ * if one exists. NOTE: the code has changed since the original inception in my
+ * mind, so we might be able to delete this without negative consquences
+ *
+ * The second collection contains a mapping from shadow page numbers to vf_page_record
+ * structures. This serves as a record of the guest pages for which guestrace
+ * installed a memory event. When the guest accesses such a page, control
+ * traps into guestrace. The most notable field in vf_page_record is children.
+ * The children field points to the third collection.
+ *
+ * The third collection contains a mapping from physical address offsets to vf_paddr_record
+ * structures. This serves as a record for each breakpoint that guestrace
+ * sets within a page.
+ */
 
 typedef struct vf_page_record {
 	addr_t page;
 	addr_t shadow_page;
-	vmi_event_t *mem_event_rw;
 	GHashTable *children;
 	vf_config *conf;
 } vf_page_record;
@@ -69,9 +86,11 @@ typedef struct vf_page_record {
 typedef struct vf_paddr_record {
 	addr_t offset;
 	vf_page_record *parent;
-	gboolean enabled;
 	uint16_t identifier; /* syscall identifier because we nix RAX */
 } vf_paddr_record;
+
+/* Global paddr record for our syscall return address */
+static vf_paddr_record * sysret_trap;
 
 /*
  * Handle terminating signals by setting interrupted flag. This allows
@@ -222,7 +241,7 @@ static void
 vf_destroy_paddr_record (gpointer data) {
 	vf_paddr_record *paddr_record = data;
 
-	fprintf(stderr, "Destroying paddr_record at shadow pa %lx\n", (paddr_record->parent->shadow_page << 12) + paddr_record->offset);
+	fprintf(stderr, "Destroying paddr_record at shadow physical address %lx\n", (paddr_record->parent->shadow_page << 12) + paddr_record->offset);
 
 	g_free(paddr_record);
 }
@@ -231,14 +250,25 @@ static void
 vf_destroy_page_record (gpointer data) {
 	vf_page_record *page_record = data;
 
-	fprintf(stderr, "Destroying page_record on page %lx\n", page_record->shadow_page);
+	fprintf(stderr, "Destroying page_record on shadow page %lx\n", page_record->shadow_page);
 
-	xc_altp2m_change_gfn(page_record->conf->xch, page_record->conf->domid, page_record->conf->shadow_view, page_record->shadow_page, ~0);
-	xc_domain_decrease_reservation_exact(page_record->conf->xch, page_record->conf->domid, 1, 0, &page_record->shadow_page);
+	/* stop monitoring this page with our mem event */
+	vmi_set_mem_event(page_record->conf->vmi,
+					  page_record->page,
+					  VMI_MEMACCESS_N,
+					  page_record->conf->shadow_view);
 
-	vmi_clear_event(page_record->conf->vmi, page_record->mem_event_rw, NULL);
+	xc_altp2m_change_gfn(page_record->conf->xch,
+						 page_record->conf->domid,
+						 page_record->conf->shadow_view,
+						 page_record->shadow_page,
+						 ~0);
 
-	g_free(page_record->mem_event_rw);
+	xc_domain_decrease_reservation_exact(page_record->conf->xch,
+										 page_record->conf->domid,
+										 1,
+										 0,
+										 &page_record->shadow_page);
 
 	g_hash_table_destroy(page_record->children);
 
@@ -251,12 +281,12 @@ vf_destroy_page_record (gpointer data) {
  */
 static event_response_t
 vf_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
-	fprintf(stderr, "mem r/w at %lx\n", event->mem_event.gla);
+	fprintf(stderr, "mem r/w on page %lx\n", event->mem_event.gfn);
 
 	/* switch back to original slat for one step */
 	event->slat_id = 0;
 
-	return VMI_EVENT_RESPONSE_NONE;
+	return VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
 }
 
 static vf_paddr_record *
@@ -322,30 +352,17 @@ vf_setup_mem_trap (vf_config * conf, addr_t va)
 		page_record->shadow_page        = shadow;
 		page_record->page               = page;
 		page_record->conf               = conf;
-		page_record->mem_event_rw       = g_new0(vmi_event_t, 1);
-		page_record->mem_event_rw->data = page_record;
-
-		page_record->children = g_hash_table_new_full(NULL,
-		                                              NULL,
-		                                              NULL,
-		                                              vf_destroy_paddr_record);
+		page_record->children 			= g_hash_table_new_full(NULL,
+					                                            NULL,
+					                                            NULL,
+					                                            vf_destroy_paddr_record);
 
 		g_hash_table_insert(vf_page_record_collection,
 		                    GSIZE_TO_POINTER(shadow),
 		                    page_record);
 
-		/* todo: support write events? */
-		SETUP_MEM_EVENT(page_record->mem_event_rw,
-		                page_record->shadow_page,
-		                VMI_MEMACCESS_RW,
-		                vf_mem_rw_cb,
-		                0);
-
-		status = vmi_register_event(conf->vmi, page_record->mem_event_rw);
-		if (VMI_SUCCESS != status) {
-			fprintf(stderr, "failed to register event\n");
-			goto done;
-		}
+		/* tells libvmi to trigger our callback on a R/W to this page */
+		vmi_set_mem_event(conf->vmi, page, VMI_MEMACCESS_RW, conf->shadow_view);
 	} else {
 		/* We already have a page record for this page in collection. */
 		paddr_record = g_hash_table_lookup(page_record->children,
@@ -360,7 +377,6 @@ vf_setup_mem_trap (vf_config * conf, addr_t va)
 	paddr_record                =  g_new0(vf_paddr_record, 1);
 	paddr_record->offset        =  shadow_offset;
 	paddr_record->parent        =  page_record;
-	paddr_record->enabled       =  TRUE;
 	paddr_record->identifier    = ~0; /* default 0xFFFF */
 
 	/* write the interrupt to our shadow page at the correct location */
@@ -380,26 +396,125 @@ done:
 }
 
 /*
+ * Emplace the breakpoint associated with paddr_record.
+ */
+static status_t
+vf_emplace_breakpoint(vf_paddr_record *paddr_record) {
+	return vmi_write_8_pa(paddr_record->parent->conf->vmi,
+	                      (paddr_record->parent->shadow_page << 12) + paddr_record->offset,
+	                      &VF_BREAKPOINT_INST);
+}
+
+/*
+ * Remove the breakpoint associated with paddr_record.
+ */
+static status_t
+vf_remove_breakpoint(vf_paddr_record *paddr_record) {
+	uint8_t curr_inst;
+	status_t status = VMI_FAILURE;
+
+	status = vmi_read_8_pa(paddr_record->parent->conf->vmi,
+						   (paddr_record->parent->page << 12) + paddr_record->offset,
+						   &curr_inst);
+
+	if (VMI_FAILURE == status) {
+		goto done;
+	}
+
+	status = vmi_write_8_pa(paddr_record->parent->conf->vmi,
+	                        (paddr_record->parent->shadow_page << 12) + paddr_record->offset,
+	                        &curr_inst);
+
+done:
+	return status;
+}
+
+/*
+ * Return the paddr_record associated with the given physical address.
+ *
+ * First obtain the page record associated with the physical address's
+ * page, and then obtain the child within that record which is associated
+ * with the physical address. Recall that a given page might contain
+ * multiple breakpoints.
+ */
+static vf_paddr_record *
+vf_paddr_record_from_pa(vmi_instance_t vmi, addr_t pa) {
+	vf_paddr_record *paddr_record = NULL;
+	vf_page_record  *page_record  = NULL;
+
+	addr_t page = pa >> 12;
+	addr_t offset = pa - (page << 12);
+	addr_t shadow = (addr_t)g_hash_table_lookup(vf_page_translation,
+											GSIZE_TO_POINTER(page));
+
+	if (0 == shadow) {
+		goto done;
+	}
+
+	page_record = g_hash_table_lookup(vf_page_record_collection,
+	                                          GSIZE_TO_POINTER(shadow));
+	if (NULL == page_record) {
+		goto done;
+	}
+
+	paddr_record = g_hash_table_lookup(page_record->children,
+	                                   GSIZE_TO_POINTER(offset));
+
+done:
+	return paddr_record;
+}
+
+/* Return the paddr_record associated with the given virtual address. */
+static vf_paddr_record *
+vf_paddr_record_from_va(vmi_instance_t vmi, addr_t va) {
+	return vf_paddr_record_from_pa(vmi, vmi_translate_kv2p(vmi, va));
+}
+
+/*
  * Callback on any interrupts received from our shadow pages
  * Here we must make temporary changes and enter into single-step mode
  */
 static event_response_t
 vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
-	//fprintf(stderr, "!!! Syscall on VCPU %d\n", event->vcpu_id);
+	status_t status = VMI_EVENT_RESPONSE_NONE;
+
+	vf_paddr_record *paddr_record = vf_paddr_record_from_va(vmi,
+	                                                        event->interrupt_event.gla);
+
+	/* if paddr_record is null, we assume that we didn't emplace this interrupt */
+	if (NULL == paddr_record) {
+		event->interrupt_event.reinject = 1;
+		/* TODO: Ensure this does the right thing: */
+		status = VMI_EVENT_RESPONSE_EMULATE;
+		goto done;
+	}
 
 	/* set vcpu's slat to use original for one step */
 	event->slat_id = 0;
 	event->interrupt_event.reinject = 0;
 
 	/* turn on single-step and switch slat_id */
-	return VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
+	status = VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
+
+	if (sysret_trap != paddr_record) {
+		/* syscall */
+		print_syscall(vmi, event, paddr_record->identifier);
+		vf_emplace_breakpoint(sysret_trap);
+	} else {
+		/* sysret */
+		print_sysret(vmi, event);
+		vf_remove_breakpoint(sysret_trap);
+	}
+
+done:
+	return status;
 }
 
 /*
  * Setup our global interrupt to catch any interrupts on any pages
  */
 static bool
-vf_set_up_interrupt_event (vf_config * conf) {
+vf_set_up_generic_events (vf_config * conf) {
 	bool status = false;
 
 	SETUP_INTERRUPT_EVENT(&vf_breakpoint_event, 0, vf_breakpoint_cb);
@@ -408,6 +523,21 @@ vf_set_up_interrupt_event (vf_config * conf) {
 	status_t ret = vmi_register_event(conf->vmi, &vf_breakpoint_event);
 	if (VMI_SUCCESS != ret) {
 		fprintf(stderr, "Failed to setup interrupt event\n");
+		goto done;
+	}
+
+	/* todo: support write events? */
+	SETUP_MEM_EVENT(&vf_memory_event,
+	                ~0ULL,
+	                VMI_MEMACCESS_RW,
+	                vf_mem_rw_cb,
+	                1);
+
+	vf_memory_event.data = conf;
+
+	ret = vmi_register_event(conf->vmi, &vf_memory_event);
+	if (VMI_SUCCESS != ret) {
+		fprintf(stderr, "Failed to setup memory event\n");
 		goto done;
 	}
 
@@ -532,7 +662,7 @@ done:
 }
 
 static bool
-vf_set_up_syscall_handler(vf_config * conf)
+vf_set_up_sysret_handler(vf_config * conf)
 {
 	bool status = false;
 	addr_t lstar = 0;
@@ -550,18 +680,13 @@ vf_set_up_syscall_handler(vf_config * conf)
 		goto done;
 	}
 
-	vf_paddr_record * lstar_trap = vf_setup_mem_trap(conf, lstar);
-	if (NULL == lstar_trap) {
-		fprintf(stderr, "Failed to create syscall memory trap\n");
-		goto done;
-	}
-
-	vf_paddr_record * sysret_trap = vf_setup_mem_trap(conf, ret_addr);
+	sysret_trap = vf_setup_mem_trap(conf, ret_addr);
 	if (NULL == sysret_trap) {
 		fprintf(stderr, "Failed to create sysret memory trap\n");
 		goto done;
 	}
 
+	vf_remove_breakpoint(sysret_trap);
 
 	status = true;
 
@@ -617,6 +742,462 @@ done:
 	return -1 != status;
 }
 
+#define countof(array) (sizeof(array) / sizeof((array)[0]))
+
+/*
+ * For each of the system calls libvmi is interested in, establish a memory trap
+ * on the page containing the system call handler's first instruction. An
+ * execute trap will cause guestrace to emplace a breakpoint. A read/write trap
+ * (i.e., kernel patch protection) will cause guestrace to restore the original
+ * instruction.
+ */
+static bool
+vf_find_syscalls_and_setup_mem_trap(vf_config * conf)
+{
+	bool status = false;
+
+	/* See Windows's KeServiceDescriptorTable. */
+	static const char *SYSCALLS[] = {
+		"NtMapUserPhysicalPagesScatter",
+		"NtWaitForSingleObject",
+		"NtCallbackReturn",
+		"NtReadFile",
+		"NtDeviceIoControlFile",
+		"NtWriteFile",
+		"NtRemoveIoCompletion",
+		"NtReleaseSemaphore",
+		"NtReplyWaitReceivePort",
+		"NtReplyPort",
+		"NtSetInformationThread",
+		"NtSetEvent",
+		"NtClose",
+		"NtQueryObject",
+		"NtQueryInformationFile",
+		"NtOpenKey",
+		"NtEnumerateValueKey",
+		"NtFindAtom",
+		"NtQueryDefaultLocale",
+		"NtQueryKey",
+		"NtQueryValueKey",
+		"NtAllocateVirtualMemory",
+		"NtQueryInformationProcess",
+		"NtWaitForMultipleObjects32",
+		"NtWriteFileGather",
+		"NtSetInformationProcess",
+		"NtCreateKey",
+		"NtFreeVirtualMemory",
+		"NtImpersonateClientOfPort",
+		"NtReleaseMutant",
+		"NtQueryInformationToken",
+		"NtRequestWaitReplyPort",
+		"NtQueryVirtualMemory",
+		"NtOpenThreadToken",
+		"NtQueryInformationThread",
+		"NtOpenProcess",
+		"NtSetInformationFile",
+		"NtMapViewOfSection",
+		"NtAccessCheckAndAuditAlarm",
+		"NtUnmapViewOfSection",
+		"NtReplyWaitReceivePortEx",
+		"NtTerminateProcess",
+		"NtSetEventBoostPriority",
+		"NtReadFileScatter",
+		"NtOpenThreadTokenEx",
+		"NtOpenProcessTokenEx",
+		"NtQueryPerformanceCounter",
+		"NtEnumerateKey",
+		"NtOpenFile",
+		"NtDelayExecution",
+		"NtQueryDirectoryFile",
+		"NtQuerySystemInformation",
+		"NtOpenSection",
+		"NtQueryTimer",
+		"NtFsControlFile",
+		"NtWriteVirtualMemory",
+		"NtCloseObjectAuditAlarm",
+		"NtDuplicateObject",
+		"NtQueryAttributesFile",
+		"NtClearEvent",
+		"NtReadVirtualMemory",
+		"NtOpenEvent",
+		"NtAdjustPrivilegesToken",
+		"NtDuplicateToken",
+		"NtContinue",
+		"NtQueryDefaultUILanguage",
+		"NtQueueApcThread",
+		"NtYieldExecution",
+		"NtAddAtom",
+		"NtCreateEvent",
+		"NtQueryVolumeInformationFile",
+		"NtCreateSection",
+		"NtFlushBuffersFile",
+		"NtApphelpCacheControl",
+		"NtCreateProcessEx",
+		"NtCreateThread",
+		"NtIsProcessInJob",
+		"NtProtectVirtualMemory",
+		"NtQuerySection",
+		"NtResumeThread",
+		"NtTerminateThread",
+		"NtReadRequestData",
+		"NtCreateFile",
+		"NtQueryEvent",
+		"NtWriteRequestData",
+		"NtOpenDirectoryObject",
+		"NtAccessCheckByTypeAndAuditAlarm",
+		"NtQuerySystemTime",
+		"NtWaitForMultipleObjects",
+		"NtSetInformationObject",
+		"NtCancelIoFile",
+		"NtTraceEvent",
+		"NtPowerInformation",
+		"NtSetValueKey",
+		"NtCancelTimer",
+		"NtSetTimer",
+		"NtAcceptConnectPort",
+		"NtAccessCheck",
+		"NtAccessCheckByType",
+		"NtAccessCheckByTypeResultList",
+		"NtAccessCheckByTypeResultListAndAuditAlarm",
+		"NtAccessCheckByTypeResultListAndAuditAlarmByHandle",
+		"NtAddBootEntry",
+		"NtAddDriverEntry",
+		"NtAdjustGroupsToken",
+		"NtAlertResumeThread",
+		"NtAlertThread",
+		"NtAllocateLocallyUniqueId",
+		"NtAllocateReserveObject",
+		"NtAllocateUserPhysicalPages",
+		"NtAllocateUuids",
+		"NtAlpcAcceptConnectPort",
+		"NtAlpcCancelMessage",
+		"NtAlpcConnectPort",
+		"NtAlpcCreatePort",
+		"NtAlpcCreatePortSection",
+		"NtAlpcCreateResourceReserve",
+		"NtAlpcCreateSectionView",
+		"NtAlpcCreateSecurityContext",
+		"NtAlpcDeletePortSection",
+		"NtAlpcDeleteResourceReserve",
+		"NtAlpcDeleteSectionView",
+		"NtAlpcDeleteSecurityContext",
+		"NtAlpcDisconnectPort",
+		"NtAlpcImpersonateClientOfPort",
+		"NtAlpcOpenSenderProcess",
+		"NtAlpcOpenSenderThread",
+		"NtAlpcQueryInformation",
+		"NtAlpcQueryInformationMessage",
+		"NtAlpcRevokeSecurityContext",
+		"NtAlpcSendWaitReceivePort",
+		"NtAlpcSetInformation",
+		"NtAreMappedFilesTheSame",
+		"NtAssignProcessToJobObject",
+		"NtCancelIoFileEx",
+		"NtCancelSynchronousIoFile",
+		"NtCommitComplete",
+		"NtCommitEnlistment",
+		"NtCommitTransaction",
+		"NtCompactKeys",
+		"NtCompareTokens",
+		"NtCompleteConnectPort",
+		"NtCompressKey",
+		"NtConnectPort",
+		"NtCreateDebugObject",
+		"NtCreateDirectoryObject",
+		"NtCreateEnlistment",
+		"NtCreateEventPair",
+		"NtCreateIoCompletion",
+		"NtCreateJobObject",
+		"NtCreateJobSet",
+		"NtCreateKeyTransacted",
+		"NtCreateKeyedEvent",
+		"NtCreateMailslotFile",
+		"NtCreateMutant",
+		"NtCreateNamedPipeFile",
+		"NtCreatePagingFile",
+		"NtCreatePort",
+		"NtCreatePrivateNamespace",
+		"NtCreateProcess",
+		"NtCreateProfile",
+		"NtCreateProfileEx",
+		"NtCreateResourceManager",
+		"NtCreateSemaphore",
+		"NtCreateSymbolicLinkObject",
+		"NtCreateThreadEx",
+		"NtCreateTimer",
+		"NtCreateToken",
+		"NtCreateTransaction",
+		"NtCreateTransactionManager",
+		"NtCreateUserProcess",
+		"NtCreateWaitablePort",
+		"NtCreateWorkerFactory",
+		"NtDebugActiveProcess",
+		"NtDebugContinue",
+		"NtDeleteAtom",
+		"NtDeleteBootEntry",
+		"NtDeleteDriverEntry",
+		"NtDeleteFile",
+		"NtDeleteKey",
+		"NtDeleteObjectAuditAlarm",
+		"NtDeletePrivateNamespace",
+		"NtDeleteValueKey",
+		"NtDisableLastKnownGood",
+		"NtDisplayString",
+		"NtDrawText",
+		"NtEnableLastKnownGood",
+		"NtEnumerateBootEntries",
+		"NtEnumerateDriverEntries",
+		"NtEnumerateSystemEnvironmentValuesEx",
+		"NtEnumerateTransactionObject",
+		"NtExtendSection",
+		"NtFilterToken",
+		"NtFlushInstallUILanguage",
+		"NtFlushInstructionCache",
+		"NtFlushKey",
+		"NtFlushProcessWriteBuffers",
+		"NtFlushVirtualMemory",
+		"NtFlushWriteBuffer",
+		"NtFreeUserPhysicalPages",
+		"NtFreezeRegistry",
+		"NtFreezeTransactions",
+		"NtGetContextThread",
+		"NtGetCurrentProcessorNumber",
+		"NtGetDevicePowerState",
+		"NtGetMUIRegistryInfo",
+		"NtGetNextProcess",
+		"NtGetNextThread",
+		"NtGetNlsSectionPtr",
+		"NtGetNotificationResourceManager",
+		"NtGetPlugPlayEvent",
+		"NtGetWriteWatch",
+		"NtImpersonateAnonymousToken",
+		"NtImpersonateThread",
+		"NtInitializeNlsFiles",
+		"NtInitializeRegistry",
+		"NtInitiatePowerAction",
+		"NtIsSystemResumeAutomatic",
+		"NtIsUILanguageComitted",
+		"NtListenPort",
+		"NtLoadDriver",
+		"NtLoadKey",
+		"NtLoadKey2",
+		"NtLoadKeyEx",
+		"NtLockFile",
+		"NtLockProductActivationKeys",
+		"NtLockRegistryKey",
+		"NtLockVirtualMemory",
+		"NtMakePermanentObject",
+		"NtMakeTemporaryObject",
+		"NtMapCMFModule",
+		"NtMapUserPhysicalPages",
+		"NtModifyBootEntry",
+		"NtModifyDriverEntry",
+		"NtNotifyChangeDirectoryFile",
+		"NtNotifyChangeKey",
+		"NtNotifyChangeMultipleKeys",
+		"NtNotifyChangeSession",
+		"NtOpenEnlistment",
+		"NtOpenEventPair",
+		"NtOpenIoCompletion",
+		"NtOpenJobObject",
+		"NtOpenKeyEx",
+		"NtOpenKeyTransacted",
+		"NtOpenKeyTransactedEx",
+		"NtOpenKeyedEvent",
+		"NtOpenMutant",
+		"NtOpenObjectAuditAlarm",
+		"NtOpenPrivateNamespace",
+		"NtOpenProcessToken",
+		"NtOpenResourceManager",
+		"NtOpenSemaphore",
+		"NtOpenSession",
+		"NtOpenSymbolicLinkObject",
+		"NtOpenThread",
+		"NtOpenTimer",
+		"NtOpenTransaction",
+		"NtOpenTransactionManager",
+		"NtPlugPlayControl",
+		"NtPrePrepareComplete",
+		"NtPrePrepareEnlistment",
+		"NtPrepareComplete",
+		"NtPrepareEnlistment",
+		"NtPrivilegeCheck",
+		"NtPrivilegeObjectAuditAlarm",
+		"NtPrivilegedServiceAuditAlarm",
+		"NtPropagationComplete",
+		"NtPropagationFailed",
+		"NtPulseEvent",
+		"NtQueryBootEntryOrder",
+		"NtQueryBootOptions",
+		"NtQueryDebugFilterState",
+		"NtQueryDirectoryObject",
+		"NtQueryDriverEntryOrder",
+		"NtQueryEaFile",
+		"NtQueryFullAttributesFile",
+		"NtQueryInformationAtom",
+		"NtQueryInformationEnlistment",
+		"NtQueryInformationJobObject",
+		"NtQueryInformationPort",
+		"NtQueryInformationResourceManager",
+		"NtQueryInformationTransaction",
+		"NtQueryInformationTransactionManager",
+		"NtQueryInformationWorkerFactory",
+		"NtQueryInstallUILanguage",
+		"NtQueryIntervalProfile",
+		"NtQueryIoCompletion",
+		"NtQueryLicenseValue",
+		"NtQueryMultipleValueKey",
+		"NtQueryMutant",
+		"NtQueryOpenSubKeys",
+		"NtQueryOpenSubKeysEx",
+		"NtQueryPortInformationProcess",
+		"NtQueryQuotaInformationFile",
+		"NtQuerySecurityAttributesToken",
+		"NtQuerySecurityObject",
+		"NtQuerySemaphore",
+		"NtQuerySymbolicLinkObject",
+		"NtQuerySystemEnvironmentValue",
+		"NtQuerySystemEnvironmentValueEx",
+		"NtQuerySystemInformationEx",
+		"NtQueryTimerResolution",
+		"NtQueueApcThreadEx",
+		"NtRaiseException",
+		"NtRaiseHardError",
+		"NtReadOnlyEnlistment",
+		"NtRecoverEnlistment",
+		"NtRecoverResourceManager",
+		"NtRecoverTransactionManager",
+		"NtRegisterProtocolAddressInformation",
+		"NtRegisterThreadTerminatePort",
+		"NtReleaseKeyedEvent",
+		"NtReleaseWorkerFactoryWorker",
+		"NtRemoveIoCompletionEx",
+		"NtRemoveProcessDebug",
+		"NtRenameKey",
+		"NtRenameTransactionManager",
+		"NtReplaceKey",
+		"NtReplacePartitionUnit",
+		"NtReplyWaitReplyPort",
+		"NtRequestPort",
+		"NtResetEvent",
+		"NtResetWriteWatch",
+		"NtRestoreKey",
+		"NtResumeProcess",
+		"NtRollbackComplete",
+		"NtRollbackEnlistment",
+		"NtRollbackTransaction",
+		"NtRollforwardTransactionManager",
+		"NtSaveKey",
+		"NtSaveKeyEx",
+		"NtSaveMergedKeys",
+		"NtSecureConnectPort",
+		"NtSerializeBoot",
+		"NtSetBootEntryOrder",
+		"NtSetBootOptions",
+		"NtSetContextThread",
+		"NtSetDebugFilterState",
+		"NtSetDefaultHardErrorPort",
+		"NtSetDefaultLocale",
+		"NtSetDefaultUILanguage",
+		"NtSetDriverEntryOrder",
+		"NtSetEaFile",
+		"NtSetHighEventPair",
+		"NtSetHighWaitLowEventPair",
+		"NtSetInformationDebugObject",
+		"NtSetInformationEnlistment",
+		"NtSetInformationJobObject",
+		"NtSetInformationKey",
+		"NtSetInformationResourceManager",
+		"NtSetInformationToken",
+		"NtSetInformationTransaction",
+		"NtSetInformationTransactionManager",
+		"NtSetInformationWorkerFactory",
+		"NtSetIntervalProfile",
+		"NtSetIoCompletion",
+		"NtSetIoCompletionEx",
+		"NtSetLdtEntries",
+		"NtSetLowEventPair",
+		"NtSetLowWaitHighEventPair",
+		"NtSetQuotaInformationFile",
+		"NtSetSecurityObject",
+		"NtSetSystemEnvironmentValue",
+		"NtSetSystemEnvironmentValueEx",
+		"NtSetSystemInformation",
+		"NtSetSystemPowerState",
+		"NtSetSystemTime",
+		"NtSetThreadExecutionState",
+		"NtSetTimerEx",
+		"NtSetTimerResolution",
+		"NtSetUuidSeed",
+		"NtSetVolumeInformationFile",
+		"NtShutdownSystem",
+		"NtShutdownWorkerFactory",
+		"NtSignalAndWaitForSingleObject",
+		"NtSinglePhaseReject",
+		"NtStartProfile",
+		"NtStopProfile",
+		"NtSuspendProcess",
+		"NtSuspendThread",
+		"NtSystemDebugControl",
+		"NtTerminateJobObject",
+		"NtTestAlert",
+		"NtThawRegistry",
+		"NtThawTransactions",
+		"NtTraceControl",
+		"NtTranslateFilePath",
+		"NtUmsThreadYield",
+		"NtUnloadDriver",
+		"NtUnloadKey",
+		"NtUnloadKey2",
+		"NtUnloadKeyEx",
+		"NtUnlockFile",
+		"NtUnlockVirtualMemory",
+		"NtVdmControl",
+		"NtWaitForDebugEvent",
+		"NtWaitForKeyedEvent",
+		"NtWaitForWorkViaWorkerFactory",
+		"NtWaitHighEventPair",
+		"NtWaitLowEventPair",
+		"NtWorkerFactoryWorkerReady"
+	};
+
+	static const char *MONITORED_SYSCALLS[] = {
+		"NtCreateFile",
+		"NtOpenProcess"
+	};
+
+	for (int i = 0; i < countof(SYSCALLS); i++) {
+		for (int j = 0; j < countof(MONITORED_SYSCALLS); j++) {
+			if (strcmp(SYSCALLS[i], MONITORED_SYSCALLS[j])) {
+				continue;
+			}
+
+			addr_t sysaddr = vmi_translate_ksym2v(conf->vmi, MONITORED_SYSCALLS[j]);
+			if (0 == sysaddr) {
+				fprintf(stderr, "could not find symbol %s\n", MONITORED_SYSCALLS[j]);
+				goto done;
+			}
+
+			vf_paddr_record *syscall_trap = vf_setup_mem_trap(conf, sysaddr);
+			if (NULL == syscall_trap) {
+				fprintf(stderr, "failed to set memory trap on %s\n",
+						 MONITORED_SYSCALLS[j]);
+				goto done;
+			}
+
+			/* set identifier to what RAX would be during syscall */
+			syscall_trap->identifier = i;
+
+			break;
+		}
+	}
+
+	status = true;
+
+done:
+	return status;
+}
+
 int
 main (int argc, char **argv) {
 	struct sigaction act;
@@ -664,12 +1245,17 @@ main (int argc, char **argv) {
 		goto done;
 	}
 
-	if (!vf_set_up_interrupt_event(&config)) {
+	if (!vf_set_up_generic_events(&config)) {
 		vmi_resume_vm(vmi);
 		goto done;
 	}
 
-	if (!vf_set_up_syscall_handler(&config)) {
+	if (!vf_find_syscalls_and_setup_mem_trap(&config)) {
+		vmi_resume_vm(vmi);
+		goto done;
+	}
+
+	if (!vf_set_up_sysret_handler(&config)) {
 		vmi_resume_vm(vmi);
 		goto done;
 	}
@@ -692,6 +1278,7 @@ done:
 	vmi_pause_vm(vmi);
 
 	g_hash_table_destroy(vf_page_record_collection);
+	g_hash_table_destroy(vf_page_translation);
 	vf_close_config(&config);
 
 	vmi_resume_vm(vmi);
