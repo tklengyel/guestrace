@@ -60,6 +60,7 @@ static GHashTable *vf_page_record_collection;
 
 typedef struct vf_page_record {
 	addr_t page;
+	addr_t shadow_page;
 	vmi_event_t *mem_event_rw;
 	GHashTable *children;
 	vf_config *conf;
@@ -115,7 +116,8 @@ vf_init_config (vmi_instance_t vmi, char * name, vf_config * conf)
 		goto done;
 	}
 
-	conf->init_mem_size = conf->curr_mem_size = vmi_get_memsize(vmi);
+	conf->init_mem_size = vmi_get_memsize(vmi);
+	conf->curr_mem_size = conf->init_mem_size;
 
 	if (0 == conf->init_mem_size) {
 		fprintf(stderr, "Could not get guest's memory size\n");
@@ -170,6 +172,7 @@ vf_close_config(vf_config * conf)
 		fprintf(stderr, "Failed to turn off altp2m on guest\n");
 	}
 
+	/* todo: find out why this isn't decreasing main memory on next run of guestrace */
 	xc_status = xc_domain_setmaxmem(conf->xch, conf->domid, conf->init_mem_size);
 	if (0 > xc_status) {
 		fprintf(stderr, "Failed to reset max memory on guest");
@@ -219,7 +222,7 @@ static void
 vf_destroy_paddr_record (gpointer data) {
 	vf_paddr_record *paddr_record = data;
 
-	fprintf(stderr, "Destroying paddr_record at shadow pa %lx\n", paddr_record->parent->page + paddr_record->offset);
+	fprintf(stderr, "Destroying paddr_record at shadow pa %lx\n", (paddr_record->parent->shadow_page << 12) + paddr_record->offset);
 
 	g_free(paddr_record);
 }
@@ -228,10 +231,10 @@ static void
 vf_destroy_page_record (gpointer data) {
 	vf_page_record *page_record = data;
 
-	fprintf(stderr, "Destroying page_record on page %lx\n", page_record->page);
+	fprintf(stderr, "Destroying page_record on page %lx\n", page_record->shadow_page);
 
-	xc_altp2m_change_gfn(page_record->conf->xch, page_record->conf->domid, page_record->conf->shadow_view, page_record->page, ~0);
-	xc_domain_decrease_reservation_exact(page_record->conf->xch, page_record->conf->domid, 1, 0, &page_record->page);
+	xc_altp2m_change_gfn(page_record->conf->xch, page_record->conf->domid, page_record->conf->shadow_view, page_record->shadow_page, ~0);
+	xc_domain_decrease_reservation_exact(page_record->conf->xch, page_record->conf->domid, 1, 0, &page_record->shadow_page);
 
 	vmi_clear_event(page_record->conf->vmi, page_record->mem_event_rw, NULL);
 
@@ -316,7 +319,8 @@ vf_setup_mem_trap (vf_config * conf, addr_t va)
 		}
 
 		page_record                     = g_new0(vf_page_record, 1);
-		page_record->page               = shadow;
+		page_record->shadow_page        = shadow;
+		page_record->page               = page;
 		page_record->conf               = conf;
 		page_record->mem_event_rw       = g_new0(vmi_event_t, 1);
 		page_record->mem_event_rw->data = page_record;
@@ -332,7 +336,7 @@ vf_setup_mem_trap (vf_config * conf, addr_t va)
 
 		/* todo: support write events? */
 		SETUP_MEM_EVENT(page_record->mem_event_rw,
-		                page_record->page,
+		                page_record->shadow_page,
 		                VMI_MEMACCESS_RW,
 		                vf_mem_rw_cb,
 		                0);
@@ -365,6 +369,10 @@ vf_setup_mem_trap (vf_config * conf, addr_t va)
 		fprintf(stderr, "Failed to write interrupt to shadow page\n");
 		goto done;
 	}
+
+	g_hash_table_insert(page_record->children,
+	                    GSIZE_TO_POINTER(shadow_offset),
+	                    paddr_record);
 
 done:
 	/* TODO: Should undo state (e.g., remove from hash tables) on error */
@@ -460,6 +468,69 @@ done:
 	return status;
 }
 
+/*
+ * Disassemble the kernel and find the appropriate point for a breakpoint
+ * which allows guestrace to determine a system call's return value. Return
+ * the address.
+ */
+static addr_t
+vf_get_syscall_ret_addr(vf_config * conf, addr_t syscall_start) {
+	csh handle;
+	cs_insn *inst;
+	size_t count, call_offset = ~0;
+	addr_t ret = 0;
+	uint8_t code[4096]; /* Assume CALL is within first KB. */
+
+	addr_t syscall_start_p = vmi_translate_kv2p(conf->vmi, syscall_start);
+	if (0 == syscall_start_p) {
+		fprintf(stderr, "failed to read instructions from 0x%"
+		                 PRIx64".\n", syscall_start);
+		goto done;
+	}
+
+	/* Read kernel instructions into code. */
+	status_t status = vmi_read_pa(conf->vmi, syscall_start_p, code, sizeof(code));
+	if (VMI_FAILURE == status) {
+		fprintf(stderr, "failed to read instructions from 0x%"
+		                 PRIx64".\n", syscall_start_p);
+		goto done;
+	}
+
+	if (cs_open(CS_ARCH_X86, CS_MODE_64, &handle) != CS_ERR_OK) {
+		fprintf(stderr, "failed to open capstone\n");
+		goto done;
+	}
+
+	/* Find CALL inst. and note address of inst. which follows. */
+	count = cs_disasm(handle, code, sizeof(code), 0, 0, &inst);
+	if (count > 0) {
+		size_t i;
+		for (i = 0; i < count; i++) {
+			if (0 == strcmp(inst[i].mnemonic, "call")
+			 && 0 == strcmp(inst[i].op_str, "r10")) {
+				call_offset = inst[i + 1].address;
+				break;
+			}
+		}
+		cs_free(inst, count);
+	} else {
+		fprintf(stderr, "failed to disassemble system-call handler\n");
+		goto done;
+	}
+
+	if (~0 == call_offset) {
+		fprintf(stderr, "did not find call in system-call handler\n");
+		goto done;
+	}
+
+	cs_close(&handle);
+
+	ret = syscall_start + call_offset;
+
+done:
+	return ret;
+}
+
 static bool
 vf_set_up_syscall_handler(vf_config * conf)
 {
@@ -473,11 +544,24 @@ vf_set_up_syscall_handler(vf_config * conf)
 		goto done;
 	}
 
-	vf_paddr_record * lstar_trap = vf_setup_mem_trap(conf, lstar);
-	if (NULL == lstar_trap) {
-		fprintf(stderr, "Failed to create memory trap\n");
+	addr_t ret_addr = vf_get_syscall_ret_addr(conf, lstar);
+	if (0 == ret_addr) {
+		fprintf(stderr, "failed to get system return address\n");
 		goto done;
 	}
+
+	vf_paddr_record * lstar_trap = vf_setup_mem_trap(conf, lstar);
+	if (NULL == lstar_trap) {
+		fprintf(stderr, "Failed to create syscall memory trap\n");
+		goto done;
+	}
+
+	vf_paddr_record * sysret_trap = vf_setup_mem_trap(conf, ret_addr);
+	if (NULL == sysret_trap) {
+		fprintf(stderr, "Failed to create sysret memory trap\n");
+		goto done;
+	}
+
 
 	status = true;
 
