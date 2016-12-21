@@ -25,8 +25,13 @@
 /* Default page size on our domain */
 #define VF_PAGE_SIZE 0x1000
 
+/* Maximum # of VCPUS we want visorflow to support */
+#define VF_MAX_VCPUS 16
+
 /* Intel breakpoint interrupt (INT 3) instruction. */
 static uint8_t VF_BREAKPOINT_INST = 0xCC;
+
+static vmi_event_t vf_step_events[VF_MAX_VCPUS];
 
 addr_t phys_lstar;
 uint8_t orig_inst;
@@ -48,10 +53,24 @@ typedef struct vf_config {
 	uint16_t shadow_view;
 } vf_config;
 
-/*
- * List that stores our allocated pages for destruction on guestrace exit
- */
-GSList * vf_allocated_pages;
+/* contains the translation from guest address to newly allocated pages */
+static GHashTable *vf_page_translation;
+
+static GHashTable *vf_page_record_collection;
+
+typedef struct vf_page_record {
+	addr_t page;
+	vmi_event_t *mem_event_rw;
+	GHashTable *children;
+	vf_config *conf;
+} vf_page_record;
+
+typedef struct vf_paddr_record {
+	addr_t offset;
+	vf_page_record *parent;
+	gboolean enabled;
+	uint16_t identifier; /* syscall identifier because we nix RAX */
+} vf_paddr_record;
 
 /*
  * Handle terminating signals by setting interrupted flag. This allows
@@ -96,11 +115,31 @@ vf_init_config (vmi_instance_t vmi, char * name, vf_config * conf)
 		goto done;
 	}
 
-	conf->init_mem_size = vmi_get_memsize(vmi);
-	conf->curr_mem_size = conf->init_mem_size;
+	conf->init_mem_size = conf->curr_mem_size = vmi_get_memsize(vmi);
 
 	if (0 == conf->init_mem_size) {
 		fprintf(stderr, "Could not get guest's memory size\n");
+		goto done;
+	}
+
+	fprintf(stderr, "Guest's starting memory size is %lx\n", conf->init_mem_size);
+
+	/* here we enable xen-specific altp2m */
+	int xc_status = xc_altp2m_set_domain_state(conf->xch, conf->domid, 1);
+	if (0 > xc_status) {
+		fprintf(stderr, "Failed to enable altp2m on guest\n");
+		goto done;
+	}
+
+	xc_status = xc_altp2m_create_view(conf->xch, conf->domid, 0, &conf->shadow_view);
+	if (0 > xc_status) {
+		fprintf(stderr, "Failed to create view for shadow page\n");
+		goto done;
+	}
+
+	xc_status = xc_altp2m_switch_to_view(conf->xch, conf->domid, conf->shadow_view);
+	if (0 > xc_status) {
+		fprintf(stderr, "Failed to enable shadow view\n");
 		goto done;
 	}
 
@@ -110,14 +149,12 @@ done:
 	return status;
 }
 
+/*
+ * Close our driver handlers and reset shadow memory
+ */
 static void
 vf_close_config(vf_config * conf)
 {
-	status_t ret = vmi_write_8_pa(conf->vmi, phys_lstar, &orig_inst);
-	if (VMI_SUCCESS != ret) {
-		fprintf(stderr, "Failed to write original instruction into syscall page\n");
-	}
-
 	int xc_status = xc_altp2m_switch_to_view(conf->xch, conf->domid, 0);
 	if (0 > xc_status) {
 		fprintf(stderr, "Failed to reset EPT to point to default table\n");
@@ -145,8 +182,8 @@ vf_close_config(vf_config * conf)
 /*
  * Allocates a new page of memory in the guest's address space
  */
-static xen_pfn_t
-vf_allocate_page (vf_config * conf)
+static addr_t
+vf_allocate_shadow_page (vf_config * conf)
 {
 	xen_pfn_t gfn = 0;
 
@@ -174,82 +211,261 @@ vf_allocate_page (vf_config * conf)
 		goto done;
 	}
 
-	vf_allocated_pages = g_slist_prepend(vf_allocated_pages, (void*)gfn);
-
 done:
 	return gfn;
 }
 
-/*
- * Removes any extra pages we added to the guest
- */
 static void
-vf_destroy_pages (vf_config * conf)
-{
-	GSList * elem;
+vf_destroy_paddr_record (gpointer data) {
+	vf_paddr_record *paddr_record = data;
 
-	for(elem = vf_allocated_pages; elem; elem = elem->next) {
-		xen_pfn_t curr = (xen_pfn_t)elem->data;
+	fprintf(stderr, "Destroying paddr_record at shadow pa %lx\n", paddr_record->parent->page + paddr_record->offset);
 
-		int xc_status = xc_altp2m_change_gfn(conf->xch, conf->domid, conf->shadow_view, curr, ~0);
-		if (0 > xc_status) {
-			fprintf(stderr, "Failed to reset GFN to ~0\n");
-		}
-
-		xc_status = xc_domain_decrease_reservation_exact(conf->xch, conf->domid, 1, 0, &curr);
-		if (0 > xc_status) {
-			fprintf(stderr, "Could not destroy GFN at 0x%lx\n", curr);
-		}
-	}
-
-	g_slist_free(vf_allocated_pages);
+	g_free(paddr_record);
 }
 
+static void
+vf_destroy_page_record (gpointer data) {
+	vf_page_record *page_record = data;
+
+	fprintf(stderr, "Destroying page_record on page %lx\n", page_record->page);
+
+	xc_altp2m_change_gfn(page_record->conf->xch, page_record->conf->domid, page_record->conf->shadow_view, page_record->page, ~0);
+	xc_domain_decrease_reservation_exact(page_record->conf->xch, page_record->conf->domid, 1, 0, &page_record->page);
+
+	vmi_clear_event(page_record->conf->vmi, page_record->mem_event_rw, NULL);
+
+	g_free(page_record->mem_event_rw);
+
+	g_hash_table_destroy(page_record->children);
+
+	g_free(page_record);
+}
+
+/*
+ * Callback invoked on a R/W of a monitored page (likely kernel patch protection).
+ * Switch the VCPU's SLAT to its original, step once, switch SLAT back
+ */
 static event_response_t
-vf_breakpoint_cb_reset(vmi_instance_t vmi, vmi_event_t *event) {
-	fprintf(stderr, "Syscall reset!!\n");
+vf_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
+	fprintf(stderr, "mem r/w at %lx\n", event->mem_event.gla);
+
+	/* switch back to original slat for one step */
+	event->slat_id = 0;
 
 	return VMI_EVENT_RESPONSE_NONE;
 }
 
+static vf_paddr_record *
+vf_setup_mem_trap (vf_config * conf, addr_t va)
+{
+	vf_page_record  *page_record  = NULL;
+	vf_paddr_record *paddr_record = NULL;
+
+	addr_t pa = vmi_translate_kv2p(conf->vmi, va);
+	if (0 == pa) {
+		fprintf(stderr, "virtual addr. translation failed: %lx\n", va);
+		goto done;
+	}
+
+	addr_t page = pa >> 12;
+	addr_t shadow = (addr_t)g_hash_table_lookup(vf_page_translation,
+		                                GSIZE_TO_POINTER(page));
+	addr_t shadow_offset = pa - (page << 12); /* probably a fancy bitwise way to do this */
+
+	if (0 == shadow) {
+		/* we need to allocate a new page */
+		shadow = vf_allocate_shadow_page(conf);
+
+		if (0 == shadow) {
+			fprintf(stderr, "Failed to allocate shadow page\n");
+			goto done;
+		}
+
+		g_hash_table_insert(vf_page_translation,
+							GSIZE_TO_POINTER(page),
+							GSIZE_TO_POINTER(shadow));
+
+		/* this adds our remapping into our shadow view */
+		int xc_status = xc_altp2m_change_gfn(conf->xch, conf->domid, conf->shadow_view, page, shadow);
+		if (0 > xc_status) {
+			fprintf(stderr, "Failed to add paddr_record into shadow view\n");
+			goto done;
+		}
+	}
+
+	page_record = g_hash_table_lookup(vf_page_record_collection,
+		                                			GSIZE_TO_POINTER(shadow));
+
+	if (NULL == page_record) {
+		/* we need to create our page record and fill it */
+		fprintf(stderr, "creating new page trap on 0x%lx -> 0x%lx\n", shadow, page);
+
+		/* store current page on the stack */
+		uint8_t buff[VF_PAGE_SIZE] = {0};
+		status_t status = vmi_read_pa(conf->vmi, page << 12, buff, VF_PAGE_SIZE);
+		if (0 == status) {
+			fprintf(stderr, "Failed to read in syscall page\n");
+			goto done;
+		}
+
+		status = vmi_write_pa(conf->vmi, shadow << 12, buff, VF_PAGE_SIZE);
+		if (0 == status) {
+			fprintf(stderr, "Failed to write to shadow page\n");
+			goto done;
+		}
+
+		page_record                     = g_new0(vf_page_record, 1);
+		page_record->page               = shadow;
+		page_record->conf               = conf;
+		page_record->mem_event_rw       = g_new0(vmi_event_t, 1);
+		page_record->mem_event_rw->data = page_record;
+
+		page_record->children = g_hash_table_new_full(NULL,
+		                                              NULL,
+		                                              NULL,
+		                                              vf_destroy_paddr_record);
+
+		g_hash_table_insert(vf_page_record_collection,
+		                    GSIZE_TO_POINTER(shadow),
+		                    page_record);
+
+		/* todo: support write events? */
+		SETUP_MEM_EVENT(page_record->mem_event_rw,
+		                page_record->page,
+		                VMI_MEMACCESS_RW,
+		                vf_mem_rw_cb,
+		                0);
+
+		status = vmi_register_event(conf->vmi, page_record->mem_event_rw);
+		if (VMI_SUCCESS != status) {
+			fprintf(stderr, "failed to register event\n");
+			goto done;
+		}
+	} else {
+		/* We already have a page record for this page in collection. */
+		paddr_record = g_hash_table_lookup(page_record->children,
+		                                GSIZE_TO_POINTER(shadow_offset));
+		if (NULL != paddr_record) {
+			/* We have a paddr record too; done (no error). */
+			goto done;
+		}
+	}
+
+	/* Create physical-address record and add to page record. */
+	paddr_record                =  g_new0(vf_paddr_record, 1);
+	paddr_record->offset        =  shadow_offset;
+	paddr_record->parent        =  page_record;
+	paddr_record->enabled       =  TRUE;
+	paddr_record->identifier    = ~0; /* default 0xFFFF */
+
+	/* write the interrupt to our shadow page at the correct location */
+	status_t ret = vmi_write_8_pa(conf->vmi, (shadow << 12) + shadow_offset, &VF_BREAKPOINT_INST);
+	if (VMI_SUCCESS != ret) {
+		fprintf(stderr, "Failed to write interrupt to shadow page\n");
+		goto done;
+	}
+
+done:
+	/* TODO: Should undo state (e.g., remove from hash tables) on error */
+	return paddr_record;
+}
+
 /*
- * Service an INT CC breakpoint
+ * Callback on any interrupts received from our shadow pages
+ * Here we must make temporary changes and enter into single-step mode
  */
 static event_response_t
 vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
-	event_response_t status = VMI_EVENT_RESPONSE_NONE;
+	//fprintf(stderr, "!!! Syscall on VCPU %d\n", event->vcpu_id);
+
+	/* set vcpu's slat to use original for one step */
+	event->slat_id = 0;
 	event->interrupt_event.reinject = 0;
 
-	vf_config *conf = (vf_config*)event->data;
+	/* turn on single-step and switch slat_id */
+	return VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
+}
 
-	fprintf(stderr, "Syscall!!\n");
+/*
+ * Setup our global interrupt to catch any interrupts on any pages
+ */
+static bool
+vf_set_up_interrupt_event (vf_config * conf) {
+	bool status = false;
 
-	event->slat_id = conf->shadow_view;
-	status = VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
+	SETUP_INTERRUPT_EVENT(&vf_breakpoint_event, 0, vf_breakpoint_cb);
+	vf_breakpoint_event.data = conf;
 
-	vmi_step_event(vmi, event, event->vcpu_id, 1, vf_breakpoint_cb_reset);
+	status_t ret = vmi_register_event(conf->vmi, &vf_breakpoint_event);
+	if (VMI_SUCCESS != ret) {
+		fprintf(stderr, "Failed to setup interrupt event\n");
+		goto done;
+	}
 
+	status = true;
+
+done:
 	return status;
 }
 
 /*
- * Create a shadow copy of our syscall routine into a newly
- * allocated page, then modify the original to have interrupts
- * Returns true if successful
+ * Callback after a step event on any VCPU
+ * Here we must reset any single-step changes we made
+ */
+static event_response_t
+vf_singlestep_cb(vmi_instance_t vmi, vmi_event_t *event) {
+	/* set to shadow slat */
+	vf_config *conf = event->data;
+
+	event->slat_id = conf->shadow_view;
+
+	/* turn off single-step and switch slat_id */
+	return VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
+}
+
+/*
+ * Creates the step events needed for each VCPU so we don't have to create
+ * a new event everytime we want to step
  */
 static bool
-vf_set_up_syscall_handler (vf_config * conf)
-{
+vf_set_up_step_events (vf_config * conf) {
 	bool status = false;
 
-	xen_pfn_t shadow = vf_allocate_page(conf);
-
-	if (0 == shadow) {
-		fprintf(stderr, "Failed to allocate shadow page\n");
+	int vcpus = vmi_get_num_vcpus(conf->vmi);
+	if (0 == vcpus) {
+		fprintf(stderr, "Failed to get number of VCPUs\n");
 		goto done;
 	}
 
+	if (VF_MAX_VCPUS < vcpus) {
+		fprintf(stderr, "Guest has more VCPUs than supported\n");
+		goto done;
+	}
+
+	for (int vcpu = 0; vcpu < vcpus; vcpu++) {
+		vmi_event_t curr = vf_step_events[vcpu];
+		SETUP_SINGLESTEP_EVENT(&curr, 1u << vcpu, vf_singlestep_cb, 0);
+		curr.data = conf;
+
+		if (VMI_FAILURE == vmi_register_event(conf->vmi, &curr)) {
+			fprintf(stderr, "Failed to register single-step event on VCPU %d\n", vcpu);
+			goto done;
+		}
+	}
+
+	status = true;
+
+done:
+	return status;
+}
+
+static bool
+vf_set_up_syscall_handler(vf_config * conf)
+{
+	bool status = false;
 	addr_t lstar = 0;
+
 	/* LSTAR should be the constant across all vcpus */
 	status_t ret = vmi_get_vcpureg(conf->vmi, &lstar, MSR_LSTAR, 0);
 	if (VMI_SUCCESS != ret) {
@@ -257,71 +473,9 @@ vf_set_up_syscall_handler (vf_config * conf)
 		goto done;
 	}
 
-	phys_lstar = vmi_translate_kv2p(conf->vmi, lstar);
-	if (0 == phys_lstar) {
-		fprintf(stderr, "failed to translate MSR_LSTAR into physical address\n");
-		goto done;
-	}
-
-	addr_t syscall_page = phys_lstar >> 12;
-
-	/* store current page on the stack */
-	uint8_t buff[VF_PAGE_SIZE] = {0};
-	ret = vmi_read_pa(conf->vmi, syscall_page << 12, buff, VF_PAGE_SIZE);
-	if (0 == ret) {
-		fprintf(stderr, "Failed to read in syscall page\n");
-		goto done;
-	}
-
-	ret = vmi_write_pa(conf->vmi, shadow << 12, buff, VF_PAGE_SIZE);
-	if (0 == ret) {
-		fprintf(stderr, "Failed to write to shadow page\n");
-		goto done;
-	}
-
-	/*
-	 * At this point, we have a new page that has an exact copy of our syscall page.
-	 * We can now write interrupts to our syscall page, and then switch to our shadow
-	 * page whenever we get interrupt callbacks.  Since this is vcpu-specific, we no
-	 * longer have a race-condition in single-step mode between different vcpus
-	 */
-
-	int xc_status = xc_altp2m_set_domain_state(conf->xch, conf->domid, 1);
-	if (0 > xc_status) {
-		fprintf(stderr, "Failed to enable altp2m on guest\n");
-		goto done;
-	}
-
-	xc_status = xc_altp2m_create_view(conf->xch, conf->domid, 0, &conf->shadow_view);
-	if (0 > xc_status) {
-		fprintf(stderr, "Failed to create view for shadow page\n");
-		goto done;
-	}
-
-	/* this adds our remapping into our shadow view */
-	xc_status = xc_altp2m_change_gfn(conf->xch, conf->domid, conf->shadow_view, syscall_page, shadow);
-	if (0 > xc_status) {
-		fprintf(stderr, "Failed to change GFN to shadow\n");
-		goto done;
-	}
-
-	SETUP_INTERRUPT_EVENT(&vf_breakpoint_event, 0, vf_breakpoint_cb);
-	vf_breakpoint_event.data = conf;
-	ret = vmi_register_event(conf->vmi, &vf_breakpoint_event);
-	if (VMI_SUCCESS != ret) {
-		fprintf(stderr, "Failed to setup interrupt event\n");
-		goto done;
-	}
-
-	ret = vmi_read_8_pa(conf->vmi, phys_lstar, &orig_inst);
-	if (VMI_SUCCESS != ret) {
-		fprintf(stderr, "Failed to read original instruction from syscall page\n");
-		goto done;
-	}
-
-	ret = vmi_write_8_pa(conf->vmi, phys_lstar, &VF_BREAKPOINT_INST);
-	if (VMI_SUCCESS != ret) {
-		fprintf(stderr, "Failed to write interrupt to syscall page\n");
+	vf_paddr_record * lstar_trap = vf_setup_mem_trap(conf, lstar);
+	if (NULL == lstar_trap) {
+		fprintf(stderr, "Failed to create memory trap\n");
 		goto done;
 	}
 
@@ -408,9 +562,25 @@ main (int argc, char **argv) {
 		printf("LibVMI init succeeded!\n");
 	}
 
+	vf_page_translation = g_hash_table_new(NULL, NULL);
+	vf_page_record_collection = g_hash_table_new_full(NULL,
+	                                                  NULL,
+	                                                  NULL,
+	                                                  vf_destroy_page_record);
+
 	vmi_pause_vm(vmi);
 
 	if (!vf_init_config(vmi, name, &config)) {
+		vmi_resume_vm(vmi);
+		goto done;
+	}
+
+	if (!vf_set_up_step_events(&config)) {
+		vmi_resume_vm(vmi);
+		goto done;
+	}
+
+	if (!vf_set_up_interrupt_event(&config)) {
 		vmi_resume_vm(vmi);
 		goto done;
 	}
@@ -437,7 +607,7 @@ done:
 
 	vmi_pause_vm(vmi);
 
-	vf_destroy_pages(&config);
+	g_hash_table_destroy(vf_page_record_collection);
 	vf_close_config(&config);
 
 	vmi_resume_vm(vmi);
