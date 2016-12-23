@@ -68,15 +68,16 @@ static GHashTable *vf_page_record_collection;
  * if one exists. NOTE: the code has changed since the original inception in my
  * mind, so we might be able to delete this without negative consquences
  *
- * The second collection contains a mapping from shadow page numbers to vf_page_record
- * structures. This serves as a record of the guest pages for which guestrace
- * installed a memory event. When the guest accesses such a page, control
- * traps into guestrace. The most notable field in vf_page_record is children.
- * The children field points to the third collection.
+ * The second collection contains a mapping from shadow page numbers to
+ * vf_page_record structures. This serves as a record of the guest pages for
+ * which guestrace installed a memory event. When the guest accesses such a
+ * page, control traps into guestrace. The most notable field in
+ * vf_page_record is children. The children field points to the third
+ * collection.
  *
- * The third collection contains a mapping from physical address offsets to vf_paddr_record
- * structures. This serves as a record for each breakpoint that guestrace
- * sets within a page.
+ * The third collection contains a mapping from physical address offsets to
+ * vf_paddr_record structures. This serves as a record for each breakpoint
+ * that guestrace sets within a page.
  */
 
 typedef struct vf_page_record {
