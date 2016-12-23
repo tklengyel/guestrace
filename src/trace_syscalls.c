@@ -39,10 +39,10 @@ static uint8_t VF_BREAKPOINT_INST = 0xCC;
 /* Array to hold step event for each VCPU */
 static vmi_event_t vf_step_event[VF_MAX_VCPUS];
 
-/* Global interrupt event that gets triggered on any VF_BREAKPOINT_INST callback */
+/* Global interrupt event, triggered by INT 3; calls vf_breakpoint_cb. */
 static vmi_event_t vf_breakpoint_event;
 
-/* Global memory event that gets triggered on memory events */
+/* Global memory event, triggered by R/W access; call vf_mem_rw_cb. */
 static vmi_event_t vf_memory_event;
 
 /* Data structure used to interact directly with Xen driver */
