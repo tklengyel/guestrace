@@ -24,6 +24,32 @@
  * to the xen config file of each guest.
  */
 
+/* This code relies on Xen's interface to Second Level Address Translation,
+ * or SLAT. See:
+ *
+ * 	https://blog.xenproject.org/2016/04/13/stealthy-monitoring-with-xen-altp2m/
+ *
+ * guestrace maintains two page tables: The first page table (PT_1) maps the
+ * kernel with no modifications. The second (PT_n) adds breakpoints to the
+ * kernel.
+ *
+ * Guestrace switches between these two page tables under the following
+ * conditions:
+ *
+ * Guestrace activates PT_1:
+ *
+ * 	(1) For a single instruction after trapping a read; on Windows, such
+ * 	a read is likely the result of Kernel Patch Protection. This allows
+ * 	KPP to measure the expected kernel.
+ *
+ * 	(2) For a single instruction after trapping a guestrace-emplaced
+ * 	breakpoint. This allows the kernel to execute as expected after
+ * 	servicing the breakpoint.
+ *
+ * Guestrace activates PT_n following a single-step execution. This restores
+ * guestrace's breakpoints after condition (1) or (2) above.
+ */
+
 /* Number of bits available for page offset. */
 #define VF_PAGE_OFFSET_BITS 12
 
@@ -103,8 +129,9 @@ static vf_paddr_record * sysret_trap;
 static int vf_interrupted = 0;
 
 /*
- * Initilize our vf_config object to interact with Xen driver
- * Returns true if succeeded
+ * Set up Xen logging and initialize the vf_config object to interact with Xen.
+ * Notably, we create the altp2m view here.
+ * Returns true on success.
  */
 static bool
 vf_init_config (vmi_instance_t vmi, char * name, vf_config * conf)
@@ -175,7 +202,7 @@ done:
 }
 
 /*
- * Close our driver handlers and reset shadow memory
+ * Close our driver handlers and reset shadow memory.
  */
 static void
 vf_close_config(vf_config * conf)
