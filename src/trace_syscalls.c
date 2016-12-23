@@ -30,8 +30,8 @@
  * 	https://blog.xenproject.org/2016/04/13/stealthy-monitoring-with-xen-altp2m/
  *
  * guestrace maintains two page tables: The first page table (PT_1) maps the
- * kernel with no modifications. The second (PT_n) adds breakpoints to the
- * kernel.
+ * kernel with no modifications. The second (PT_n, the shadow page table) adds
+ * breakpoints to the kernel.
  *
  * Guestrace switches between these two page tables under the following
  * conditions:
@@ -130,68 +130,67 @@ static int vf_interrupted = 0;
 
 /*
  * Set up Xen logging and initialize the vf_config object to interact with Xen.
- * Notably, we create the altp2m view here.
+ * Notably, we create the altp2m view here. Assuming success, Xen will activate
+ * the shadow page table which will eventually contain breakpoints.
  * Returns true on success.
  */
 static bool
-vf_init_config (vmi_instance_t vmi, char * name, vf_config * conf)
+vf_init_config(vmi_instance_t vmi, char *name, vf_config *conf)
 {
+	int rc;
 	bool status = false;
 
 	conf->vmi = vmi;
-	xc_interface *xch = xc_interface_open(0, 0, 0);
 
-	if (NULL == xch) {
-		fprintf(stderr, "Could not create xc interface\n");
+	conf->xch = xc_interface_open(0, 0, 0);
+	if (NULL == conf->xch) {
+		fprintf(stderr, "failed to create xc interface\n");
 		goto done;
 	}
 
-	conf->xch = xch;
-
-	conf->logger = (xentoollog_logger *)xtl_createlogger_stdiostream(stderr, XTL_PROGRESS, 0);
-	if (conf->logger == NULL) {
-		fprintf(stderr, "Could not create libxl logger\n");
+	conf->logger = (xentoollog_logger *) xtl_createlogger_stdiostream(
+	                                                           stderr,
+	                                                           XTL_PROGRESS,
+	                                                           0);
+	if (NULL == conf->logger) {
+		fprintf(stderr, "failed to create libxl logger\n");
 		goto done;
 	}
 
-	if (libxl_ctx_alloc(&conf->ctx, LIBXL_VERSION, 0, conf->logger)) {
-		fprintf(stderr, "Could not create libxl context\n");
+	rc = libxl_ctx_alloc(&conf->ctx, LIBXL_VERSION, 0, conf->logger);
+	if (0 != rc) {
+		fprintf(stderr, "failed to create libxl context\n");
 		goto done;
 	}
 
-	conf->domid = ~0U;
-
-	if (libxl_name_to_domid(conf->ctx, name, &conf->domid) || ~0U == conf->domid) {
-		fprintf(stderr, "Could not translate guest name to dom-id\n");
+	conf->domid = ~0u;
+	rc = libxl_name_to_domid(conf->ctx, name, &conf->domid);
+	if (0 != rc || ~0u == conf->domid) {
+		fprintf(stderr, "failed to translate guest name to dom. ID\n");
 		goto done;
 	}
 
-	conf->init_mem_size = vmi_get_memsize(vmi);
-	conf->curr_mem_size = conf->init_mem_size;
-
+	conf->curr_mem_size = conf->init_mem_size = vmi_get_memsize(vmi);
 	if (0 == conf->init_mem_size) {
-		fprintf(stderr, "Could not get guest's memory size\n");
+		fprintf(stderr, "failed to get guest memory size\n");
 		goto done;
 	}
 
-	fprintf(stderr, "Guest's starting memory size is %lx\n", conf->init_mem_size);
-
-	/* here we enable xen-specific altp2m */
-	int xc_status = xc_altp2m_set_domain_state(conf->xch, conf->domid, 1);
-	if (0 > xc_status) {
-		fprintf(stderr, "Failed to enable altp2m on guest\n");
+	rc = xc_altp2m_set_domain_state(conf->xch, conf->domid, 1);
+	if (rc < 0) {
+		fprintf(stderr, "failed to enable altp2m on guest\n");
 		goto done;
 	}
 
-	xc_status = xc_altp2m_create_view(conf->xch, conf->domid, 0, &conf->shadow_view);
-	if (0 > xc_status) {
-		fprintf(stderr, "Failed to create view for shadow page\n");
+	rc = xc_altp2m_create_view(conf->xch, conf->domid, 0, &conf->shadow_view);
+	if (rc < 0) {
+		fprintf(stderr, "failed to create view for shadow page\n");
 		goto done;
 	}
 
-	xc_status = xc_altp2m_switch_to_view(conf->xch, conf->domid, conf->shadow_view);
-	if (0 > xc_status) {
-		fprintf(stderr, "Failed to enable shadow view\n");
+	rc = xc_altp2m_switch_to_view(conf->xch, conf->domid, conf->shadow_view);
+	if (rc < 0) {
+		fprintf(stderr, "failed to enable shadow view\n");
 		goto done;
 	}
 
