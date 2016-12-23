@@ -1,16 +1,14 @@
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <sys/mman.h>
-#include <stdio.h>
-#include <inttypes.h>
-#include <signal.h>
-#include <glib.h>
+#include <capstone/capstone.h>
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
-#include <capstone/capstone.h>
-#include <xenctrl.h>
+#include <glib.h>
+#include <inttypes.h>
 #include <libxl_utils.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <xenctrl.h>
 
 #include "translate_syscalls.h"
 
