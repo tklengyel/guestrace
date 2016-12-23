@@ -36,8 +36,8 @@
 /* Intel breakpoint interrupt (INT 3) instruction. */
 static uint8_t VF_BREAKPOINT_INST = 0xCC;
 
-/* Array to hold our step events for each VCPU */
-static vmi_event_t vf_step_events[VF_MAX_VCPUS];
+/* Array to hold step event for each VCPU */
+static vmi_event_t vf_step_event[VF_MAX_VCPUS];
 
 /* Global interrupt event that gets triggered on any VF_BREAKPOINT_INST callback */
 static vmi_event_t vf_breakpoint_event;
@@ -584,7 +584,7 @@ vf_set_up_step_events (vf_config * conf) {
 	}
 
 	for (int vcpu = 0; vcpu < vcpus; vcpu++) {
-		vmi_event_t curr = vf_step_events[vcpu];
+		vmi_event_t curr = vf_step_event[vcpu];
 		SETUP_SINGLESTEP_EVENT(&curr, 1u << vcpu, vf_singlestep_cb, 0);
 		curr.data = conf;
 
