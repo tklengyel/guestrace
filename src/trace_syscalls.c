@@ -30,7 +30,7 @@
 /* Default page size on our domain */
 #define VF_PAGE_SIZE (1 << VF_PAGE_OFFSET_BITS)
 
-/* Maximum # of VCPUS we want visorflow to support */
+/* Maximum number of VCPUs VisorFlow will support */
 #define VF_MAX_VCPUS 16
 
 /* Intel breakpoint interrupt (INT 3) instruction. */
