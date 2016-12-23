@@ -20,8 +20,6 @@
  * to /etc/default/grub and add
  * altp2mhvm = 1
  * to the xen config file of a guest
- *
- * You must also add -lxenlight when building and linking
  */
 
 /* Default page size on our domain */
