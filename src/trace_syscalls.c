@@ -24,8 +24,11 @@
  * to the xen config file of each guest.
  */
 
+/* Number of bits available for page offset. */
+#define VF_PAGE_OFFSET_BITS 12
+
 /* Default page size on our domain */
-#define VF_PAGE_SIZE 0x1000
+#define VF_PAGE_SIZE (1 << VF_PAGE_OFFSET_BITS)
 
 /* Maximum # of VCPUS we want visorflow to support */
 #define VF_MAX_VCPUS 16
@@ -241,7 +244,7 @@ static void
 vf_destroy_paddr_record (gpointer data) {
 	vf_paddr_record *paddr_record = data;
 
-	fprintf(stderr, "Destroying paddr_record at shadow physical address %lx\n", (paddr_record->parent->shadow_page << 12) + paddr_record->offset);
+	fprintf(stderr, "Destroying paddr_record at shadow physical address %lx\n", (paddr_record->parent->shadow_page << VF_PAGE_OFFSET_BITS) + paddr_record->offset);
 
 	g_free(paddr_record);
 }
@@ -301,10 +304,10 @@ vf_setup_mem_trap (vf_config * conf, addr_t va)
 		goto done;
 	}
 
-	addr_t frame = pa >> 12;
+	addr_t frame = pa >> VF_PAGE_OFFSET_BITS;
 	addr_t shadow = (addr_t)g_hash_table_lookup(vf_page_translation,
 		                                GSIZE_TO_POINTER(frame));
-	addr_t shadow_offset = pa % (1 << 12);
+	addr_t shadow_offset = pa % VF_PAGE_SIZE;
 
 	if (0 == shadow) {
 		/* we need to allocate a new page */
@@ -336,13 +339,13 @@ vf_setup_mem_trap (vf_config * conf, addr_t va)
 
 		/* store current page on the stack */
 		uint8_t buff[VF_PAGE_SIZE] = {0};
-		status_t status = vmi_read_pa(conf->vmi, frame << 12, buff, VF_PAGE_SIZE);
+		status_t status = vmi_read_pa(conf->vmi, frame << VF_PAGE_OFFSET_BITS, buff, VF_PAGE_SIZE);
 		if (0 == status) {
 			fprintf(stderr, "Failed to read in syscall page\n");
 			goto done;
 		}
 
-		status = vmi_write_pa(conf->vmi, shadow << 12, buff, VF_PAGE_SIZE);
+		status = vmi_write_pa(conf->vmi, shadow << VF_PAGE_OFFSET_BITS, buff, VF_PAGE_SIZE);
 		if (0 == status) {
 			fprintf(stderr, "Failed to write to shadow page\n");
 			goto done;
@@ -380,7 +383,7 @@ vf_setup_mem_trap (vf_config * conf, addr_t va)
 	paddr_record->identifier    = ~0; /* default 0xFFFF */
 
 	/* write the interrupt to our shadow page at the correct location */
-	status_t ret = vmi_write_8_pa(conf->vmi, (shadow << 12) + shadow_offset, &VF_BREAKPOINT_INST);
+	status_t ret = vmi_write_8_pa(conf->vmi, (shadow << VF_PAGE_OFFSET_BITS) + shadow_offset, &VF_BREAKPOINT_INST);
 	if (VMI_SUCCESS != ret) {
 		fprintf(stderr, "Failed to write interrupt to shadow page\n");
 		goto done;
@@ -401,7 +404,7 @@ done:
 static status_t
 vf_emplace_breakpoint(vf_paddr_record *paddr_record) {
 	return vmi_write_8_pa(paddr_record->parent->conf->vmi,
-	                      (paddr_record->parent->shadow_page << 12) + paddr_record->offset,
+	                      (paddr_record->parent->shadow_page << VF_PAGE_OFFSET_BITS) + paddr_record->offset,
 	                      &VF_BREAKPOINT_INST);
 }
 
@@ -414,7 +417,7 @@ vf_remove_breakpoint(vf_paddr_record *paddr_record) {
 	status_t status = VMI_FAILURE;
 
 	status = vmi_read_8_pa(paddr_record->parent->conf->vmi,
-						   (paddr_record->parent->frame << 12) + paddr_record->offset,
+						   (paddr_record->parent->frame << VF_PAGE_OFFSET_BITS) + paddr_record->offset,
 						   &curr_inst);
 
 	if (VMI_FAILURE == status) {
@@ -422,7 +425,7 @@ vf_remove_breakpoint(vf_paddr_record *paddr_record) {
 	}
 
 	status = vmi_write_8_pa(paddr_record->parent->conf->vmi,
-	                        (paddr_record->parent->shadow_page << 12) + paddr_record->offset,
+	                        (paddr_record->parent->shadow_page << VF_PAGE_OFFSET_BITS) + paddr_record->offset,
 	                        &curr_inst);
 
 done:
@@ -442,8 +445,8 @@ vf_paddr_record_from_pa(vmi_instance_t vmi, addr_t pa) {
 	vf_paddr_record *paddr_record = NULL;
 	vf_page_record  *page_record  = NULL;
 
-	addr_t page = pa >> 12;
-	addr_t offset = pa - (page << 12);
+	addr_t page = pa >> VF_PAGE_OFFSET_BITS;
+	addr_t offset = pa - (page << VF_PAGE_OFFSET_BITS);
 	addr_t shadow = (addr_t)g_hash_table_lookup(vf_page_translation,
 											GSIZE_TO_POINTER(page));
 
