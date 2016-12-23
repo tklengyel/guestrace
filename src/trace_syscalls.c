@@ -304,7 +304,7 @@ vf_setup_mem_trap (vf_config * conf, addr_t va)
 	addr_t frame = pa >> 12;
 	addr_t shadow = (addr_t)g_hash_table_lookup(vf_page_translation,
 		                                GSIZE_TO_POINTER(frame));
-	addr_t shadow_offset = pa - (frame << 12); /* probably a fancy bitwise way to do this */
+	addr_t shadow_offset = pa % (1 << 12);
 
 	if (0 == shadow) {
 		/* we need to allocate a new page */
