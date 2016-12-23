@@ -446,10 +446,9 @@ vf_paddr_record_from_pa(vmi_instance_t vmi, addr_t pa) {
 	vf_page_record  *page_record  = NULL;
 
 	addr_t frame = pa >> VF_PAGE_OFFSET_BITS;
-	addr_t offset = pa - (frame << VF_PAGE_OFFSET_BITS);
+	addr_t offset = pa % VF_PAGE_SIZE;
 	addr_t shadow = (addr_t)g_hash_table_lookup(vf_page_translation,
-											GSIZE_TO_POINTER(frame));
-
+	                                            GSIZE_TO_POINTER(frame));
 	if (0 == shadow) {
 		goto done;
 	}
