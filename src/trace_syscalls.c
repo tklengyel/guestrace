@@ -77,7 +77,7 @@ static GHashTable *vf_page_record_collection;
  */
 
 typedef struct vf_page_record {
-	addr_t page;
+	addr_t frame;
 	addr_t shadow_page;
 	GHashTable *children;
 	vf_config *conf;
@@ -254,7 +254,7 @@ vf_destroy_page_record (gpointer data) {
 
 	/* stop monitoring this page with our mem event */
 	vmi_set_mem_event(page_record->conf->vmi,
-					  page_record->page,
+					  page_record->frame,
 					  VMI_MEMACCESS_N,
 					  page_record->conf->shadow_view);
 
@@ -301,10 +301,10 @@ vf_setup_mem_trap (vf_config * conf, addr_t va)
 		goto done;
 	}
 
-	addr_t page = pa >> 12;
+	addr_t frame = pa >> 12;
 	addr_t shadow = (addr_t)g_hash_table_lookup(vf_page_translation,
-		                                GSIZE_TO_POINTER(page));
-	addr_t shadow_offset = pa - (page << 12); /* probably a fancy bitwise way to do this */
+		                                GSIZE_TO_POINTER(frame));
+	addr_t shadow_offset = pa - (frame << 12); /* probably a fancy bitwise way to do this */
 
 	if (0 == shadow) {
 		/* we need to allocate a new page */
@@ -316,11 +316,11 @@ vf_setup_mem_trap (vf_config * conf, addr_t va)
 		}
 
 		g_hash_table_insert(vf_page_translation,
-							GSIZE_TO_POINTER(page),
+							GSIZE_TO_POINTER(frame),
 							GSIZE_TO_POINTER(shadow));
 
 		/* this adds our remapping into our shadow view */
-		int xc_status = xc_altp2m_change_gfn(conf->xch, conf->domid, conf->shadow_view, page, shadow);
+		int xc_status = xc_altp2m_change_gfn(conf->xch, conf->domid, conf->shadow_view, frame, shadow);
 		if (0 > xc_status) {
 			fprintf(stderr, "Failed to add paddr_record into shadow view\n");
 			goto done;
@@ -332,11 +332,11 @@ vf_setup_mem_trap (vf_config * conf, addr_t va)
 
 	if (NULL == page_record) {
 		/* we need to create our page record and fill it */
-		fprintf(stderr, "creating new page trap on 0x%lx -> 0x%lx\n", shadow, page);
+		fprintf(stderr, "creating new page trap on 0x%lx -> 0x%lx\n", shadow, frame);
 
 		/* store current page on the stack */
 		uint8_t buff[VF_PAGE_SIZE] = {0};
-		status_t status = vmi_read_pa(conf->vmi, page << 12, buff, VF_PAGE_SIZE);
+		status_t status = vmi_read_pa(conf->vmi, frame << 12, buff, VF_PAGE_SIZE);
 		if (0 == status) {
 			fprintf(stderr, "Failed to read in syscall page\n");
 			goto done;
@@ -350,7 +350,7 @@ vf_setup_mem_trap (vf_config * conf, addr_t va)
 
 		page_record                     = g_new0(vf_page_record, 1);
 		page_record->shadow_page        = shadow;
-		page_record->page               = page;
+		page_record->frame              = frame;
 		page_record->conf               = conf;
 		page_record->children 			= g_hash_table_new_full(NULL,
 					                                            NULL,
@@ -362,7 +362,7 @@ vf_setup_mem_trap (vf_config * conf, addr_t va)
 		                    page_record);
 
 		/* tells libvmi to trigger our callback on a R/W to this page */
-		vmi_set_mem_event(conf->vmi, page, VMI_MEMACCESS_RW, conf->shadow_view);
+		vmi_set_mem_event(conf->vmi, frame, VMI_MEMACCESS_RW, conf->shadow_view);
 	} else {
 		/* We already have a page record for this page in collection. */
 		paddr_record = g_hash_table_lookup(page_record->children,
@@ -414,7 +414,7 @@ vf_remove_breakpoint(vf_paddr_record *paddr_record) {
 	status_t status = VMI_FAILURE;
 
 	status = vmi_read_8_pa(paddr_record->parent->conf->vmi,
-						   (paddr_record->parent->page << 12) + paddr_record->offset,
+						   (paddr_record->parent->frame << 12) + paddr_record->offset,
 						   &curr_inst);
 
 	if (VMI_FAILURE == status) {
