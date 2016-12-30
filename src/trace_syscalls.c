@@ -200,65 +200,68 @@ done:
 	return status;
 }
 
-/*
- * Close our driver handlers and reset shadow memory.
- */
+/* Tear down the Xen facilities set up by vf_init_config(). */
 static void
 vf_close_config(vf_config * conf)
 {
-	int xc_status = xc_altp2m_switch_to_view(conf->xch, conf->domid, 0);
-	if (0 > xc_status) {
-		fprintf(stderr, "Failed to reset EPT to point to default table\n");
+	int status;
+
+	status = xc_altp2m_switch_to_view(conf->xch, conf->domid, 0);
+	if (0 > status) {
+		fprintf(stderr, "failed to reset EPT to point to default table\n");
 	}
 
-	xc_status = xc_altp2m_destroy_view(conf->xch, conf->domid, conf->shadow_view);
-	if (0 > xc_status) {
-		fprintf(stderr, "Failed to destroy shadow view\n");
+	status = xc_altp2m_destroy_view(conf->xch, conf->domid, conf->shadow_view);
+	if (0 > status) {
+		fprintf(stderr, "failed to destroy shadow view\n");
 	}
 
-	xc_status = xc_altp2m_set_domain_state(conf->xch, conf->domid, 0);
-	if (0 > xc_status) {
-		fprintf(stderr, "Failed to turn off altp2m on guest\n");
+	status = xc_altp2m_set_domain_state(conf->xch, conf->domid, 0);
+	if (0 > status) {
+		fprintf(stderr, "failed to turn off altp2m on guest\n");
 	}
 
 	/* todo: find out why this isn't decreasing main memory on next run of guestrace */
-	xc_status = xc_domain_setmaxmem(conf->xch, conf->domid, conf->init_mem_size);
-	if (0 > xc_status) {
-		fprintf(stderr, "Failed to reset max memory on guest");
+	status = xc_domain_setmaxmem(conf->xch, conf->domid, conf->init_mem_size);
+	if (0 > status) {
+		fprintf(stderr, "failed to reset max memory on guest");
 	}
 
 	libxl_ctx_free(conf->ctx);
 	xc_interface_close(conf->xch);
 }
 
-/*
- * Allocates a new page of memory in the guest's address space
- */
+/* Allocate a new page of memory in the guest's address space. */
 static addr_t
 vf_allocate_shadow_page (vf_config * conf)
 {
+	int status;
 	xen_pfn_t gfn = 0;
+	uint64_t proposed_mem_size = conf->curr_mem_size + VF_PAGE_SIZE;
 
-	int status = xc_domain_setmaxmem(conf->xch, conf->domid, conf->curr_mem_size + VF_PAGE_SIZE);
-
+	status = xc_domain_setmaxmem(conf->xch, conf->domid, proposed_mem_size);
 	if (0 == status) {
-		conf->curr_mem_size += VF_PAGE_SIZE;
+		conf->curr_mem_size = proposed_mem_size;
 	} else {
-		fprintf(stderr, "Could not increase memory size on guest to %lx\n", conf->curr_mem_size + VF_PAGE_SIZE);
+		fprintf(stderr,
+		       "failed to increase memory size on guest to %lx\n",
+		        proposed_mem_size);
 		goto done;
 	}
 
-	status = xc_domain_increase_reservation_exact(conf->xch, conf->domid, 1, 0, 0, &gfn);
+	status = xc_domain_increase_reservation_exact(conf->xch, conf->domid,
+	                                              1, 0, 0, &gfn);
 
 	if (status) {
-		fprintf(stderr, "Could not increase reservation on guest");
+		fprintf(stderr, "failed to increase reservation on guest");
 		goto done;
 	}
 
-	status = xc_domain_populate_physmap_exact(conf->xch, conf->domid, 1, 0, 0, &gfn);
+	status = xc_domain_populate_physmap_exact(conf->xch, conf->domid, 1, 0,
+	                                          0, &gfn);
 
 	if (status) {
-		fprintf(stderr, "Could not populate GFN at 0x%lx\n", gfn);
+		fprintf(stderr, "failed to populate GFN at 0x%lx\n", gfn);
 		gfn = 0;
 		goto done;
 	}
