@@ -274,7 +274,10 @@ static void
 vf_destroy_paddr_record (gpointer data) {
 	vf_paddr_record *paddr_record = data;
 
-	fprintf(stderr, "Destroying paddr_record at shadow physical address %lx\n", (paddr_record->parent->shadow_page << VF_PAGE_OFFSET_BITS) + paddr_record->offset);
+	fprintf(stderr,
+	       "destroying paddr record at shadow physical address %lx\n",
+	       (paddr_record->parent->shadow_page << VF_PAGE_OFFSET_BITS)
+	      + paddr_record->offset);
 
 	g_free(paddr_record);
 }
@@ -283,25 +286,26 @@ static void
 vf_destroy_page_record (gpointer data) {
 	vf_page_record *page_record = data;
 
-	fprintf(stderr, "Destroying page_record on shadow page %lx\n", page_record->shadow_page);
+	fprintf(stderr,
+	       "destroying page record on shadow page %lx\n",
+	        page_record->shadow_page);
 
-	/* stop monitoring this page with our mem event */
+	/* Stop monitoring this page. */
 	vmi_set_mem_event(page_record->conf->vmi,
-					  page_record->frame,
-					  VMI_MEMACCESS_N,
-					  page_record->conf->shadow_view);
+	                  page_record->frame,
+	                  VMI_MEMACCESS_N,
+	                  page_record->conf->shadow_view);
 
 	xc_altp2m_change_gfn(page_record->conf->xch,
-						 page_record->conf->domid,
-						 page_record->conf->shadow_view,
-						 page_record->shadow_page,
-						 ~0);
+	                     page_record->conf->domid,
+	                     page_record->conf->shadow_view,
+	                     page_record->shadow_page,
+	                    ~0);
 
 	xc_domain_decrease_reservation_exact(page_record->conf->xch,
-										 page_record->conf->domid,
-										 1,
-										 0,
-										 &page_record->shadow_page);
+	                                     page_record->conf->domid,
+	                                     1, 0,
+	                                    &page_record->shadow_page);
 
 	g_hash_table_destroy(page_record->children);
 
