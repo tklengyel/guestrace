@@ -22,5 +22,5 @@ src/Makefile.in
 src/guestrace
 src/syscalls.txt
 src/trace_syscalls.o
-src/translate_syscalls.o
+src/functions_windows.o
 stamp-h1

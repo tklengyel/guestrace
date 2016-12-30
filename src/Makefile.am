@@ -17,8 +17,8 @@ bin_PROGRAMS = \
 
 guestrace_SOURCES = \
 	trace_syscalls.c \
-	translate_syscalls.c
+	functions_windows.c
 
 noinst_HEADERS = \
 	syscall_enum.h \
-	translate_syscalls.h
+	functions_windows.h

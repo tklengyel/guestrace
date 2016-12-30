@@ -1,4 +1,3 @@
-#include <capstone/capstone.h>
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
 #include <glib.h>
@@ -10,7 +9,8 @@
 #include <string.h>
 #include <xenctrl.h>
 
-#include "translate_syscalls.h"
+#include "trace_syscalls.h"
+#include "functions_windows.h"
 
 /*
  * Before running, you must add
@@ -71,18 +71,6 @@ static vmi_event_t vf_breakpoint_event;
 /* Global memory event, triggered by R/W access; call vf_mem_rw_cb. */
 static vmi_event_t vf_memory_event;
 
-/* Data structure used to interact directly with Xen driver */
-typedef struct vf_config {
-	xc_interface *xch;
-	libxl_ctx *ctx;
-	xentoollog_logger *logger;
-	uint32_t domid;
-	uint64_t init_mem_size;
-	uint64_t curr_mem_size;
-	vmi_instance_t vmi;
-	uint16_t shadow_view;
-} vf_config;
-
 static GHashTable *vf_page_translation;
 static GHashTable *vf_page_record_collection;
 
@@ -107,22 +95,6 @@ static GHashTable *vf_page_record_collection;
  * This serves as a record for each breakpoint that guestrace sets within a
  * page.
  */
-
-typedef struct vf_page_record {
-	addr_t frame;
-	addr_t shadow_page;
-	GHashTable *children;
-	vf_config *conf;
-} vf_page_record;
-
-typedef struct vf_paddr_record {
-	addr_t offset;
-	vf_page_record *parent;
-	uint16_t identifier; /* Syscall identifier because we nix RAX. */
-} vf_paddr_record;
-
-/* Global paddr record for our syscall return address */
-static vf_paddr_record *sysret_trap;
 
 /*
  * Handle terminating signals by setting interrupted flag. This allows
@@ -335,7 +307,7 @@ vf_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
  * physical-address record corresponding to va to the page record's collection
  * of children.
  */
-static vf_paddr_record *
+vf_paddr_record *
 vf_setup_mem_trap (vf_config *conf, addr_t va)
 {
 	vf_page_record  *page_record  = NULL;
@@ -457,7 +429,7 @@ done:
 /*
  * Emplace the breakpoint associated with paddr_record.
  */
-static status_t
+status_t
 vf_emplace_breakpoint(vf_paddr_record *paddr_record) {
 	addr_t shadow_page = paddr_record->parent->shadow_page;
 	addr_t offset      = paddr_record->offset;
@@ -470,7 +442,7 @@ vf_emplace_breakpoint(vf_paddr_record *paddr_record) {
 /*
  * Remove the breakpoint associated with paddr_record.
  */
-static status_t
+status_t
 vf_remove_breakpoint(vf_paddr_record *paddr_record) {
 	uint8_t curr_inst;
 	status_t status    = VMI_FAILURE;
@@ -674,108 +646,6 @@ done:
 	return status;
 }
 
-/*
- * Disassemble the kernel and find the appropriate spot for a breakpoint
- * which will allow guestrace to determine a system call's return value. Return
- * the address of this spot.
- */
-static addr_t
-vf_get_syscall_ret_addr(vf_config *conf, addr_t syscall_start) {
-	csh handle;
-	cs_insn *inst;
-	size_t count, call_offset = ~0;
-	addr_t ret = 0;
-	uint8_t code[4096]; /* Assume CALL is within first page. */
-
-	addr_t syscall_start_p = vmi_translate_kv2p(conf->vmi, syscall_start);
-	if (0 == syscall_start_p) {
-		fprintf(stderr, "failed to read instructions from 0x%"
-		                 PRIx64".\n", syscall_start);
-		goto done;
-	}
-
-	/* Read kernel instructions into code. */
-	status_t status = vmi_read_pa(conf->vmi, syscall_start_p, code, sizeof(code));
-	if (VMI_FAILURE == status) {
-		fprintf(stderr, "failed to read instructions from 0x%"
-		                 PRIx64".\n", syscall_start_p);
-		goto done;
-	}
-
-	if (cs_open(CS_ARCH_X86, CS_MODE_64, &handle) != CS_ERR_OK) {
-		fprintf(stderr, "failed to open capstone\n");
-		goto done;
-	}
-
-	/* Find CALL inst. and note address of inst. which follows. */
-	count = cs_disasm(handle, code, sizeof(code), 0, 0, &inst);
-	if (count > 0) {
-		size_t i;
-		for (i = 0; i < count; i++) {
-			if (0 == strcmp(inst[i].mnemonic, "call")
-			 && 0 == strcmp(inst[i].op_str, "r10")) {
-				call_offset = inst[i + 1].address;
-				break;
-			}
-		}
-		cs_free(inst, count);
-	} else {
-		fprintf(stderr, "failed to disassemble system-call handler\n");
-		goto done;
-	}
-
-	if (~0 == call_offset) {
-		fprintf(stderr, "did not find call in system-call handler\n");
-		goto done;
-	}
-
-	cs_close(&handle);
-
-	ret = syscall_start + call_offset;
-
-done:
-	return ret;
-}
-
-/*
- * Find the appropriate place for a breakpoint which will enable guestrace to
- * read a system call's return value, setup the breakpoint, and setup
- * a memory trap. Leave the breakpoint disabled; guestrace will enable it
- * upon an execution of the return-value page.
- */
-static bool
-vf_set_up_sysret_handler(vf_config *conf)
-{
-	bool status = false;
-	addr_t lstar = 0;
-
-	/* LSTAR should be the constant across all VCPUs */
-	status_t ret = vmi_get_vcpureg(conf->vmi, &lstar, MSR_LSTAR, 0);
-	if (VMI_SUCCESS != ret) {
-		fprintf(stderr, "failed to get MSR_LSTAR address\n");
-		goto done;
-	}
-
-	addr_t ret_addr = vf_get_syscall_ret_addr(conf, lstar);
-	if (0 == ret_addr) {
-		fprintf(stderr, "failed to get system return address\n");
-		goto done;
-	}
-
-	sysret_trap = vf_setup_mem_trap(conf, ret_addr);
-	if (NULL == sysret_trap) {
-		fprintf(stderr, "Failed to create sysret memory trap\n");
-		goto done;
-	}
-
-	vf_remove_breakpoint(sysret_trap);
-
-	status = true;
-
-done:
-	return status;
-}
-
 static void
 vf_close_handler (int sig)
 {
@@ -822,469 +692,6 @@ vf_set_up_signal_handler (struct sigaction act)
 
 done:
 	return -1 != status;
-}
-
-#define countof(array) (sizeof(array) / sizeof((array)[0]))
-
-/*
- * For each of the system calls libvmi is interested in, establish a memory trap
- * on the page containing the system call handler's first instruction. An
- * execute trap will cause guestrace to emplace a breakpoint. A read/write trap
- * (i.e., kernel patch protection) will cause guestrace to restore the original
- * instruction.
- */
-static bool
-vf_find_syscalls_and_setup_mem_trap(vf_config *conf)
-{
-	bool status = false;
-
-	/* See Windows's KeServiceDescriptorTable. */
-	static const char *SYSCALLS[] = {
-		"NtMapUserPhysicalPagesScatter",
-		"NtWaitForSingleObject",
-		"NtCallbackReturn",
-		"NtReadFile",
-		"NtDeviceIoControlFile",
-		"NtWriteFile",
-		"NtRemoveIoCompletion",
-		"NtReleaseSemaphore",
-		"NtReplyWaitReceivePort",
-		"NtReplyPort",
-		"NtSetInformationThread",
-		"NtSetEvent",
-		"NtClose",
-		"NtQueryObject",
-		"NtQueryInformationFile",
-		"NtOpenKey",
-		"NtEnumerateValueKey",
-		"NtFindAtom",
-		"NtQueryDefaultLocale",
-		"NtQueryKey",
-		"NtQueryValueKey",
-		"NtAllocateVirtualMemory",
-		"NtQueryInformationProcess",
-		"NtWaitForMultipleObjects32",
-		"NtWriteFileGather",
-		"NtSetInformationProcess",
-		"NtCreateKey",
-		"NtFreeVirtualMemory",
-		"NtImpersonateClientOfPort",
-		"NtReleaseMutant",
-		"NtQueryInformationToken",
-		"NtRequestWaitReplyPort",
-		"NtQueryVirtualMemory",
-		"NtOpenThreadToken",
-		"NtQueryInformationThread",
-		"NtOpenProcess",
-		"NtSetInformationFile",
-		"NtMapViewOfSection",
-		"NtAccessCheckAndAuditAlarm",
-		"NtUnmapViewOfSection",
-		"NtReplyWaitReceivePortEx",
-		"NtTerminateProcess",
-		"NtSetEventBoostPriority",
-		"NtReadFileScatter",
-		"NtOpenThreadTokenEx",
-		"NtOpenProcessTokenEx",
-		"NtQueryPerformanceCounter",
-		"NtEnumerateKey",
-		"NtOpenFile",
-		"NtDelayExecution",
-		"NtQueryDirectoryFile",
-		"NtQuerySystemInformation",
-		"NtOpenSection",
-		"NtQueryTimer",
-		"NtFsControlFile",
-		"NtWriteVirtualMemory",
-		"NtCloseObjectAuditAlarm",
-		"NtDuplicateObject",
-		"NtQueryAttributesFile",
-		"NtClearEvent",
-		"NtReadVirtualMemory",
-		"NtOpenEvent",
-		"NtAdjustPrivilegesToken",
-		"NtDuplicateToken",
-		"NtContinue",
-		"NtQueryDefaultUILanguage",
-		"NtQueueApcThread",
-		"NtYieldExecution",
-		"NtAddAtom",
-		"NtCreateEvent",
-		"NtQueryVolumeInformationFile",
-		"NtCreateSection",
-		"NtFlushBuffersFile",
-		"NtApphelpCacheControl",
-		"NtCreateProcessEx",
-		"NtCreateThread",
-		"NtIsProcessInJob",
-		"NtProtectVirtualMemory",
-		"NtQuerySection",
-		"NtResumeThread",
-		"NtTerminateThread",
-		"NtReadRequestData",
-		"NtCreateFile",
-		"NtQueryEvent",
-		"NtWriteRequestData",
-		"NtOpenDirectoryObject",
-		"NtAccessCheckByTypeAndAuditAlarm",
-		"NtQuerySystemTime",
-		"NtWaitForMultipleObjects",
-		"NtSetInformationObject",
-		"NtCancelIoFile",
-		"NtTraceEvent",
-		"NtPowerInformation",
-		"NtSetValueKey",
-		"NtCancelTimer",
-		"NtSetTimer",
-		"NtAcceptConnectPort",
-		"NtAccessCheck",
-		"NtAccessCheckByType",
-		"NtAccessCheckByTypeResultList",
-		"NtAccessCheckByTypeResultListAndAuditAlarm",
-		"NtAccessCheckByTypeResultListAndAuditAlarmByHandle",
-		"NtAddBootEntry",
-		"NtAddDriverEntry",
-		"NtAdjustGroupsToken",
-		"NtAlertResumeThread",
-		"NtAlertThread",
-		"NtAllocateLocallyUniqueId",
-		"NtAllocateReserveObject",
-		"NtAllocateUserPhysicalPages",
-		"NtAllocateUuids",
-		"NtAlpcAcceptConnectPort",
-		"NtAlpcCancelMessage",
-		"NtAlpcConnectPort",
-		"NtAlpcCreatePort",
-		"NtAlpcCreatePortSection",
-		"NtAlpcCreateResourceReserve",
-		"NtAlpcCreateSectionView",
-		"NtAlpcCreateSecurityContext",
-		"NtAlpcDeletePortSection",
-		"NtAlpcDeleteResourceReserve",
-		"NtAlpcDeleteSectionView",
-		"NtAlpcDeleteSecurityContext",
-		"NtAlpcDisconnectPort",
-		"NtAlpcImpersonateClientOfPort",
-		"NtAlpcOpenSenderProcess",
-		"NtAlpcOpenSenderThread",
-		"NtAlpcQueryInformation",
-		"NtAlpcQueryInformationMessage",
-		"NtAlpcRevokeSecurityContext",
-		"NtAlpcSendWaitReceivePort",
-		"NtAlpcSetInformation",
-		"NtAreMappedFilesTheSame",
-		"NtAssignProcessToJobObject",
-		"NtCancelIoFileEx",
-		"NtCancelSynchronousIoFile",
-		"NtCommitComplete",
-		"NtCommitEnlistment",
-		"NtCommitTransaction",
-		"NtCompactKeys",
-		"NtCompareTokens",
-		"NtCompleteConnectPort",
-		"NtCompressKey",
-		"NtConnectPort",
-		"NtCreateDebugObject",
-		"NtCreateDirectoryObject",
-		"NtCreateEnlistment",
-		"NtCreateEventPair",
-		"NtCreateIoCompletion",
-		"NtCreateJobObject",
-		"NtCreateJobSet",
-		"NtCreateKeyTransacted",
-		"NtCreateKeyedEvent",
-		"NtCreateMailslotFile",
-		"NtCreateMutant",
-		"NtCreateNamedPipeFile",
-		"NtCreatePagingFile",
-		"NtCreatePort",
-		"NtCreatePrivateNamespace",
-		"NtCreateProcess",
-		"NtCreateProfile",
-		"NtCreateProfileEx",
-		"NtCreateResourceManager",
-		"NtCreateSemaphore",
-		"NtCreateSymbolicLinkObject",
-		"NtCreateThreadEx",
-		"NtCreateTimer",
-		"NtCreateToken",
-		"NtCreateTransaction",
-		"NtCreateTransactionManager",
-		"NtCreateUserProcess",
-		"NtCreateWaitablePort",
-		"NtCreateWorkerFactory",
-		"NtDebugActiveProcess",
-		"NtDebugContinue",
-		"NtDeleteAtom",
-		"NtDeleteBootEntry",
-		"NtDeleteDriverEntry",
-		"NtDeleteFile",
-		"NtDeleteKey",
-		"NtDeleteObjectAuditAlarm",
-		"NtDeletePrivateNamespace",
-		"NtDeleteValueKey",
-		"NtDisableLastKnownGood",
-		"NtDisplayString",
-		"NtDrawText",
-		"NtEnableLastKnownGood",
-		"NtEnumerateBootEntries",
-		"NtEnumerateDriverEntries",
-		"NtEnumerateSystemEnvironmentValuesEx",
-		"NtEnumerateTransactionObject",
-		"NtExtendSection",
-		"NtFilterToken",
-		"NtFlushInstallUILanguage",
-		"NtFlushInstructionCache",
-		"NtFlushKey",
-		"NtFlushProcessWriteBuffers",
-		"NtFlushVirtualMemory",
-		"NtFlushWriteBuffer",
-		"NtFreeUserPhysicalPages",
-		"NtFreezeRegistry",
-		"NtFreezeTransactions",
-		"NtGetContextThread",
-		"NtGetCurrentProcessorNumber",
-		"NtGetDevicePowerState",
-		"NtGetMUIRegistryInfo",
-		"NtGetNextProcess",
-		"NtGetNextThread",
-		"NtGetNlsSectionPtr",
-		"NtGetNotificationResourceManager",
-		"NtGetPlugPlayEvent",
-		"NtGetWriteWatch",
-		"NtImpersonateAnonymousToken",
-		"NtImpersonateThread",
-		"NtInitializeNlsFiles",
-		"NtInitializeRegistry",
-		"NtInitiatePowerAction",
-		"NtIsSystemResumeAutomatic",
-		"NtIsUILanguageComitted",
-		"NtListenPort",
-		"NtLoadDriver",
-		"NtLoadKey",
-		"NtLoadKey2",
-		"NtLoadKeyEx",
-		"NtLockFile",
-		"NtLockProductActivationKeys",
-		"NtLockRegistryKey",
-		"NtLockVirtualMemory",
-		"NtMakePermanentObject",
-		"NtMakeTemporaryObject",
-		"NtMapCMFModule",
-		"NtMapUserPhysicalPages",
-		"NtModifyBootEntry",
-		"NtModifyDriverEntry",
-		"NtNotifyChangeDirectoryFile",
-		"NtNotifyChangeKey",
-		"NtNotifyChangeMultipleKeys",
-		"NtNotifyChangeSession",
-		"NtOpenEnlistment",
-		"NtOpenEventPair",
-		"NtOpenIoCompletion",
-		"NtOpenJobObject",
-		"NtOpenKeyEx",
-		"NtOpenKeyTransacted",
-		"NtOpenKeyTransactedEx",
-		"NtOpenKeyedEvent",
-		"NtOpenMutant",
-		"NtOpenObjectAuditAlarm",
-		"NtOpenPrivateNamespace",
-		"NtOpenProcessToken",
-		"NtOpenResourceManager",
-		"NtOpenSemaphore",
-		"NtOpenSession",
-		"NtOpenSymbolicLinkObject",
-		"NtOpenThread",
-		"NtOpenTimer",
-		"NtOpenTransaction",
-		"NtOpenTransactionManager",
-		"NtPlugPlayControl",
-		"NtPrePrepareComplete",
-		"NtPrePrepareEnlistment",
-		"NtPrepareComplete",
-		"NtPrepareEnlistment",
-		"NtPrivilegeCheck",
-		"NtPrivilegeObjectAuditAlarm",
-		"NtPrivilegedServiceAuditAlarm",
-		"NtPropagationComplete",
-		"NtPropagationFailed",
-		"NtPulseEvent",
-		"NtQueryBootEntryOrder",
-		"NtQueryBootOptions",
-		"NtQueryDebugFilterState",
-		"NtQueryDirectoryObject",
-		"NtQueryDriverEntryOrder",
-		"NtQueryEaFile",
-		"NtQueryFullAttributesFile",
-		"NtQueryInformationAtom",
-		"NtQueryInformationEnlistment",
-		"NtQueryInformationJobObject",
-		"NtQueryInformationPort",
-		"NtQueryInformationResourceManager",
-		"NtQueryInformationTransaction",
-		"NtQueryInformationTransactionManager",
-		"NtQueryInformationWorkerFactory",
-		"NtQueryInstallUILanguage",
-		"NtQueryIntervalProfile",
-		"NtQueryIoCompletion",
-		"NtQueryLicenseValue",
-		"NtQueryMultipleValueKey",
-		"NtQueryMutant",
-		"NtQueryOpenSubKeys",
-		"NtQueryOpenSubKeysEx",
-		"NtQueryPortInformationProcess",
-		"NtQueryQuotaInformationFile",
-		"NtQuerySecurityAttributesToken",
-		"NtQuerySecurityObject",
-		"NtQuerySemaphore",
-		"NtQuerySymbolicLinkObject",
-		"NtQuerySystemEnvironmentValue",
-		"NtQuerySystemEnvironmentValueEx",
-		"NtQuerySystemInformationEx",
-		"NtQueryTimerResolution",
-		"NtQueueApcThreadEx",
-		"NtRaiseException",
-		"NtRaiseHardError",
-		"NtReadOnlyEnlistment",
-		"NtRecoverEnlistment",
-		"NtRecoverResourceManager",
-		"NtRecoverTransactionManager",
-		"NtRegisterProtocolAddressInformation",
-		"NtRegisterThreadTerminatePort",
-		"NtReleaseKeyedEvent",
-		"NtReleaseWorkerFactoryWorker",
-		"NtRemoveIoCompletionEx",
-		"NtRemoveProcessDebug",
-		"NtRenameKey",
-		"NtRenameTransactionManager",
-		"NtReplaceKey",
-		"NtReplacePartitionUnit",
-		"NtReplyWaitReplyPort",
-		"NtRequestPort",
-		"NtResetEvent",
-		"NtResetWriteWatch",
-		"NtRestoreKey",
-		"NtResumeProcess",
-		"NtRollbackComplete",
-		"NtRollbackEnlistment",
-		"NtRollbackTransaction",
-		"NtRollforwardTransactionManager",
-		"NtSaveKey",
-		"NtSaveKeyEx",
-		"NtSaveMergedKeys",
-		"NtSecureConnectPort",
-		"NtSerializeBoot",
-		"NtSetBootEntryOrder",
-		"NtSetBootOptions",
-		"NtSetContextThread",
-		"NtSetDebugFilterState",
-		"NtSetDefaultHardErrorPort",
-		"NtSetDefaultLocale",
-		"NtSetDefaultUILanguage",
-		"NtSetDriverEntryOrder",
-		"NtSetEaFile",
-		"NtSetHighEventPair",
-		"NtSetHighWaitLowEventPair",
-		"NtSetInformationDebugObject",
-		"NtSetInformationEnlistment",
-		"NtSetInformationJobObject",
-		"NtSetInformationKey",
-		"NtSetInformationResourceManager",
-		"NtSetInformationToken",
-		"NtSetInformationTransaction",
-		"NtSetInformationTransactionManager",
-		"NtSetInformationWorkerFactory",
-		"NtSetIntervalProfile",
-		"NtSetIoCompletion",
-		"NtSetIoCompletionEx",
-		"NtSetLdtEntries",
-		"NtSetLowEventPair",
-		"NtSetLowWaitHighEventPair",
-		"NtSetQuotaInformationFile",
-		"NtSetSecurityObject",
-		"NtSetSystemEnvironmentValue",
-		"NtSetSystemEnvironmentValueEx",
-		"NtSetSystemInformation",
-		"NtSetSystemPowerState",
-		"NtSetSystemTime",
-		"NtSetThreadExecutionState",
-		"NtSetTimerEx",
-		"NtSetTimerResolution",
-		"NtSetUuidSeed",
-		"NtSetVolumeInformationFile",
-		"NtShutdownSystem",
-		"NtShutdownWorkerFactory",
-		"NtSignalAndWaitForSingleObject",
-		"NtSinglePhaseReject",
-		"NtStartProfile",
-		"NtStopProfile",
-		"NtSuspendProcess",
-		"NtSuspendThread",
-		"NtSystemDebugControl",
-		"NtTerminateJobObject",
-		"NtTestAlert",
-		"NtThawRegistry",
-		"NtThawTransactions",
-		"NtTraceControl",
-		"NtTranslateFilePath",
-		"NtUmsThreadYield",
-		"NtUnloadDriver",
-		"NtUnloadKey",
-		"NtUnloadKey2",
-		"NtUnloadKeyEx",
-		"NtUnlockFile",
-		"NtUnlockVirtualMemory",
-		"NtVdmControl",
-		"NtWaitForDebugEvent",
-		"NtWaitForKeyedEvent",
-		"NtWaitForWorkViaWorkerFactory",
-		"NtWaitHighEventPair",
-		"NtWaitLowEventPair",
-		"NtWorkerFactoryWorkerReady"
-	};
-
-	static const char *TRACED_SYSCALLS[] = {
-		"NtCreateFile",
-		"NtOpenProcess"
-	};
-
-	for (int i = 0; i < countof(SYSCALLS); i++) {
-		for (int j = 0; j < countof(TRACED_SYSCALLS); j++) {
-			addr_t sysaddr;
-			vf_paddr_record *syscall_trap;
-
-			if (strcmp(SYSCALLS[i], TRACED_SYSCALLS[j])) {
-				continue;
-			}
-
-			sysaddr = vmi_translate_ksym2v(conf->vmi,
-			                               TRACED_SYSCALLS[j]);
-			if (0 == sysaddr) {
-				fprintf(stderr,
-				       "could not find symbol %s\n",
-				        TRACED_SYSCALLS[j]);
-				goto done;
-			}
-
-			syscall_trap = vf_setup_mem_trap(conf, sysaddr);
-			if (NULL == syscall_trap) {
-				fprintf(stderr,
-				       "failed to set memory trap on %s\n",
-				        TRACED_SYSCALLS[j]);
-				goto done;
-			}
-
-			/* Set identifier to contents of RAX during syscall. */
-			syscall_trap->identifier = i;
-
-			break;
-		}
-	}
-
-	status = true;
-
-done:
-	return status;
 }
 
 int
@@ -1339,7 +746,7 @@ main (int argc, char **argv) {
 		goto done;
 	}
 
-	if (!vf_find_syscalls_and_setup_mem_trap(&config)) {
+	if (!vf_find_syscalls_and_setup_mem_traps(&config)) {
 		vmi_resume_vm(vmi);
 		goto done;
 	}
