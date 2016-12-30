@@ -316,7 +316,7 @@ vf_destroy_page_record (gpointer data) {
 
 /*
  * Callback invoked on a R/W of a monitored page (likely kernel patch protection).
- * Switch the VCPU's SLAT to its original, step once, switch SLAT back
+ * Switch the VCPUs SLAT to its original, step once, switch SLAT back
  */
 static event_response_t
 vf_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
@@ -552,7 +552,7 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		goto done;
 	}
 
-	/* Set VCPU's SLAT to use original for one step. */
+	/* Set VCPUs SLAT to use original for one step. */
 	event->slat_id = 0;
 	event->interrupt_event.reinject = 0;
 
@@ -575,7 +575,7 @@ done:
 }
 
 /*
- * Setup our global interrupt to catch any interrupts on any pages
+ * Setup our global interrupt to catch any interrupts on any pages.
  */
 static bool
 vf_set_up_generic_events (vf_config *conf) {
@@ -590,12 +590,12 @@ vf_set_up_generic_events (vf_config *conf) {
 		goto done;
 	}
 
-	/* todo: support write events? */
+	/* TODO: support write events? */
 	SETUP_MEM_EVENT(&vf_memory_event,
 	                ~0ULL,
-	                VMI_MEMACCESS_RW,
-	                vf_mem_rw_cb,
-	                1);
+	                 VMI_MEMACCESS_RW,
+	                 vf_mem_rw_cb,
+	                 1);
 
 	vf_memory_event.data = conf;
 
@@ -612,23 +612,23 @@ done:
 }
 
 /*
- * Callback after a step event on any VCPU
- * Here we must reset any single-step changes we made
+ * Callback after a step event on any VCPU.
+ * Here we must reset any single-step changes we made.
  */
 static event_response_t
 vf_singlestep_cb(vmi_instance_t vmi, vmi_event_t *event) {
-	/* set to shadow slat */
+	/* Resume use of shadow SLAT. */
 	vf_config *conf = event->data;
-
 	event->slat_id = conf->shadow_view;
 
-	/* turn off single-step and switch slat_id */
-	return VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
+	/* Turn off single-step and switch slat_id. */
+	return VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
+	     | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
 }
 
 /*
- * Creates the step events needed for each VCPU so we don't have to create
- * a new event everytime we want to step
+ * Preemptively create the step events needed for each VCPU so we don't have to
+ * create a new event each time we want to single-step.
  */
 static bool
 vf_set_up_step_events (vf_config *conf) {
@@ -636,12 +636,12 @@ vf_set_up_step_events (vf_config *conf) {
 
 	int vcpus = vmi_get_num_vcpus(conf->vmi);
 	if (0 == vcpus) {
-		fprintf(stderr, "Failed to get number of VCPUs\n");
+		fprintf(stderr, "failed to get number of VCPUs\n");
 		goto done;
 	}
 
 	if (VF_MAX_VCPUS < vcpus) {
-		fprintf(stderr, "Guest has more VCPUs than supported\n");
+		fprintf(stderr, "guest has more VCPUs than supported\n");
 		goto done;
 	}
 
@@ -651,7 +651,9 @@ vf_set_up_step_events (vf_config *conf) {
 		curr.data = conf;
 
 		if (VMI_FAILURE == vmi_register_event(conf->vmi, &curr)) {
-			fprintf(stderr, "Failed to register single-step event on VCPU %d\n", vcpu);
+			fprintf(stderr,
+			       "failed to register single-step event on VCPU %d\n",
+			        vcpu);
 			goto done;
 		}
 	}
@@ -663,9 +665,9 @@ done:
 }
 
 /*
- * Disassemble the kernel and find the appropriate point for a breakpoint
- * which allows guestrace to determine a system call's return value. Return
- * the address.
+ * Disassemble the kernel and find the appropriate spot for a breakpoint
+ * which will allow guestrace to determine a system call's return value. Return
+ * the address of this spot.
  */
 static addr_t
 vf_get_syscall_ret_addr(vf_config *conf, addr_t syscall_start) {
@@ -673,7 +675,7 @@ vf_get_syscall_ret_addr(vf_config *conf, addr_t syscall_start) {
 	cs_insn *inst;
 	size_t count, call_offset = ~0;
 	addr_t ret = 0;
-	uint8_t code[4096]; /* Assume CALL is within first KB. */
+	uint8_t code[4096]; /* Assume CALL is within first page. */
 
 	addr_t syscall_start_p = vmi_translate_kv2p(conf->vmi, syscall_start);
 	if (0 == syscall_start_p) {
@@ -731,7 +733,7 @@ vf_set_up_sysret_handler(vf_config *conf)
 	bool status = false;
 	addr_t lstar = 0;
 
-	/* LSTAR should be the constant across all vcpus */
+	/* LSTAR should be the constant across all VCPUs */
 	status_t ret = vmi_get_vcpureg(conf->vmi, &lstar, MSR_LSTAR, 0);
 	if (VMI_SUCCESS != ret) {
 		fprintf(stderr, "failed to get MSR_LSTAR address\n");
@@ -1225,31 +1227,38 @@ vf_find_syscalls_and_setup_mem_trap(vf_config *conf)
 		"NtWorkerFactoryWorkerReady"
 	};
 
-	static const char *MONITORED_SYSCALLS[] = {
+	static const char *TRACED_SYSCALLS[] = {
 		"NtCreateFile",
 		"NtOpenProcess"
 	};
 
 	for (int i = 0; i < countof(SYSCALLS); i++) {
-		for (int j = 0; j < countof(MONITORED_SYSCALLS); j++) {
-			if (strcmp(SYSCALLS[i], MONITORED_SYSCALLS[j])) {
+		for (int j = 0; j < countof(TRACED_SYSCALLS); j++) {
+			addr_t sysaddr;
+			vf_paddr_record *syscall_trap;
+
+			if (strcmp(SYSCALLS[i], TRACED_SYSCALLS[j])) {
 				continue;
 			}
 
-			addr_t sysaddr = vmi_translate_ksym2v(conf->vmi, MONITORED_SYSCALLS[j]);
+			sysaddr = vmi_translate_ksym2v(conf->vmi,
+			                               TRACED_SYSCALLS[j]);
 			if (0 == sysaddr) {
-				fprintf(stderr, "could not find symbol %s\n", MONITORED_SYSCALLS[j]);
+				fprintf(stderr,
+				       "could not find symbol %s\n",
+				        TRACED_SYSCALLS[j]);
 				goto done;
 			}
 
-			vf_paddr_record *syscall_trap = vf_setup_mem_trap(conf, sysaddr);
+			syscall_trap = vf_setup_mem_trap(conf, sysaddr);
 			if (NULL == syscall_trap) {
-				fprintf(stderr, "failed to set memory trap on %s\n",
-						 MONITORED_SYSCALLS[j]);
+				fprintf(stderr,
+				       "failed to set memory trap on %s\n",
+				        TRACED_SYSCALLS[j]);
 				goto done;
 			}
 
-			/* set identifier to what RAX would be during syscall */
+			/* Set identifier to contents of RAX during syscall. */
 			syscall_trap->identifier = i;
 
 			break;
