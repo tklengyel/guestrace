@@ -89,21 +89,23 @@ static GHashTable *vf_page_record_collection;
 /*
  * Guestrace maintains three collections:
  *
- * The first collection contains a mapping from page numbers to shadow page
- * numbers. Given a physical page, this will translate it into a shadow page
- * if one exists. NOTE: the code has changed since the original inception in my
- * mind, so we might be able to delete this without negative consquences
+ * The first collection (vf_page_translation) contains a mapping from
+ * frame numbers to shadow page numbers. Given a frame, this will translate
+ * it into a shadow page if one exists. NOTE: the code has changed since
+ * the original inception in my mind, so we might be able to delete this
+ * without negative consequences
  *
- * The second collection contains a mapping from shadow page numbers to
- * vf_page_record structures. This serves as a record of the guest pages for
- * which guestrace installed a memory event. When the guest accesses such a
- * page, control traps into guestrace. The most notable field in
- * vf_page_record is children. The children field points to the third
- * collection.
+ * The second collection (vf_page_record_collection) contains a
+ * mapping from shadow page numbers to vf_page_record structures. This
+ * serves as a record of the guest pages for which guestrace installed a
+ * memory event. When the guest accesses such a page, control traps into
+ * guestrace. The most notable field in vf_page_record is children. The
+ * children field points to the third collection.
  *
- * The third collection contains a mapping from physical address offsets to
- * vf_paddr_record structures. This serves as a record for each breakpoint
- * that guestrace sets within a page.
+ * The third collection (each vf_page_record's children field) contains a
+ * mapping from physical address offsets to vf_paddr_record structures.
+ * This serves as a record for each breakpoint that guestrace sets within a
+ * page.
  */
 
 typedef struct vf_page_record {
@@ -327,6 +329,12 @@ vf_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
 	     | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
 }
 
+/*
+ * Ensure there exists a memory trap on the shadow page containing virtual
+ * address va, and create a page record if it does not yet exist. Add a
+ * physical-address record corresponding to va to the page record's collection
+ * of children.
+ */
 static vf_paddr_record *
 vf_setup_mem_trap (vf_config *conf, addr_t va)
 {
@@ -340,67 +348,78 @@ vf_setup_mem_trap (vf_config *conf, addr_t va)
 	}
 
 	addr_t frame = pa >> VF_PAGE_OFFSET_BITS;
-	addr_t shadow = (addr_t)g_hash_table_lookup(vf_page_translation,
-		                                GSIZE_TO_POINTER(frame));
+	addr_t shadow = (addr_t) g_hash_table_lookup(vf_page_translation,
+		                                     GSIZE_TO_POINTER(frame));
 	addr_t shadow_offset = pa % VF_PAGE_SIZE;
 
 	if (0 == shadow) {
-		/* we need to allocate a new page */
+		/* Record does not exist; allocate new page and create record. */
 		shadow = vf_allocate_shadow_page(conf);
-
 		if (0 == shadow) {
-			fprintf(stderr, "Failed to allocate shadow page\n");
+			fprintf(stderr, "failed to allocate shadow page\n");
 			goto done;
 		}
 
 		g_hash_table_insert(vf_page_translation,
-							GSIZE_TO_POINTER(frame),
-							GSIZE_TO_POINTER(shadow));
+		                    GSIZE_TO_POINTER(frame),
+		                    GSIZE_TO_POINTER(shadow));
 
-		/* this adds our remapping into our shadow view */
-		int xc_status = xc_altp2m_change_gfn(conf->xch, conf->domid, conf->shadow_view, frame, shadow);
-		if (0 > xc_status) {
-			fprintf(stderr, "Failed to add paddr_record into shadow view\n");
+		/* Activate in shadow view. */
+		int xc_status = xc_altp2m_change_gfn(conf->xch,
+		                                     conf->domid,
+		                                     conf->shadow_view,
+		                                     frame,
+		                                     shadow);
+		if (xc_status < 0) {
+			fprintf(stderr, "failed to update shadow view\n");
 			goto done;
 		}
 	}
 
 	page_record = g_hash_table_lookup(vf_page_record_collection,
-		                                			GSIZE_TO_POINTER(shadow));
-
+	                                  GSIZE_TO_POINTER(shadow));
 	if (NULL == page_record) {
-		/* we need to create our page record and fill it */
-		fprintf(stderr, "creating new page trap on 0x%lx -> 0x%lx\n", shadow, frame);
+		/* No record for this page yet; create one. */
+		fprintf(stderr, "creating new page trap on 0x%lx -> 0x%lx\n",
+		        shadow, frame);
 
-		/* store current page on the stack */
+		/* Copy page to shadow. */
 		uint8_t buff[VF_PAGE_SIZE] = {0};
-		status_t status = vmi_read_pa(conf->vmi, frame << VF_PAGE_OFFSET_BITS, buff, VF_PAGE_SIZE);
+		status_t status = vmi_read_pa(conf->vmi,
+		                              frame << VF_PAGE_OFFSET_BITS,
+		                              buff,
+		                              VF_PAGE_SIZE);
 		if (0 == status) {
-			fprintf(stderr, "Failed to read in syscall page\n");
+			fprintf(stderr, "failed to read in syscall page\n");
 			goto done;
 		}
 
-		status = vmi_write_pa(conf->vmi, shadow << VF_PAGE_OFFSET_BITS, buff, VF_PAGE_SIZE);
+		status = vmi_write_pa(conf->vmi,
+		                      shadow << VF_PAGE_OFFSET_BITS,
+		                      buff,
+		                      VF_PAGE_SIZE);
 		if (0 == status) {
-			fprintf(stderr, "Failed to write to shadow page\n");
+			fprintf(stderr, "failed to write to shadow page\n");
 			goto done;
 		}
 
-		page_record                     = g_new0(vf_page_record, 1);
-		page_record->shadow_page        = shadow;
-		page_record->frame              = frame;
-		page_record->conf               = conf;
-		page_record->children 			= g_hash_table_new_full(NULL,
-					                                            NULL,
-					                                            NULL,
-					                                            vf_destroy_paddr_record);
+		/* Initialize record of this page. */
+		page_record              = g_new0(vf_page_record, 1);
+		page_record->shadow_page = shadow;
+		page_record->frame       = frame;
+		page_record->conf        = conf;
+		page_record->children    = g_hash_table_new_full(NULL,
+		                                       NULL,
+		                                       NULL,
+		                                       vf_destroy_paddr_record);
 
 		g_hash_table_insert(vf_page_record_collection,
 		                    GSIZE_TO_POINTER(shadow),
 		                    page_record);
 
-		/* tells libvmi to trigger our callback on a R/W to this page */
-		vmi_set_mem_event(conf->vmi, frame, VMI_MEMACCESS_RW, conf->shadow_view);
+		/* Establish callback on a R/W of this page. */
+		vmi_set_mem_event(conf->vmi, frame, VMI_MEMACCESS_RW,
+		                  conf->shadow_view);
 	} else {
 		/* We already have a page record for this page in collection. */
 		paddr_record = g_hash_table_lookup(page_record->children,
@@ -417,10 +436,12 @@ vf_setup_mem_trap (vf_config *conf, addr_t va)
 	paddr_record->parent        =  page_record;
 	paddr_record->identifier    = ~0; /* default 0xFFFF */
 
-	/* write the interrupt to our shadow page at the correct location */
-	status_t ret = vmi_write_8_pa(conf->vmi, (shadow << VF_PAGE_OFFSET_BITS) + shadow_offset, &VF_BREAKPOINT_INST);
+	/* Write interrupt to our shadow page at the correct location. */
+	status_t ret = vmi_write_8_pa(conf->vmi,
+	                             (shadow << VF_PAGE_OFFSET_BITS) + shadow_offset,
+	                             &VF_BREAKPOINT_INST);
 	if (VMI_SUCCESS != ret) {
-		fprintf(stderr, "Failed to write interrupt to shadow page\n");
+		fprintf(stderr, "failed to write interrupt to shadow page\n");
 		goto done;
 	}
 
