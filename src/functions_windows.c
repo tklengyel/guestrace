@@ -13,7 +13,7 @@ struct os_functions os_functions_windows = {
         .print_syscall         = vf_windows_print_syscall,
         .print_sysret          = vf_windows_print_sysret,
         .find_syscalls_and_setup_mem_traps \
-		= vf_windows_find_syscalls_and_setup_mem_traps,
+		               = vf_windows_find_syscalls_and_setup_mem_traps,
 	.set_up_sysret_handler = vf_windows_set_up_sysret_handler,
 };
 

@@ -7,6 +7,7 @@
 #include <stdlib.h>
 
 #include "trace_syscalls.h"
+#include "functions_linux.h"
 #include "functions_windows.h"
 
 /*
@@ -735,15 +736,14 @@ main (int argc, char **argv) {
 
 	os = vmi_get_ostype(vmi);
         switch (os) {
-/*
         case VMI_OS_LINUX:
                 os_functions = &os_functions_linux;
                 break;
-*/
         case VMI_OS_WINDOWS:
                 os_functions = &os_functions_windows;
                 break;
         default:
+		fprintf(stderr, "unknown guest operating system\n");
                 status = VMI_FAILURE;
                 goto done;
         }
