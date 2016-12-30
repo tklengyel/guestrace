@@ -541,10 +541,10 @@ static event_response_t
 vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	status_t status = VMI_EVENT_RESPONSE_NONE;
 
-	vf_paddr_record *paddr_record = vf_paddr_record_from_va(vmi,
-	                                                        event->interrupt_event.gla);
+	vf_paddr_record *paddr_record
+		= vf_paddr_record_from_va(vmi, event->interrupt_event.gla);
 
-	/* if paddr_record is null, we assume that we didn't emplace this interrupt */
+	/* If paddr_record is null, we assume we didn't emplace interrupt. */
 	if (NULL == paddr_record) {
 		event->interrupt_event.reinject = 1;
 		/* TODO: Ensure this does the right thing: */
@@ -552,12 +552,9 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		goto done;
 	}
 
-	/* set vcpu's slat to use original for one step */
+	/* Set VCPU's SLAT to use original for one step. */
 	event->slat_id = 0;
 	event->interrupt_event.reinject = 0;
-
-	/* turn on single-step and switch slat_id */
-	status = VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
 
 	if (sysret_trap != paddr_record) {
 		/* syscall */
@@ -568,6 +565,10 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		print_sysret(vmi, event);
 		vf_remove_breakpoint(sysret_trap);
 	}
+
+	/* Turn on single-step and switch slat_id. */
+	status = VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
+	       | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
 
 done:
 	return status;
