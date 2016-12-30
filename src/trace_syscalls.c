@@ -320,10 +320,11 @@ static event_response_t
 vf_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
 	fprintf(stderr, "mem r/w on page %lx\n", event->mem_event.gfn);
 
-	/* switch back to original slat for one step */
+	/* Switch back to original SLAT for one step. */
 	event->slat_id = 0;
 
-	return VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
+	return VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
+	     | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
 }
 
 static vf_paddr_record *
