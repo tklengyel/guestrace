@@ -1,13 +1,10 @@
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
 #include <glib.h>
-#include <inttypes.h>
 #include <libxl_utils.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <xenctrl.h>
 
 #include "trace_syscalls.h"
 #include "functions_windows.h"

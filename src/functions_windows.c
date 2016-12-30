@@ -5,8 +5,6 @@
 #include <libvmi/events.h>
 #include <inttypes.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "functions_windows.h"
 #include "syscall_enum.h"
