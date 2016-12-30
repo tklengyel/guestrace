@@ -36,13 +36,8 @@ typedef struct visor_proc {
 /* todo: use glibc */
 visor_proc * PROC_HEAD = NULL;
 
-struct win64_obj_attr * obj_attr_from_va(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid);
-uint8_t * filename_from_arg(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid);
-visor_proc * get_process_from_pid(vmi_pid_t pid);
-visor_proc * allocate_process(vmi_pid_t pid, char * name);
-void delete_process(vmi_pid_t pid);
-
-visor_proc * get_process_from_pid(vmi_pid_t pid) {
+static visor_proc *
+get_process_from_pid(vmi_pid_t pid) {
 	visor_proc * curr = PROC_HEAD;
 
 	while (NULL != curr) {
@@ -55,7 +50,34 @@ visor_proc * get_process_from_pid(vmi_pid_t pid) {
 	return curr;
 }
 
-visor_proc * allocate_process(vmi_pid_t pid, char * name) {
+static void
+delete_process(vmi_pid_t pid) {
+	if (NULL == PROC_HEAD) {
+		return;
+	}
+
+	if (PROC_HEAD->pid == pid) {
+		visor_proc * saved = PROC_HEAD->next;
+		free(PROC_HEAD->name);
+		free(PROC_HEAD);
+		PROC_HEAD = saved;
+	} else {
+		visor_proc * curr = PROC_HEAD;
+
+		while (NULL != curr->next) {
+			if (curr->next->pid == pid) {
+				visor_proc * saved = curr->next->next;
+				free(curr->next->name);
+				free(curr->next);
+				curr->next = saved;
+				return;
+			}
+		}
+	}
+}
+
+static visor_proc *
+allocate_process(vmi_pid_t pid, char * name) {
 	visor_proc * result = NULL;
 
 	/* we never delete processes, only replace them if another is allocated with same PID */
@@ -90,29 +112,31 @@ done:
 	return result;
 }
 
-void delete_process(vmi_pid_t pid) {
-	if (NULL == PROC_HEAD) {
-		return;
+/*
+ * Get ObjectAttributes struct from virtual address
+ */
+static struct win64_obj_attr *
+obj_attr_from_va(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid) {
+	struct win64_obj_attr * buff = NULL;
+
+	uint32_t struct_size = 0;
+
+	if (VMI_SUCCESS != vmi_read_32_va(vmi, vaddr, pid, &struct_size)) {
+		goto done;
 	}
 
-	if (PROC_HEAD->pid == pid) {
-		visor_proc * saved = PROC_HEAD->next;
-		free(PROC_HEAD->name);
-		free(PROC_HEAD);
-		PROC_HEAD = saved;
-	} else {
-		visor_proc * curr = PROC_HEAD;
+	struct_size = struct_size <= sizeof(struct win64_obj_attr) ? struct_size : sizeof(struct win64_obj_attr); // don't wanna read too much data
 
-		while (NULL != curr->next) {
-			if (curr->next->pid == pid) {
-				visor_proc * saved = curr->next->next;
-				free(curr->next->name);
-				free(curr->next);
-				curr->next = saved;
-				return;
-			}
-		}
+	buff = calloc(1, sizeof(struct win64_obj_attr));
+
+	if (struct_size != vmi_read_va(vmi, vaddr, pid, buff, struct_size)) {
+		free(buff);
+		buff = NULL;
+		goto done;
 	}
+
+done:
+	return buff;
 }
 
 //const char * symbol_from_syscall_num(uint16_t sysnum) {
@@ -135,7 +159,8 @@ void delete_process(vmi_pid_t pid) {
  * Must free what it returns
  */
 
-uint8_t * filename_from_arg(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid) {
+static uint8_t *
+filename_from_arg(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid) {
 	struct win64_obj_attr * obj_attr = obj_attr_from_va(vmi, vaddr, pid);
 
 	uint8_t * res = NULL;
@@ -166,33 +191,7 @@ done:
 	return res;
 }
 
-/*
- * Get ObjectAttributes struct from virtual address
- */
-struct win64_obj_attr * obj_attr_from_va(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid) {
-	struct win64_obj_attr * buff = NULL;
-
-	uint32_t struct_size = 0;
-
-	if (VMI_SUCCESS != vmi_read_32_va(vmi, vaddr, pid, &struct_size)) {
-		goto done;
-	}
-
-	struct_size = struct_size <= sizeof(struct win64_obj_attr) ? struct_size : sizeof(struct win64_obj_attr); // don't wanna read too much data
-
-	buff = calloc(1, sizeof(struct win64_obj_attr));
-
-	if (struct_size != vmi_read_va(vmi, vaddr, pid, buff, struct_size)) {
-		free(buff);
-		buff = NULL;
-		goto done;
-	}
-
-done:
-	return buff;
-}
-
-char *
+static char *
 get_process_name(vmi_instance_t vmi, vmi_pid_t pid) 
 {
 	/* Gets the process name of the process with the input pid */
