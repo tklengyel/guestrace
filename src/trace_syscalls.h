@@ -31,8 +31,16 @@ typedef struct vf_paddr_record {
 	uint16_t identifier; /* Syscall identifier because we nix RAX. */
 } vf_paddr_record;
 
+/* Operating-system-specific operations. */
+struct os_functions {
+        void (*print_syscall) (vmi_instance_t vmi, vmi_event_t *event, uint16_t syscall_num);
+        void (*print_sysret) (vmi_instance_t vmi, vmi_event_t *event);
+        bool (*find_syscalls_and_setup_mem_traps) (vf_config *conf);
+        bool (*set_up_sysret_handler) (vf_config *conf);
+};
+
 /* Global paddr record for our syscall return address */
-static vf_paddr_record *sysret_trap;
+extern vf_paddr_record *sysret_trap;
 
 vf_paddr_record *vf_setup_mem_trap (vf_config *conf, addr_t va);
 status_t vf_emplace_breakpoint(vf_paddr_record *paddr_record);

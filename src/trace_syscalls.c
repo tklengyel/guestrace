@@ -99,6 +99,10 @@ static GHashTable *vf_page_record_collection;
  */
 static int vf_interrupted = 0;
 
+static struct os_functions *os_functions;
+
+vf_paddr_record *sysret_trap;
+
 /*
  * Set up Xen logging and initialize the vf_config object to interact with Xen.
  * Notably, we create the altp2m view here. Assuming success, Xen will activate
@@ -537,11 +541,11 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 
 	if (sysret_trap != paddr_record) {
 		/* syscall */
-		print_syscall(vmi, event, paddr_record->identifier);
+		os_functions->print_syscall(vmi, event, paddr_record->identifier);
 		vf_emplace_breakpoint(sysret_trap);
 	} else {
 		/* sysret */
-		print_sysret(vmi, event);
+		os_functions->print_sysret(vmi, event);
 		vf_remove_breakpoint(sysret_trap);
 	}
 
@@ -693,6 +697,7 @@ done:
 
 int
 main (int argc, char **argv) {
+	os_t os;
 	struct sigaction act;
 	status_t status = VMI_FAILURE;
 	vmi_instance_t vmi;
@@ -728,6 +733,21 @@ main (int argc, char **argv) {
 
 	vmi_pause_vm(vmi);
 
+	os = vmi_get_ostype(vmi);
+        switch (os) {
+/*
+        case VMI_OS_LINUX:
+                os_functions = &os_functions_linux;
+                break;
+*/
+        case VMI_OS_WINDOWS:
+                os_functions = &os_functions_windows;
+                break;
+        default:
+                status = VMI_FAILURE;
+                goto done;
+        }
+
 	if (!vf_init_config(vmi, name, &config)) {
 		vmi_resume_vm(vmi);
 		goto done;
@@ -743,12 +763,12 @@ main (int argc, char **argv) {
 		goto done;
 	}
 
-	if (!vf_find_syscalls_and_setup_mem_traps(&config)) {
+	if (!os_functions->find_syscalls_and_setup_mem_traps(&config)) {
 		vmi_resume_vm(vmi);
 		goto done;
 	}
 
-	if (!vf_set_up_sysret_handler(&config)) {
+	if (!os_functions->set_up_sysret_handler(&config)) {
 		vmi_resume_vm(vmi);
 		goto done;
 	}

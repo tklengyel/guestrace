@@ -9,6 +9,14 @@
 #include "functions_windows.h"
 #include "syscall_enum.h"
 
+struct os_functions os_functions_windows = {
+        .print_syscall         = vf_windows_print_syscall,
+        .print_sysret          = vf_windows_print_sysret,
+        .find_syscalls_and_setup_mem_traps \
+		= vf_windows_find_syscalls_and_setup_mem_traps,
+	.set_up_sysret_handler = vf_windows_set_up_sysret_handler,
+};
+
 struct win64_obj_attr {
 	uint32_t length; // sizeof given struct
 	uint64_t root_directory; // if not null, object_name is relative to this directory
@@ -243,7 +251,9 @@ done:
 
 
 void 
-print_syscall(vmi_instance_t vmi, vmi_event_t *event, uint16_t syscall_num) 
+vf_windows_print_syscall(vmi_instance_t vmi,
+                         vmi_event_t *event,
+                         uint16_t syscall_num) 
 {
 	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 
@@ -296,7 +306,8 @@ print_syscall(vmi_instance_t vmi, vmi_event_t *event, uint16_t syscall_num)
 }
 
 void 
-print_sysret(vmi_instance_t vmi, vmi_event_t *event) 
+vf_windows_print_sysret(vmi_instance_t vmi,
+                        vmi_event_t *event) 
 {
 	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 
@@ -445,7 +456,7 @@ print_sysret(vmi_instance_t vmi, vmi_event_t *event)
  * instruction.
  */
 bool
-vf_find_syscalls_and_setup_mem_traps(vf_config *conf)
+vf_windows_find_syscalls_and_setup_mem_traps(vf_config *conf)
 {
 	bool status = false;
 
@@ -904,7 +915,7 @@ done:
  * the address of this spot.
  */
 static addr_t
-vf_get_syscall_ret_addr(vf_config *conf, addr_t syscall_start) {
+vf_windows_get_syscall_ret_addr(vf_config *conf, addr_t syscall_start) {
 	csh handle;
 	cs_insn *inst;
 	size_t count, call_offset = ~0;
@@ -968,7 +979,7 @@ done:
  * upon an execution of the return-value page.
  */
 bool
-vf_set_up_sysret_handler(vf_config *conf)
+vf_windows_set_up_sysret_handler(vf_config *conf)
 {
 	bool status = false;
 	addr_t lstar = 0;
@@ -980,7 +991,7 @@ vf_set_up_sysret_handler(vf_config *conf)
 		goto done;
 	}
 
-	addr_t ret_addr = vf_get_syscall_ret_addr(conf, lstar);
+	addr_t ret_addr = vf_windows_get_syscall_ret_addr(conf, lstar);
 	if (0 == ret_addr) {
 		fprintf(stderr, "failed to get system return address\n");
 		goto done;
