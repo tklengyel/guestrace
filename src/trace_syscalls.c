@@ -30,7 +30,7 @@
  * 	https://blog.xenproject.org/2016/04/13/stealthy-monitoring-with-xen-altp2m/
  *
  * guestrace maintains two page tables: The first page table (PT_1) maps the
- * kernel with no modifications. The second (PT_n, the shadow page table) adds
+ * kernel with no modifications. The second (PT_n/the shadow page table) adds
  * breakpoints to the kernel.
  *
  * Guestrace switches between these two page tables under the following
@@ -91,7 +91,7 @@ static GHashTable *vf_page_record_collection;
  *
  * The first collection (vf_page_translation) contains a mapping from
  * frame numbers to shadow page numbers. Given a frame, this will translate
- * it into a shadow page if one exists. NOTE: the code has changed since
+ * it into a shadow page if one exists. TODO: the code has changed since
  * the original inception in my mind, so we might be able to delete this
  * without negative consequences
  *
@@ -99,8 +99,8 @@ static GHashTable *vf_page_record_collection;
  * mapping from shadow page numbers to vf_page_record structures. This
  * serves as a record of the guest pages for which guestrace installed a
  * memory event. When the guest accesses such a page, control traps into
- * guestrace. The most notable field in vf_page_record is children. The
- * children field points to the third collection.
+ * guestrace. The most notable field in vf_page_record is children; this
+ * field points to the third collection.
  *
  * The third collection (each vf_page_record's children field) contains a
  * mapping from physical address offsets to vf_paddr_record structures.
@@ -118,7 +118,7 @@ typedef struct vf_page_record {
 typedef struct vf_paddr_record {
 	addr_t offset;
 	vf_page_record *parent;
-	uint16_t identifier; /* syscall identifier because we nix RAX */
+	uint16_t identifier; /* Syscall identifier because we nix RAX. */
 } vf_paddr_record;
 
 /* Global paddr record for our syscall return address */
@@ -537,6 +537,16 @@ vf_paddr_record_from_va(vmi_instance_t vmi, addr_t va) {
  * Callback on any interrupts received from our shadow pages
  * Here we must make temporary changes and enter into single-step mode
  */
+/*
+ * Service a triggered breakpoint. Restore the original page table for one
+ * single-step iteration and possibly print the system call parameters
+ * or return value.
+ *
+ * In the case of a system call, enable the syscall return breakpoint.
+ *
+ * In the case of a system return, disable the syscall return breakpoint until
+ * the next system call enables it.
+ */
 static event_response_t
 vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	status_t status = VMI_EVENT_RESPONSE_NONE;
@@ -727,6 +737,12 @@ done:
 	return ret;
 }
 
+/*
+ * Find the appropriate place for a breakpoint which will enable guestrace to
+ * read a system call's return value, setup the breakpoint, and setup
+ * a memory trap. Leave the breakpoint disabled; guestrace will enable it
+ * upon an execution of the return-value page.
+ */
 static bool
 vf_set_up_sysret_handler(vf_config *conf)
 {
