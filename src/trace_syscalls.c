@@ -120,7 +120,7 @@ typedef struct vf_paddr_record {
 } vf_paddr_record;
 
 /* Global paddr record for our syscall return address */
-static vf_paddr_record * sysret_trap;
+static vf_paddr_record *sysret_trap;
 
 /*
  * Handle terminating signals by setting interrupted flag. This allows
@@ -202,7 +202,7 @@ done:
 
 /* Tear down the Xen facilities set up by vf_init_config(). */
 static void
-vf_close_config(vf_config * conf)
+vf_close_config(vf_config *conf)
 {
 	int status;
 
@@ -233,7 +233,7 @@ vf_close_config(vf_config * conf)
 
 /* Allocate a new page of memory in the guest's address space. */
 static addr_t
-vf_allocate_shadow_page (vf_config * conf)
+vf_allocate_shadow_page (vf_config *conf)
 {
 	int status;
 	xen_pfn_t gfn = 0;
@@ -328,7 +328,7 @@ vf_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
 }
 
 static vf_paddr_record *
-vf_setup_mem_trap (vf_config * conf, addr_t va)
+vf_setup_mem_trap (vf_config *conf, addr_t va)
 {
 	vf_page_record  *page_record  = NULL;
 	vf_paddr_record *paddr_record = NULL;
@@ -551,7 +551,7 @@ done:
  * Setup our global interrupt to catch any interrupts on any pages
  */
 static bool
-vf_set_up_generic_events (vf_config * conf) {
+vf_set_up_generic_events (vf_config *conf) {
 	bool status = false;
 
 	SETUP_INTERRUPT_EVENT(&vf_breakpoint_event, 0, vf_breakpoint_cb);
@@ -604,7 +604,7 @@ vf_singlestep_cb(vmi_instance_t vmi, vmi_event_t *event) {
  * a new event everytime we want to step
  */
 static bool
-vf_set_up_step_events (vf_config * conf) {
+vf_set_up_step_events (vf_config *conf) {
 	bool status = false;
 
 	int vcpus = vmi_get_num_vcpus(conf->vmi);
@@ -641,7 +641,7 @@ done:
  * the address.
  */
 static addr_t
-vf_get_syscall_ret_addr(vf_config * conf, addr_t syscall_start) {
+vf_get_syscall_ret_addr(vf_config *conf, addr_t syscall_start) {
 	csh handle;
 	cs_insn *inst;
 	size_t count, call_offset = ~0;
@@ -699,7 +699,7 @@ done:
 }
 
 static bool
-vf_set_up_sysret_handler(vf_config * conf)
+vf_set_up_sysret_handler(vf_config *conf)
 {
 	bool status = false;
 	addr_t lstar = 0;
@@ -789,7 +789,7 @@ done:
  * instruction.
  */
 static bool
-vf_find_syscalls_and_setup_mem_trap(vf_config * conf)
+vf_find_syscalls_and_setup_mem_trap(vf_config *conf)
 {
 	bool status = false;
 
