@@ -60,15 +60,6 @@
 /* Intel breakpoint interrupt (INT 3) instruction. */
 static uint8_t VF_BREAKPOINT_INST = 0xCC;
 
-/* Array to hold step event for each VCPU */
-static vmi_event_t vf_step_event[VF_MAX_VCPUS];
-
-/* Global interrupt event, triggered by INT 3; calls vf_breakpoint_cb. */
-static vmi_event_t vf_breakpoint_event;
-
-/* Global memory event, triggered by R/W access; call vf_mem_rw_cb. */
-static vmi_event_t vf_memory_event;
-
 static GHashTable *vf_page_translation;
 static GHashTable *vf_page_record_collection;
 
@@ -564,26 +555,28 @@ done:
 static bool
 vf_set_up_generic_events (vf_config *conf) {
 	bool status = false;
+	static vmi_event_t breakpoint_event;
+	static vmi_event_t memory_event;
 
-	SETUP_INTERRUPT_EVENT(&vf_breakpoint_event, 0, vf_breakpoint_cb);
-	vf_breakpoint_event.data = conf;
+	SETUP_INTERRUPT_EVENT(&breakpoint_event, 0, vf_breakpoint_cb);
+	breakpoint_event.data = conf;
 
-	status_t ret = vmi_register_event(conf->vmi, &vf_breakpoint_event);
+	status_t ret = vmi_register_event(conf->vmi, &breakpoint_event);
 	if (VMI_SUCCESS != ret) {
 		fprintf(stderr, "Failed to setup interrupt event\n");
 		goto done;
 	}
 
 	/* TODO: support write events? */
-	SETUP_MEM_EVENT(&vf_memory_event,
+	SETUP_MEM_EVENT(&memory_event,
 	                ~0ULL,
 	                 VMI_MEMACCESS_RW,
 	                 vf_mem_rw_cb,
 	                 1);
 
-	vf_memory_event.data = conf;
+	memory_event.data = conf;
 
-	ret = vmi_register_event(conf->vmi, &vf_memory_event);
+	ret = vmi_register_event(conf->vmi, &memory_event);
 	if (VMI_SUCCESS != ret) {
 		fprintf(stderr, "Failed to setup memory event\n");
 		goto done;
@@ -617,6 +610,7 @@ vf_singlestep_cb(vmi_instance_t vmi, vmi_event_t *event) {
 static bool
 vf_set_up_step_events (vf_config *conf) {
 	bool status = false;
+	static vmi_event_t step_event[VF_MAX_VCPUS];
 
 	int vcpus = vmi_get_num_vcpus(conf->vmi);
 	if (0 == vcpus) {
@@ -630,7 +624,7 @@ vf_set_up_step_events (vf_config *conf) {
 	}
 
 	for (int vcpu = 0; vcpu < vcpus; vcpu++) {
-		vmi_event_t curr = vf_step_event[vcpu];
+		vmi_event_t curr = step_event[vcpu];
 		SETUP_SINGLESTEP_EVENT(&curr, 1u << vcpu, vf_singlestep_cb, 0);
 		curr.data = conf;
 
