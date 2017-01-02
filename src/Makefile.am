@@ -21,6 +21,6 @@ guestrace_SOURCES = \
 	functions_windows.c
 
 noinst_HEADERS = \
-	syscall_enum.h \
+	trace_syscalls.h \
 	functions_linux.h \
 	functions_windows.h
