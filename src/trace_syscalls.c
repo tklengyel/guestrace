@@ -10,18 +10,6 @@
 #include "functions_linux.h"
 #include "functions_windows.h"
 
-/*
- * Before running, you must add
- *
- * 	GRUB_CMDLINE_XEN_DEFAULT="altp2m=1"
- *
- * to /etc/default/grub and add
- *
- * 	altp2mhvm = 1
- *
- * to the xen config file of each guest.
- */
-
 /* This code relies on Xen's interface to Second Level Address Translation,
  * or SLAT. See:
  *
