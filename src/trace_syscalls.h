@@ -28,7 +28,7 @@
  * This serves as a record for each breakpoint that guestrace sets within a
  * page.
  */
-typedef struct vf_config {
+typedef struct vf_state {
 	/* Fields used with libvmi. */
 	GHashTable *vf_page_translation;
 	GHashTable *vf_page_record_collection;
@@ -42,13 +42,13 @@ typedef struct vf_config {
 	uint64_t curr_mem_size;
 	vmi_instance_t vmi;
 	uint16_t shadow_view;
-} vf_config;
+} vf_state;
 
 typedef struct vf_page_record {
 	addr_t frame;
 	addr_t shadow_page;
 	GHashTable *children;
-	vf_config *conf;
+	vf_state *state;
 } vf_page_record;
 
 typedef struct vf_paddr_record {
@@ -61,14 +61,14 @@ typedef struct vf_paddr_record {
 struct os_functions {
         void (*print_syscall) (vmi_instance_t vmi, vmi_event_t *event, uint16_t syscall_num);
         void (*print_sysret) (vmi_instance_t vmi, vmi_event_t *event);
-        bool (*find_syscalls_and_setup_mem_traps) (vf_config *conf);
-        bool (*set_up_sysret_handler) (vf_config *conf);
+        bool (*find_syscalls_and_setup_mem_traps) (vf_state *state);
+        bool (*set_up_sysret_handler) (vf_state *state);
 };
 
 /* Global paddr record for our syscall return address */
 extern vf_paddr_record *sysret_trap;
 
-vf_paddr_record *vf_setup_mem_trap (vf_config *conf, addr_t va);
+vf_paddr_record *vf_setup_mem_trap (vf_state *state, addr_t va);
 status_t vf_emplace_breakpoint(vf_paddr_record *paddr_record);
 status_t vf_remove_breakpoint(vf_paddr_record *paddr_record);
 

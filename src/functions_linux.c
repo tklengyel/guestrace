@@ -4185,19 +4185,19 @@ vf_linux_print_sysret(vmi_instance_t vmi, vmi_event_t *event)
  * the system call handler is available in MSR_LSTAR.
  */
 bool
-vf_linux_find_syscalls_and_setup_mem_traps(vf_config *conf)
+vf_linux_find_syscalls_and_setup_mem_traps(vf_state *state)
 {
 	status_t status = false;
 	addr_t sysaddr;
 	vf_paddr_record *syscall_trap;
 
-	status = vmi_get_vcpureg(conf->vmi, &sysaddr, MSR_LSTAR, 0);
+	status = vmi_get_vcpureg(state->vmi, &sysaddr, MSR_LSTAR, 0);
 	if (VMI_FAILURE == status) {
 		fprintf(stderr, "failed to read MSR_LSTAR.\n");
 		goto done;
 	}
 
-	syscall_trap = vf_setup_mem_trap(conf, sysaddr);
+	syscall_trap = vf_setup_mem_trap(state, sysaddr);
 	if (NULL == syscall_trap) {
 		fprintf(stderr, "failed to set syscall memory trap\n");
 		goto done;
@@ -4214,7 +4214,7 @@ done:
  * We find the address of the CALL instruction by disassembling the kernel core.
  */
 bool
-vf_linux_set_up_sysret_handler(vf_config *conf)
+vf_linux_set_up_sysret_handler(vf_state *state)
 {
 	csh handle;
 	cs_insn *inst;
@@ -4224,13 +4224,13 @@ vf_linux_set_up_sysret_handler(vf_config *conf)
 	uint8_t code[4096]; /* Assume CALL is within first page. */
 
 	/* LSTAR should be the constant across all VCPUs */
-        status_t ret = vmi_get_vcpureg(conf->vmi, &lstar, MSR_LSTAR, 0);
+        status_t ret = vmi_get_vcpureg(state->vmi, &lstar, MSR_LSTAR, 0);
         if (VMI_SUCCESS != ret) {
                 fprintf(stderr, "failed to get MSR_LSTAR address\n");
                 goto done;
         }
 
-	addr_t lstar_p = vmi_translate_kv2p(conf->vmi, lstar);
+	addr_t lstar_p = vmi_translate_kv2p(state->vmi, lstar);
         if (0 == lstar_p) {
                 fprintf(stderr, "failed to read instructions from 0x%"
                                  PRIx64".\n", lstar);
@@ -4238,7 +4238,7 @@ vf_linux_set_up_sysret_handler(vf_config *conf)
         }
 
 	/* Read kernel instructions into code. */
-	status = vmi_read_pa(conf->vmi, lstar_p,
+	status = vmi_read_pa(state->vmi, lstar_p,
 	                     code, sizeof(code));
 	if (VMI_FAILURE == status) {
 		fprintf(stderr, "failed to read instructions from 0x%"
@@ -4277,7 +4277,7 @@ vf_linux_set_up_sysret_handler(vf_config *conf)
 
 	cs_close(&handle);
 
-	sysret_trap = vf_setup_mem_trap(conf, lstar + call_offset);
+	sysret_trap = vf_setup_mem_trap(state, lstar + call_offset);
         if (NULL == sysret_trap) {
 		fprintf(stderr, "failed to create sysret memory trap\n");
 		status = VMI_FAILURE;

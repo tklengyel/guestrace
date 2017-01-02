@@ -71,66 +71,66 @@ static struct os_functions *os_functions;
 vf_paddr_record *sysret_trap;
 
 /*
- * Set up Xen logging and initialize the vf_config object to interact with Xen.
+ * Set up Xen logging and initialize the vf_state object to interact with Xen.
  * Notably, we create the altp2m view here. Assuming success, Xen will activate
  * the shadow page table which will eventually contain breakpoints.
  * Returns true on success.
  */
 static bool
-vf_init_config(vmi_instance_t vmi, char *name, vf_config *conf)
+vf_init_state(vmi_instance_t vmi, char *name, vf_state *state)
 {
 	int rc;
 	bool status = false;
 
-	conf->vmi = vmi;
+	state->vmi = vmi;
 
-	conf->xch = xc_interface_open(0, 0, 0);
-	if (NULL == conf->xch) {
+	state->xch = xc_interface_open(0, 0, 0);
+	if (NULL == state->xch) {
 		fprintf(stderr, "failed to create xc interface\n");
 		goto done;
 	}
 
-	conf->logger = (xentoollog_logger *) xtl_createlogger_stdiostream(
+	state->logger = (xentoollog_logger *) xtl_createlogger_stdiostream(
 	                                                           stderr,
 	                                                           XTL_PROGRESS,
 	                                                           0);
-	if (NULL == conf->logger) {
+	if (NULL == state->logger) {
 		fprintf(stderr, "failed to create libxl logger\n");
 		goto done;
 	}
 
-	rc = libxl_ctx_alloc(&conf->ctx, LIBXL_VERSION, 0, conf->logger);
+	rc = libxl_ctx_alloc(&state->ctx, LIBXL_VERSION, 0, state->logger);
 	if (0 != rc) {
 		fprintf(stderr, "failed to create libxl context\n");
 		goto done;
 	}
 
-	conf->domid = ~0u;
-	rc = libxl_name_to_domid(conf->ctx, name, &conf->domid);
-	if (0 != rc || ~0u == conf->domid) {
+	state->domid = ~0u;
+	rc = libxl_name_to_domid(state->ctx, name, &state->domid);
+	if (0 != rc || ~0u == state->domid) {
 		fprintf(stderr, "failed to translate guest name to dom. ID\n");
 		goto done;
 	}
 
-	conf->curr_mem_size = conf->init_mem_size = vmi_get_memsize(vmi);
-	if (0 == conf->init_mem_size) {
+	state->curr_mem_size = state->init_mem_size = vmi_get_memsize(vmi);
+	if (0 == state->init_mem_size) {
 		fprintf(stderr, "failed to get guest memory size\n");
 		goto done;
 	}
 
-	rc = xc_altp2m_set_domain_state(conf->xch, conf->domid, 1);
+	rc = xc_altp2m_set_domain_state(state->xch, state->domid, 1);
 	if (rc < 0) {
 		fprintf(stderr, "failed to enable altp2m on guest\n");
 		goto done;
 	}
 
-	rc = xc_altp2m_create_view(conf->xch, conf->domid, 0, &conf->shadow_view);
+	rc = xc_altp2m_create_view(state->xch, state->domid, 0, &state->shadow_view);
 	if (rc < 0) {
 		fprintf(stderr, "failed to create view for shadow page\n");
 		goto done;
 	}
 
-	rc = xc_altp2m_switch_to_view(conf->xch, conf->domid, conf->shadow_view);
+	rc = xc_altp2m_switch_to_view(state->xch, state->domid, state->shadow_view);
 	if (rc < 0) {
 		fprintf(stderr, "failed to enable shadow view\n");
 		goto done;
@@ -142,48 +142,48 @@ done:
 	return status;
 }
 
-/* Tear down the Xen facilities set up by vf_init_config(). */
+/* Tear down the Xen facilities set up by vf_init_state(). */
 static void
-vf_close_config(vf_config *conf)
+vf_teardown_state(vf_state *state)
 {
 	int status;
 
-	status = xc_altp2m_switch_to_view(conf->xch, conf->domid, 0);
+	status = xc_altp2m_switch_to_view(state->xch, state->domid, 0);
 	if (0 > status) {
 		fprintf(stderr, "failed to reset EPT to point to default table\n");
 	}
 
-	status = xc_altp2m_destroy_view(conf->xch, conf->domid, conf->shadow_view);
+	status = xc_altp2m_destroy_view(state->xch, state->domid, state->shadow_view);
 	if (0 > status) {
 		fprintf(stderr, "failed to destroy shadow view\n");
 	}
 
-	status = xc_altp2m_set_domain_state(conf->xch, conf->domid, 0);
+	status = xc_altp2m_set_domain_state(state->xch, state->domid, 0);
 	if (0 > status) {
 		fprintf(stderr, "failed to turn off altp2m on guest\n");
 	}
 
 	/* todo: find out why this isn't decreasing main memory on next run of guestrace */
-	status = xc_domain_setmaxmem(conf->xch, conf->domid, conf->init_mem_size);
+	status = xc_domain_setmaxmem(state->xch, state->domid, state->init_mem_size);
 	if (0 > status) {
 		fprintf(stderr, "failed to reset max memory on guest");
 	}
 
-	libxl_ctx_free(conf->ctx);
-	xc_interface_close(conf->xch);
+	libxl_ctx_free(state->ctx);
+	xc_interface_close(state->xch);
 }
 
 /* Allocate a new page of memory in the guest's address space. */
 static addr_t
-vf_allocate_shadow_page (vf_config *conf)
+vf_allocate_shadow_page (vf_state *state)
 {
 	int status;
 	xen_pfn_t gfn = 0;
-	uint64_t proposed_mem_size = conf->curr_mem_size + VF_PAGE_SIZE;
+	uint64_t proposed_mem_size = state->curr_mem_size + VF_PAGE_SIZE;
 
-	status = xc_domain_setmaxmem(conf->xch, conf->domid, proposed_mem_size);
+	status = xc_domain_setmaxmem(state->xch, state->domid, proposed_mem_size);
 	if (0 == status) {
-		conf->curr_mem_size = proposed_mem_size;
+		state->curr_mem_size = proposed_mem_size;
 	} else {
 		fprintf(stderr,
 		       "failed to increase memory size on guest to %lx\n",
@@ -191,7 +191,7 @@ vf_allocate_shadow_page (vf_config *conf)
 		goto done;
 	}
 
-	status = xc_domain_increase_reservation_exact(conf->xch, conf->domid,
+	status = xc_domain_increase_reservation_exact(state->xch, state->domid,
 	                                              1, 0, 0, &gfn);
 
 	if (status) {
@@ -199,7 +199,7 @@ vf_allocate_shadow_page (vf_config *conf)
 		goto done;
 	}
 
-	status = xc_domain_populate_physmap_exact(conf->xch, conf->domid, 1, 0,
+	status = xc_domain_populate_physmap_exact(state->xch, state->domid, 1, 0,
 	                                          0, &gfn);
 
 	if (status) {
@@ -233,19 +233,19 @@ vf_destroy_page_record (gpointer data) {
 	        page_record->shadow_page);
 
 	/* Stop monitoring this page. */
-	vmi_set_mem_event(page_record->conf->vmi,
+	vmi_set_mem_event(page_record->state->vmi,
 	                  page_record->frame,
 	                  VMI_MEMACCESS_N,
-	                  page_record->conf->shadow_view);
+	                  page_record->state->shadow_view);
 
-	xc_altp2m_change_gfn(page_record->conf->xch,
-	                     page_record->conf->domid,
-	                     page_record->conf->shadow_view,
+	xc_altp2m_change_gfn(page_record->state->xch,
+	                     page_record->state->domid,
+	                     page_record->state->shadow_view,
 	                     page_record->shadow_page,
 	                    ~0);
 
-	xc_domain_decrease_reservation_exact(page_record->conf->xch,
-	                                     page_record->conf->domid,
+	xc_domain_decrease_reservation_exact(page_record->state->xch,
+	                                     page_record->state->domid,
 	                                     1, 0,
 	                                    &page_record->shadow_page);
 
@@ -276,38 +276,38 @@ vf_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
  * of children.
  */
 vf_paddr_record *
-vf_setup_mem_trap (vf_config *conf, addr_t va)
+vf_setup_mem_trap (vf_state *state, addr_t va)
 {
 	vf_page_record  *page_record  = NULL;
 	vf_paddr_record *paddr_record = NULL;
 
-	addr_t pa = vmi_translate_kv2p(conf->vmi, va);
+	addr_t pa = vmi_translate_kv2p(state->vmi, va);
 	if (0 == pa) {
 		fprintf(stderr, "virtual addr. translation failed: %lx\n", va);
 		goto done;
 	}
 
 	addr_t frame = pa >> VF_PAGE_OFFSET_BITS;
-	addr_t shadow = (addr_t) g_hash_table_lookup(conf->vf_page_translation,
+	addr_t shadow = (addr_t) g_hash_table_lookup(state->vf_page_translation,
 		                                     GSIZE_TO_POINTER(frame));
 	addr_t shadow_offset = pa % VF_PAGE_SIZE;
 
 	if (0 == shadow) {
 		/* Record does not exist; allocate new page and create record. */
-		shadow = vf_allocate_shadow_page(conf);
+		shadow = vf_allocate_shadow_page(state);
 		if (0 == shadow) {
 			fprintf(stderr, "failed to allocate shadow page\n");
 			goto done;
 		}
 
-		g_hash_table_insert(conf->vf_page_translation,
+		g_hash_table_insert(state->vf_page_translation,
 		                    GSIZE_TO_POINTER(frame),
 		                    GSIZE_TO_POINTER(shadow));
 
 		/* Activate in shadow view. */
-		int xc_status = xc_altp2m_change_gfn(conf->xch,
-		                                     conf->domid,
-		                                     conf->shadow_view,
+		int xc_status = xc_altp2m_change_gfn(state->xch,
+		                                     state->domid,
+		                                     state->shadow_view,
 		                                     frame,
 		                                     shadow);
 		if (xc_status < 0) {
@@ -316,7 +316,7 @@ vf_setup_mem_trap (vf_config *conf, addr_t va)
 		}
 	}
 
-	page_record = g_hash_table_lookup(conf->vf_page_record_collection,
+	page_record = g_hash_table_lookup(state->vf_page_record_collection,
 	                                  GSIZE_TO_POINTER(shadow));
 	if (NULL == page_record) {
 		/* No record for this page yet; create one. */
@@ -325,7 +325,7 @@ vf_setup_mem_trap (vf_config *conf, addr_t va)
 
 		/* Copy page to shadow. */
 		uint8_t buff[VF_PAGE_SIZE] = {0};
-		status_t status = vmi_read_pa(conf->vmi,
+		status_t status = vmi_read_pa(state->vmi,
 		                              frame << VF_PAGE_OFFSET_BITS,
 		                              buff,
 		                              VF_PAGE_SIZE);
@@ -334,7 +334,7 @@ vf_setup_mem_trap (vf_config *conf, addr_t va)
 			goto done;
 		}
 
-		status = vmi_write_pa(conf->vmi,
+		status = vmi_write_pa(state->vmi,
 		                      shadow << VF_PAGE_OFFSET_BITS,
 		                      buff,
 		                      VF_PAGE_SIZE);
@@ -347,19 +347,19 @@ vf_setup_mem_trap (vf_config *conf, addr_t va)
 		page_record              = g_new0(vf_page_record, 1);
 		page_record->shadow_page = shadow;
 		page_record->frame       = frame;
-		page_record->conf        = conf;
+		page_record->state        = state;
 		page_record->children    = g_hash_table_new_full(NULL,
 		                                       NULL,
 		                                       NULL,
 		                                       vf_destroy_paddr_record);
 
-		g_hash_table_insert(conf->vf_page_record_collection,
+		g_hash_table_insert(state->vf_page_record_collection,
 		                    GSIZE_TO_POINTER(shadow),
 		                    page_record);
 
 		/* Establish callback on a R/W of this page. */
-		vmi_set_mem_event(conf->vmi, frame, VMI_MEMACCESS_RW,
-		                  conf->shadow_view);
+		vmi_set_mem_event(state->vmi, frame, VMI_MEMACCESS_RW,
+		                  state->shadow_view);
 	} else {
 		/* We already have a page record for this page in collection. */
 		paddr_record = g_hash_table_lookup(page_record->children,
@@ -377,7 +377,7 @@ vf_setup_mem_trap (vf_config *conf, addr_t va)
 	paddr_record->identifier    = ~0; /* default 0xFFFF */
 
 	/* Write interrupt to our shadow page at the correct location. */
-	status_t ret = vmi_write_8_pa(conf->vmi,
+	status_t ret = vmi_write_8_pa(state->vmi,
 	                             (shadow << VF_PAGE_OFFSET_BITS) + shadow_offset,
 	                             &VF_BREAKPOINT_INST);
 	if (VMI_SUCCESS != ret) {
@@ -402,7 +402,7 @@ vf_emplace_breakpoint(vf_paddr_record *paddr_record) {
 	addr_t shadow_page = paddr_record->parent->shadow_page;
 	addr_t offset      = paddr_record->offset;
 
-	return vmi_write_8_pa(paddr_record->parent->conf->vmi,
+	return vmi_write_8_pa(paddr_record->parent->state->vmi,
 	                     (shadow_page << VF_PAGE_OFFSET_BITS) + offset,
 	                     &VF_BREAKPOINT_INST);
 }
@@ -418,14 +418,14 @@ vf_remove_breakpoint(vf_paddr_record *paddr_record) {
 	addr_t frame       = paddr_record->parent->frame;
 	addr_t offset      = paddr_record->offset;
 
-	status = vmi_read_8_pa(paddr_record->parent->conf->vmi,
+	status = vmi_read_8_pa(paddr_record->parent->state->vmi,
 	                      (frame << VF_PAGE_OFFSET_BITS) + offset,
 	                      &curr_inst);
 	if (VMI_FAILURE == status) {
 		goto done;
 	}
 
-	status = vmi_write_8_pa(paddr_record->parent->conf->vmi,
+	status = vmi_write_8_pa(paddr_record->parent->state->vmi,
 	                       (shadow_page << VF_PAGE_OFFSET_BITS) + offset,
 	                       &curr_inst);
 
@@ -442,19 +442,19 @@ done:
  * multiple breakpoints.
  */
 static vf_paddr_record *
-vf_paddr_record_from_pa(vf_config *conf, addr_t pa) {
+vf_paddr_record_from_pa(vf_state *state, addr_t pa) {
 	vf_paddr_record *paddr_record = NULL;
 	vf_page_record  *page_record  = NULL;
 
 	addr_t frame  = pa >> VF_PAGE_OFFSET_BITS;
 	addr_t offset = pa % VF_PAGE_SIZE;
-	addr_t shadow = (addr_t)g_hash_table_lookup(conf->vf_page_translation,
+	addr_t shadow = (addr_t)g_hash_table_lookup(state->vf_page_translation,
 	                                            GSIZE_TO_POINTER(frame));
 	if (0 == shadow) {
 		goto done;
 	}
 
-	page_record = g_hash_table_lookup(conf->vf_page_record_collection,
+	page_record = g_hash_table_lookup(state->vf_page_record_collection,
 	                                          GSIZE_TO_POINTER(shadow));
 	if (NULL == page_record) {
 		goto done;
@@ -469,8 +469,8 @@ done:
 
 /* Return the paddr_record associated with the given virtual address. */
 static vf_paddr_record *
-vf_paddr_record_from_va(vf_config *conf, addr_t va) {
-	return vf_paddr_record_from_pa(conf, vmi_translate_kv2p(conf->vmi, va));
+vf_paddr_record_from_va(vf_state *state, addr_t va) {
+	return vf_paddr_record_from_pa(state, vmi_translate_kv2p(state->vmi, va));
 }
 
 /*
@@ -528,15 +528,15 @@ done:
  * Setup our global interrupt to catch any interrupts on any pages.
  */
 static bool
-vf_set_up_generic_events (vf_config *conf) {
+vf_set_up_generic_events (vf_state *state) {
 	bool status = false;
 	static vmi_event_t breakpoint_event;
 	static vmi_event_t memory_event;
 
 	SETUP_INTERRUPT_EVENT(&breakpoint_event, 0, vf_breakpoint_cb);
-	breakpoint_event.data = conf;
+	breakpoint_event.data = state;
 
-	status_t ret = vmi_register_event(conf->vmi, &breakpoint_event);
+	status_t ret = vmi_register_event(state->vmi, &breakpoint_event);
 	if (VMI_SUCCESS != ret) {
 		fprintf(stderr, "Failed to setup interrupt event\n");
 		goto done;
@@ -549,9 +549,9 @@ vf_set_up_generic_events (vf_config *conf) {
 	                 vf_mem_rw_cb,
 	                 1);
 
-	memory_event.data = conf;
+	memory_event.data = state;
 
-	ret = vmi_register_event(conf->vmi, &memory_event);
+	ret = vmi_register_event(state->vmi, &memory_event);
 	if (VMI_SUCCESS != ret) {
 		fprintf(stderr, "Failed to setup memory event\n");
 		goto done;
@@ -570,8 +570,8 @@ done:
 static event_response_t
 vf_singlestep_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	/* Resume use of shadow SLAT. */
-	vf_config *conf = event->data;
-	event->slat_id = conf->shadow_view;
+	vf_state *state = event->data;
+	event->slat_id = state->shadow_view;
 
 	/* Turn off single-step and switch slat_id. */
 	return VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
@@ -583,11 +583,11 @@ vf_singlestep_cb(vmi_instance_t vmi, vmi_event_t *event) {
  * create a new event each time we want to single-step.
  */
 static bool
-vf_set_up_step_events (vf_config *conf) {
+vf_set_up_step_events (vf_state *state) {
 	bool status = false;
 	static vmi_event_t step_event[VF_MAX_VCPUS];
 
-	int vcpus = vmi_get_num_vcpus(conf->vmi);
+	int vcpus = vmi_get_num_vcpus(state->vmi);
 	if (0 == vcpus) {
 		fprintf(stderr, "failed to get number of VCPUs\n");
 		goto done;
@@ -601,9 +601,9 @@ vf_set_up_step_events (vf_config *conf) {
 	for (int vcpu = 0; vcpu < vcpus; vcpu++) {
 		vmi_event_t curr = step_event[vcpu];
 		SETUP_SINGLESTEP_EVENT(&curr, 1u << vcpu, vf_singlestep_cb, 0);
-		curr.data = conf;
+		curr.data = state;
 
-		if (VMI_FAILURE == vmi_register_event(conf->vmi, &curr)) {
+		if (VMI_FAILURE == vmi_register_event(state->vmi, &curr)) {
 			fprintf(stderr,
 			       "failed to register single-step event on VCPU %d\n",
 			        vcpu);
@@ -672,7 +672,7 @@ main (int argc, char **argv) {
 	status_t status = VMI_FAILURE;
 	vmi_instance_t vmi;
 	char *name = NULL;
-	vf_config config = {0};
+	vf_state state = {0};
 
 	if (argc < 2){
 		fprintf(stderr, "Usage: guestrace <name of VM>\n");
@@ -695,8 +695,8 @@ main (int argc, char **argv) {
 		printf("LibVMI init succeeded!\n");
 	}
 
-	config.vf_page_translation = g_hash_table_new(NULL, NULL);
-	config.vf_page_record_collection = g_hash_table_new_full(NULL,
+	state.vf_page_translation = g_hash_table_new(NULL, NULL);
+	state.vf_page_record_collection = g_hash_table_new_full(NULL,
 	                                                  NULL,
 	                                                  NULL,
 	                                                  vf_destroy_page_record);
@@ -717,27 +717,27 @@ main (int argc, char **argv) {
                 goto done;
         }
 
-	if (!vf_init_config(vmi, name, &config)) {
+	if (!vf_init_state(vmi, name, &state)) {
 		vmi_resume_vm(vmi);
 		goto done;
 	}
 
-	if (!vf_set_up_step_events(&config)) {
+	if (!vf_set_up_step_events(&state)) {
 		vmi_resume_vm(vmi);
 		goto done;
 	}
 
-	if (!vf_set_up_generic_events(&config)) {
+	if (!vf_set_up_generic_events(&state)) {
 		vmi_resume_vm(vmi);
 		goto done;
 	}
 
-	if (!os_functions->find_syscalls_and_setup_mem_traps(&config)) {
+	if (!os_functions->find_syscalls_and_setup_mem_traps(&state)) {
 		vmi_resume_vm(vmi);
 		goto done;
 	}
 
-	if (!os_functions->set_up_sysret_handler(&config)) {
+	if (!os_functions->set_up_sysret_handler(&state)) {
 		vmi_resume_vm(vmi);
 		goto done;
 	}
@@ -759,9 +759,9 @@ done:
 
 	vmi_pause_vm(vmi);
 
-	g_hash_table_destroy(config.vf_page_record_collection);
-	g_hash_table_destroy(config.vf_page_translation);
-	vf_close_config(&config);
+	g_hash_table_destroy(state.vf_page_record_collection);
+	g_hash_table_destroy(state.vf_page_translation);
+	vf_teardown_state(&state);
 
 	vmi_resume_vm(vmi);
 

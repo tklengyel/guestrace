@@ -456,7 +456,7 @@ vf_windows_print_sysret(vmi_instance_t vmi,
  * instruction.
  */
 bool
-vf_windows_find_syscalls_and_setup_mem_traps(vf_config *conf)
+vf_windows_find_syscalls_and_setup_mem_traps(vf_state *state)
 {
 	bool status = false;
 
@@ -879,7 +879,7 @@ vf_windows_find_syscalls_and_setup_mem_traps(vf_config *conf)
 				continue;
 			}
 
-			sysaddr = vmi_translate_ksym2v(conf->vmi,
+			sysaddr = vmi_translate_ksym2v(state->vmi,
 			                               TRACED_SYSCALLS[j]);
 			if (0 == sysaddr) {
 				fprintf(stderr,
@@ -888,7 +888,7 @@ vf_windows_find_syscalls_and_setup_mem_traps(vf_config *conf)
 				goto done;
 			}
 
-			syscall_trap = vf_setup_mem_trap(conf, sysaddr);
+			syscall_trap = vf_setup_mem_trap(state, sysaddr);
 			if (NULL == syscall_trap) {
 				fprintf(stderr,
 				       "failed to set memory trap on %s\n",
@@ -915,14 +915,14 @@ done:
  * the address of this spot.
  */
 static addr_t
-vf_windows_get_syscall_ret_addr(vf_config *conf, addr_t syscall_start) {
+vf_windows_get_syscall_ret_addr(vf_state *state, addr_t syscall_start) {
 	csh handle;
 	cs_insn *inst;
 	size_t count, call_offset = ~0;
 	addr_t ret = 0;
 	uint8_t code[4096]; /* Assume CALL is within first page. */
 
-	addr_t syscall_start_p = vmi_translate_kv2p(conf->vmi, syscall_start);
+	addr_t syscall_start_p = vmi_translate_kv2p(state->vmi, syscall_start);
 	if (0 == syscall_start_p) {
 		fprintf(stderr, "failed to read instructions from 0x%"
 		                 PRIx64".\n", syscall_start);
@@ -930,7 +930,7 @@ vf_windows_get_syscall_ret_addr(vf_config *conf, addr_t syscall_start) {
 	}
 
 	/* Read kernel instructions into code. */
-	status_t status = vmi_read_pa(conf->vmi, syscall_start_p, code, sizeof(code));
+	status_t status = vmi_read_pa(state->vmi, syscall_start_p, code, sizeof(code));
 	if (VMI_FAILURE == status) {
 		fprintf(stderr, "failed to read instructions from 0x%"
 		                 PRIx64".\n", syscall_start_p);
@@ -979,25 +979,25 @@ done:
  * upon an execution of the return-value page.
  */
 bool
-vf_windows_set_up_sysret_handler(vf_config *conf)
+vf_windows_set_up_sysret_handler(vf_state *state)
 {
 	bool status = false;
 	addr_t lstar = 0;
 
 	/* LSTAR should be the constant across all VCPUs */
-	status_t ret = vmi_get_vcpureg(conf->vmi, &lstar, MSR_LSTAR, 0);
+	status_t ret = vmi_get_vcpureg(state->vmi, &lstar, MSR_LSTAR, 0);
 	if (VMI_SUCCESS != ret) {
 		fprintf(stderr, "failed to get MSR_LSTAR address\n");
 		goto done;
 	}
 
-	addr_t ret_addr = vf_windows_get_syscall_ret_addr(conf, lstar);
+	addr_t ret_addr = vf_windows_get_syscall_ret_addr(state, lstar);
 	if (0 == ret_addr) {
 		fprintf(stderr, "failed to get system return address\n");
 		goto done;
 	}
 
-	sysret_trap = vf_setup_mem_trap(conf, ret_addr);
+	sysret_trap = vf_setup_mem_trap(state, ret_addr);
 	if (NULL == sysret_trap) {
 		fprintf(stderr, "Failed to create sysret memory trap\n");
 		goto done;
