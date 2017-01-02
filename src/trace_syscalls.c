@@ -60,31 +60,6 @@
 /* Intel breakpoint interrupt (INT 3) instruction. */
 static uint8_t VF_BREAKPOINT_INST = 0xCC;
 
-static GHashTable *vf_page_translation;
-static GHashTable *vf_page_record_collection;
-
-/*
- * Guestrace maintains three collections:
- *
- * The first collection (vf_page_translation) contains a mapping from
- * frame numbers to shadow page numbers. Given a frame, this will translate
- * it into a shadow page if one exists. TODO: the code has changed since
- * the original inception in my mind, so we might be able to delete this
- * without negative consequences
- *
- * The second collection (vf_page_record_collection) contains a
- * mapping from shadow page numbers to vf_page_record structures. This
- * serves as a record of the guest pages for which guestrace installed a
- * memory event. When the guest accesses such a page, control traps into
- * guestrace. The most notable field in vf_page_record is children; this
- * field points to the third collection.
- *
- * The third collection (each vf_page_record's children field) contains a
- * mapping from physical address offsets to vf_paddr_record structures.
- * This serves as a record for each breakpoint that guestrace sets within a
- * page.
- */
-
 /*
  * Handle terminating signals by setting interrupted flag. This allows
  * a graceful exit.
@@ -313,7 +288,7 @@ vf_setup_mem_trap (vf_config *conf, addr_t va)
 	}
 
 	addr_t frame = pa >> VF_PAGE_OFFSET_BITS;
-	addr_t shadow = (addr_t) g_hash_table_lookup(vf_page_translation,
+	addr_t shadow = (addr_t) g_hash_table_lookup(conf->vf_page_translation,
 		                                     GSIZE_TO_POINTER(frame));
 	addr_t shadow_offset = pa % VF_PAGE_SIZE;
 
@@ -325,7 +300,7 @@ vf_setup_mem_trap (vf_config *conf, addr_t va)
 			goto done;
 		}
 
-		g_hash_table_insert(vf_page_translation,
+		g_hash_table_insert(conf->vf_page_translation,
 		                    GSIZE_TO_POINTER(frame),
 		                    GSIZE_TO_POINTER(shadow));
 
@@ -341,7 +316,7 @@ vf_setup_mem_trap (vf_config *conf, addr_t va)
 		}
 	}
 
-	page_record = g_hash_table_lookup(vf_page_record_collection,
+	page_record = g_hash_table_lookup(conf->vf_page_record_collection,
 	                                  GSIZE_TO_POINTER(shadow));
 	if (NULL == page_record) {
 		/* No record for this page yet; create one. */
@@ -378,7 +353,7 @@ vf_setup_mem_trap (vf_config *conf, addr_t va)
 		                                       NULL,
 		                                       vf_destroy_paddr_record);
 
-		g_hash_table_insert(vf_page_record_collection,
+		g_hash_table_insert(conf->vf_page_record_collection,
 		                    GSIZE_TO_POINTER(shadow),
 		                    page_record);
 
@@ -467,19 +442,19 @@ done:
  * multiple breakpoints.
  */
 static vf_paddr_record *
-vf_paddr_record_from_pa(vmi_instance_t vmi, addr_t pa) {
+vf_paddr_record_from_pa(vf_config *conf, addr_t pa) {
 	vf_paddr_record *paddr_record = NULL;
 	vf_page_record  *page_record  = NULL;
 
 	addr_t frame  = pa >> VF_PAGE_OFFSET_BITS;
 	addr_t offset = pa % VF_PAGE_SIZE;
-	addr_t shadow = (addr_t)g_hash_table_lookup(vf_page_translation,
+	addr_t shadow = (addr_t)g_hash_table_lookup(conf->vf_page_translation,
 	                                            GSIZE_TO_POINTER(frame));
 	if (0 == shadow) {
 		goto done;
 	}
 
-	page_record = g_hash_table_lookup(vf_page_record_collection,
+	page_record = g_hash_table_lookup(conf->vf_page_record_collection,
 	                                          GSIZE_TO_POINTER(shadow));
 	if (NULL == page_record) {
 		goto done;
@@ -494,8 +469,8 @@ done:
 
 /* Return the paddr_record associated with the given virtual address. */
 static vf_paddr_record *
-vf_paddr_record_from_va(vmi_instance_t vmi, addr_t va) {
-	return vf_paddr_record_from_pa(vmi, vmi_translate_kv2p(vmi, va));
+vf_paddr_record_from_va(vf_config *conf, addr_t va) {
+	return vf_paddr_record_from_pa(conf, vmi_translate_kv2p(conf->vmi, va));
 }
 
 /*
@@ -517,7 +492,7 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	status_t status = VMI_EVENT_RESPONSE_NONE;
 
 	vf_paddr_record *paddr_record
-		= vf_paddr_record_from_va(vmi, event->interrupt_event.gla);
+		= vf_paddr_record_from_va(event->data, event->interrupt_event.gla);
 
 	/* If paddr_record is null, we assume we didn't emplace interrupt. */
 	if (NULL == paddr_record) {
@@ -720,8 +695,8 @@ main (int argc, char **argv) {
 		printf("LibVMI init succeeded!\n");
 	}
 
-	vf_page_translation = g_hash_table_new(NULL, NULL);
-	vf_page_record_collection = g_hash_table_new_full(NULL,
+	config.vf_page_translation = g_hash_table_new(NULL, NULL);
+	config.vf_page_record_collection = g_hash_table_new_full(NULL,
 	                                                  NULL,
 	                                                  NULL,
 	                                                  vf_destroy_page_record);
@@ -784,8 +759,8 @@ done:
 
 	vmi_pause_vm(vmi);
 
-	g_hash_table_destroy(vf_page_record_collection);
-	g_hash_table_destroy(vf_page_translation);
+	g_hash_table_destroy(config.vf_page_record_collection);
+	g_hash_table_destroy(config.vf_page_translation);
 	vf_close_config(&config);
 
 	vmi_resume_vm(vmi);

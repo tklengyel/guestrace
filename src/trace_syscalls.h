@@ -6,8 +6,34 @@
 #include <xenctrl.h>
 #include <xentoollog.h>
 
-/* Data structure used to interact directly with Xen driver */
+/* Collection of global state for callbacks.
+ *
+ * Guestrace maintains three collections:
+ *
+ * The first collection (vf_page_translation) contains a mapping from
+ * frame numbers to shadow page numbers. Given a frame, this will translate
+ * it into a shadow page if one exists. TODO: the code has changed since
+ * the original inception in my mind, so we might be able to delete this
+ * without negative consequences
+ *
+ * The second collection (vf_page_record_collection) contains a
+ * mapping from shadow page numbers to vf_page_record structures. This
+ * serves as a record of the guest pages for which guestrace installed a
+ * memory event. When the guest accesses such a page, control traps into
+ * guestrace. The most notable field in vf_page_record is children; this
+ * field points to the third collection.
+ *
+ * The third collection (each vf_page_record's children field) contains a
+ * mapping from physical address offsets to vf_paddr_record structures.
+ * This serves as a record for each breakpoint that guestrace sets within a
+ * page.
+ */
 typedef struct vf_config {
+	/* Fields used with libvmi. */
+	GHashTable *vf_page_translation;
+	GHashTable *vf_page_record_collection;
+
+	/* Fields used to interact directly with Xen driver. */
 	xc_interface *xch;
 	libxl_ctx *ctx;
 	xentoollog_logger *logger;
