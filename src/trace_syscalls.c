@@ -496,7 +496,7 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 
 	if (sysret_trap != paddr_record) {
 		/* syscall */
-		os_functions->print_syscall(vmi, event, paddr_record->identifier);
+		os_functions->print_syscall(vmi, event, paddr_record);
 		vf_emplace_breakpoint(sysret_trap);
 	} else {
 		/* sysret */

@@ -407,7 +407,7 @@ done:
 }
 
 void 
-vf_linux_print_syscall(vmi_instance_t vmi, vmi_event_t *event, uint16_t syscall_num) 
+vf_linux_print_syscall(vmi_instance_t vmi, vmi_event_t *event, vf_paddr_record *unused)
 {
 	/* 
  	 *  This function is used to translate the 

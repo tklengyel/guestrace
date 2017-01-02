@@ -253,7 +253,7 @@ done:
 void 
 vf_windows_print_syscall(vmi_instance_t vmi,
                          vmi_event_t *event,
-                         uint16_t syscall_num) 
+                         vf_paddr_record *paddr_record)
 {
 	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 
@@ -283,7 +283,7 @@ vf_windows_print_syscall(vmi_instance_t vmi,
 		fprintf(stderr, "Warning: system call didn't return before new system call.  Multi-threaded process?\n");
 	}
 
-	curr_proc->sysnum = syscall_num;
+	curr_proc->sysnum = paddr_record->identifier;
 	
 	time_t now = time(NULL);
 

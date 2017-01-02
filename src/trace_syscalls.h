@@ -59,7 +59,7 @@ typedef struct vf_paddr_record {
 
 /* Operating-system-specific operations. */
 struct os_functions {
-        void (*print_syscall) (vmi_instance_t vmi, vmi_event_t *event, uint16_t syscall_num);
+        void (*print_syscall) (vmi_instance_t vmi, vmi_event_t *event, vf_paddr_record *record);
         void (*print_sysret) (vmi_instance_t vmi, vmi_event_t *event);
         bool (*find_syscalls_and_setup_mem_traps) (vf_state *state);
         bool (*set_up_sysret_handler) (vf_state *state);
