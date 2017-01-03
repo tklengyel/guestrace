@@ -41,7 +41,10 @@ typedef struct visor_proc {
 
 struct syscall_defs {
 	char *name;
-	void (*print) (vmi_instance_t vmi, char *timestamp, visor_proc *curr_proc);
+	void (*print) (vmi_instance_t vmi,
+	               char *timestamp,
+	               char *syscall_symbol,
+	               visor_proc *curr_proc);
 };
 
 /*
@@ -104,60 +107,52 @@ done:
 }
 
 static void
-vf_windows_print_sysret_openfile(vmi_instance_t vmi, char *timestamp, visor_proc *curr_proc)
+vf_windows_print_sysret_openfile(vmi_instance_t vmi, char *timestamp, char *syscall_symbol, visor_proc *curr_proc)
 {
 	uint8_t * filename = filename_from_arg(vmi, curr_proc->args[2], curr_proc->pid);
 
 	uint64_t handle = 0;
 	vmi_read_64_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
 
-	const char * syscall_symbol = "NtOpenFile";
-
 	fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n\thandle value:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, curr_proc->ret_status, handle);
 }
 
 static void
-vf_windows_print_sysret_opensymboliclinkobject(vmi_instance_t vmi, char *timestamp, visor_proc *curr_proc)
+vf_windows_print_sysret_opensymboliclinkobject(vmi_instance_t vmi, char *timestamp, char *syscall_symbol, visor_proc *curr_proc)
 {
 	uint8_t * filename = filename_from_arg(vmi, curr_proc->args[2], curr_proc->pid);
 
 	uint64_t handle = 0;
 	vmi_read_64_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
 
-	const char * syscall_symbol = "NtOpenSymbolicLinkObject";
-
 	fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n\thandle value:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, curr_proc->ret_status, handle);
 
 }
 
 static void
-vf_windows_print_sysret_createfile(vmi_instance_t vmi, char *timestamp, visor_proc *curr_proc)
+vf_windows_print_sysret_createfile(vmi_instance_t vmi, char *timestamp, char *syscall_symbol, visor_proc *curr_proc)
 {
 	uint8_t * filename = filename_from_arg(vmi, curr_proc->args[2], curr_proc->pid);
 
 	uint64_t handle = 0;
 	vmi_read_64_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
 
-	const char * syscall_symbol = "NtCreateFile";
-
 	fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n\thandle value:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, curr_proc->ret_status, handle);
 }
 
 static void
-vf_windows_print_sysret_opendirectoryobject(vmi_instance_t vmi, char *timestamp, visor_proc *curr_proc)
+vf_windows_print_sysret_opendirectoryobject(vmi_instance_t vmi, char *timestamp, char *syscall_symbol, visor_proc *curr_proc)
 {
 	uint8_t * filename = filename_from_arg(vmi, curr_proc->args[2], curr_proc->pid);
 
 	uint64_t handle = 0;
 	vmi_read_64_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
 
-	const char * syscall_symbol = "NtOpenDirectoryObject";
-
 	fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n\thandle value:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, curr_proc->ret_status, handle);
 }
 
 static void
-vf_windows_print_sysret_openprocess(vmi_instance_t vmi, char *timestamp, visor_proc *curr_proc)
+vf_windows_print_sysret_openprocess(vmi_instance_t vmi, char *timestamp, char *syscall_symbol, visor_proc *curr_proc)
 {
 	struct win64_client_id client_id = {0};
 	vmi_read_va(vmi, curr_proc->args[3], curr_proc->pid, &client_id, sizeof(struct win64_client_id));
@@ -165,29 +160,23 @@ vf_windows_print_sysret_openprocess(vmi_instance_t vmi, char *timestamp, visor_p
 	uint64_t handle = 0;
 	vmi_read_64_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
 
-	const char * syscall_symbol = "NtOpenProcess";
-
 	fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t0x%lx\n\treturn status:\t0x%lx\n\thandle value:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, client_id.unique_process, curr_proc->ret_status, handle);
 }
 
 static void
-vf_windows_print_sysret_readfile(vmi_instance_t vmi, char *timestamp, visor_proc *curr_proc)
+vf_windows_print_sysret_readfile(vmi_instance_t vmi, char *timestamp, char *syscall_symbol, visor_proc *curr_proc)
 {
-	const char * syscall_symbol = "NtReadFile";
-
 	fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t0x%lx\n\treturn status:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, curr_proc->args[0], curr_proc->ret_status);
 }
 
 static void
-vf_windows_print_sysret_writefile(vmi_instance_t vmi, char *timestamp, visor_proc *curr_proc)
+vf_windows_print_sysret_writefile(vmi_instance_t vmi, char *timestamp, char *syscall_symbol, visor_proc *curr_proc)
 {
-	const char * syscall_symbol = "NtWriteFile";
-
 	fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t0x%lx\n\treturn status:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, curr_proc->args[0], curr_proc->ret_status);
 }
 
 static void
-vf_windows_print_sysret_def(vmi_instance_t vmi, char *timestamp, visor_proc *curr_proc)
+vf_windows_print_sysret_def(vmi_instance_t vmi, char *timestamp, char *syscall_symbol, visor_proc *curr_proc)
 {
 	/* No-Op. for now. */
 }
@@ -839,7 +828,10 @@ vf_windows_print_sysret(vmi_instance_t vmi,
 	//	syscall_symbol = "Unknown Symbol";
 	//}
 	
-	SYSCALLS[curr_proc->sysnum].print(vmi, timestamp, curr_proc);
+	SYSCALLS[curr_proc->sysnum].print(vmi,
+	                                  timestamp,
+	                                  SYSCALLS[curr_proc->sysnum].name,
+	                                  curr_proc);
 
 	curr_proc->sysnum = 0xFFFF; /* clean out the syscall */
 
