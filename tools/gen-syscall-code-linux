@@ -453,7 +453,7 @@ static const struct syscall_defs SYSCALLS[] = {
 
 def create_print_function(syscall_data):
     """Generate a print function for a single syscall"""
-    func_str = """void vf_linux_print_syscall_{0}(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+    func_str = """static void vf_linux_print_syscall_{0}(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {{
 """.format(syscall_data.get_syscall_name())
     if 1 == syscall_data.get_args_count():
