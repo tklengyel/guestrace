@@ -377,7 +377,7 @@ get_proc_name(vmi_instance_t vmi, vmi_pid_t pid)
 	list_head = vmi_translate_ksym2v(vmi, "init_task") + task_offset; 	/* get the address to the head of the process list */
 
 	if (list_head == task_offset) {
-		printf("Failed to read address for init_task!\\n");
+		fprintf(stderr, "failed to read address for init_task\\n");
 		goto done;
 	}
 	
@@ -386,7 +386,7 @@ get_proc_name(vmi_instance_t vmi, vmi_pid_t pid)
 	do{
 		curr_proc = list_curr - task_offset;						/* subtract the task offset to get to the start of the task_struct */
 		if (VMI_FAILURE == vmi_read_32_va(vmi, curr_proc + pid_offset, 0, (uint32_t*)&curr_pid)) {		/* read the current pid using the pid offset from the start of the task struct */
-			printf("Failed to get the pid of the process we are examining!\\n");
+			fprintf(stderr, "failed to get the pid of the process we are examining\\n");
 			goto done;
 		}
 	
@@ -396,7 +396,7 @@ get_proc_name(vmi_instance_t vmi, vmi_pid_t pid)
 		}
 	
 		if (VMI_FAILURE == vmi_read_addr_va(vmi, list_curr, 0, &list_curr)) {				/* read the memory from the address of list_curr which will return a pointer to the */
-			printf("Failed to get the next task in the process list!\\n");
+			fprintf(stderr, "failed to get the next task in the process list\\n");
 			goto done;
 		}
 
@@ -442,7 +442,7 @@ static const struct syscall_defs SYSCALLS[] = {
     str += """void vf_linux_print_sysret(vmi_instance_t vmi, vmi_event_t *event) {
 	reg_t syscall_return = event->x86_regs->rax;
 	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
-	printf("pid: %u (%s) return: 0x%"PRIx64"\\n", pid, get_proc_name(vmi, pid), syscall_return);
+	fprintf(stderr, "pid: %u (%s) return: 0x%"PRIx64"\\n", pid, get_proc_name(vmi, pid), syscall_return);
 	}
 """
 
@@ -469,7 +469,7 @@ def create_print_function(syscall_data):
     elif 6 == syscall_data.get_args_count():
 	func_str += create_printf_statement(6, syscall_data)
     else:
-        func_str += '\tprintf("pid: %u (%s) syscall: %s()\\n", pid, proc, syscall);\n'
+        func_str += '\tfprintf(stderr, "pid: %u (%s) syscall: %s()\\n", pid, proc, syscall);\n'
     func_str += "}\n\n"
 
     return func_str
@@ -485,7 +485,7 @@ def create_printf_statement(count, syscall_data):
         else:
             func_str += "\treg_t arg{0} = event->x86_regs->{1};\n".format(i, REG[i])
 
-    func_str += '\tprintf("pid: %u (%s) syscall: %s('
+    func_str += '\tfprintf(stderr, "pid: %u (%s) syscall: %s('
 
     if syscall_data.get_arg_printf_type(0) == "char *":
         func_str += '\\"{0}\\"'.format(syscall_data.get_arg_format(0))
