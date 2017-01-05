@@ -321,6 +321,11 @@ def parse_syscall_protos(syscall_prototypes, syscall_map):
             if curr_args[0] == "void);":    # No arguments if the first is void.
                 continue
 
+            if syscall_map[syscall_name].get_args_count() != 0:
+                # Likely uses #ifdef to provide alternate definitions of syscall.
+                print "skip repeat", syscall_name, "def.: ", syscall_map[syscall_name]
+                continue
+
             for arg in curr_args:
                 
                 if arg[-2:] == ");":        # Remove the end for the last arg.
@@ -456,20 +461,7 @@ def create_print_function(syscall_data):
     func_str = """static void vf_linux_print_syscall_{0}(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {{
 """.format(syscall_data.get_syscall_name())
-    if 1 == syscall_data.get_args_count():
-	func_str += create_printf_statement(1, syscall_data)
-    elif 2 == syscall_data.get_args_count():
-	func_str += create_printf_statement(2, syscall_data)
-    elif 3 == syscall_data.get_args_count():
-	func_str += create_printf_statement(3, syscall_data)
-    elif 4 == syscall_data.get_args_count():
-	func_str += create_printf_statement(4, syscall_data)
-    elif 5 == syscall_data.get_args_count():
-	func_str += create_printf_statement(5, syscall_data)
-    elif 6 == syscall_data.get_args_count():
-	func_str += create_printf_statement(6, syscall_data)
-    else:
-        func_str += '\tfprintf(stderr, "pid: %u (%s) syscall: %s()\\n", pid, proc, syscall);\n'
+    func_str += create_printf_statement(syscall_data.get_args_count(), syscall_data)
     func_str += "}\n\n"
 
     return func_str
@@ -487,21 +479,23 @@ def create_printf_statement(count, syscall_data):
 
     func_str += '\tfprintf(stderr, "pid: %u (%s) syscall: %s('
 
-    if syscall_data.get_arg_printf_type(0) == "char *":
-        func_str += '\\"{0}\\"'.format(syscall_data.get_arg_format(0))
-    else:
-        func_str += '{0}'.format(syscall_data.get_arg_format(0))
-    for i in range(1, count):
-        if syscall_data.get_arg_printf_type(i) == "char *":
-            func_str += ', \\"{0}\\"'.format(syscall_data.get_arg_format(i))
+    if count != 0:
+        if syscall_data.get_arg_printf_type(0) == "char *":
+            func_str += '\\"{0}\\"'.format(syscall_data.get_arg_format(0))
         else:
-            func_str += ', {0}'.format(syscall_data.get_arg_format(i))
+            func_str += '{0}'.format(syscall_data.get_arg_format(0))
+        for i in range(1, count):
+            if syscall_data.get_arg_printf_type(i) == "char *":
+                func_str += ', \\"{0}\\"'.format(syscall_data.get_arg_format(i))
+            else:
+                func_str += ', {0}'.format(syscall_data.get_arg_format(i))
 
-    func_str += ')\\n", pid, proc, syscall, '
+    func_str += ')\\n", pid, proc, syscall'
 
-    func_str += '({0}) arg{1}'.format(syscall_data.get_arg_printf_type(0), 0)
-    for i in range(1, count):
-        func_str += ', ({0}) arg{1}'.format(syscall_data.get_arg_printf_type(i), i)
+    if count != 0:
+        for i in range(0, count):
+            func_str += ', ({0}) arg{1}'.format(syscall_data.get_arg_printf_type(i), i)
+
     func_str += ');\n'
 
     return func_str

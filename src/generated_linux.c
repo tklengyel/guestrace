@@ -1,4 +1,4 @@
-/* Generated on Linux_4.8.15-300.fc25.x86_64 on 05 Jan 2017 10:44:44*/
+/* Generated on Linux_4.8.15-300.fc25.x86_64 on 05 Jan 2017 11:28:24*/
 
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
@@ -508,7 +508,12 @@ static void vf_linux_print_syscall_sys_getsockopt(vmi_instance_t vmi, vmi_pid_t 
 
 static void vf_linux_print_syscall_sys_clone(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
-	fprintf(stderr, "pid: %u (%s) syscall: %s()\n", pid, proc, syscall);
+	reg_t arg0 = event->x86_regs->rdi;
+	reg_t arg1 = event->x86_regs->rsi;
+	reg_t arg2 = event->x86_regs->rdx;
+	reg_t arg3 = event->x86_regs->r10;
+	reg_t arg4 = event->x86_regs->r8;
+	fprintf(stderr, "pid: %u (%s) syscall: %s(%lu, %lu, 0x%"PRIx64", %lu, 0x%"PRIx64")\n", pid, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 }
 
 static void vf_linux_print_syscall_sys_fork(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
@@ -1314,10 +1319,7 @@ static void vf_linux_print_syscall_sys_ioperm(vmi_instance_t vmi, vmi_pid_t pid,
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
 	reg_t arg2 = event->x86_regs->rdx;
-	reg_t arg3 = event->x86_regs->r10;
-	reg_t arg4 = event->x86_regs->r8;
-	reg_t arg5 = event->x86_regs->r9;
-	fprintf(stderr, "pid: %u (%s) syscall: %s(%lu, %lu, %i, %lu, %lu, %i)\n", pid, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (int) arg2, (unsigned long) arg3, (unsigned long) arg4, (int) arg5);
+	fprintf(stderr, "pid: %u (%s) syscall: %s(%lu, %lu, %i)\n", pid, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (int) arg2);
 }
 
 static void vf_linux_print_syscall_sys_create_module(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
