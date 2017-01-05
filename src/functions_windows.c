@@ -114,7 +114,10 @@ vf_windows_print_sysret_openfile(vmi_instance_t vmi, char *timestamp, char *sysc
 	uint64_t handle = 0;
 	vmi_read_64_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
 
-	fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n\thandle value:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, curr_proc->ret_status, handle);
+	fprintf(stderr, "pid: %d (%s) syscall: %s(%s)\n", curr_proc->pid, curr_proc->name, syscall_symbol, filename);
+	fprintf(stderr, "pid: %d (%s) return: %lx\n", curr_proc->pid, curr_proc->name, curr_proc->ret_status);
+
+	/* TODO: presently omitted: timestamp, handle, curr_proc->sysnum. */
 }
 
 static void
@@ -125,8 +128,10 @@ vf_windows_print_sysret_opensymboliclinkobject(vmi_instance_t vmi, char *timesta
 	uint64_t handle = 0;
 	vmi_read_64_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
 
-	fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n\thandle value:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, curr_proc->ret_status, handle);
+	fprintf(stderr, "pid: %d (%s) syscall: %s(%s)\n", curr_proc->pid, curr_proc->name, syscall_symbol, filename);
+	fprintf(stderr, "pid: %d (%s) return: %lx\n", curr_proc->pid, curr_proc->name, curr_proc->ret_status);
 
+	/* TODO: presently omitted: timestamp, handle, curr_proc->sysnum. */
 }
 
 static void
@@ -137,7 +142,10 @@ vf_windows_print_sysret_createfile(vmi_instance_t vmi, char *timestamp, char *sy
 	uint64_t handle = 0;
 	vmi_read_64_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
 
-	fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n\thandle value:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, curr_proc->ret_status, handle);
+	fprintf(stderr, "pid: %d (%s) syscall: %s(%s)\n", curr_proc->pid, curr_proc->name, syscall_symbol, filename);
+	fprintf(stderr, "pid: %d (%s) return: %lx\n", curr_proc->pid, curr_proc->name, curr_proc->ret_status);
+
+	/* TODO: presently omitted: timestamp, handle, curr_proc->sysnum. */
 }
 
 static void
@@ -148,7 +156,10 @@ vf_windows_print_sysret_opendirectoryobject(vmi_instance_t vmi, char *timestamp,
 	uint64_t handle = 0;
 	vmi_read_64_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
 
-	fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t'%s'\n\treturn status:\t0x%lx\n\thandle value:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, filename, curr_proc->ret_status, handle);
+	fprintf(stderr, "pid: %d (%s) syscall: %s(%s)\n", curr_proc->pid, curr_proc->name, syscall_symbol, filename);
+	fprintf(stderr, "pid: %d (%s) return: %lx\n", curr_proc->pid, curr_proc->name, curr_proc->ret_status);
+
+	/* TODO: presently omitted: timestamp, handle, curr_proc->sysnum. */
 }
 
 static void
@@ -160,19 +171,28 @@ vf_windows_print_sysret_openprocess(vmi_instance_t vmi, char *timestamp, char *s
 	uint64_t handle = 0;
 	vmi_read_64_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
 
-	fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t0x%lx\n\treturn status:\t0x%lx\n\thandle value:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, client_id.unique_process, curr_proc->ret_status, handle);
+	fprintf(stderr, "pid: %d (%s) syscall: %s(%lx)\n", curr_proc->pid, curr_proc->name, syscall_symbol, client_id.unique_process);
+	fprintf(stderr, "pid: %d (%s) return: %lx\n", curr_proc->pid, curr_proc->name, curr_proc->ret_status);
+
+	/* TODO: presently omitted: timestamp, handle, curr_proc->sysnum. */
 }
 
 static void
 vf_windows_print_sysret_readfile(vmi_instance_t vmi, char *timestamp, char *syscall_symbol, visor_proc *curr_proc)
 {
-	fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t0x%lx\n\treturn status:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, curr_proc->args[0], curr_proc->ret_status);
+	fprintf(stderr, "pid: %d (%s) syscall: %s(%lx)\n", curr_proc->pid, curr_proc->name, syscall_symbol, curr_proc->args[0]);
+	fprintf(stderr, "pid: %d (%s) return: %lx\n", curr_proc->pid, curr_proc->name, curr_proc->ret_status);
+
+	/* TODO: presently omitted: timestamp, handle, curr_proc->sysnum. */
 }
 
 static void
 vf_windows_print_sysret_writefile(vmi_instance_t vmi, char *timestamp, char *syscall_symbol, visor_proc *curr_proc)
 {
-	fprintf(stderr, "[%s] %s (PID: %d) -> %s (SysNum: 0x%x)\n\targuments:\t0x%lx\n\treturn status:\t0x%lx\n", timestamp, curr_proc->name, curr_proc->pid, syscall_symbol, curr_proc->sysnum, curr_proc->args[0], curr_proc->ret_status);
+	fprintf(stderr, "pid: %d (%s) syscall: %s(%lx)\n", curr_proc->pid, curr_proc->name, syscall_symbol, curr_proc->args[0]);
+	fprintf(stderr, "pid: %d (%s) return: %lx\n", curr_proc->pid, curr_proc->name, curr_proc->ret_status);
+
+	/* TODO: presently omitted: timestamp, handle, curr_proc->sysnum. */
 }
 
 static void
