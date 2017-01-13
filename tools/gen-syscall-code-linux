@@ -447,7 +447,8 @@ static const struct syscall_defs SYSCALLS[] = {
     str += """void vf_linux_print_sysret(vmi_instance_t vmi, vmi_event_t *event) {
 	reg_t syscall_return = event->x86_regs->rax;
 	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
-	fprintf(stderr, "pid: %u (%s) return: 0x%"PRIx64"\\n", pid, get_proc_name(vmi, pid), syscall_return);
+	reg_t rsp = event->x86_regs->rsp;
+	fprintf(stderr, "pid: %u/%p (%s) return: 0x%"PRIx64"\\n", pid, rsp, get_proc_name(vmi, pid), syscall_return);
 	}
 """
 
@@ -476,8 +477,8 @@ def create_printf_statement(count, syscall_data):
             func_str += "\tchar *arg{0} = vmi_read_str_va(vmi, event->x86_regs->{1}, pid);\n".format(i, REG[i])
         else:
             func_str += "\treg_t arg{0} = event->x86_regs->{1};\n".format(i, REG[i])
-
-    func_str += '\tfprintf(stderr, "pid: %u (%s) syscall: %s('
+    func_str += '\treg_t rsp = event->x86_regs->rsp;\n'
+    func_str += '\tfprintf(stderr, "pid: %u/%p (%s) syscall: %s('
 
     if count != 0:
         if syscall_data.get_arg_printf_type(0) == "char *":
@@ -490,7 +491,7 @@ def create_printf_statement(count, syscall_data):
             else:
                 func_str += ', {0}'.format(syscall_data.get_arg_format(i))
 
-    func_str += ')\\n", pid, proc, syscall'
+    func_str += ')\\n", pid, rsp, proc, syscall'
 
     if count != 0:
         for i in range(0, count):
