@@ -167,7 +167,7 @@ class syscall_data:
 class kernel_data:
     """Holds data about the kernel upon which the script runs.""" 
     
-    def __init__(self, version, get_kernel_source):
+    def __init__(self, kernel_info, get_kernel_source):
         """The __init__ method is called to create the object.
         
         Inputs:
@@ -176,10 +176,10 @@ class kernel_data:
 
         No Output
         """
-        self.__name = self.__set_name(version)
-        self.__version = version
-        self.__version_short = self.__set_short_version(version)
-        self.__arch = self.__set_arch(version)
+        self.__name = self.__set_name(kernel_info)
+        self.__version = kernel_info[1]
+        self.__version_short = self.__set_short_version(kernel_info)
+        self.__arch = self.__set_arch(kernel_info)
         self.__syscall_header_src = []
         
         if get_kernel_source:
@@ -209,17 +209,17 @@ class kernel_data:
         """Returns the list of lines from the source header files"""
         return self.__syscall_header_src
 
-    def __set_name(self, version):
+    def __set_name(self, kernel_info):
         """Set the name of the kernel based on the version"""
-        return version.split("_")[0]   
+        return kernel_info[0]
 
-    def __set_short_version(self, version):
+    def __set_short_version(self, kernel_info):
         """Set the short kernel version number based on the version"""
-        return ".".join(version.split("_")[1].split(".")[:2])        
+        return ".".join(kernel_info[1].split("_")[1].split(".")[:2])        
 
-    def __set_arch(self, version):
+    def __set_arch(self, kernel_info):
         """Set the kernel architecture based on the version"""
-        return version.split("_")[1].split(".")[4]
+        return kernel_info[2]
     
     def __fetch_syscall_header_src(self):
         """Attempts to get the two header files that contain the syscall prototypes online first then locally"""
@@ -249,9 +249,11 @@ class kernel_data:
 
 def get_kernel_info(get_kernel_source):
     """Get kernel information and create a kernel_data object"""
-    uname_output = subprocess.check_output(["uname", "-a"]).strip().split(" ")
-    kernel_version = "{0}_{1}".format(uname_output[0], uname_output[2])
-    return kernel_data(kernel_version, get_kernel_source)
+    kernel_name = subprocess.check_output(["uname", "-s"]).strip()
+    kernel_version = kernel_name + "_" + subprocess.check_output(["uname", "-r"]).strip()
+    arch = subprocess.check_output(["uname", "-m"]).strip()
+    kernel_info = [kernel_name, kernel_version, arch]
+    return kernel_data(kernel_info, get_kernel_source)
 
 
 def get_syscalls():
