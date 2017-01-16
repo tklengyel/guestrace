@@ -78,16 +78,7 @@ vf_init_state(vmi_instance_t vmi, char *name, vf_state *state)
 		goto done;
 	}
 
-	state->logger = (xentoollog_logger *) xtl_createlogger_stdiostream(
-	                                                           stderr,
-	                                                           XTL_PROGRESS,
-	                                                           0);
-	if (NULL == state->logger) {
-		fprintf(stderr, "failed to create libxl logger\n");
-		goto done;
-	}
-
-	rc = libxl_ctx_alloc(&state->ctx, LIBXL_VERSION, 0, state->logger);
+	rc = libxl_ctx_alloc(&state->ctx, LIBXL_VERSION, 0, NULL);
 	if (0 != rc) {
 		fprintf(stderr, "failed to create libxl context\n");
 		goto done;
@@ -335,7 +326,7 @@ vf_setup_mem_trap (vf_state *state, addr_t va)
 		page_record              = g_new0(vf_page_record, 1);
 		page_record->shadow_page = shadow;
 		page_record->frame       = frame;
-		page_record->state        = state;
+		page_record->state       = state;
 		page_record->children    = g_hash_table_new_full(NULL,
 		                                       NULL,
 		                                       NULL,

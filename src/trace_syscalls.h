@@ -4,7 +4,6 @@
 #include <glib.h>
 #include <libxl.h>
 #include <xenctrl.h>
-#include <xentoollog.h>
 
 /* Collection of global state for callbacks.
  *
@@ -36,7 +35,6 @@ typedef struct vf_state {
 	/* Fields used to interact directly with Xen driver. */
 	xc_interface *xch;
 	libxl_ctx *ctx;
-	xentoollog_logger *logger;
 	uint32_t domid;
 	uint64_t init_mem_size;
 	uint64_t curr_mem_size;
