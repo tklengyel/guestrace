@@ -54,7 +54,6 @@ AC_SUBST(BLIG_LIBS)
 AC_DEFINE(HAVE_GLIB, 1, [Defined when glib was found])
 
 AC_CHECK_LIB(xenlight, libxl_name_to_domid, , AC_MSG_ERROR(You are missing libxenlight))
-AC_CHECK_LIB(xentoollog, xtl_createlogger_stdiostream, , AC_MSG_ERROR(You are missing libxentoollog))
 
 AM_CONDITIONAL(FLYN, test "$FLYN")
 
