@@ -348,7 +348,33 @@ def parse_syscall_protos(syscall_prototypes, syscall_map):
     
     return syscall_map
 
-def create_struct_src(syscall_map, syscall_order, kernel_info):
+def create_struct_h(syscall_map, syscall_order, kernel_info):
+    # generate beginning of source file 
+    str = "/* Generated on {0} on {1}*/\n".format(kernel_info.get_kernel_version(), time.strftime("%d %b %Y %H:%M:%S", time.localtime()))
+    str += """
+#ifndef GENERATED_LINUX_H
+#define GENERATED_LINUX_H
+
+#include <libvmi/libvmi.h>
+#include <libvmi/events.h>
+
+struct syscall_defs {
+    char *name;
+    void (*print) (vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event);
+};
+
+extern const char *VM_LINUX_TRACED_SYSCALLS[];
+extern const struct syscall_defs VM_LINUX_SYSCALLS[];
+
+#endif
+"""
+
+    # write all the functions to generated_linux.c
+    f = open("generated_linux.h", "w+")
+    f.write(str)
+    f.close
+
+def create_struct_c(syscall_map, syscall_order, kernel_info):
     # generate beginning of source file 
     str = "/* Generated on {0} on {1}*/\n".format(kernel_info.get_kernel_version(), time.strftime("%d %b %Y %H:%M:%S", time.localtime()))
     str += """
@@ -359,10 +385,7 @@ def create_struct_src(syscall_map, syscall_order, kernel_info):
 #include <stdio.h>
 #include <inttypes.h>
 
-struct syscall_defs {
-    char *name;
-    void (*print) (vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event);
-};
+#include "generated_linux.h"
 
 static char *
 get_proc_name(vmi_instance_t vmi, vmi_pid_t pid) 
@@ -425,23 +448,39 @@ done:
     for syscall in syscall_order:
         str += create_print_function(syscall_map[syscall])
 
+    # Generate TRACED_SYSCALLS table.
+    str += """
+const char *VM_LINUX_TRACED_SYSCALLS[] = {
+"""
+    
+    # generate the actual string list
+    for syscall_id in range(len(syscall_order)):
+        str += "\t\"{0}\",\n".format(syscall_order[syscall_id])
+
+    str += """
+    NULL,
+};\n\n"""
+
     # Generate SYSCALLS table.
     str += """
-static const struct syscall_defs SYSCALLS[] = {
+const struct syscall_defs VM_LINUX_SYSCALLS[] = {
 """
     
     # generate the actual struct list
     for syscall_id in range(len(syscall_order)):
         str += "\t{{ \"{0}\", vf_linux_print_syscall_{1} }},\n".format(syscall_order[syscall_id], syscall_order[syscall_id])
 
-    str += "};\n\n"
-    
+    str += """
+    { NULL, NULL }
+};"""
+
+
     # generate the print_syscall_info function
     str += """void vf_linux_print_syscall(vmi_instance_t vmi, vmi_event_t *event) {
 	reg_t syscall_id = event->x86_regs->rax;
 	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 	char *proc = get_proc_name(vmi, pid);
-	SYSCALLS[syscall_id].print(vmi, pid, proc, SYSCALLS[syscall_id].name, event);
+	VM_LINUX_SYSCALLS[syscall_id].print(vmi, pid, proc, VM_LINUX_SYSCALLS[syscall_id].name, event);
 }
 """
 
@@ -461,7 +500,7 @@ static const struct syscall_defs SYSCALLS[] = {
 
 def create_print_function(syscall_data):
     """Generate a print function for a single syscall"""
-    func_str = """static void vf_linux_print_syscall_{0}(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+    func_str = """void vf_linux_print_syscall_{0}(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {{
 """.format(syscall_data.get_syscall_name())
     func_str += create_printf_statement(syscall_data.get_args_count(), syscall_data)
@@ -527,7 +566,8 @@ def main(get_kernel_source):
         print "Skipped functions invloving the linux source headers!"
 
     print "Generating generated_linux.c!"
-    create_struct_src(syscall_map, syscall_order, kernel_info)
+    create_struct_h(syscall_map, syscall_order, kernel_info)
+    create_struct_c(syscall_map, syscall_order, kernel_info)
 
 if __name__ == "__main__":
     parser = OptionParser()

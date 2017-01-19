@@ -1,4 +1,4 @@
-/* Generated on Linux_4.8.15-300.fc25.x86_64 on 14 Jan 2017 18:04:39*/
+/* Generated on Linux_4.9.3-200.fc25.x86_64 on 19 Jan 2017 17:15:28*/
 
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
@@ -7,10 +7,7 @@
 #include <stdio.h>
 #include <inttypes.h>
 
-struct syscall_defs {
-    char *name;
-    void (*print) (vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event);
-};
+#include "generated_linux.h"
 
 static char *
 get_proc_name(vmi_instance_t vmi, vmi_pid_t pid) 
@@ -67,7 +64,7 @@ done:
 
 }
 
-static void vf_linux_print_syscall_sys_read(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_read(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -76,7 +73,7 @@ static void vf_linux_print_syscall_sys_read(vmi_instance_t vmi, vmi_pid_t pid, c
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_write(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_write(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -85,7 +82,7 @@ static void vf_linux_print_syscall_sys_write(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_open(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_open(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	char *arg0 = vmi_read_str_va(vmi, event->x86_regs->rdi, pid);
 	reg_t arg1 = event->x86_regs->rsi;
@@ -94,14 +91,14 @@ static void vf_linux_print_syscall_sys_open(vmi_instance_t vmi, vmi_pid_t pid, c
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(\"%s\", %i, %lu)\n", pid, rsp, proc, syscall, (char *) arg0, (int) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_close(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_close(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_stat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_stat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -109,7 +106,7 @@ static void vf_linux_print_syscall_sys_stat(vmi_instance_t vmi, vmi_pid_t pid, c
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_fstat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_fstat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -117,7 +114,7 @@ static void vf_linux_print_syscall_sys_fstat(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_lstat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_lstat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -125,7 +122,7 @@ static void vf_linux_print_syscall_sys_lstat(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_poll(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_poll(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -134,7 +131,7 @@ static void vf_linux_print_syscall_sys_poll(vmi_instance_t vmi, vmi_pid_t pid, c
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu, %i)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (int) arg2);
 }
 
-static void vf_linux_print_syscall_sys_lseek(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_lseek(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -143,13 +140,13 @@ static void vf_linux_print_syscall_sys_lseek(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_mmap(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_mmap(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_mprotect(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_mprotect(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -158,7 +155,7 @@ static void vf_linux_print_syscall_sys_mprotect(vmi_instance_t vmi, vmi_pid_t pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_munmap(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_munmap(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -166,14 +163,14 @@ static void vf_linux_print_syscall_sys_munmap(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_brk(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_brk(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_rt_sigaction(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_rt_sigaction(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -183,7 +180,7 @@ static void vf_linux_print_syscall_sys_rt_sigaction(vmi_instance_t vmi, vmi_pid_
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_rt_sigprocmask(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_rt_sigprocmask(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -193,13 +190,13 @@ static void vf_linux_print_syscall_sys_rt_sigprocmask(vmi_instance_t vmi, vmi_pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_rt_sigreturn(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_rt_sigreturn(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_ioctl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_ioctl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -208,7 +205,7 @@ static void vf_linux_print_syscall_sys_ioctl(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_pread(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_pread(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -218,7 +215,7 @@ static void vf_linux_print_syscall_sys_pread(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu, %li)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (long int) arg3);
 }
 
-static void vf_linux_print_syscall_sys_pwrite(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_pwrite(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -228,7 +225,7 @@ static void vf_linux_print_syscall_sys_pwrite(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu, %li)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (long int) arg3);
 }
 
-static void vf_linux_print_syscall_sys_readv(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_readv(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -237,7 +234,7 @@ static void vf_linux_print_syscall_sys_readv(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_writev(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_writev(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -246,7 +243,7 @@ static void vf_linux_print_syscall_sys_writev(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_access(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_access(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -254,14 +251,14 @@ static void vf_linux_print_syscall_sys_access(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (int) arg1);
 }
 
-static void vf_linux_print_syscall_sys_pipe(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_pipe(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_select(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_select(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -272,13 +269,13 @@ static void vf_linux_print_syscall_sys_select(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 }
 
-static void vf_linux_print_syscall_sys_sched_yield(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_sched_yield(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_mremap(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_mremap(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -289,7 +286,7 @@ static void vf_linux_print_syscall_sys_mremap(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu, %lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 }
 
-static void vf_linux_print_syscall_sys_msync(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_msync(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -298,7 +295,7 @@ static void vf_linux_print_syscall_sys_msync(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %i)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (int) arg2);
 }
 
-static void vf_linux_print_syscall_sys_mincore(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_mincore(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -307,7 +304,7 @@ static void vf_linux_print_syscall_sys_mincore(vmi_instance_t vmi, vmi_pid_t pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_madvise(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_madvise(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -316,7 +313,7 @@ static void vf_linux_print_syscall_sys_madvise(vmi_instance_t vmi, vmi_pid_t pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %i)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (int) arg2);
 }
 
-static void vf_linux_print_syscall_sys_shmget(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_shmget(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -325,7 +322,7 @@ static void vf_linux_print_syscall_sys_shmget(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, %i)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (int) arg2);
 }
 
-static void vf_linux_print_syscall_sys_shmat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_shmat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -334,7 +331,7 @@ static void vf_linux_print_syscall_sys_shmat(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (int) arg2);
 }
 
-static void vf_linux_print_syscall_sys_shmctl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_shmctl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -343,14 +340,14 @@ static void vf_linux_print_syscall_sys_shmctl(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_dup(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_dup(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_dup2(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_dup2(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -358,13 +355,13 @@ static void vf_linux_print_syscall_sys_dup2(vmi_instance_t vmi, vmi_pid_t pid, c
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_pause(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_pause(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_nanosleep(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_nanosleep(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -372,7 +369,7 @@ static void vf_linux_print_syscall_sys_nanosleep(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_getitimer(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_getitimer(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -380,14 +377,14 @@ static void vf_linux_print_syscall_sys_getitimer(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_alarm(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_alarm(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_setitimer(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_setitimer(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -396,13 +393,13 @@ static void vf_linux_print_syscall_sys_setitimer(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_getpid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_getpid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_sendfile(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_sendfile(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -412,7 +409,7 @@ static void vf_linux_print_syscall_sys_sendfile(vmi_instance_t vmi, vmi_pid_t pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_socket(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_socket(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -421,7 +418,7 @@ static void vf_linux_print_syscall_sys_socket(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i)\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1, (int) arg2);
 }
 
-static void vf_linux_print_syscall_sys_connect(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_connect(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -430,7 +427,7 @@ static void vf_linux_print_syscall_sys_connect(vmi_instance_t vmi, vmi_pid_t pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (int) arg2);
 }
 
-static void vf_linux_print_syscall_sys_accept(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_accept(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -439,7 +436,7 @@ static void vf_linux_print_syscall_sys_accept(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_sendto(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_sendto(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -451,7 +448,7 @@ static void vf_linux_print_syscall_sys_sendto(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4, (int) arg5);
 }
 
-static void vf_linux_print_syscall_sys_recvfrom(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_recvfrom(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -463,7 +460,7 @@ static void vf_linux_print_syscall_sys_recvfrom(vmi_instance_t vmi, vmi_pid_t pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5);
 }
 
-static void vf_linux_print_syscall_sys_sendmsg(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_sendmsg(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -472,7 +469,7 @@ static void vf_linux_print_syscall_sys_sendmsg(vmi_instance_t vmi, vmi_pid_t pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_recvmsg(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_recvmsg(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -481,7 +478,7 @@ static void vf_linux_print_syscall_sys_recvmsg(vmi_instance_t vmi, vmi_pid_t pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_shutdown(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_shutdown(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -489,7 +486,7 @@ static void vf_linux_print_syscall_sys_shutdown(vmi_instance_t vmi, vmi_pid_t pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1);
 }
 
-static void vf_linux_print_syscall_sys_bind(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_bind(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -498,7 +495,7 @@ static void vf_linux_print_syscall_sys_bind(vmi_instance_t vmi, vmi_pid_t pid, c
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (int) arg2);
 }
 
-static void vf_linux_print_syscall_sys_listen(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_listen(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -506,7 +503,7 @@ static void vf_linux_print_syscall_sys_listen(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1);
 }
 
-static void vf_linux_print_syscall_sys_getsockname(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_getsockname(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -515,7 +512,7 @@ static void vf_linux_print_syscall_sys_getsockname(vmi_instance_t vmi, vmi_pid_t
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_getpeername(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_getpeername(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -524,7 +521,7 @@ static void vf_linux_print_syscall_sys_getpeername(vmi_instance_t vmi, vmi_pid_t
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_socketpair(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_socketpair(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -534,7 +531,7 @@ static void vf_linux_print_syscall_sys_socketpair(vmi_instance_t vmi, vmi_pid_t 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1, (int) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_setsockopt(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_setsockopt(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -545,7 +542,7 @@ static void vf_linux_print_syscall_sys_setsockopt(vmi_instance_t vmi, vmi_pid_t 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i, 0x%"PRIx64", %i)\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1, (int) arg2, (unsigned long) arg3, (int) arg4);
 }
 
-static void vf_linux_print_syscall_sys_getsockopt(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_getsockopt(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -556,7 +553,7 @@ static void vf_linux_print_syscall_sys_getsockopt(vmi_instance_t vmi, vmi_pid_t 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1, (int) arg2, (unsigned long) arg3, (unsigned long) arg4);
 }
 
-static void vf_linux_print_syscall_sys_clone(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_clone(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -567,19 +564,19 @@ static void vf_linux_print_syscall_sys_clone(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, 0x%"PRIx64", %lu, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 }
 
-static void vf_linux_print_syscall_sys_fork(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_fork(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_vfork(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_vfork(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_execve(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_execve(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -588,14 +585,14 @@ static void vf_linux_print_syscall_sys_execve(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_exit(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_exit(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, syscall, (int) arg0);
 }
 
-static void vf_linux_print_syscall_sys_wait4(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_wait4(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -605,7 +602,7 @@ static void vf_linux_print_syscall_sys_wait4(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (int) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_kill(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_kill(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -613,14 +610,14 @@ static void vf_linux_print_syscall_sys_kill(vmi_instance_t vmi, vmi_pid_t pid, c
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1);
 }
 
-static void vf_linux_print_syscall_sys_uname(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_uname(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_semget(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_semget(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -629,7 +626,7 @@ static void vf_linux_print_syscall_sys_semget(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i)\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1, (int) arg2);
 }
 
-static void vf_linux_print_syscall_sys_semop(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_semop(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -638,7 +635,7 @@ static void vf_linux_print_syscall_sys_semop(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_semctl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_semctl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -648,14 +645,14 @@ static void vf_linux_print_syscall_sys_semctl(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i, %lu)\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1, (int) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_shmdt(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_shmdt(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_msgget(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_msgget(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -663,7 +660,7 @@ static void vf_linux_print_syscall_sys_msgget(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1);
 }
 
-static void vf_linux_print_syscall_sys_msgsnd(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_msgsnd(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -673,7 +670,7 @@ static void vf_linux_print_syscall_sys_msgsnd(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %i)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (int) arg3);
 }
 
-static void vf_linux_print_syscall_sys_msgrcv(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_msgrcv(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -684,7 +681,7 @@ static void vf_linux_print_syscall_sys_msgrcv(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %li, %i)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (long int) arg3, (int) arg4);
 }
 
-static void vf_linux_print_syscall_sys_msgctl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_msgctl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -693,7 +690,7 @@ static void vf_linux_print_syscall_sys_msgctl(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_fcntl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_fcntl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -702,7 +699,7 @@ static void vf_linux_print_syscall_sys_fcntl(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_flock(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_flock(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -710,21 +707,21 @@ static void vf_linux_print_syscall_sys_flock(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_fsync(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_fsync(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_fdatasync(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_fdatasync(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_truncate(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_truncate(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -732,7 +729,7 @@ static void vf_linux_print_syscall_sys_truncate(vmi_instance_t vmi, vmi_pid_t pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %li)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (long int) arg1);
 }
 
-static void vf_linux_print_syscall_sys_ftruncate(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_ftruncate(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -740,7 +737,7 @@ static void vf_linux_print_syscall_sys_ftruncate(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_getdents(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_getdents(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -749,7 +746,7 @@ static void vf_linux_print_syscall_sys_getdents(vmi_instance_t vmi, vmi_pid_t pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_getcwd(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_getcwd(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -757,21 +754,21 @@ static void vf_linux_print_syscall_sys_getcwd(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_chdir(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_chdir(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_fchdir(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_fchdir(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_rename(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_rename(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -779,7 +776,7 @@ static void vf_linux_print_syscall_sys_rename(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_mkdir(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_mkdir(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -787,14 +784,14 @@ static void vf_linux_print_syscall_sys_mkdir(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_rmdir(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_rmdir(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_creat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_creat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -802,7 +799,7 @@ static void vf_linux_print_syscall_sys_creat(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_link(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_link(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -810,14 +807,14 @@ static void vf_linux_print_syscall_sys_link(vmi_instance_t vmi, vmi_pid_t pid, c
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_unlink(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_unlink(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_symlink(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_symlink(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -825,7 +822,7 @@ static void vf_linux_print_syscall_sys_symlink(vmi_instance_t vmi, vmi_pid_t pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_readlink(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_readlink(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -834,7 +831,7 @@ static void vf_linux_print_syscall_sys_readlink(vmi_instance_t vmi, vmi_pid_t pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (int) arg2);
 }
 
-static void vf_linux_print_syscall_sys_chmod(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_chmod(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -842,7 +839,7 @@ static void vf_linux_print_syscall_sys_chmod(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_fchmod(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_fchmod(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -850,7 +847,7 @@ static void vf_linux_print_syscall_sys_fchmod(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_chown(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_chown(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -859,7 +856,7 @@ static void vf_linux_print_syscall_sys_chown(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_fchown(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_fchown(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -868,7 +865,7 @@ static void vf_linux_print_syscall_sys_fchown(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_lchown(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_lchown(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -877,14 +874,14 @@ static void vf_linux_print_syscall_sys_lchown(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_umask(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_umask(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, syscall, (int) arg0);
 }
 
-static void vf_linux_print_syscall_sys_gettimeofday(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_gettimeofday(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -892,7 +889,7 @@ static void vf_linux_print_syscall_sys_gettimeofday(vmi_instance_t vmi, vmi_pid_
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_getrlimit(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_getrlimit(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -900,7 +897,7 @@ static void vf_linux_print_syscall_sys_getrlimit(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_getrusage(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_getrusage(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -908,21 +905,21 @@ static void vf_linux_print_syscall_sys_getrusage(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_sysinfo(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_sysinfo(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_times(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_times(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_ptrace(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_ptrace(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -932,13 +929,13 @@ static void vf_linux_print_syscall_sys_ptrace(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%li, %li, %lu, %lu)\n", pid, rsp, proc, syscall, (long int) arg0, (long int) arg1, (unsigned long) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_getuid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_getuid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_syslog(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_syslog(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -947,39 +944,39 @@ static void vf_linux_print_syscall_sys_syslog(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (int) arg2);
 }
 
-static void vf_linux_print_syscall_sys_getgid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_getgid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_setuid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_setuid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_setgid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_setgid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_geteuid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_geteuid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_getegid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_getegid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_setpgid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_setpgid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -987,25 +984,25 @@ static void vf_linux_print_syscall_sys_setpgid(vmi_instance_t vmi, vmi_pid_t pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1);
 }
 
-static void vf_linux_print_syscall_sys_getppid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_getppid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_getpgrp(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_getpgrp(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_setsid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_setsid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_setreuid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_setreuid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1013,7 +1010,7 @@ static void vf_linux_print_syscall_sys_setreuid(vmi_instance_t vmi, vmi_pid_t pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_setregid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_setregid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1021,7 +1018,7 @@ static void vf_linux_print_syscall_sys_setregid(vmi_instance_t vmi, vmi_pid_t pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_getgroups(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_getgroups(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1029,7 +1026,7 @@ static void vf_linux_print_syscall_sys_getgroups(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_setgroups(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_setgroups(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1037,7 +1034,7 @@ static void vf_linux_print_syscall_sys_setgroups(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_setresuid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_setresuid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1046,7 +1043,7 @@ static void vf_linux_print_syscall_sys_setresuid(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_getresuid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_getresuid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1055,7 +1052,7 @@ static void vf_linux_print_syscall_sys_getresuid(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_setresgid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_setresgid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1064,7 +1061,7 @@ static void vf_linux_print_syscall_sys_setresgid(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_getresgid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_getresgid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1073,35 +1070,35 @@ static void vf_linux_print_syscall_sys_getresgid(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_getpgid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_getpgid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, syscall, (int) arg0);
 }
 
-static void vf_linux_print_syscall_sys_setfsuid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_setfsuid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_setfsgid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_setfsgid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_getsid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_getsid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, syscall, (int) arg0);
 }
 
-static void vf_linux_print_syscall_sys_capget(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_capget(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1109,7 +1106,7 @@ static void vf_linux_print_syscall_sys_capget(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_capset(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_capset(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1117,7 +1114,7 @@ static void vf_linux_print_syscall_sys_capset(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_rt_sigpending(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_rt_sigpending(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1125,7 +1122,7 @@ static void vf_linux_print_syscall_sys_rt_sigpending(vmi_instance_t vmi, vmi_pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_rt_sigtimedwait(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_rt_sigtimedwait(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1135,7 +1132,7 @@ static void vf_linux_print_syscall_sys_rt_sigtimedwait(vmi_instance_t vmi, vmi_p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_rt_sigqueueinfo(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_rt_sigqueueinfo(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1144,7 +1141,7 @@ static void vf_linux_print_syscall_sys_rt_sigqueueinfo(vmi_instance_t vmi, vmi_p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_rt_sigsuspend(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_rt_sigsuspend(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1152,7 +1149,7 @@ static void vf_linux_print_syscall_sys_rt_sigsuspend(vmi_instance_t vmi, vmi_pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_sigaltstack(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_sigaltstack(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1160,7 +1157,7 @@ static void vf_linux_print_syscall_sys_sigaltstack(vmi_instance_t vmi, vmi_pid_t
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_utime(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_utime(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1168,7 +1165,7 @@ static void vf_linux_print_syscall_sys_utime(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_mknod(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_mknod(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1177,21 +1174,21 @@ static void vf_linux_print_syscall_sys_mknod(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_uselib(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_uselib(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_personality(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_personality(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_ustat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_ustat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1199,7 +1196,7 @@ static void vf_linux_print_syscall_sys_ustat(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_statfs(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_statfs(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1207,7 +1204,7 @@ static void vf_linux_print_syscall_sys_statfs(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_fstatfs(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_fstatfs(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1215,7 +1212,7 @@ static void vf_linux_print_syscall_sys_fstatfs(vmi_instance_t vmi, vmi_pid_t pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_sysfs(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_sysfs(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1224,7 +1221,7 @@ static void vf_linux_print_syscall_sys_sysfs(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_getpriority(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_getpriority(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1232,7 +1229,7 @@ static void vf_linux_print_syscall_sys_getpriority(vmi_instance_t vmi, vmi_pid_t
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1);
 }
 
-static void vf_linux_print_syscall_sys_setpriority(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_setpriority(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1241,7 +1238,7 @@ static void vf_linux_print_syscall_sys_setpriority(vmi_instance_t vmi, vmi_pid_t
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i)\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1, (int) arg2);
 }
 
-static void vf_linux_print_syscall_sys_sched_setparam(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_sched_setparam(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1249,7 +1246,7 @@ static void vf_linux_print_syscall_sys_sched_setparam(vmi_instance_t vmi, vmi_pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_sched_getparam(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_sched_getparam(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1257,7 +1254,7 @@ static void vf_linux_print_syscall_sys_sched_getparam(vmi_instance_t vmi, vmi_pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_sched_setscheduler(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_sched_setscheduler(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1266,28 +1263,28 @@ static void vf_linux_print_syscall_sys_sched_setscheduler(vmi_instance_t vmi, vm
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_sched_getscheduler(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_sched_getscheduler(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, syscall, (int) arg0);
 }
 
-static void vf_linux_print_syscall_sys_sched_get_priority_max(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_sched_get_priority_max(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, syscall, (int) arg0);
 }
 
-static void vf_linux_print_syscall_sys_sched_get_priority_min(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_sched_get_priority_min(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, syscall, (int) arg0);
 }
 
-static void vf_linux_print_syscall_sys_sched_rr_get_interval(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_sched_rr_get_interval(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1295,7 +1292,7 @@ static void vf_linux_print_syscall_sys_sched_rr_get_interval(vmi_instance_t vmi,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_mlock(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_mlock(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1303,7 +1300,7 @@ static void vf_linux_print_syscall_sys_mlock(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_munlock(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_munlock(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1311,32 +1308,32 @@ static void vf_linux_print_syscall_sys_munlock(vmi_instance_t vmi, vmi_pid_t pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_mlockall(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_mlockall(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, syscall, (int) arg0);
 }
 
-static void vf_linux_print_syscall_sys_munlockall(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_munlockall(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_vhangup(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_vhangup(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_modify_ldt(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_modify_ldt(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_pivot_root(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_pivot_root(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1344,14 +1341,14 @@ static void vf_linux_print_syscall_sys_pivot_root(vmi_instance_t vmi, vmi_pid_t 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_sysctl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_sysctl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_prctl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_prctl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1362,20 +1359,20 @@ static void vf_linux_print_syscall_sys_prctl(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, %lu, %lu, %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 }
 
-static void vf_linux_print_syscall_sys_arch_prctl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_arch_prctl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_adjtimex(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_adjtimex(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_setrlimit(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_setrlimit(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1383,27 +1380,27 @@ static void vf_linux_print_syscall_sys_setrlimit(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_chroot(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_chroot(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_sync(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_sync(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_acct(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_acct(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_settimeofday(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_settimeofday(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1411,7 +1408,7 @@ static void vf_linux_print_syscall_sys_settimeofday(vmi_instance_t vmi, vmi_pid_
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_mount(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_mount(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1422,13 +1419,13 @@ static void vf_linux_print_syscall_sys_mount(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %lu, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 }
 
-static void vf_linux_print_syscall_sys_umount2(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_umount2(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_swapon(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_swapon(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1436,14 +1433,14 @@ static void vf_linux_print_syscall_sys_swapon(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (int) arg1);
 }
 
-static void vf_linux_print_syscall_sys_swapoff(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_swapoff(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_reboot(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_reboot(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1453,7 +1450,7 @@ static void vf_linux_print_syscall_sys_reboot(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %lu, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_sethostname(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_sethostname(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1461,7 +1458,7 @@ static void vf_linux_print_syscall_sys_sethostname(vmi_instance_t vmi, vmi_pid_t
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (int) arg1);
 }
 
-static void vf_linux_print_syscall_sys_setdomainname(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_setdomainname(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1469,13 +1466,13 @@ static void vf_linux_print_syscall_sys_setdomainname(vmi_instance_t vmi, vmi_pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (int) arg1);
 }
 
-static void vf_linux_print_syscall_sys_iopl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_iopl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_ioperm(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_ioperm(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1484,13 +1481,13 @@ static void vf_linux_print_syscall_sys_ioperm(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %i)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (int) arg2);
 }
 
-static void vf_linux_print_syscall_sys_create_module(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_create_module(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_init_module(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_init_module(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1499,7 +1496,7 @@ static void vf_linux_print_syscall_sys_init_module(vmi_instance_t vmi, vmi_pid_t
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_delete_module(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_delete_module(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1507,19 +1504,19 @@ static void vf_linux_print_syscall_sys_delete_module(vmi_instance_t vmi, vmi_pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_get_kernel_syms(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_get_kernel_syms(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_query_module(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_query_module(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_quotactl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_quotactl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1529,49 +1526,49 @@ static void vf_linux_print_syscall_sys_quotactl(vmi_instance_t vmi, vmi_pid_t pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_nfsservctl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_nfsservctl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_getpmsg(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_getpmsg(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_putpmsg(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_putpmsg(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_afs_syscall(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_afs_syscall(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_tuxcall(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_tuxcall(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_security(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_security(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_gettid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_gettid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_readahead(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_readahead(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1580,7 +1577,7 @@ static void vf_linux_print_syscall_sys_readahead(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %li, %lu)\n", pid, rsp, proc, syscall, (int) arg0, (long int) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_setxattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_setxattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1591,7 +1588,7 @@ static void vf_linux_print_syscall_sys_setxattr(vmi_instance_t vmi, vmi_pid_t pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %lu, %i)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (int) arg4);
 }
 
-static void vf_linux_print_syscall_sys_lsetxattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_lsetxattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1602,7 +1599,7 @@ static void vf_linux_print_syscall_sys_lsetxattr(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %lu, %i)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (int) arg4);
 }
 
-static void vf_linux_print_syscall_sys_fsetxattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_fsetxattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1613,7 +1610,7 @@ static void vf_linux_print_syscall_sys_fsetxattr(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", %lu, %i)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (int) arg4);
 }
 
-static void vf_linux_print_syscall_sys_getxattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_getxattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1623,7 +1620,7 @@ static void vf_linux_print_syscall_sys_getxattr(vmi_instance_t vmi, vmi_pid_t pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_lgetxattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_lgetxattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1633,7 +1630,7 @@ static void vf_linux_print_syscall_sys_lgetxattr(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_fgetxattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_fgetxattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1643,7 +1640,7 @@ static void vf_linux_print_syscall_sys_fgetxattr(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_listxattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_listxattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1652,7 +1649,7 @@ static void vf_linux_print_syscall_sys_listxattr(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_llistxattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_llistxattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1661,7 +1658,7 @@ static void vf_linux_print_syscall_sys_llistxattr(vmi_instance_t vmi, vmi_pid_t 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_flistxattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_flistxattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1670,7 +1667,7 @@ static void vf_linux_print_syscall_sys_flistxattr(vmi_instance_t vmi, vmi_pid_t 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_removexattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_removexattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1678,7 +1675,7 @@ static void vf_linux_print_syscall_sys_removexattr(vmi_instance_t vmi, vmi_pid_t
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_lremovexattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_lremovexattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1686,7 +1683,7 @@ static void vf_linux_print_syscall_sys_lremovexattr(vmi_instance_t vmi, vmi_pid_
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_fremovexattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_fremovexattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1694,7 +1691,7 @@ static void vf_linux_print_syscall_sys_fremovexattr(vmi_instance_t vmi, vmi_pid_
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_tkill(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_tkill(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1702,14 +1699,14 @@ static void vf_linux_print_syscall_sys_tkill(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1);
 }
 
-static void vf_linux_print_syscall_sys_time(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_time(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_futex(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_futex(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1721,7 +1718,7 @@ static void vf_linux_print_syscall_sys_futex(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5);
 }
 
-static void vf_linux_print_syscall_sys_sched_setaffinity(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_sched_setaffinity(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1730,7 +1727,7 @@ static void vf_linux_print_syscall_sys_sched_setaffinity(vmi_instance_t vmi, vmi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_sched_getaffinity(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_sched_getaffinity(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1739,13 +1736,13 @@ static void vf_linux_print_syscall_sys_sched_getaffinity(vmi_instance_t vmi, vmi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_set_thread_area(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_set_thread_area(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_io_setup(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_io_setup(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1753,14 +1750,14 @@ static void vf_linux_print_syscall_sys_io_setup(vmi_instance_t vmi, vmi_pid_t pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_io_destroy(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_io_destroy(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_io_getevents(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_io_getevents(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1771,7 +1768,7 @@ static void vf_linux_print_syscall_sys_io_getevents(vmi_instance_t vmi, vmi_pid_
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %li, %li, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (long int) arg1, (long int) arg2, (unsigned long) arg3, (unsigned long) arg4);
 }
 
-static void vf_linux_print_syscall_sys_io_submit(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_io_submit(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1780,7 +1777,7 @@ static void vf_linux_print_syscall_sys_io_submit(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %li, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (long int) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_io_cancel(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_io_cancel(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1789,13 +1786,13 @@ static void vf_linux_print_syscall_sys_io_cancel(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_get_thread_area(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_get_thread_area(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_lookup_dcookie(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_lookup_dcookie(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1804,26 +1801,26 @@ static void vf_linux_print_syscall_sys_lookup_dcookie(vmi_instance_t vmi, vmi_pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_epoll_create(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_epoll_create(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, syscall, (int) arg0);
 }
 
-static void vf_linux_print_syscall_sys_epoll_ctl_old(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_epoll_ctl_old(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_epoll_wait_old(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_epoll_wait_old(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_remap_file_pages(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_remap_file_pages(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1834,7 +1831,7 @@ static void vf_linux_print_syscall_sys_remap_file_pages(vmi_instance_t vmi, vmi_
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu, %lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 }
 
-static void vf_linux_print_syscall_sys_getdents64(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_getdents64(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1843,20 +1840,20 @@ static void vf_linux_print_syscall_sys_getdents64(vmi_instance_t vmi, vmi_pid_t 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_set_tid_address(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_set_tid_address(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_restart_syscall(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_restart_syscall(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_semtimedop(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_semtimedop(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1866,7 +1863,7 @@ static void vf_linux_print_syscall_sys_semtimedop(vmi_instance_t vmi, vmi_pid_t 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_fadvise64(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_fadvise64(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1876,7 +1873,7 @@ static void vf_linux_print_syscall_sys_fadvise64(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %li, %lu, %i)\n", pid, rsp, proc, syscall, (int) arg0, (long int) arg1, (unsigned long) arg2, (int) arg3);
 }
 
-static void vf_linux_print_syscall_sys_timer_create(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_timer_create(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1885,7 +1882,7 @@ static void vf_linux_print_syscall_sys_timer_create(vmi_instance_t vmi, vmi_pid_
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_timer_settime(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_timer_settime(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1895,7 +1892,7 @@ static void vf_linux_print_syscall_sys_timer_settime(vmi_instance_t vmi, vmi_pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_timer_gettime(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_timer_gettime(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1903,21 +1900,21 @@ static void vf_linux_print_syscall_sys_timer_gettime(vmi_instance_t vmi, vmi_pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_timer_getoverrun(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_timer_getoverrun(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_timer_delete(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_timer_delete(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_clock_settime(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_clock_settime(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1925,7 +1922,7 @@ static void vf_linux_print_syscall_sys_clock_settime(vmi_instance_t vmi, vmi_pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_clock_gettime(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_clock_gettime(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1933,7 +1930,7 @@ static void vf_linux_print_syscall_sys_clock_gettime(vmi_instance_t vmi, vmi_pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_clock_getres(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_clock_getres(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1941,7 +1938,7 @@ static void vf_linux_print_syscall_sys_clock_getres(vmi_instance_t vmi, vmi_pid_
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_clock_nanosleep(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_clock_nanosleep(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1951,14 +1948,14 @@ static void vf_linux_print_syscall_sys_clock_nanosleep(vmi_instance_t vmi, vmi_p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_exit_group(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_exit_group(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, syscall, (int) arg0);
 }
 
-static void vf_linux_print_syscall_sys_epoll_wait(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_epoll_wait(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1968,7 +1965,7 @@ static void vf_linux_print_syscall_sys_epoll_wait(vmi_instance_t vmi, vmi_pid_t 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, %i)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (int) arg2, (int) arg3);
 }
 
-static void vf_linux_print_syscall_sys_epoll_ctl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_epoll_ctl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1978,7 +1975,7 @@ static void vf_linux_print_syscall_sys_epoll_ctl(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1, (int) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_tgkill(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_tgkill(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1987,7 +1984,7 @@ static void vf_linux_print_syscall_sys_tgkill(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i)\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1, (int) arg2);
 }
 
-static void vf_linux_print_syscall_sys_utimes(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_utimes(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -1995,13 +1992,13 @@ static void vf_linux_print_syscall_sys_utimes(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_vserver(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_vserver(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_mbind(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_mbind(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2013,7 +2010,7 @@ static void vf_linux_print_syscall_sys_mbind(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu, 0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5);
 }
 
-static void vf_linux_print_syscall_sys_set_mempolicy(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_set_mempolicy(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2022,7 +2019,7 @@ static void vf_linux_print_syscall_sys_set_mempolicy(vmi_instance_t vmi, vmi_pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_get_mempolicy(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_get_mempolicy(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2033,7 +2030,7 @@ static void vf_linux_print_syscall_sys_get_mempolicy(vmi_instance_t vmi, vmi_pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", %lu, %lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 }
 
-static void vf_linux_print_syscall_sys_mq_open(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_mq_open(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2043,14 +2040,14 @@ static void vf_linux_print_syscall_sys_mq_open(vmi_instance_t vmi, vmi_pid_t pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i, %lu, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_mq_unlink(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_mq_unlink(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_mq_timedsend(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_mq_timedsend(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2061,7 +2058,7 @@ static void vf_linux_print_syscall_sys_mq_timedsend(vmi_instance_t vmi, vmi_pid_
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %lu, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 }
 
-static void vf_linux_print_syscall_sys_mq_timedreceive(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_mq_timedreceive(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2072,7 +2069,7 @@ static void vf_linux_print_syscall_sys_mq_timedreceive(vmi_instance_t vmi, vmi_p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 }
 
-static void vf_linux_print_syscall_sys_mq_notify(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_mq_notify(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2080,7 +2077,7 @@ static void vf_linux_print_syscall_sys_mq_notify(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_mq_getsetattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_mq_getsetattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2089,7 +2086,7 @@ static void vf_linux_print_syscall_sys_mq_getsetattr(vmi_instance_t vmi, vmi_pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_kexec_load(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_kexec_load(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2099,7 +2096,7 @@ static void vf_linux_print_syscall_sys_kexec_load(vmi_instance_t vmi, vmi_pid_t 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_waitid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_waitid(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2110,7 +2107,7 @@ static void vf_linux_print_syscall_sys_waitid(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, 0x%"PRIx64", %i, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1, (unsigned long) arg2, (int) arg3, (unsigned long) arg4);
 }
 
-static void vf_linux_print_syscall_sys_add_key(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_add_key(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2121,7 +2118,7 @@ static void vf_linux_print_syscall_sys_add_key(vmi_instance_t vmi, vmi_pid_t pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %lu, %i)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (int) arg4);
 }
 
-static void vf_linux_print_syscall_sys_request_key(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_request_key(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2131,7 +2128,7 @@ static void vf_linux_print_syscall_sys_request_key(vmi_instance_t vmi, vmi_pid_t
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (int) arg3);
 }
 
-static void vf_linux_print_syscall_sys_keyctl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_keyctl(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2142,7 +2139,7 @@ static void vf_linux_print_syscall_sys_keyctl(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, %lu, %lu, %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 }
 
-static void vf_linux_print_syscall_sys_ioprio_set(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_ioprio_set(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2151,7 +2148,7 @@ static void vf_linux_print_syscall_sys_ioprio_set(vmi_instance_t vmi, vmi_pid_t 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i)\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1, (int) arg2);
 }
 
-static void vf_linux_print_syscall_sys_ioprio_get(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_ioprio_get(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2159,13 +2156,13 @@ static void vf_linux_print_syscall_sys_ioprio_get(vmi_instance_t vmi, vmi_pid_t 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1);
 }
 
-static void vf_linux_print_syscall_sys_inotify_init(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_inotify_init(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_inotify_add_watch(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_inotify_add_watch(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2174,7 +2171,7 @@ static void vf_linux_print_syscall_sys_inotify_add_watch(vmi_instance_t vmi, vmi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_inotify_rm_watch(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_inotify_rm_watch(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2182,7 +2179,7 @@ static void vf_linux_print_syscall_sys_inotify_rm_watch(vmi_instance_t vmi, vmi_
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_migrate_pages(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_migrate_pages(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2192,7 +2189,7 @@ static void vf_linux_print_syscall_sys_migrate_pages(vmi_instance_t vmi, vmi_pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_openat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_openat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2202,7 +2199,7 @@ static void vf_linux_print_syscall_sys_openat(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (int) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_mkdirat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_mkdirat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2211,7 +2208,7 @@ static void vf_linux_print_syscall_sys_mkdirat(vmi_instance_t vmi, vmi_pid_t pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_mknodat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_mknodat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2221,7 +2218,7 @@ static void vf_linux_print_syscall_sys_mknodat(vmi_instance_t vmi, vmi_pid_t pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_fchownat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_fchownat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2232,7 +2229,7 @@ static void vf_linux_print_syscall_sys_fchownat(vmi_instance_t vmi, vmi_pid_t pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %lu, %i)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (int) arg4);
 }
 
-static void vf_linux_print_syscall_sys_futimesat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_futimesat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2241,7 +2238,7 @@ static void vf_linux_print_syscall_sys_futimesat(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_newfstatat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_newfstatat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2251,7 +2248,7 @@ static void vf_linux_print_syscall_sys_newfstatat(vmi_instance_t vmi, vmi_pid_t 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (int) arg3);
 }
 
-static void vf_linux_print_syscall_sys_unlinkat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_unlinkat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2260,7 +2257,7 @@ static void vf_linux_print_syscall_sys_unlinkat(vmi_instance_t vmi, vmi_pid_t pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (int) arg2);
 }
 
-static void vf_linux_print_syscall_sys_renameat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_renameat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2270,7 +2267,7 @@ static void vf_linux_print_syscall_sys_renameat(vmi_instance_t vmi, vmi_pid_t pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (int) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_linkat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_linkat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2281,7 +2278,7 @@ static void vf_linux_print_syscall_sys_linkat(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, 0x%"PRIx64", %i)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (int) arg2, (unsigned long) arg3, (int) arg4);
 }
 
-static void vf_linux_print_syscall_sys_symlinkat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_symlinkat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2290,7 +2287,7 @@ static void vf_linux_print_syscall_sys_symlinkat(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (int) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_readlinkat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_readlinkat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2300,7 +2297,7 @@ static void vf_linux_print_syscall_sys_readlinkat(vmi_instance_t vmi, vmi_pid_t 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (int) arg3);
 }
 
-static void vf_linux_print_syscall_sys_fchmodat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_fchmodat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2309,7 +2306,7 @@ static void vf_linux_print_syscall_sys_fchmodat(vmi_instance_t vmi, vmi_pid_t pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_faccessat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_faccessat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2318,7 +2315,7 @@ static void vf_linux_print_syscall_sys_faccessat(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (int) arg2);
 }
 
-static void vf_linux_print_syscall_sys_pselect6(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_pselect6(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2330,7 +2327,7 @@ static void vf_linux_print_syscall_sys_pselect6(vmi_instance_t vmi, vmi_pid_t pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5);
 }
 
-static void vf_linux_print_syscall_sys_ppoll(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_ppoll(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2341,14 +2338,14 @@ static void vf_linux_print_syscall_sys_ppoll(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 }
 
-static void vf_linux_print_syscall_sys_unshare(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_unshare(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_set_robust_list(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_set_robust_list(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2356,7 +2353,7 @@ static void vf_linux_print_syscall_sys_set_robust_list(vmi_instance_t vmi, vmi_p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_get_robust_list(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_get_robust_list(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2365,7 +2362,7 @@ static void vf_linux_print_syscall_sys_get_robust_list(vmi_instance_t vmi, vmi_p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_splice(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_splice(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2377,7 +2374,7 @@ static void vf_linux_print_syscall_sys_splice(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, 0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (int) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5);
 }
 
-static void vf_linux_print_syscall_sys_tee(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_tee(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2387,7 +2384,7 @@ static void vf_linux_print_syscall_sys_tee(vmi_instance_t vmi, vmi_pid_t pid, ch
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %lu, %lu)\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_sync_file_range(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_sync_file_range(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2397,7 +2394,7 @@ static void vf_linux_print_syscall_sys_sync_file_range(vmi_instance_t vmi, vmi_p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %li, %li, %lu)\n", pid, rsp, proc, syscall, (int) arg0, (long int) arg1, (long int) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_vmsplice(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_vmsplice(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2407,7 +2404,7 @@ static void vf_linux_print_syscall_sys_vmsplice(vmi_instance_t vmi, vmi_pid_t pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_move_pages(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_move_pages(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2419,7 +2416,7 @@ static void vf_linux_print_syscall_sys_move_pages(vmi_instance_t vmi, vmi_pid_t 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4, (int) arg5);
 }
 
-static void vf_linux_print_syscall_sys_utimensat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_utimensat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2429,7 +2426,7 @@ static void vf_linux_print_syscall_sys_utimensat(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (int) arg3);
 }
 
-static void vf_linux_print_syscall_sys_epoll_pwait(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_epoll_pwait(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2441,7 +2438,7 @@ static void vf_linux_print_syscall_sys_epoll_pwait(vmi_instance_t vmi, vmi_pid_t
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, %i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (int) arg2, (int) arg3, (unsigned long) arg4, (unsigned long) arg5);
 }
 
-static void vf_linux_print_syscall_sys_signalfd(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_signalfd(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2450,20 +2447,20 @@ static void vf_linux_print_syscall_sys_signalfd(vmi_instance_t vmi, vmi_pid_t pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_timerfd(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_timerfd(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, syscall);
 }
 
-static void vf_linux_print_syscall_sys_eventfd(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_eventfd(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0);
 }
 
-static void vf_linux_print_syscall_sys_fallocate(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_fallocate(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2473,7 +2470,7 @@ static void vf_linux_print_syscall_sys_fallocate(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %li, %li)\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1, (long int) arg2, (long int) arg3);
 }
 
-static void vf_linux_print_syscall_sys_timerfd_settime(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_timerfd_settime(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2483,7 +2480,7 @@ static void vf_linux_print_syscall_sys_timerfd_settime(vmi_instance_t vmi, vmi_p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_timerfd_gettime(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_timerfd_gettime(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2491,7 +2488,7 @@ static void vf_linux_print_syscall_sys_timerfd_gettime(vmi_instance_t vmi, vmi_p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_accept4(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_accept4(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2501,7 +2498,7 @@ static void vf_linux_print_syscall_sys_accept4(vmi_instance_t vmi, vmi_pid_t pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (int) arg3);
 }
 
-static void vf_linux_print_syscall_sys_signalfd4(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_signalfd4(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2511,7 +2508,7 @@ static void vf_linux_print_syscall_sys_signalfd4(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %i)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (int) arg3);
 }
 
-static void vf_linux_print_syscall_sys_eventfd2(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_eventfd2(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2519,14 +2516,14 @@ static void vf_linux_print_syscall_sys_eventfd2(vmi_instance_t vmi, vmi_pid_t pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %i)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (int) arg1);
 }
 
-static void vf_linux_print_syscall_sys_epoll_create1(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_epoll_create1(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, syscall, (int) arg0);
 }
 
-static void vf_linux_print_syscall_sys_dup3(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_dup3(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2535,7 +2532,7 @@ static void vf_linux_print_syscall_sys_dup3(vmi_instance_t vmi, vmi_pid_t pid, c
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %i)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (int) arg2);
 }
 
-static void vf_linux_print_syscall_sys_pipe2(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_pipe2(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2543,14 +2540,14 @@ static void vf_linux_print_syscall_sys_pipe2(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (int) arg1);
 }
 
-static void vf_linux_print_syscall_sys_inotify_init1(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_inotify_init1(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, syscall, (int) arg0);
 }
 
-static void vf_linux_print_syscall_sys_preadv(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_preadv(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2561,7 +2558,7 @@ static void vf_linux_print_syscall_sys_preadv(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu, %lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 }
 
-static void vf_linux_print_syscall_sys_pwritev(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_pwritev(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2572,7 +2569,7 @@ static void vf_linux_print_syscall_sys_pwritev(vmi_instance_t vmi, vmi_pid_t pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu, %lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 }
 
-static void vf_linux_print_syscall_sys_rt_tgsigqueueinfo(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_rt_tgsigqueueinfo(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2582,7 +2579,7 @@ static void vf_linux_print_syscall_sys_rt_tgsigqueueinfo(vmi_instance_t vmi, vmi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1, (int) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_perf_event_open(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_perf_event_open(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2593,7 +2590,7 @@ static void vf_linux_print_syscall_sys_perf_event_open(vmi_instance_t vmi, vmi_p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i, %i, %i, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (int) arg1, (int) arg2, (int) arg3, (unsigned long) arg4);
 }
 
-static void vf_linux_print_syscall_sys_recvmmsg(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_recvmmsg(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2604,7 +2601,7 @@ static void vf_linux_print_syscall_sys_recvmmsg(vmi_instance_t vmi, vmi_pid_t pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %lu, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 }
 
-static void vf_linux_print_syscall_sys_fanotify_init(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_fanotify_init(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2612,7 +2609,7 @@ static void vf_linux_print_syscall_sys_fanotify_init(vmi_instance_t vmi, vmi_pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_fanotify_mark(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_fanotify_mark(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2623,7 +2620,7 @@ static void vf_linux_print_syscall_sys_fanotify_mark(vmi_instance_t vmi, vmi_pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, %lu, %i, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (int) arg3, (unsigned long) arg4);
 }
 
-static void vf_linux_print_syscall_sys_prlimit64(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_prlimit64(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2633,7 +2630,7 @@ static void vf_linux_print_syscall_sys_prlimit64(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_name_to_handle_at(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_name_to_handle_at(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2644,7 +2641,7 @@ static void vf_linux_print_syscall_sys_name_to_handle_at(vmi_instance_t vmi, vmi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (int) arg4);
 }
 
-static void vf_linux_print_syscall_sys_open_by_handle_at(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_open_by_handle_at(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2653,7 +2650,7 @@ static void vf_linux_print_syscall_sys_open_by_handle_at(vmi_instance_t vmi, vmi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (int) arg2);
 }
 
-static void vf_linux_print_syscall_sys_clock_adjtime(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_clock_adjtime(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2661,14 +2658,14 @@ static void vf_linux_print_syscall_sys_clock_adjtime(vmi_instance_t vmi, vmi_pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_syncfs(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_syncfs(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, syscall, (int) arg0);
 }
 
-static void vf_linux_print_syscall_sys_sendmmsg(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_sendmmsg(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2678,7 +2675,7 @@ static void vf_linux_print_syscall_sys_sendmmsg(vmi_instance_t vmi, vmi_pid_t pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_setns(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_setns(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2686,7 +2683,7 @@ static void vf_linux_print_syscall_sys_setns(vmi_instance_t vmi, vmi_pid_t pid, 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1);
 }
 
-static void vf_linux_print_syscall_sys_getcpu(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_getcpu(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2695,7 +2692,7 @@ static void vf_linux_print_syscall_sys_getcpu(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_process_vm_readv(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_process_vm_readv(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2707,7 +2704,7 @@ static void vf_linux_print_syscall_sys_process_vm_readv(vmi_instance_t vmi, vmi_
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, 0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5);
 }
 
-static void vf_linux_print_syscall_sys_process_vm_writev(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_process_vm_writev(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2719,7 +2716,7 @@ static void vf_linux_print_syscall_sys_process_vm_writev(vmi_instance_t vmi, vmi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, 0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5);
 }
 
-static void vf_linux_print_syscall_sys_kcmp(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_kcmp(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2730,7 +2727,7 @@ static void vf_linux_print_syscall_sys_kcmp(vmi_instance_t vmi, vmi_pid_t pid, c
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i, %lu, %lu)\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1, (int) arg2, (unsigned long) arg3, (unsigned long) arg4);
 }
 
-static void vf_linux_print_syscall_sys_finit_module(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_finit_module(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2739,7 +2736,7 @@ static void vf_linux_print_syscall_sys_finit_module(vmi_instance_t vmi, vmi_pid_
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (int) arg2);
 }
 
-static void vf_linux_print_syscall_sys_sched_setattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_sched_setattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2748,7 +2745,7 @@ static void vf_linux_print_syscall_sys_sched_setattr(vmi_instance_t vmi, vmi_pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_sched_getattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_sched_getattr(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2758,7 +2755,7 @@ static void vf_linux_print_syscall_sys_sched_getattr(vmi_instance_t vmi, vmi_pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 }
 
-static void vf_linux_print_syscall_sys_renameat2(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_renameat2(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2769,7 +2766,7 @@ static void vf_linux_print_syscall_sys_renameat2(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (int) arg2, (unsigned long) arg3, (unsigned long) arg4);
 }
 
-static void vf_linux_print_syscall_sys_seccomp(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_seccomp(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2778,7 +2775,7 @@ static void vf_linux_print_syscall_sys_seccomp(vmi_instance_t vmi, vmi_pid_t pid
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, 0x%"PRIx64")\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_getrandom(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_getrandom(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2787,7 +2784,7 @@ static void vf_linux_print_syscall_sys_getrandom(vmi_instance_t vmi, vmi_pid_t p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_memfd_create(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_memfd_create(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2795,7 +2792,7 @@ static void vf_linux_print_syscall_sys_memfd_create(vmi_instance_t vmi, vmi_pid_
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1);
 }
 
-static void vf_linux_print_syscall_sys_kexec_file_load(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_kexec_file_load(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2806,7 +2803,7 @@ static void vf_linux_print_syscall_sys_kexec_file_load(vmi_instance_t vmi, vmi_p
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %lu, 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 }
 
-static void vf_linux_print_syscall_sys_bpf(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_bpf(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2815,7 +2812,7 @@ static void vf_linux_print_syscall_sys_bpf(vmi_instance_t vmi, vmi_pid_t pid, ch
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 }
 
-static void vf_linux_print_syscall_sys_execveat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_execveat(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2826,14 +2823,14 @@ static void vf_linux_print_syscall_sys_execveat(vmi_instance_t vmi, vmi_pid_t pi
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (int) arg4);
 }
 
-static void vf_linux_print_syscall_sys_userfaultfd(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_userfaultfd(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, syscall, (int) arg0);
 }
 
-static void vf_linux_print_syscall_sys_membarrier(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_membarrier(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2841,7 +2838,7 @@ static void vf_linux_print_syscall_sys_membarrier(vmi_instance_t vmi, vmi_pid_t 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, rsp, proc, syscall, (int) arg0, (int) arg1);
 }
 
-static void vf_linux_print_syscall_sys_mlock2(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_mlock2(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2850,7 +2847,7 @@ static void vf_linux_print_syscall_sys_mlock2(vmi_instance_t vmi, vmi_pid_t pid,
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %i)\n", pid, rsp, proc, syscall, (unsigned long) arg0, (unsigned long) arg1, (int) arg2);
 }
 
-static void vf_linux_print_syscall_sys_copy_file_range(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+void vf_linux_print_syscall_sys_copy_file_range(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
 {
 	reg_t arg0 = event->x86_regs->rdi;
 	reg_t arg1 = event->x86_regs->rsi;
@@ -2863,7 +2860,340 @@ static void vf_linux_print_syscall_sys_copy_file_range(vmi_instance_t vmi, vmi_p
 }
 
 
-static const struct syscall_defs SYSCALLS[] = {
+const char *VM_LINUX_TRACED_SYSCALLS[] = {
+	"sys_read",
+	"sys_write",
+	"sys_open",
+	"sys_close",
+	"sys_stat",
+	"sys_fstat",
+	"sys_lstat",
+	"sys_poll",
+	"sys_lseek",
+	"sys_mmap",
+	"sys_mprotect",
+	"sys_munmap",
+	"sys_brk",
+	"sys_rt_sigaction",
+	"sys_rt_sigprocmask",
+	"sys_rt_sigreturn",
+	"sys_ioctl",
+	"sys_pread",
+	"sys_pwrite",
+	"sys_readv",
+	"sys_writev",
+	"sys_access",
+	"sys_pipe",
+	"sys_select",
+	"sys_sched_yield",
+	"sys_mremap",
+	"sys_msync",
+	"sys_mincore",
+	"sys_madvise",
+	"sys_shmget",
+	"sys_shmat",
+	"sys_shmctl",
+	"sys_dup",
+	"sys_dup2",
+	"sys_pause",
+	"sys_nanosleep",
+	"sys_getitimer",
+	"sys_alarm",
+	"sys_setitimer",
+	"sys_getpid",
+	"sys_sendfile",
+	"sys_socket",
+	"sys_connect",
+	"sys_accept",
+	"sys_sendto",
+	"sys_recvfrom",
+	"sys_sendmsg",
+	"sys_recvmsg",
+	"sys_shutdown",
+	"sys_bind",
+	"sys_listen",
+	"sys_getsockname",
+	"sys_getpeername",
+	"sys_socketpair",
+	"sys_setsockopt",
+	"sys_getsockopt",
+	"sys_clone",
+	"sys_fork",
+	"sys_vfork",
+	"sys_execve",
+	"sys_exit",
+	"sys_wait4",
+	"sys_kill",
+	"sys_uname",
+	"sys_semget",
+	"sys_semop",
+	"sys_semctl",
+	"sys_shmdt",
+	"sys_msgget",
+	"sys_msgsnd",
+	"sys_msgrcv",
+	"sys_msgctl",
+	"sys_fcntl",
+	"sys_flock",
+	"sys_fsync",
+	"sys_fdatasync",
+	"sys_truncate",
+	"sys_ftruncate",
+	"sys_getdents",
+	"sys_getcwd",
+	"sys_chdir",
+	"sys_fchdir",
+	"sys_rename",
+	"sys_mkdir",
+	"sys_rmdir",
+	"sys_creat",
+	"sys_link",
+	"sys_unlink",
+	"sys_symlink",
+	"sys_readlink",
+	"sys_chmod",
+	"sys_fchmod",
+	"sys_chown",
+	"sys_fchown",
+	"sys_lchown",
+	"sys_umask",
+	"sys_gettimeofday",
+	"sys_getrlimit",
+	"sys_getrusage",
+	"sys_sysinfo",
+	"sys_times",
+	"sys_ptrace",
+	"sys_getuid",
+	"sys_syslog",
+	"sys_getgid",
+	"sys_setuid",
+	"sys_setgid",
+	"sys_geteuid",
+	"sys_getegid",
+	"sys_setpgid",
+	"sys_getppid",
+	"sys_getpgrp",
+	"sys_setsid",
+	"sys_setreuid",
+	"sys_setregid",
+	"sys_getgroups",
+	"sys_setgroups",
+	"sys_setresuid",
+	"sys_getresuid",
+	"sys_setresgid",
+	"sys_getresgid",
+	"sys_getpgid",
+	"sys_setfsuid",
+	"sys_setfsgid",
+	"sys_getsid",
+	"sys_capget",
+	"sys_capset",
+	"sys_rt_sigpending",
+	"sys_rt_sigtimedwait",
+	"sys_rt_sigqueueinfo",
+	"sys_rt_sigsuspend",
+	"sys_sigaltstack",
+	"sys_utime",
+	"sys_mknod",
+	"sys_uselib",
+	"sys_personality",
+	"sys_ustat",
+	"sys_statfs",
+	"sys_fstatfs",
+	"sys_sysfs",
+	"sys_getpriority",
+	"sys_setpriority",
+	"sys_sched_setparam",
+	"sys_sched_getparam",
+	"sys_sched_setscheduler",
+	"sys_sched_getscheduler",
+	"sys_sched_get_priority_max",
+	"sys_sched_get_priority_min",
+	"sys_sched_rr_get_interval",
+	"sys_mlock",
+	"sys_munlock",
+	"sys_mlockall",
+	"sys_munlockall",
+	"sys_vhangup",
+	"sys_modify_ldt",
+	"sys_pivot_root",
+	"sys_sysctl",
+	"sys_prctl",
+	"sys_arch_prctl",
+	"sys_adjtimex",
+	"sys_setrlimit",
+	"sys_chroot",
+	"sys_sync",
+	"sys_acct",
+	"sys_settimeofday",
+	"sys_mount",
+	"sys_umount2",
+	"sys_swapon",
+	"sys_swapoff",
+	"sys_reboot",
+	"sys_sethostname",
+	"sys_setdomainname",
+	"sys_iopl",
+	"sys_ioperm",
+	"sys_create_module",
+	"sys_init_module",
+	"sys_delete_module",
+	"sys_get_kernel_syms",
+	"sys_query_module",
+	"sys_quotactl",
+	"sys_nfsservctl",
+	"sys_getpmsg",
+	"sys_putpmsg",
+	"sys_afs_syscall",
+	"sys_tuxcall",
+	"sys_security",
+	"sys_gettid",
+	"sys_readahead",
+	"sys_setxattr",
+	"sys_lsetxattr",
+	"sys_fsetxattr",
+	"sys_getxattr",
+	"sys_lgetxattr",
+	"sys_fgetxattr",
+	"sys_listxattr",
+	"sys_llistxattr",
+	"sys_flistxattr",
+	"sys_removexattr",
+	"sys_lremovexattr",
+	"sys_fremovexattr",
+	"sys_tkill",
+	"sys_time",
+	"sys_futex",
+	"sys_sched_setaffinity",
+	"sys_sched_getaffinity",
+	"sys_set_thread_area",
+	"sys_io_setup",
+	"sys_io_destroy",
+	"sys_io_getevents",
+	"sys_io_submit",
+	"sys_io_cancel",
+	"sys_get_thread_area",
+	"sys_lookup_dcookie",
+	"sys_epoll_create",
+	"sys_epoll_ctl_old",
+	"sys_epoll_wait_old",
+	"sys_remap_file_pages",
+	"sys_getdents64",
+	"sys_set_tid_address",
+	"sys_restart_syscall",
+	"sys_semtimedop",
+	"sys_fadvise64",
+	"sys_timer_create",
+	"sys_timer_settime",
+	"sys_timer_gettime",
+	"sys_timer_getoverrun",
+	"sys_timer_delete",
+	"sys_clock_settime",
+	"sys_clock_gettime",
+	"sys_clock_getres",
+	"sys_clock_nanosleep",
+	"sys_exit_group",
+	"sys_epoll_wait",
+	"sys_epoll_ctl",
+	"sys_tgkill",
+	"sys_utimes",
+	"sys_vserver",
+	"sys_mbind",
+	"sys_set_mempolicy",
+	"sys_get_mempolicy",
+	"sys_mq_open",
+	"sys_mq_unlink",
+	"sys_mq_timedsend",
+	"sys_mq_timedreceive",
+	"sys_mq_notify",
+	"sys_mq_getsetattr",
+	"sys_kexec_load",
+	"sys_waitid",
+	"sys_add_key",
+	"sys_request_key",
+	"sys_keyctl",
+	"sys_ioprio_set",
+	"sys_ioprio_get",
+	"sys_inotify_init",
+	"sys_inotify_add_watch",
+	"sys_inotify_rm_watch",
+	"sys_migrate_pages",
+	"sys_openat",
+	"sys_mkdirat",
+	"sys_mknodat",
+	"sys_fchownat",
+	"sys_futimesat",
+	"sys_newfstatat",
+	"sys_unlinkat",
+	"sys_renameat",
+	"sys_linkat",
+	"sys_symlinkat",
+	"sys_readlinkat",
+	"sys_fchmodat",
+	"sys_faccessat",
+	"sys_pselect6",
+	"sys_ppoll",
+	"sys_unshare",
+	"sys_set_robust_list",
+	"sys_get_robust_list",
+	"sys_splice",
+	"sys_tee",
+	"sys_sync_file_range",
+	"sys_vmsplice",
+	"sys_move_pages",
+	"sys_utimensat",
+	"sys_epoll_pwait",
+	"sys_signalfd",
+	"sys_timerfd",
+	"sys_eventfd",
+	"sys_fallocate",
+	"sys_timerfd_settime",
+	"sys_timerfd_gettime",
+	"sys_accept4",
+	"sys_signalfd4",
+	"sys_eventfd2",
+	"sys_epoll_create1",
+	"sys_dup3",
+	"sys_pipe2",
+	"sys_inotify_init1",
+	"sys_preadv",
+	"sys_pwritev",
+	"sys_rt_tgsigqueueinfo",
+	"sys_perf_event_open",
+	"sys_recvmmsg",
+	"sys_fanotify_init",
+	"sys_fanotify_mark",
+	"sys_prlimit64",
+	"sys_name_to_handle_at",
+	"sys_open_by_handle_at",
+	"sys_clock_adjtime",
+	"sys_syncfs",
+	"sys_sendmmsg",
+	"sys_setns",
+	"sys_getcpu",
+	"sys_process_vm_readv",
+	"sys_process_vm_writev",
+	"sys_kcmp",
+	"sys_finit_module",
+	"sys_sched_setattr",
+	"sys_sched_getattr",
+	"sys_renameat2",
+	"sys_seccomp",
+	"sys_getrandom",
+	"sys_memfd_create",
+	"sys_kexec_file_load",
+	"sys_bpf",
+	"sys_execveat",
+	"sys_userfaultfd",
+	"sys_membarrier",
+	"sys_mlock2",
+	"sys_copy_file_range",
+
+    NULL,
+};
+
+
+const struct syscall_defs VM_LINUX_SYSCALLS[] = {
 	{ "sys_read", vf_linux_print_syscall_sys_read },
 	{ "sys_write", vf_linux_print_syscall_sys_write },
 	{ "sys_open", vf_linux_print_syscall_sys_open },
@@ -3191,13 +3521,13 @@ static const struct syscall_defs SYSCALLS[] = {
 	{ "sys_membarrier", vf_linux_print_syscall_sys_membarrier },
 	{ "sys_mlock2", vf_linux_print_syscall_sys_mlock2 },
 	{ "sys_copy_file_range", vf_linux_print_syscall_sys_copy_file_range },
-};
 
-void vf_linux_print_syscall(vmi_instance_t vmi, vmi_event_t *event) {
+    { NULL, NULL }
+};void vf_linux_print_syscall(vmi_instance_t vmi, vmi_event_t *event) {
 	reg_t syscall_id = event->x86_regs->rax;
 	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 	char *proc = get_proc_name(vmi, pid);
-	SYSCALLS[syscall_id].print(vmi, pid, proc, SYSCALLS[syscall_id].name, event);
+	VM_LINUX_SYSCALLS[syscall_id].print(vmi, pid, proc, VM_LINUX_SYSCALLS[syscall_id].name, event);
 }
 void vf_linux_print_sysret(vmi_instance_t vmi, vmi_event_t *event) {
 	reg_t syscall_return = event->x86_regs->rax;
