@@ -13,7 +13,8 @@ struct os_functions os_functions_linux = {
 	.print_sysret          = vf_linux_print_sysret,
 	.find_syscalls_and_setup_mem_traps \
 	                       = vf_linux_find_syscalls_and_setup_mem_traps,
-	.set_up_sysret_handler = vf_linux_set_up_sysret_handler,
+	.find_sysret_addr      = vf_linux_find_sysret_addr,
+	.find_trampoline_addr = vf_linux_find_trampoline_addr
 };
 
 /* 
@@ -50,7 +51,7 @@ done:
  * We find the address of the CALL instruction by disassembling the kernel core.
  */
 bool
-vf_linux_set_up_sysret_handler(vf_state *state)
+vf_linux_find_sysret_addr(vf_state *state)
 {
 	csh handle;
 	cs_insn *inst;
@@ -113,17 +114,17 @@ vf_linux_set_up_sysret_handler(vf_state *state)
 
 	cs_close(&handle);
 
-	sysret_trap = vf_setup_mem_trap(state, lstar + call_offset);
-        if (NULL == sysret_trap) {
-		fprintf(stderr, "failed to create sysret memory trap\n");
-		status = VMI_FAILURE;
-		goto done;
-        }
-
-	vf_remove_breakpoint(sysret_trap);
+	sysret_addr = lstar + call_offset;
 
 	status = VMI_SUCCESS;
 
 done:
 	return status == VMI_SUCCESS ? true : false;
+}
+
+/* todo: figure this out */
+bool
+vf_linux_find_trampoline_addr(vf_state *state)
+{
+	return false;
 }

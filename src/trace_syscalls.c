@@ -1,5 +1,6 @@
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
+#include <libvmi/libvmi_extra.h>
 #include <glib.h>
 #include <libxl_utils.h>
 #include <signal.h>
@@ -55,6 +56,10 @@ static uint8_t VF_BREAKPOINT_INST = 0xCC;
 static int vf_interrupted = 0;
 
 static struct os_functions *os_functions;
+
+//vf_paddr_record *sysret_trap;
+addr_t sysret_addr;
+addr_t trampoline_addr;
 
 vf_paddr_record *sysret_trap;
 
@@ -126,6 +131,11 @@ static void
 vf_teardown_state(vf_state *state)
 {
 	int status;
+
+	/*
+	 * todo: overwrite our trampoline interrupt with a NOP so
+	 * lingering threads don't crash after we exit guestrace
+	 */
 
 	status = xc_altp2m_switch_to_view(state->xch, state->domid, 0);
 	if (0 > status) {
@@ -200,6 +210,8 @@ vf_destroy_paddr_record (gpointer data) {
 	       (paddr_record->parent->shadow_page << VF_PAGE_OFFSET_BITS)
 	      + paddr_record->offset);
 
+	vf_remove_breakpoint(paddr_record);
+
 	g_free(paddr_record);
 }
 
@@ -210,6 +222,8 @@ vf_destroy_page_record (gpointer data) {
 	fprintf(stderr,
 	       "destroying page record on shadow page %lx\n",
 	        page_record->shadow_page);
+
+	g_hash_table_destroy(page_record->children);
 
 	/* Stop monitoring this page. */
 	vmi_set_mem_event(page_record->state->vmi,
@@ -228,8 +242,6 @@ vf_destroy_page_record (gpointer data) {
 	                                     1, 0,
 	                                    &page_record->shadow_page);
 
-	g_hash_table_destroy(page_record->children);
-
 	g_free(page_record);
 }
 
@@ -239,7 +251,7 @@ vf_destroy_page_record (gpointer data) {
  */
 static event_response_t
 vf_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
-	fprintf(stderr, "mem r/w on page %lx\n", event->mem_event.gfn);
+	//fprintf(stderr, "mem r/w on page %lx\n", event->mem_event.gfn);
 
 	/* Switch back to original SLAT for one step. */
 	event->slat_id = 0;
@@ -453,10 +465,6 @@ vf_paddr_record_from_va(vf_state *state, addr_t va) {
 }
 
 /*
- * Callback on any interrupts received from our shadow pages
- * Here we must make temporary changes and enter into single-step mode
- */
-/*
  * Service a triggered breakpoint. Restore the original page table for one
  * single-step iteration and possibly print the system call parameters
  * or return value.
@@ -481,23 +489,41 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		goto done;
 	}
 
-	/* Set VCPUs SLAT to use original for one step. */
-	event->slat_id = 0;
 	event->interrupt_event.reinject = 0;
 
-	if (sysret_trap != paddr_record) {
-		/* syscall */
-		os_functions->print_syscall(vmi, event, paddr_record);
-		vf_emplace_breakpoint(sysret_trap);
-	} else {
-		/* sysret */
-		os_functions->print_sysret(vmi, event);
-		vf_remove_breakpoint(sysret_trap);
-	}
+	if (sysret_trap == paddr_record) {
+		//vmi_pause_vm(vmi);
 
-	/* Turn on single-step and switch slat_id. */
-	status = VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
-	       | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
+		os_functions->print_sysret(vmi, event);
+
+		vmi_set_vcpureg(vmi, sysret_addr, RIP, event->vcpu_id);
+
+		//vmi_resume_vm(vmi);
+	} else {
+		addr_t ret_loc = vmi_translate_kv2p(vmi, event->x86_regs->rsp);
+
+		addr_t ret_addr;
+		vmi_read_64_pa(vmi, ret_loc, &ret_addr);
+
+		/*
+		 * If these match, we know the lstar routine called this function
+		 * We may be able to remove this check and the associated read if
+		 * we're confident nothing else will call a system call stub
+		 */
+
+		if (ret_addr == sysret_addr) {
+			os_functions->print_syscall(vmi, event, paddr_record);
+			vmi_write_64_pa(vmi, ret_loc, &trampoline_addr);
+		}
+
+		/* Set VCPUs SLAT to use original for one step. */
+		event->slat_id = 0;
+
+		/* Turn on single-step and switch slat_id. */
+		status = VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
+		       | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
+
+	}
 
 done:
 	return status;
@@ -562,7 +588,8 @@ vf_singlestep_cb(vmi_instance_t vmi, vmi_event_t *event) {
  * create a new event each time we want to single-step.
  */
 static bool
-vf_set_up_step_events (vf_state *state) {
+vf_set_up_step_events (vf_state *state)
+{
 	bool status = false;
 	static vmi_event_t step_event[VF_MAX_VCPUS];
 
@@ -588,6 +615,23 @@ vf_set_up_step_events (vf_state *state) {
 			        vcpu);
 			goto done;
 		}
+	}
+
+	status = true;
+
+done:
+	return status;
+}
+
+static bool
+vf_create_trampoline (vf_state *state)
+{
+	bool status = false;
+
+	sysret_trap = vf_setup_mem_trap(state, trampoline_addr);
+	if (NULL == sysret_trap) {
+		fprintf(stderr, "failed to create sysret trap\n");
+		goto done;
 	}
 
 	status = true;
@@ -716,7 +760,17 @@ main (int argc, char **argv) {
 		goto done;
 	}
 
-	if (!os_functions->set_up_sysret_handler(&state)) {
+	if (!os_functions->find_sysret_addr(&state)) {
+		vmi_resume_vm(vmi);
+		goto done;
+	}
+
+	if (!os_functions->find_trampoline_addr(&state)) {
+		vmi_resume_vm(vmi);
+		goto done;
+	}
+
+	if (!vf_create_trampoline(&state)) {
 		vmi_resume_vm(vmi);
 		goto done;
 	}

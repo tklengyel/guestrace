@@ -13,7 +13,8 @@ struct os_functions os_functions_windows = {
         .print_sysret          = vf_windows_print_sysret,
         .find_syscalls_and_setup_mem_traps \
 		               = vf_windows_find_syscalls_and_setup_mem_traps,
-	.set_up_sysret_handler = vf_windows_set_up_sysret_handler,
+	.find_sysret_addr = vf_windows_find_sysret_addr,
+	.find_trampoline_addr = vf_windows_find_trampoline_addr
 };
 
 struct win64_obj_attr {
@@ -30,21 +31,15 @@ struct win64_client_id {
 	uint64_t unique_thread; /* thread id */
 };
 
-typedef struct visor_proc {
-	vmi_pid_t pid; /* current process pid */
-	char * name; /* this will be removed automatically */
-	uint16_t sysnum; /* 0xFFFF if not waiting on syscall to finish, otherwise sysnum */
-	uint64_t * args; /* saved arguments to use between syscall start and finish. must be freed in ret */
-	reg_t ret_status;
-	struct visor_proc * next; /* todo: don't use linked list */
-} visor_proc;
-
 struct syscall_defs {
 	char *name;
 	void (*print) (vmi_instance_t vmi,
+		           vmi_event_t *event,
 	               char *timestamp,
 	               char *syscall_symbol,
-	               visor_proc *curr_proc);
+	               int pid,
+	               uint64_t *args,
+	               char *proc_name);
 };
 
 /*
@@ -107,98 +102,126 @@ done:
 }
 
 static void
-vf_windows_print_sysret_openfile(vmi_instance_t vmi, char *timestamp, char *syscall_symbol, visor_proc *curr_proc)
+vf_windows_print_sysret_openfile(vmi_instance_t vmi, vmi_event_t *event, char *timestamp, char *syscall_symbol, int pid, uint64_t *args, char *proc_name)
 {
-	uint8_t * filename = filename_from_arg(vmi, curr_proc->args[2], curr_proc->pid);
+	uint8_t * filename = filename_from_arg(vmi, args[2], pid);
 
 	uint64_t handle = 0;
-	vmi_read_64_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
+	vmi_read_64_va(vmi, args[0], pid, &handle);
 
-	fprintf(stderr, "pid: %d (%s) syscall: %s(%s)\n", curr_proc->pid, curr_proc->name, syscall_symbol, filename);
-	fprintf(stderr, "pid: %d (%s) return: 0x%lx\n", curr_proc->pid, curr_proc->name, curr_proc->ret_status);
+	fprintf(stderr, "pid: %d (%s) thread: 0x%lx syscall: %s(%s)\n", pid, proc_name, event->x86_regs->rsp, syscall_symbol, filename);
+	
 
-	/* TODO: presently omitted: timestamp, handle, curr_proc->sysnum. */
+	/* TODO: presently omitted: timestamp, handle, sysnum. */
 }
 
 static void
-vf_windows_print_sysret_opensymboliclinkobject(vmi_instance_t vmi, char *timestamp, char *syscall_symbol, visor_proc *curr_proc)
+vf_windows_print_sysret_opensymboliclinkobject(vmi_instance_t vmi, vmi_event_t *event, char *timestamp, char *syscall_symbol, int pid, uint64_t *args, char *proc_name)
 {
-	uint8_t * filename = filename_from_arg(vmi, curr_proc->args[2], curr_proc->pid);
+	uint8_t * filename = filename_from_arg(vmi, args[2], pid);
 
 	uint64_t handle = 0;
-	vmi_read_64_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
+	vmi_read_64_va(vmi, args[0], pid, &handle);
 
-	fprintf(stderr, "pid: %d (%s) syscall: %s(%s)\n", curr_proc->pid, curr_proc->name, syscall_symbol, filename);
-	fprintf(stderr, "pid: %d (%s) return: 0x%lx\n", curr_proc->pid, curr_proc->name, curr_proc->ret_status);
+	fprintf(stderr, "pid: %d (%s) thread: 0x%lx syscall: %s(%s)\n", pid, proc_name, event->x86_regs->rsp, syscall_symbol, filename);
+	
 
-	/* TODO: presently omitted: timestamp, handle, curr_proc->sysnum. */
+	/* TODO: presently omitted: timestamp, handle, sysnum. */
 }
 
 static void
-vf_windows_print_sysret_createfile(vmi_instance_t vmi, char *timestamp, char *syscall_symbol, visor_proc *curr_proc)
+vf_windows_print_sysret_createfile(vmi_instance_t vmi, vmi_event_t *event, char *timestamp, char *syscall_symbol, int pid, uint64_t *args, char *proc_name)
 {
-	uint8_t * filename = filename_from_arg(vmi, curr_proc->args[2], curr_proc->pid);
+	uint8_t * filename = filename_from_arg(vmi, args[2], pid);
 
 	uint64_t handle = 0;
-	vmi_read_64_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
+	vmi_read_64_va(vmi, args[0], pid, &handle);
 
-	fprintf(stderr, "pid: %d (%s) syscall: %s(%s)\n", curr_proc->pid, curr_proc->name, syscall_symbol, filename);
-	fprintf(stderr, "pid: %d (%s) return: 0x%lx\n", curr_proc->pid, curr_proc->name, curr_proc->ret_status);
+	fprintf(stderr, "pid: %d (%s) thread: 0x%lx syscall: %s(%s)\n", pid, proc_name, event->x86_regs->rsp, syscall_symbol, filename);
+	
 
-	/* TODO: presently omitted: timestamp, handle, curr_proc->sysnum. */
+	/* TODO: presently omitted: timestamp, handle, sysnum. */
 }
 
 static void
-vf_windows_print_sysret_opendirectoryobject(vmi_instance_t vmi, char *timestamp, char *syscall_symbol, visor_proc *curr_proc)
+vf_windows_print_sysret_opendirectoryobject(vmi_instance_t vmi, vmi_event_t *event, char *timestamp, char *syscall_symbol, int pid, uint64_t *args, char *proc_name)
 {
-	uint8_t * filename = filename_from_arg(vmi, curr_proc->args[2], curr_proc->pid);
+	uint8_t * filename = filename_from_arg(vmi, args[2], pid);
 
 	uint64_t handle = 0;
-	vmi_read_64_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
+	vmi_read_64_va(vmi, args[0], pid, &handle);
 
-	fprintf(stderr, "pid: %d (%s) syscall: %s(%s)\n", curr_proc->pid, curr_proc->name, syscall_symbol, filename);
-	fprintf(stderr, "pid: %d (%s) return: 0x%lx\n", curr_proc->pid, curr_proc->name, curr_proc->ret_status);
+	fprintf(stderr, "pid: %d (%s) thread: 0x%lx syscall: %s(%s)\n", pid, proc_name, event->x86_regs->rsp, syscall_symbol, filename);
+	
 
-	/* TODO: presently omitted: timestamp, handle, curr_proc->sysnum. */
+	/* TODO: presently omitted: timestamp, handle, sysnum. */
 }
 
 static void
-vf_windows_print_sysret_openprocess(vmi_instance_t vmi, char *timestamp, char *syscall_symbol, visor_proc *curr_proc)
+vf_windows_print_sysret_openprocess(vmi_instance_t vmi, vmi_event_t *event, char *timestamp, char *syscall_symbol, int pid, uint64_t *args, char *proc_name)
 {
 	struct win64_client_id client_id = {0};
-	vmi_read_va(vmi, curr_proc->args[3], curr_proc->pid, &client_id, sizeof(struct win64_client_id));
+	vmi_read_va(vmi, args[3], pid, &client_id, sizeof(struct win64_client_id));
 
 	uint64_t handle = 0;
-	vmi_read_64_va(vmi, curr_proc->args[0], curr_proc->pid, &handle);
+	vmi_read_64_va(vmi, args[0], pid, &handle);
 
-	fprintf(stderr, "pid: %d (%s) syscall: %s(0x%lx)\n", curr_proc->pid, curr_proc->name, syscall_symbol, client_id.unique_process);
-	fprintf(stderr, "pid: %d (%s) return: 0x%lx\n", curr_proc->pid, curr_proc->name, curr_proc->ret_status);
+	fprintf(stderr, "pid: %d (%s) thread: 0x%lx syscall: %s(0x%lx)\n", pid, proc_name, event->x86_regs->rsp, syscall_symbol, client_id.unique_process);
+	
 
-	/* TODO: presently omitted: timestamp, handle, curr_proc->sysnum. */
+	/* TODO: presently omitted: timestamp, handle, sysnum. */
 }
 
 static void
-vf_windows_print_sysret_readfile(vmi_instance_t vmi, char *timestamp, char *syscall_symbol, visor_proc *curr_proc)
+vf_windows_print_sysret_readfile(vmi_instance_t vmi, vmi_event_t *event, char *timestamp, char *syscall_symbol, int pid, uint64_t *args, char *proc_name)
 {
-	fprintf(stderr, "pid: %d (%s) syscall: %s(0x%lx)\n", curr_proc->pid, curr_proc->name, syscall_symbol, curr_proc->args[0]);
-	fprintf(stderr, "pid: %d (%s) return: 0x%lx\n", curr_proc->pid, curr_proc->name, curr_proc->ret_status);
+	fprintf(stderr, "pid: %d (%s) thread: 0x%lx syscall: %s(0x%lx)\n", pid, proc_name, event->x86_regs->rsp, syscall_symbol, args[0]);
+	
 
-	/* TODO: presently omitted: timestamp, handle, curr_proc->sysnum. */
+	/* TODO: presently omitted: timestamp, handle, sysnum. */
 }
 
 static void
-vf_windows_print_sysret_writefile(vmi_instance_t vmi, char *timestamp, char *syscall_symbol, visor_proc *curr_proc)
+vf_windows_print_sysret_writefile(vmi_instance_t vmi, vmi_event_t *event, char *timestamp, char *syscall_symbol, int pid, uint64_t *args, char *proc_name)
 {
-	fprintf(stderr, "pid: %d (%s) syscall: %s(0x%lx)\n", curr_proc->pid, curr_proc->name, syscall_symbol, curr_proc->args[0]);
-	fprintf(stderr, "pid: %d (%s) return: 0x%lx\n", curr_proc->pid, curr_proc->name, curr_proc->ret_status);
+	fprintf(stderr, "pid: %d (%s) thread: 0x%lx syscall: %s(0x%lx)\n", pid, proc_name, event->x86_regs->rsp, syscall_symbol, args[0]);
+	
 
-	/* TODO: presently omitted: timestamp, handle, curr_proc->sysnum. */
+	/* TODO: presently omitted: timestamp, handle, sysnum. */
 }
 
 static void
-vf_windows_print_sysret_def(vmi_instance_t vmi, char *timestamp, char *syscall_symbol, visor_proc *curr_proc)
+vf_windows_print_sysret_def(vmi_instance_t vmi, vmi_event_t *event, char *timestamp, char *syscall_symbol, int pid, uint64_t *args, char *proc_name)
 {
 	/* No-Op. for now. */
+}
+
+bool
+vf_windows_find_trampoline_addr(vf_state *state)
+{
+	bool status = false;
+	trampoline_addr = 0;
+
+	status_t ret = vmi_get_vcpureg(state->vmi, &trampoline_addr, MSR_LSTAR, 0);
+	if (VMI_SUCCESS != ret) {
+		fprintf(stderr, "failed to get MSR_LSTAR address\n");
+		goto done;
+	}
+
+	/*
+	 * byte before system call routine should be alignment
+	 *
+	 * todo: programatically find a single byte in executable
+	 * memory that we can overwrite with INT 3
+	 * we may just be able to search through memory for an
+	 * inevitable \xCC byte
+	 */
+	trampoline_addr -= 1;
+
+	status = true;
+
+done:
+	return status;
 }
 
 /* See Windows's KeServiceDescriptorTable. */
@@ -608,99 +631,6 @@ static const struct syscall_defs SYSCALLS[] = {
 
 #define NUM_SYSCALL_ARGS 8
 
-/* todo: use glibc */
-visor_proc * PROC_HEAD = NULL;
-
-static visor_proc *
-get_process_from_pid(vmi_pid_t pid) {
-	visor_proc * curr = PROC_HEAD;
-
-	while (NULL != curr) {
-		if (curr->pid == pid) {
-			break;
-		}
-		curr = curr->next;
-	}
-
-	return curr;
-}
-
-static void
-delete_process(vmi_pid_t pid) {
-	if (NULL == PROC_HEAD) {
-		return;
-	}
-
-	if (PROC_HEAD->pid == pid) {
-		visor_proc * saved = PROC_HEAD->next;
-		free(PROC_HEAD->name);
-		free(PROC_HEAD);
-		PROC_HEAD = saved;
-	} else {
-		visor_proc * curr = PROC_HEAD;
-
-		while (NULL != curr->next) {
-			if (curr->next->pid == pid) {
-				visor_proc * saved = curr->next->next;
-				free(curr->next->name);
-				free(curr->next);
-				curr->next = saved;
-				return;
-			}
-		}
-	}
-}
-
-static visor_proc *
-allocate_process(vmi_pid_t pid, char * name) {
-	visor_proc * result = NULL;
-
-	/* we never delete processes, only replace them if another is allocated with same PID */
-	if (NULL != get_process_from_pid(pid)) {
-		delete_process(pid);
-	}
-
-	result = calloc(1, sizeof(visor_proc));
-
-	if (NULL == result) {
-		goto done;
-	}
-
-	result->pid = pid;
-	result->sysnum = 0xFFFF; /* not waiting on any syscall */
-	result->name = name;
-
-	/* let's append this to the current list */
-	if (NULL == PROC_HEAD) {
-		PROC_HEAD = result;
-	} else {
-		visor_proc * tail = PROC_HEAD;
-
-		while (tail->next != NULL) {
-			tail = tail->next;
-		}
-
-		tail->next = result;
-	}
-
-done:
-	return result;
-}
-
-//const char * symbol_from_syscall_num(uint16_t sysnum) {
-//	if (sysnum >> 12 == 0) { /* normal syscalls lead with 0 */
-//		if (sysnum >= NUM_SYSCALLS || sysnum < 0 || NUM_TO_SYSCALL[sysnum] == NULL) {
-//			return NULL;
-//		} else {
-//			return NUM_TO_SYSCALL[sysnum];
-//		}
-//	} else if (sysnum >> 12 == 1) { /* windows graphical syscalls lead with 1 */
-//		return NULL; /* ignore graphical syscalls for performance */
-//	} else {
-//		return NULL;
-//	}
-//}
-
 /*
  * Tries to return a UTF-8 string representing the filename of an ObjectAttribute
  * vaddr must point to an ObjectAttribute virtual address
@@ -769,48 +699,32 @@ vf_windows_print_syscall(vmi_instance_t vmi,
 		return;
 	}
 
-	visor_proc * curr_proc = get_process_from_pid(pid);
+	char * proc_name = get_process_name(vmi, pid);
 
-	if (NULL == curr_proc) {
-		char * proc_name = get_process_name(vmi, pid);
-
-		//if (strcmp(proc_name, "cmd.exe") == 0) { /* let's only track cmd.exe for now */
-			curr_proc = allocate_process(pid, proc_name);
-
-			if (NULL == curr_proc) {
-				free(proc_name);
-			}
-		//}
-	}
-	
-	if (NULL == curr_proc) { /* we don't want to track this PID */
-		return;
-	}
-
-	if (0xFFFF != curr_proc->sysnum) {
-		fprintf(stderr, "Warning: system call didn't return before new system call.  Multi-threaded process?\n");
-	}
-
-	curr_proc->sysnum = paddr_record->identifier;
-	
 	time_t now = time(NULL);
 
 	char * timestamp = ctime(&now); // y u have a newline
 	timestamp[strlen(timestamp)-1] = 0;
 
-	if (NULL != curr_proc->args) {
-		free(curr_proc->args);
-		curr_proc->args = NULL;
-	}
-
-	curr_proc->args = calloc(NUM_SYSCALL_ARGS, sizeof(uint64_t));
-	curr_proc->args[0] = event->x86_regs->rcx;
-	curr_proc->args[1] = event->x86_regs->rdx;
-	curr_proc->args[2] = event->x86_regs->r8;
-	curr_proc->args[3] = event->x86_regs->r9;
+	uint64_t *args = calloc(NUM_SYSCALL_ARGS, sizeof(uint64_t));
+	args[0] = event->x86_regs->rcx;
+	args[1] = event->x86_regs->rdx;
+	args[2] = event->x86_regs->r8;
+	args[3] = event->x86_regs->r9;
 
 	/* todo figure out how to get rest of arguments */
-	vmi_read_va(vmi, event->x86_regs->rsp, curr_proc->pid, &curr_proc->args[4], (NUM_SYSCALL_ARGS - 4) * sizeof(uint64_t));
+	vmi_read_va(vmi, event->x86_regs->rsp, pid, &args[4], (NUM_SYSCALL_ARGS - 4) * sizeof(uint64_t));
+
+	SYSCALLS[paddr_record->identifier].print(vmi,
+	                                  event,
+	                                  timestamp,
+	                                  SYSCALLS[paddr_record->identifier].name,
+	                                  pid,
+	                                  args,
+	                                  proc_name);
+
+	free(args);
+	free(proc_name);
 }
 
 void 
@@ -823,42 +737,9 @@ vf_windows_print_sysret(vmi_instance_t vmi,
 		return;
 	}
 
-	visor_proc * curr_proc = get_process_from_pid(pid);
+	char * proc_name = get_process_name(vmi, pid);
 
-	if (NULL == curr_proc) { /* not tracking this process */
-		return;
-	}
-
-	if (0xFFFF == curr_proc->sysnum) {
-		fprintf(stderr, "Error: system call returned without setting valid sysnum for PID %d\n", pid);
-		return;
-	}
-
-	/* Print the pid, process name and return value of a system call */
-	curr_proc->ret_status = event->x86_regs->rax;			/* get the return value out of rax */
-
-	time_t now = time(NULL);
-
-	char * timestamp = ctime(&now); // y u have a newline
-	timestamp[strlen(timestamp)-1] = 0;
-
-	//const char * syscall_symbol = symbol_from_syscall_num(curr_proc->sysnum);
-
-	//if (syscall_symbol == NULL) {
-	//	syscall_symbol = "Unknown Symbol";
-	//}
-	
-	SYSCALLS[curr_proc->sysnum].print(vmi,
-	                                  timestamp,
-	                                  SYSCALLS[curr_proc->sysnum].name,
-	                                  curr_proc);
-
-	curr_proc->sysnum = 0xFFFF; /* clean out the syscall */
-
-	if (NULL != curr_proc->args) {
-		free(curr_proc->args);
-		curr_proc->args = NULL;
-	}
+	fprintf(stderr, "pid: %d (%s) thread: 0x%lx return: 0x%lx\n", pid, proc_name, event->x86_regs->rsp - 8, event->x86_regs->rax);
 }
 
 #define countof(array) (sizeof(array) / sizeof((array)[0]))
@@ -982,14 +863,8 @@ done:
 	return ret;
 }
 
-/*
- * Find the appropriate place for a breakpoint which will enable guestrace to
- * read a system call's return value, setup the breakpoint, and setup
- * a memory trap. Leave the breakpoint disabled; guestrace will enable it
- * upon an execution of the return-value page.
- */
 bool
-vf_windows_set_up_sysret_handler(vf_state *state)
+vf_windows_find_sysret_addr(vf_state *state)
 {
 	bool status = false;
 	addr_t lstar = 0;
@@ -1001,19 +876,11 @@ vf_windows_set_up_sysret_handler(vf_state *state)
 		goto done;
 	}
 
-	addr_t ret_addr = vf_windows_get_syscall_ret_addr(state, lstar);
-	if (0 == ret_addr) {
+	sysret_addr = vf_windows_get_syscall_ret_addr(state, lstar);
+	if (0 == sysret_addr) {
 		fprintf(stderr, "failed to get system return address\n");
 		goto done;
 	}
-
-	sysret_trap = vf_setup_mem_trap(state, ret_addr);
-	if (NULL == sysret_trap) {
-		fprintf(stderr, "Failed to create sysret memory trap\n");
-		goto done;
-	}
-
-	vf_remove_breakpoint(sysret_trap);
 
 	status = true;
 
