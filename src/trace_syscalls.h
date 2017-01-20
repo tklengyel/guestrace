@@ -58,6 +58,11 @@ typedef struct vf_paddr_record {
 	uint16_t identifier; /* Syscall identifier because we nix RAX. */
 } vf_paddr_record;
 
+struct syscall_defs {
+	char *name;
+	void (*print) (vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, char *proc, char *syscall);
+};
+
 /* Operating-system-specific operations. */
 struct os_functions {
         void (*print_syscall) (vmi_instance_t vmi, vmi_event_t *event, vf_paddr_record *record);
@@ -76,5 +81,8 @@ extern addr_t trampoline_addr;
 vf_paddr_record *vf_setup_mem_trap (vf_state *state, addr_t va);
 status_t vf_emplace_breakpoint(vf_paddr_record *paddr_record);
 status_t vf_remove_breakpoint(vf_paddr_record *paddr_record);
+bool vf_find_syscalls_and_setup_mem_traps(vf_state *state,
+                                          const struct syscall_defs syscalls[],
+                                          const char *traced_syscalls[]);
 
 #endif

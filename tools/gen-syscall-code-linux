@@ -358,10 +358,7 @@ def create_struct_h(syscall_map, syscall_order, kernel_info):
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
 
-struct syscall_defs {
-    char *name;
-    void (*print) (vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event);
-};
+#include "trace_syscalls.h"
 
 extern const char *VM_LINUX_TRACED_SYSCALLS[];
 extern const struct syscall_defs VM_LINUX_SYSCALLS[];
@@ -480,7 +477,7 @@ const struct syscall_defs VM_LINUX_SYSCALLS[] = {
 	reg_t syscall_id = event->x86_regs->rax;
 	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 	char *proc = get_proc_name(vmi, pid);
-	VM_LINUX_SYSCALLS[syscall_id].print(vmi, pid, proc, VM_LINUX_SYSCALLS[syscall_id].name, event);
+	VM_LINUX_SYSCALLS[syscall_id].print(vmi, event, pid, proc, VM_LINUX_SYSCALLS[syscall_id].name);
 }
 """
 
@@ -500,7 +497,7 @@ const struct syscall_defs VM_LINUX_SYSCALLS[] = {
 
 def create_print_function(syscall_data):
     """Generate a print function for a single syscall"""
-    func_str = """void vf_linux_print_syscall_{0}(vmi_instance_t vmi, vmi_pid_t pid, char *proc, char *syscall, vmi_event_t *event)
+    func_str = """void vf_linux_print_syscall_{0}(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, char *proc, char *syscall)
 {{
 """.format(syscall_data.get_syscall_name())
     func_str += create_printf_statement(syscall_data.get_args_count(), syscall_data)

@@ -136,7 +136,7 @@ vf_restore_return_address(gpointer value, gpointer data)
 	addr_t pa = vmi_translate_kv2p(state->vmi, ret_loc);
 
 	/* todo: error checking */
-	vmi_write_64_pa(state->vmi, pa, sysret_addr);
+	vmi_write_64_pa(state->vmi, pa, &sysret_addr);
 }
 
 /* Tear down the Xen facilities set up by vf_init_state(). */
@@ -155,7 +155,7 @@ vf_teardown_state(vf_state *state)
 
 	g_ptr_array_foreach(state->vf_ret_addr_mapping, vf_restore_return_address, state);
 
-	g_ptr_array_free(state->vf_ret_addr_mapping);
+	g_ptr_array_free(state->vf_ret_addr_mapping, false);
 
 	status = xc_altp2m_switch_to_view(state->xch, state->domid, 0);
 	if (0 > status) {
@@ -439,6 +439,52 @@ vf_remove_breakpoint(vf_paddr_record *paddr_record) {
 	status = vmi_write_8_pa(paddr_record->parent->state->vmi,
 	                       (shadow_page << VF_PAGE_OFFSET_BITS) + offset,
 	                       &curr_inst);
+
+done:
+	return status;
+}
+
+bool
+vf_find_syscalls_and_setup_mem_traps(vf_state *state,
+                                     const struct syscall_defs syscalls[],
+                                     const char *traced_syscalls[])
+{
+	bool status = false;
+
+	for (int i = 0; syscalls[i].name; i++) {
+		for (int j = 0; traced_syscalls[j]; j++) {
+			addr_t sysaddr;
+			vf_paddr_record *syscall_trap;
+
+			if (strcmp(syscalls[i].name, traced_syscalls[j])) {
+				continue;
+			}
+
+			sysaddr = vmi_translate_ksym2v(state->vmi,
+						       traced_syscalls[j]);
+			if (0 == sysaddr) {
+				fprintf(stderr,
+				       "could not find symbol %s\n",
+					traced_syscalls[j]);
+				continue;
+			}
+
+			syscall_trap = vf_setup_mem_trap(state, sysaddr);
+			if (NULL == syscall_trap) {
+				fprintf(stderr,
+				       "failed to set memory trap on %s\n",
+					traced_syscalls[j]);
+				goto done;
+			}
+
+			/* Set identifier to contents of RAX during syscall. */
+			syscall_trap->identifier = i;
+
+			break;
+		}
+	}
+
+	status = true;
 
 done:
 	return status;

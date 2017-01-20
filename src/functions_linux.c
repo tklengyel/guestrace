@@ -21,45 +21,9 @@ struct os_functions os_functions_linux = {
 bool
 vf_linux_find_syscalls_and_setup_mem_traps(vf_state *state)
 {
-	bool status = false;
-
-	for (int i = 0; VM_LINUX_SYSCALLS[i].name; i++) {
-		for (int j = 0; VM_LINUX_TRACED_SYSCALLS[j]; j++) {
-			addr_t sysaddr;
-			vf_paddr_record *syscall_trap;
-
-			if (strcmp(VM_LINUX_SYSCALLS[i].name, VM_LINUX_TRACED_SYSCALLS[j])) {
-				continue;
-			}
-
-			sysaddr = vmi_translate_ksym2v(state->vmi,
-			                               VM_LINUX_TRACED_SYSCALLS[j]);
-			if (0 == sysaddr) {
-				fprintf(stderr,
-				       "could not find symbol %s\n",
-				        VM_LINUX_TRACED_SYSCALLS[j]);
-				continue;
-			}
-
-			syscall_trap = vf_setup_mem_trap(state, sysaddr);
-			if (NULL == syscall_trap) {
-				fprintf(stderr,
-				       "failed to set memory trap on %s\n",
-				        VM_LINUX_TRACED_SYSCALLS[j]);
-				goto done;
-			}
-
-			/* Set identifier to contents of RAX during syscall. */
-			syscall_trap->identifier = i;
-
-			break;
-		}
-	}
-
-	status = true;
-
-done:
-	return status;
+	return vf_find_syscalls_and_setup_mem_traps(state,
+	                                            VM_LINUX_SYSCALLS,
+	                                            VM_LINUX_TRACED_SYSCALLS);
 }
 
 /*
