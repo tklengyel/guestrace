@@ -310,6 +310,8 @@ vf_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
 vf_paddr_record *
 vf_setup_mem_trap (vf_state *state, addr_t va)
 {
+	size_t ret;
+	status_t status;
 	vf_page_record  *page_record  = NULL;
 	vf_paddr_record *paddr_record = NULL;
 
@@ -357,20 +359,20 @@ vf_setup_mem_trap (vf_state *state, addr_t va)
 
 		/* Copy page to shadow. */
 		uint8_t buff[VF_PAGE_SIZE] = {0};
-		status_t status = vmi_read_pa(state->vmi,
+		ret = vmi_read_pa(state->vmi,
 		                              frame << VF_PAGE_OFFSET_BITS,
 		                              buff,
 		                              VF_PAGE_SIZE);
-		if (0 == status) {
+		if (VF_PAGE_SIZE != ret) {
 			fprintf(stderr, "failed to read in syscall page\n");
 			goto done;
 		}
 
-		status = vmi_write_pa(state->vmi,
+		ret = vmi_write_pa(state->vmi,
 		                      shadow << VF_PAGE_OFFSET_BITS,
 		                      buff,
 		                      VF_PAGE_SIZE);
-		if (0 == status) {
+		if (VF_PAGE_SIZE != ret) {
 			fprintf(stderr, "failed to write to shadow page\n");
 			goto done;
 		}
@@ -409,10 +411,10 @@ vf_setup_mem_trap (vf_state *state, addr_t va)
 	paddr_record->identifier    = ~0; /* default 0xFFFF */
 
 	/* Write interrupt to our shadow page at the correct location. */
-	status_t ret = vmi_write_8_pa(state->vmi,
-	                             (shadow << VF_PAGE_OFFSET_BITS) + shadow_offset,
-	                             &VF_BREAKPOINT_INST);
-	if (VMI_SUCCESS != ret) {
+	status = vmi_write_8_pa(state->vmi,
+	                       (shadow << VF_PAGE_OFFSET_BITS) + shadow_offset,
+	                       &VF_BREAKPOINT_INST);
+	if (VMI_SUCCESS != status) {
 		fprintf(stderr, "failed to write interrupt to shadow page\n");
 		goto done;
 	}
@@ -453,7 +455,7 @@ vf_remove_breakpoint(vf_paddr_record *paddr_record) {
 	status = vmi_read_8_pa(paddr_record->parent->state->vmi,
 	                      (frame << VF_PAGE_OFFSET_BITS) + offset,
 	                      &curr_inst);
-	if (VMI_FAILURE == status) {
+	if (VMI_SUCCESS != status) {
 		goto done;
 	}
 
@@ -701,7 +703,7 @@ vf_set_up_step_events (vf_state *state)
 		SETUP_SINGLESTEP_EVENT(&curr, 1u << vcpu, vf_singlestep_cb, 0);
 		curr.data = state;
 
-		if (VMI_FAILURE == vmi_register_event(state->vmi, &curr)) {
+		if (VMI_SUCCESS != vmi_register_event(state->vmi, &curr)) {
 			fprintf(stderr,
 			       "failed to register single-step event on VCPU %d\n",
 			        vcpu);
