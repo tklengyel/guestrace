@@ -12,8 +12,7 @@ struct os_functions os_functions_windows = {
         .print_syscall          = vf_windows_print_syscall,
         .print_sysret           = vf_windows_print_sysret,
         .find_syscalls_and_setup_mem_traps \
-		                = vf_windows_find_syscalls_and_setup_mem_traps,
-	.find_return_point_addr = vf_windows_find_return_point_addr
+		                = vf_windows_find_syscalls_and_setup_mem_traps
 };
 
 struct win64_obj_attr {
@@ -707,92 +706,4 @@ vf_windows_find_syscalls_and_setup_mem_traps(vf_state *state)
 	return vf_find_syscalls_and_setup_mem_traps(state,
                                                     SYSCALLS,
                                                     TRACED_SYSCALLS);
-}
-
-/*
- * Disassemble the kernel and find the appropriate spot for a breakpoint
- * which will allow guestrace to determine a system call's return value. Return
- * the address of this spot.
- */
-static addr_t
-vf_windows_get_return_point_addr(vf_state *state, addr_t syscall_start) {
-	csh handle;
-	cs_insn *inst;
-	size_t count, call_offset = ~0;
-	addr_t ret = 0;
-	uint8_t code[4096]; /* Assume CALL is within first page. */
-
-	addr_t syscall_start_p = vmi_translate_kv2p(state->vmi, syscall_start);
-	if (0 == syscall_start_p) {
-		fprintf(stderr, "failed to read instructions from 0x%"
-		                 PRIx64".\n", syscall_start);
-		goto done;
-	}
-
-	/* Read kernel instructions into code. */
-	status_t status = vmi_read_pa(state->vmi, syscall_start_p, code, sizeof(code));
-	if (VMI_FAILURE == status) {
-		fprintf(stderr, "failed to read instructions from 0x%"
-		                 PRIx64".\n", syscall_start_p);
-		goto done;
-	}
-
-	if (cs_open(CS_ARCH_X86, CS_MODE_64, &handle) != CS_ERR_OK) {
-		fprintf(stderr, "failed to open capstone\n");
-		goto done;
-	}
-
-	/* Find CALL inst. and note address of inst. which follows. */
-	count = cs_disasm(handle, code, sizeof(code), 0, 0, &inst);
-	if (count > 0) {
-		size_t i;
-		for (i = 0; i < count; i++) {
-			if (0 == strcmp(inst[i].mnemonic, "call")
-			 && 0 == strcmp(inst[i].op_str, "r10")) {
-				call_offset = inst[i + 1].address;
-				break;
-			}
-		}
-		cs_free(inst, count);
-	} else {
-		fprintf(stderr, "failed to disassemble system-call handler\n");
-		goto done;
-	}
-
-	if (~0 == call_offset) {
-		fprintf(stderr, "did not find call in system-call handler\n");
-		goto done;
-	}
-
-	cs_close(&handle);
-
-	ret = syscall_start + call_offset;
-
-done:
-	return ret;
-}
-
-bool
-vf_windows_find_return_point_addr(vf_state *state)
-{
-	bool status = false;
-	addr_t lstar = 0;
-
-	/* LSTAR should be the constant across all VCPUs */
-	status_t ret = vmi_get_vcpureg(state->vmi, &lstar, MSR_LSTAR, 0);
-	if (VMI_SUCCESS != ret) {
-		fprintf(stderr, "failed to get MSR_LSTAR address\n");
-		goto done;
-	}
-
-	return_point_addr = vf_windows_get_return_point_addr(state, lstar);
-	if (0 == return_point_addr) {
-		fprintf(stderr, "failed to get system return address\n");
-		goto done;
-	}
-
-	status = true;
-
-done:
-	return status;
 }

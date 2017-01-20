@@ -74,7 +74,6 @@ static struct os_functions *os_functions;
  *
  * trampoline_addr is the address of the type-two breakpoint.
  */
-addr_t return_point_addr;
 addr_t trampoline_addr;
 
 /*
@@ -882,11 +881,6 @@ main (int argc, char **argv) {
 	}
 
 	if (!os_functions->find_syscalls_and_setup_mem_traps(&state)) {
-		vmi_resume_vm(vmi);
-		goto done;
-	}
-
-	if (!os_functions->find_return_point_addr(&state)) {
 		vmi_resume_vm(vmi);
 		goto done;
 	}
