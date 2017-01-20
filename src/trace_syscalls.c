@@ -78,10 +78,9 @@ addr_t return_point_addr;
 addr_t trampoline_addr;
 
 /*
- * Set up Xen logging and initialize the vf_state object to interact with Xen.
- * Notably, we create the altp2m view here. Assuming success, Xen will activate
- * the shadow page table which will eventually contain breakpoints.
- * Returns true on success.
+ * Initialize the vf_state object to interact with Xen. Notably, we create the
+ * altp2m view here. Assuming success, Xen will activate the shadow page table
+ * which will eventually contain breakpoints. Returns true on success.
  */
 static bool
 vf_init_state(vmi_instance_t vmi, char *name, vf_state *state)
@@ -140,17 +139,25 @@ done:
 	return status;
 }
 
-/* Restore any lingering stack return pointers so Kernel doesn't crash on guestrace exit */
+/*
+ * Restore a stack return pointer; useful to ensure the kernel continues to
+ * run after guestrace exit. Otherwise, guestrace's stack manipulation might
+ * remain in place, since guestrace might no longer exist at the time of a
+ * system-call return.
+ */
 static void
-vf_restore_return_address(gpointer value, gpointer data)
+vf_restore_return_address(gpointer value, gpointer user_data)
 {
-	addr_t ret_loc = (addr_t)value;
-	vf_state *state = data;
+	status_t status;
+	addr_t va       = GPOINTER_TO_SIZE(value);
+	vf_state *state = user_data;
 
-	addr_t pa = vmi_translate_kv2p(state->vmi, ret_loc);
+	addr_t pa = vmi_translate_kv2p(state->vmi, va);
 
-	/* todo: error checking */
-	vmi_write_64_pa(state->vmi, pa, &return_point_addr);
+	status = vmi_write_64_pa(state->vmi, pa, &return_point_addr);
+	if (VMI_SUCCESS != status) {
+		fprintf(stderr, "error restoring stack; guest will likely fail\n");
+	}
 }
 
 /* Tear down the Xen facilities set up by vf_init_state(). */
