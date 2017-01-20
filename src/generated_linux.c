@@ -1,4 +1,4 @@
-/* Generated on Linux_4.9.3-200.fc25.x86_64 on 20 Jan 2017 08:26:10*/
+/* Generated on Linux_4.9.3-200.fc25.x86_64 on 20 Jan 2017 11:58:41*/
 
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
@@ -2859,7 +2859,6 @@ void vf_linux_print_syscall_sys_copy_file_range(vmi_instance_t vmi, vmi_event_t 
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, 0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, syscall, (int) arg0, (unsigned long) arg1, (int) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5);
 }
 
-
 const char *VM_LINUX_TRACED_SYSCALLS[] = {
 	"sys_read",
 	"sys_write",
@@ -3188,10 +3187,8 @@ const char *VM_LINUX_TRACED_SYSCALLS[] = {
 	"sys_membarrier",
 	"sys_mlock2",
 	"sys_copy_file_range",
-
-    NULL,
+	NULL,
 };
-
 
 const struct syscall_defs VM_LINUX_SYSCALLS[] = {
 	{ "sys_read", vf_linux_print_syscall_sys_read },
@@ -3521,17 +3518,20 @@ const struct syscall_defs VM_LINUX_SYSCALLS[] = {
 	{ "sys_membarrier", vf_linux_print_syscall_sys_membarrier },
 	{ "sys_mlock2", vf_linux_print_syscall_sys_mlock2 },
 	{ "sys_copy_file_range", vf_linux_print_syscall_sys_copy_file_range },
+	{ NULL, NULL }
+};
 
-    { NULL, NULL }
-};void vf_linux_print_syscall(vmi_instance_t vmi, vmi_event_t *event) {
+void vf_linux_print_syscall(vmi_instance_t vmi, vmi_event_t *event, vf_paddr_record *paddr_record) {
 	reg_t syscall_id = event->x86_regs->rax;
 	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 	char *proc = get_proc_name(vmi, pid);
 	VM_LINUX_SYSCALLS[syscall_id].print(vmi, event, pid, proc, VM_LINUX_SYSCALLS[syscall_id].name);
 }
+
 void vf_linux_print_sysret(vmi_instance_t vmi, vmi_event_t *event) {
 	reg_t syscall_return = event->x86_regs->rax;
 	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) return: 0x%"PRIx64"\n", pid, rsp, get_proc_name(vmi, pid), syscall_return);
-	}
+}
+

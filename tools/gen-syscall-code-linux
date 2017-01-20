@@ -446,39 +446,40 @@ done:
         str += create_print_function(syscall_map[syscall])
 
     # Generate TRACED_SYSCALLS table.
-    str += """
-const char *VM_LINUX_TRACED_SYSCALLS[] = {
+    str += """const char *VM_LINUX_TRACED_SYSCALLS[] = {
 """
     
     # generate the actual string list
     for syscall_id in range(len(syscall_order)):
         str += "\t\"{0}\",\n".format(syscall_order[syscall_id])
 
-    str += """
-    NULL,
-};\n\n"""
+    str += """\tNULL,
+};
+
+"""
 
     # Generate SYSCALLS table.
-    str += """
-const struct syscall_defs VM_LINUX_SYSCALLS[] = {
+    str += """const struct syscall_defs VM_LINUX_SYSCALLS[] = {
 """
     
     # generate the actual struct list
     for syscall_id in range(len(syscall_order)):
         str += "\t{{ \"{0}\", vf_linux_print_syscall_{1} }},\n".format(syscall_order[syscall_id], syscall_order[syscall_id])
 
-    str += """
-    { NULL, NULL }
-};"""
+    str += """\t{ NULL, NULL }
+};
+
+"""
 
 
     # generate the print_syscall_info function
-    str += """void vf_linux_print_syscall(vmi_instance_t vmi, vmi_event_t *event) {
+    str += """void vf_linux_print_syscall(vmi_instance_t vmi, vmi_event_t *event, vf_paddr_record *paddr_record) {
 	reg_t syscall_id = event->x86_regs->rax;
 	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 	char *proc = get_proc_name(vmi, pid);
 	VM_LINUX_SYSCALLS[syscall_id].print(vmi, event, pid, proc, VM_LINUX_SYSCALLS[syscall_id].name);
 }
+
 """
 
     # generate the print_sysret_info function
@@ -487,7 +488,8 @@ const struct syscall_defs VM_LINUX_SYSCALLS[] = {
 	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) return: 0x%"PRIx64"\\n", pid, rsp, get_proc_name(vmi, pid), syscall_return);
-	}
+}
+
 """
 
     # write all the functions to generated_linux.c

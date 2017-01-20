@@ -146,7 +146,7 @@ done:
  * system-call return.
  */
 static void
-vf_restore_return_address(gpointer value, gpointer user_data)
+vf_restore_return_addr(gpointer value, gpointer user_data)
 {
 	status_t status;
 	addr_t va       = GPOINTER_TO_SIZE(value);
@@ -166,15 +166,10 @@ vf_teardown_state(vf_state *state)
 {
 	int status;
 
-	/*
-	 * todo: overwrite our trampoline interrupt with a NOP so
-	 * lingering threads don't crash after we exit guestrace
-	 */
-
 	g_hash_table_destroy(state->vf_page_record_collection);
 	g_hash_table_destroy(state->vf_page_translation);
 
-	g_ptr_array_foreach(state->vf_ret_addr_mapping, vf_restore_return_address, state);
+	g_ptr_array_foreach(state->vf_ret_addr_mapping, vf_restore_return_addr, state);
 
 	g_ptr_array_free(state->vf_ret_addr_mapping, false);
 
@@ -193,7 +188,7 @@ vf_teardown_state(vf_state *state)
 		fprintf(stderr, "failed to turn off altp2m on guest\n");
 	}
 
-	/* todo: find out why this isn't decreasing main memory on next run of guestrace */
+	/* TODO: find out why this isn't decreasing main memory on next run of guestrace */
 	status = xc_domain_setmaxmem(state->xch, state->domid, state->init_mem_size);
 	if (0 > status) {
 		fprintf(stderr, "failed to reset max memory on guest");
@@ -292,8 +287,6 @@ vf_destroy_page_record (gpointer data) {
  */
 static event_response_t
 vf_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
-	//fprintf(stderr, "mem r/w on page %lx\n", event->mem_event.gfn);
-
 	/* Switch back to original SLAT for one step. */
 	event->slat_id = 0;
 
