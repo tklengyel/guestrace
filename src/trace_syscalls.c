@@ -126,6 +126,19 @@ done:
 	return status;
 }
 
+/* Restore any lingering stack return pointers so Kernel doesn't crash on guestrace exit */
+static void
+vf_restore_return_address(gpointer value, gpointer data)
+{
+	addr_t ret_loc = (addr_t)value;
+	vf_state *state = data;
+
+	addr_t pa = vmi_translate_kv2p(state->vmi, ret_loc);
+
+	/* todo: error checking */
+	vmi_write_64_pa(state->vmi, pa, sysret_addr);
+}
+
 /* Tear down the Xen facilities set up by vf_init_state(). */
 static void
 vf_teardown_state(vf_state *state)
@@ -136,6 +149,13 @@ vf_teardown_state(vf_state *state)
 	 * todo: overwrite our trampoline interrupt with a NOP so
 	 * lingering threads don't crash after we exit guestrace
 	 */
+
+	g_hash_table_destroy(state->vf_page_record_collection);
+	g_hash_table_destroy(state->vf_page_translation);
+
+	g_ptr_array_foreach(state->vf_ret_addr_mapping, vf_restore_return_address, state);
+
+	g_ptr_array_free(state->vf_ret_addr_mapping);
 
 	status = xc_altp2m_switch_to_view(state->xch, state->domid, 0);
 	if (0 > status) {
@@ -489,16 +509,16 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		goto done;
 	}
 
+	vf_state *state = event->data;
 	event->interrupt_event.reinject = 0;
 
 	if (sysret_trap == paddr_record) {
-		//vmi_pause_vm(vmi);
-
 		os_functions->print_sysret(vmi, event);
 
 		vmi_set_vcpureg(vmi, sysret_addr, RIP, event->vcpu_id);
 
-		//vmi_resume_vm(vmi);
+		g_ptr_array_remove_fast(state->vf_ret_addr_mapping,
+		                        GSIZE_TO_POINTER(event->x86_regs->rsp - 8));
 	} else {
 		addr_t ret_loc = vmi_translate_kv2p(vmi, event->x86_regs->rsp);
 
@@ -514,6 +534,8 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		if (ret_addr == sysret_addr) {
 			os_functions->print_syscall(vmi, event, paddr_record);
 			vmi_write_64_pa(vmi, ret_loc, &trampoline_addr);
+			g_ptr_array_add(state->vf_ret_addr_mapping,
+		                    GSIZE_TO_POINTER(event->x86_regs->rsp));
 		}
 
 		/* Set VCPUs SLAT to use original for one step. */
@@ -723,6 +745,7 @@ main (int argc, char **argv) {
 	                                                  NULL,
 	                                                  NULL,
 	                                                  vf_destroy_page_record);
+	state.vf_ret_addr_mapping = g_ptr_array_new();
 
 	vmi_pause_vm(vmi);
 
@@ -792,8 +815,6 @@ done:
 
 	vmi_pause_vm(vmi);
 
-	g_hash_table_destroy(state.vf_page_record_collection);
-	g_hash_table_destroy(state.vf_page_translation);
 	vf_teardown_state(&state);
 
 	vmi_resume_vm(vmi);
