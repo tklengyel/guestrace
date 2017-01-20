@@ -33,7 +33,7 @@ typedef struct vf_state {
 	GHashTable *vf_page_record_collection;
 
 	/* Contains the current mapping between [return_ptr] and our trampoline.  Used for restoring state during teardown */ 
-	GPtrArray *vf_ret_addr_mapping;
+	GHashTable *vf_ret_addr_mapping;
 
 	/* Fields used to interact directly with Xen driver. */
 	xc_interface *xch;

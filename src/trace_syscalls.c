@@ -146,15 +146,16 @@ done:
  * system-call return.
  */
 static void
-vf_restore_return_addr(gpointer value, gpointer user_data)
+vf_restore_return_addr(gpointer key, gpointer value, gpointer user_data)
 {
 	status_t status;
-	addr_t va       = GPOINTER_TO_SIZE(value);
-	vf_state *state = user_data;
+	addr_t ret_loc      = GPOINTER_TO_SIZE(key);
+	addr_t orig_ret     = GPOINTER_TO_SIZE(value);
+	vf_state *state     = user_data;
 
-	addr_t pa = vmi_translate_kv2p(state->vmi, va);
+	addr_t pa = vmi_translate_kv2p(state->vmi, ret_loc);
 
-	status = vmi_write_64_pa(state->vmi, pa, &return_point_addr);
+	status = vmi_write_64_pa(state->vmi, pa, &orig_ret);
 	if (VMI_SUCCESS != status) {
 		fprintf(stderr, "error restoring stack; guest will likely fail\n");
 	}
@@ -169,9 +170,9 @@ vf_teardown_state(vf_state *state)
 	g_hash_table_destroy(state->vf_page_record_collection);
 	g_hash_table_destroy(state->vf_page_translation);
 
-	g_ptr_array_foreach(state->vf_ret_addr_mapping, vf_restore_return_addr, state);
+	g_hash_table_foreach(state->vf_ret_addr_mapping, vf_restore_return_addr, state);
 
-	g_ptr_array_free(state->vf_ret_addr_mapping, false);
+	g_hash_table_destroy(state->vf_ret_addr_mapping);
 
 	status = xc_altp2m_switch_to_view(state->xch, state->domid, 0);
 	if (0 > status) {
@@ -582,18 +583,12 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		addr_t ret_addr;
 		vmi_read_64_pa(vmi, ret_loc, &ret_addr);
 
-		/*
-		 * If these match, we know the lstar routine called this function
-		 * We may be able to remove this check and the associated read if
-		 * we're confident nothing else will call a system call stub
-		 */
 
-		if (ret_addr == return_point_addr) {
-			os_functions->print_syscall(vmi, event, paddr_record);
-			vmi_write_64_pa(vmi, ret_loc, &trampoline_addr);
-			g_ptr_array_add(state->vf_ret_addr_mapping,
-		                    GSIZE_TO_POINTER(event->x86_regs->rsp));
-		}
+		os_functions->print_syscall(vmi, event, paddr_record);
+		vmi_write_64_pa(vmi, ret_loc, &trampoline_addr);
+		g_hash_table_insert(state->vf_ret_addr_mapping,
+		                    GSIZE_TO_POINTER(event->x86_regs->rsp),
+		                    GSIZE_TO_POINTER(ret_addr));
 
 		/* Set VCPUs SLAT to use original for one step. */
 		event->slat_id = 0;
@@ -606,10 +601,14 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 
 		os_functions->print_sysret(vmi, event);
 
-		vmi_set_vcpureg(vmi, return_point_addr, RIP, event->vcpu_id);
+		/* todo: make sure it exists in here */
+		addr_t ret_addr = (addr_t)g_hash_table_lookup(state->vf_ret_addr_mapping,
+		                                      GSIZE_TO_POINTER(event->x86_regs->rsp - 8));
 
-		g_ptr_array_remove_fast(state->vf_ret_addr_mapping,
-		                        GSIZE_TO_POINTER(event->x86_regs->rsp - 8));
+		g_hash_table_remove(state->vf_ret_addr_mapping,
+		                    GSIZE_TO_POINTER(event->x86_regs->rsp - 8));
+
+		vmi_set_vcpureg(vmi, ret_addr, RIP, event->vcpu_id);
 	}
 
 done:
@@ -849,7 +848,7 @@ main (int argc, char **argv) {
 	                                                  NULL,
 	                                                  NULL,
 	                                                  vf_destroy_page_record);
-	state.vf_ret_addr_mapping = g_ptr_array_new();
+	state.vf_ret_addr_mapping = g_hash_table_new(NULL, NULL);
 
 	vmi_pause_vm(vmi);
 
