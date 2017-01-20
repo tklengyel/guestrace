@@ -69,11 +69,9 @@ struct os_functions {
         void (*print_sysret) (vmi_instance_t vmi, vmi_event_t *event);
         bool (*find_syscalls_and_setup_mem_traps) (vf_state *state);
         bool (*find_return_point_addr) (vf_state *state);
-        bool (*find_trampoline_addr) (vf_state *state);
 };
 
 extern addr_t return_point_addr;
-extern addr_t trampoline_addr;
 
 vf_paddr_record *vf_setup_mem_trap (vf_state *state, addr_t va);
 status_t vf_emplace_breakpoint(vf_paddr_record *paddr_record);

@@ -710,6 +710,62 @@ done:
 	return status;
 }
 
+static bool
+vf_find_trampoline_addr (vf_state *state)
+{
+	bool status = false;
+	status_t vmi_status;
+	addr_t lstar = 0;
+	uint8_t code[VF_PAGE_SIZE] = {0}; /* Assume CALL is within first page. */
+
+	/* LSTAR should be the constant across all VCPUs */
+	vmi_status = vmi_get_vcpureg(state->vmi, &lstar, MSR_LSTAR, 0);
+	if (VMI_SUCCESS != vmi_status) {
+		fprintf(stderr, "failed to get MSR_LSTAR address\n");
+		goto done;
+	}
+
+	addr_t lstar_p = vmi_translate_kv2p(state->vmi, lstar);
+	if (0 == lstar_p) {
+		fprintf(stderr, "failed to translate virtual LSTAR to physical address");
+		goto done;
+	}
+
+	/* Read kernel instructions into code. */
+	vmi_status = vmi_read_pa(state->vmi, lstar_p,
+	                     code, sizeof(code));
+	if (vmi_status < VF_PAGE_SIZE) {
+		fprintf(stderr, "failed to read instructions from 0x%lx.\n", lstar_p);
+		goto done;
+	}
+
+	for (int curr_inst = 0; curr_inst < VF_PAGE_SIZE; curr_inst++) {
+		if (code[curr_inst] != VF_BREAKPOINT_INST) {
+			continue;
+		}
+
+		trampoline_addr = lstar + curr_inst;
+		goto done;
+	}
+
+	fprintf(stderr, "could not find valid trampoline address; defaulting to [LSTAR-1]\n");
+
+	trampoline_addr = lstar - 1;
+
+	vmi_status = vmi_write_8_pa(state->vmi, vmi_translate_kv2p(state->vmi, trampoline_addr), &VF_BREAKPOINT_INST);
+
+	if (VMI_SUCCESS != vmi_status) {
+		trampoline_addr = 0;
+		fprintf(stderr, "failed to write breakpoint for trampoline\n");
+		goto done;
+	}
+
+	status = true;
+
+done:
+	return status;
+}
+
 static void
 vf_close_handler (int sig)
 {
@@ -836,7 +892,7 @@ main (int argc, char **argv) {
 		goto done;
 	}
 
-	if (!os_functions->find_trampoline_addr(&state)) {
+	if (vf_find_trampoline_addr(&state)) {
 		vmi_resume_vm(vmi);
 		goto done;
 	}
