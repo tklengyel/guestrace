@@ -40,10 +40,10 @@
 /* Number of bits available for page offset. */
 #define VF_PAGE_OFFSET_BITS 12
 
-/* Default page size on our domain */
+/* Default page size on our domain. */
 #define VF_PAGE_SIZE (1 << VF_PAGE_OFFSET_BITS)
 
-/* Maximum number of VCPUs VisorFlow will support */
+/* Maximum number of VCPUs VisorFlow will support. */
 #define VF_MAX_VCPUS 16
 
 /* Intel breakpoint interrupt (INT 3) instruction. */
@@ -55,13 +55,27 @@ static uint8_t VF_BREAKPOINT_INST = 0xCC;
  */
 static int vf_interrupted = 0;
 
+/*
+ * Function pointers which allow for polymorphism; cleanly support both Linux
+ * and Windows.
+ */
 static struct os_functions *os_functions;
 
-//vf_paddr_record *sysret_trap;
-addr_t sysret_addr;
+/*
+ * Two addresses relevant to type-two breakpoints, which capture system call
+ * returns:
+ *
+ * return_point_addr stores the return point immediately after the jump-table
+ * call in the system-call handler. Following a type-one breakpoint, we hijack
+ * the stack so that the particular system-call routine returns to our type-
+ * two breakpoint. return_point_addr allows us to remember where the control
+ * flow should continue after servicing this breakpoint. (We restore the
+ * proper control flow by writing to RIP after servicing a type-two breakpoint.
+ *
+ * trampoline_addr is the address of the type-two breakpoint.
+ */
+addr_t return_point_addr;
 addr_t trampoline_addr;
-
-vf_paddr_record *sysret_trap;
 
 /*
  * Set up Xen logging and initialize the vf_state object to interact with Xen.
@@ -136,7 +150,7 @@ vf_restore_return_address(gpointer value, gpointer data)
 	addr_t pa = vmi_translate_kv2p(state->vmi, ret_loc);
 
 	/* todo: error checking */
-	vmi_write_64_pa(state->vmi, pa, &sysret_addr);
+	vmi_write_64_pa(state->vmi, pa, &return_point_addr);
 }
 
 /* Tear down the Xen facilities set up by vf_init_state(). */
@@ -544,28 +558,23 @@ static event_response_t
 vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	status_t status = VMI_EVENT_RESPONSE_NONE;
 
-	vf_paddr_record *paddr_record
-		= vf_paddr_record_from_va(event->data, event->interrupt_event.gla);
-
-	/* If paddr_record is null, we assume we didn't emplace interrupt. */
-	if (NULL == paddr_record) {
-		event->interrupt_event.reinject = 1;
-		/* TODO: Ensure this does the right thing: */
-		status = VMI_EVENT_RESPONSE_EMULATE;
-		goto done;
-	}
-
 	vf_state *state = event->data;
 	event->interrupt_event.reinject = 0;
 
-	if (sysret_trap == paddr_record) {
-		os_functions->print_sysret(vmi, event);
+	if (event->interrupt_event.gla != trampoline_addr) {
+		/* Type-one breakpoint. */
 
-		vmi_set_vcpureg(vmi, sysret_addr, RIP, event->vcpu_id);
+		vf_paddr_record *paddr_record
+			= vf_paddr_record_from_va(event->data, event->interrupt_event.gla);
 
-		g_ptr_array_remove_fast(state->vf_ret_addr_mapping,
-		                        GSIZE_TO_POINTER(event->x86_regs->rsp - 8));
-	} else {
+		/* If paddr_record is null, we assume we didn't emplace interrupt. */
+		if (NULL == paddr_record) {
+			event->interrupt_event.reinject = 1;
+			/* TODO: Ensure this does the right thing: */
+			status = VMI_EVENT_RESPONSE_EMULATE;
+			goto done;
+		}
+
 		addr_t ret_loc = vmi_translate_kv2p(vmi, event->x86_regs->rsp);
 
 		addr_t ret_addr;
@@ -577,7 +586,7 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		 * we're confident nothing else will call a system call stub
 		 */
 
-		if (ret_addr == sysret_addr) {
+		if (ret_addr == return_point_addr) {
 			os_functions->print_syscall(vmi, event, paddr_record);
 			vmi_write_64_pa(vmi, ret_loc, &trampoline_addr);
 			g_ptr_array_add(state->vf_ret_addr_mapping,
@@ -590,7 +599,15 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		/* Turn on single-step and switch slat_id. */
 		status = VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
 		       | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
+	} else {
+		/* Type-two breakpoint. */
 
+		os_functions->print_sysret(vmi, event);
+
+		vmi_set_vcpureg(vmi, return_point_addr, RIP, event->vcpu_id);
+
+		g_ptr_array_remove_fast(state->vf_ret_addr_mapping,
+		                        GSIZE_TO_POINTER(event->x86_regs->rsp - 8));
 	}
 
 done:
@@ -683,23 +700,6 @@ vf_set_up_step_events (vf_state *state)
 			        vcpu);
 			goto done;
 		}
-	}
-
-	status = true;
-
-done:
-	return status;
-}
-
-static bool
-vf_create_trampoline (vf_state *state)
-{
-	bool status = false;
-
-	sysret_trap = vf_setup_mem_trap(state, trampoline_addr);
-	if (NULL == sysret_trap) {
-		fprintf(stderr, "failed to create sysret trap\n");
-		goto done;
 	}
 
 	status = true;
@@ -829,17 +829,12 @@ main (int argc, char **argv) {
 		goto done;
 	}
 
-	if (!os_functions->find_sysret_addr(&state)) {
+	if (!os_functions->find_return_point_addr(&state)) {
 		vmi_resume_vm(vmi);
 		goto done;
 	}
 
 	if (!os_functions->find_trampoline_addr(&state)) {
-		vmi_resume_vm(vmi);
-		goto done;
-	}
-
-	if (!vf_create_trampoline(&state)) {
 		vmi_resume_vm(vmi);
 		goto done;
 	}

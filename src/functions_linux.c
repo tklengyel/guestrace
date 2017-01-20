@@ -10,12 +10,12 @@
 #include "generated_linux.h"
 
 struct os_functions os_functions_linux = {
-	.print_syscall         = vf_linux_print_syscall,
-	.print_sysret          = vf_linux_print_sysret,
+	.print_syscall          = vf_linux_print_syscall,
+	.print_sysret           = vf_linux_print_sysret,
 	.find_syscalls_and_setup_mem_traps \
-	                       = vf_linux_find_syscalls_and_setup_mem_traps,
-	.find_sysret_addr      = vf_linux_find_sysret_addr,
-	.find_trampoline_addr = vf_linux_find_trampoline_addr
+	                        = vf_linux_find_syscalls_and_setup_mem_traps,
+	.find_return_point_addr = vf_linux_find_return_point_addr,
+	.find_trampoline_addr   = vf_linux_find_trampoline_addr
 };
 
 bool
@@ -33,7 +33,7 @@ vf_linux_find_syscalls_and_setup_mem_traps(vf_state *state)
  * We find the address of the CALL instruction by disassembling the kernel core.
  */
 bool
-vf_linux_find_sysret_addr(vf_state *state)
+vf_linux_find_return_point_addr(vf_state *state)
 {
 	csh handle;
 	cs_insn *inst;
@@ -96,7 +96,7 @@ vf_linux_find_sysret_addr(vf_state *state)
 
 	cs_close(&handle);
 
-	sysret_addr = lstar + call_offset;
+	return_point_addr = lstar + call_offset;
 
 	status = VMI_SUCCESS;
 
