@@ -69,7 +69,7 @@ static struct os_functions *os_functions;
  * call in the system-call handler. Following a type-one breakpoint, we hijack
  * the stack so that the particular system-call routine returns to our type-
  * two breakpoint. return_point_addr allows us to remember where the control
- * flow should continue after servicing this breakpoint. (We restore the
+ * flow should continue after servicing this breakpoint. We restore the
  * proper control flow by writing to RIP after servicing a type-two breakpoint.
  *
  * trampoline_addr is the address of the type-two breakpoint.
