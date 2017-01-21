@@ -7,6 +7,8 @@
 
 #include "functions_windows.h"
 
+static const int RETURN_ADDR_WIDTH = sizeof(void *);
+
 struct os_functions os_functions_windows = {
         .print_syscall          = vf_windows_print_syscall,
         .print_sysret           = vf_windows_print_sysret,
@@ -681,7 +683,7 @@ vf_windows_print_sysret(vmi_instance_t vmi,
 
 	char * proc_name = get_process_name(vmi, pid);
 
-	fprintf(stderr, "pid: %d (%s) thread: 0x%lx return: 0x%lx\n", pid, proc_name, event->x86_regs->rsp - 8, event->x86_regs->rax);
+	fprintf(stderr, "pid: %d (%s) thread: 0x%lx return: 0x%lx\n", pid, proc_name, event->x86_regs->rsp - RETURN_ADDR_WIDTH, event->x86_regs->rax);
 }
 
 /*

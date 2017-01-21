@@ -1,4 +1,4 @@
-/* Generated on Linux_4.9.3-200.fc25.x86_64 on 20 Jan 2017 11:58:41*/
+/* Generated on Linux_4.9.3-200.fc25.x86_64 on 21 Jan 2017 13:31:33*/
 
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
@@ -8,6 +8,8 @@
 #include <inttypes.h>
 
 #include "generated_linux.h"
+
+static const int RETURN_ADDR_WIDTH = sizeof(void *);
 
 static char *
 get_proc_name(vmi_instance_t vmi, vmi_pid_t pid) 
@@ -3532,6 +3534,6 @@ void vf_linux_print_sysret(vmi_instance_t vmi, vmi_event_t *event) {
 	reg_t syscall_return = event->x86_regs->rax;
 	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 	reg_t rsp = event->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) return: 0x%"PRIx64"\n", pid, rsp, get_proc_name(vmi, pid), syscall_return);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) return: 0x%"PRIx64"\n", pid, rsp - RETURN_ADDR_WIDTH, get_proc_name(vmi, pid), syscall_return);
 }
 

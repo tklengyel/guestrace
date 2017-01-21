@@ -384,6 +384,8 @@ def create_struct_c(syscall_map, syscall_order, kernel_info):
 
 #include "generated_linux.h"
 
+static const int RETURN_ADDR_WIDTH = sizeof(void *);
+
 static char *
 get_proc_name(vmi_instance_t vmi, vmi_pid_t pid) 
 {
@@ -487,7 +489,7 @@ done:
 	reg_t syscall_return = event->x86_regs->rax;
 	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 	reg_t rsp = event->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) return: 0x%"PRIx64"\\n", pid, rsp, get_proc_name(vmi, pid), syscall_return);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) return: 0x%"PRIx64"\\n", pid, rsp - RETURN_ADDR_WIDTH, get_proc_name(vmi, pid), syscall_return);
 }
 
 """
