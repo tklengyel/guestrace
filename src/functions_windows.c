@@ -684,8 +684,6 @@ vf_windows_print_sysret(vmi_instance_t vmi,
 	fprintf(stderr, "pid: %d (%s) thread: 0x%lx return: 0x%lx\n", pid, proc_name, event->x86_regs->rsp - 8, event->x86_regs->rax);
 }
 
-#define countof(array) (sizeof(array) / sizeof((array)[0]))
-
 /*
  * For each of the system calls libvmi is interested in, establish a memory trap
  * on the page containing the system call handler's first instruction. An
