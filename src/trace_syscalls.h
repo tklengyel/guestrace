@@ -71,8 +71,6 @@ struct os_functions {
 };
 
 vf_paddr_record *vf_setup_mem_trap (vf_state *state, addr_t va);
-status_t vf_emplace_breakpoint(vf_paddr_record *paddr_record);
-status_t vf_remove_breakpoint(vf_paddr_record *paddr_record);
 bool vf_find_syscalls_and_setup_mem_traps(vf_state *state,
                                           const struct syscall_defs syscalls[],
                                           const char *traced_syscalls[]);

@@ -237,6 +237,32 @@ done:
 	return gfn;
 }
 
+/*
+ * Remove the breakpoint associated with paddr_record.
+ */
+static status_t
+vf_remove_breakpoint(vf_paddr_record *paddr_record) {
+	uint8_t curr_inst;
+	status_t status    = VMI_FAILURE;
+	addr_t shadow_page = paddr_record->parent->shadow_page;
+	addr_t frame       = paddr_record->parent->frame;
+	addr_t offset      = paddr_record->offset;
+
+	status = vmi_read_8_pa(paddr_record->parent->state->vmi,
+	                      (frame << VF_PAGE_OFFSET_BITS) + offset,
+	                      &curr_inst);
+	if (VMI_SUCCESS != status) {
+		goto done;
+	}
+
+	status = vmi_write_8_pa(paddr_record->parent->state->vmi,
+	                       (shadow_page << VF_PAGE_OFFSET_BITS) + offset,
+	                       &curr_inst);
+
+done:
+	return status;
+}
+
 static void
 vf_destroy_paddr_record (gpointer data) {
 	vf_paddr_record *paddr_record = data;
@@ -419,45 +445,6 @@ vf_setup_mem_trap (vf_state *state, addr_t va)
 done:
 	/* TODO: Should undo state (e.g., remove from hash tables) on error */
 	return paddr_record;
-}
-
-/*
- * Emplace the breakpoint associated with paddr_record.
- */
-status_t
-vf_emplace_breakpoint(vf_paddr_record *paddr_record) {
-	addr_t shadow_page = paddr_record->parent->shadow_page;
-	addr_t offset      = paddr_record->offset;
-
-	return vmi_write_8_pa(paddr_record->parent->state->vmi,
-	                     (shadow_page << VF_PAGE_OFFSET_BITS) + offset,
-	                     &VF_BREAKPOINT_INST);
-}
-
-/*
- * Remove the breakpoint associated with paddr_record.
- */
-status_t
-vf_remove_breakpoint(vf_paddr_record *paddr_record) {
-	uint8_t curr_inst;
-	status_t status    = VMI_FAILURE;
-	addr_t shadow_page = paddr_record->parent->shadow_page;
-	addr_t frame       = paddr_record->parent->frame;
-	addr_t offset      = paddr_record->offset;
-
-	status = vmi_read_8_pa(paddr_record->parent->state->vmi,
-	                      (frame << VF_PAGE_OFFSET_BITS) + offset,
-	                      &curr_inst);
-	if (VMI_SUCCESS != status) {
-		goto done;
-	}
-
-	status = vmi_write_8_pa(paddr_record->parent->state->vmi,
-	                       (shadow_page << VF_PAGE_OFFSET_BITS) + offset,
-	                       &curr_inst);
-
-done:
-	return status;
 }
 
 bool
