@@ -730,22 +730,11 @@ vf_find_trampoline_addr (vf_state *state)
 		}
 
 		trampoline_addr = lstar + curr_inst;
+		status = true;
 		goto done;
 	}
 
-	fprintf(stderr, "could not find valid trampoline address; defaulting to [LSTAR-1]\n");
-
-	trampoline_addr = lstar - 1;
-
-	vmi_status = vmi_write_8_pa(state->vmi, vmi_translate_kv2p(state->vmi, trampoline_addr), &VF_BREAKPOINT_INST);
-
-	if (VMI_SUCCESS != vmi_status) {
-		trampoline_addr = 0;
-		fprintf(stderr, "failed to write breakpoint for trampoline\n");
-		goto done;
-	}
-
-	status = true;
+	fprintf(stderr, "could not find address of existing int 3 instruction\n");
 
 done:
 	return status;
@@ -872,7 +861,7 @@ main (int argc, char **argv) {
 		goto done;
 	}
 
-	if (vf_find_trampoline_addr(&state)) {
+	if (!vf_find_trampoline_addr(&state)) {
 		vmi_resume_vm(vmi);
 		goto done;
 	}
