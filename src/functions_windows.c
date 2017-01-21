@@ -4,6 +4,7 @@
 #include <libvmi/events.h>
 #include <inttypes.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "functions_windows.h"
 
