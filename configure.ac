@@ -31,17 +31,6 @@ AC_SUBST(LIBVMI_LIBS)
 
 AC_DEFINE(HAVE_LIBVMI, 1, [Defined when libvmi was found])
 
-PKG_CHECK_MODULES(CAPSTONE, capstone, HAVE_CAPSTONE=yes, HAVE_CAPSTONE=no)
-
-if test "x$HAVE_CAPSTONE" = "xno"; then
-  AC_MSG_ERROR(you need capstone installed)
-fi
-
-AC_SUBST(CAPSTONE_CFLAGS)
-AC_SUBST(CAPSTONE_LIBS)
-
-AC_DEFINE(HAVE_CAPSTONE, 1, [Defined when capstone was found])
-
 PKG_CHECK_MODULES(GLIB, glib-2.0, HAVE_GLIB=yes, HAVE_GLIB=no)
 
 if test "x$HAVE_GLIB" = "xno"; then

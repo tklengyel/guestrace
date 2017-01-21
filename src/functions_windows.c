@@ -1,6 +1,5 @@
 /* Generated on Linux_4.6.7-300.fc24.x86_64 on 30 Aug 2016o 16:18:03 */
 
-#include <capstone/capstone.h>
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
 #include <inttypes.h>

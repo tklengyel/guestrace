@@ -1,4 +1,3 @@
-#include <capstone/capstone.h>
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
 #include <stdlib.h>
