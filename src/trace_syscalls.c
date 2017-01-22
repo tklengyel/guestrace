@@ -552,9 +552,10 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 
 	if (event->interrupt_event.gla != trampoline_addr) {
 		/* Type-one breakpoint. */
-
 		vf_paddr_record *paddr_record
 			= vf_paddr_record_from_va(event->data, event->interrupt_event.gla);
+
+		addr_t thread_id = event->x86_regs->rsp;
 
 		/* If paddr_record is null, we assume we didn't emplace interrupt. */
 		if (NULL == paddr_record) {
@@ -564,17 +565,22 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 			goto done;
 		}
 
-		addr_t ret_loc = vmi_translate_kv2p(vmi, event->x86_regs->rsp);
+		/* Make sure we have a unique thread so recursive calls don't kill us */
+		addr_t thread_in_use = (addr_t)g_hash_table_lookup(state->vf_ret_addr_mapping,
+		                                                   GSIZE_TO_POINTER(thread_id));
 
-		addr_t ret_addr;
-		vmi_read_64_pa(vmi, ret_loc, &ret_addr);
+		if (0 == thread_in_use) {
+			addr_t ret_loc = vmi_translate_kv2p(vmi, thread_id);
 
-
-		os_functions->print_syscall(vmi, event, paddr_record);
-		vmi_write_64_pa(vmi, ret_loc, &trampoline_addr);
-		g_hash_table_insert(state->vf_ret_addr_mapping,
-		                    GSIZE_TO_POINTER(event->x86_regs->rsp),
-		                    GSIZE_TO_POINTER(ret_addr));
+			addr_t ret_addr;
+			vmi_read_64_pa(vmi, ret_loc, &ret_addr);
+			
+			os_functions->print_syscall(vmi, event, paddr_record);
+			vmi_write_64_pa(vmi, ret_loc, &trampoline_addr);
+			g_hash_table_insert(state->vf_ret_addr_mapping,
+			                    GSIZE_TO_POINTER(thread_id),
+			                    GSIZE_TO_POINTER(ret_addr));
+		}
 
 		/* Set VCPUs SLAT to use original for one step. */
 		event->slat_id = 0;
