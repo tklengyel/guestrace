@@ -1,5 +1,6 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
+	$(CAPSTONE_CFLAGS) \
 	$(GLIB_CFLAGS) \
 	$(LIBVMI_CFLAGS)
 
@@ -7,6 +8,7 @@ AM_CFLAGS = \
 	-Wall
 
 AM_LDFLAGS = \
+	$(CAPSTONE_LIBS) \
 	$(GLIB_LIBS) \
 	$(LIBVMI_LIBS)
 
