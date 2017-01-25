@@ -1,3 +1,4 @@
+#include <capstone/capstone.h>
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
 #include <libvmi/libvmi_extra.h>
@@ -74,7 +75,9 @@ static struct os_functions *os_functions;
  *
  * trampoline_addr is the address of the type-two breakpoint.
  */
+addr_t return_point_addr;
 addr_t trampoline_addr;
+
 
 /*
  * Initialize the vf_state object to interact with Xen. Notably, we create the
@@ -145,16 +148,15 @@ done:
  * system-call return.
  */
 static void
-vf_restore_return_addr(gpointer key, gpointer value, gpointer user_data)
+vf_restore_return_addr(gpointer value, gpointer user_data)
 {
 	status_t status;
-	addr_t ret_loc      = GPOINTER_TO_SIZE(key);
-	addr_t orig_ret     = GPOINTER_TO_SIZE(value);
-	vf_state *state     = user_data;
+	addr_t va       = GPOINTER_TO_SIZE(value);
+	vf_state *state = user_data;
 
-	addr_t pa = vmi_translate_kv2p(state->vmi, ret_loc);
+	addr_t pa = vmi_translate_kv2p(state->vmi, va);
 
-	status = vmi_write_64_pa(state->vmi, pa, &orig_ret);
+	status = vmi_write_64_pa(state->vmi, pa, &return_point_addr);
 	if (VMI_SUCCESS != status) {
 		fprintf(stderr, "error restoring stack; guest will likely fail\n");
 	}
@@ -169,9 +171,9 @@ vf_teardown_state(vf_state *state)
 	g_hash_table_destroy(state->vf_page_record_collection);
 	g_hash_table_destroy(state->vf_page_translation);
 
-	g_hash_table_foreach(state->vf_ret_addr_mapping, vf_restore_return_addr, state);
+	g_ptr_array_foreach(state->vf_ret_addr_mapping, vf_restore_return_addr, state);
 
-	g_hash_table_destroy(state->vf_ret_addr_mapping);
+	g_ptr_array_free(state->vf_ret_addr_mapping, false);
 
 	status = xc_altp2m_switch_to_view(state->xch, state->domid, 0);
 	if (0 > status) {
@@ -454,6 +456,9 @@ vf_find_syscalls_and_setup_mem_traps(vf_state *state,
 {
 	bool status = false;
 
+	/* this might take a while */
+	fprintf(stderr, "Finding and creating syscall traps...\n");
+
 	for (int i = 0; syscalls[i].name; i++) {
 		for (int j = 0; traced_syscalls[j]; j++) {
 			addr_t sysaddr;
@@ -486,6 +491,8 @@ vf_find_syscalls_and_setup_mem_traps(vf_state *state,
 			break;
 		}
 	}
+
+	fprintf(stderr, "Finished finding and creating syscall traps\n");
 
 	status = true;
 
@@ -555,8 +562,6 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		vf_paddr_record *paddr_record
 			= vf_paddr_record_from_va(event->data, event->interrupt_event.gla);
 
-		addr_t thread_id = event->x86_regs->rsp;
-
 		/* If paddr_record is null, we assume we didn't emplace interrupt. */
 		if (NULL == paddr_record) {
 			event->interrupt_event.reinject = 1;
@@ -565,21 +570,17 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 			goto done;
 		}
 
-		/* Make sure we have a unique thread so recursive calls don't kill us */
-		addr_t thread_in_use = (addr_t)g_hash_table_lookup(state->vf_ret_addr_mapping,
-		                                                   GSIZE_TO_POINTER(thread_id));
+		addr_t thread_id = event->x86_regs->rsp;
+		addr_t ret_loc = vmi_translate_kv2p(vmi, thread_id);
 
-		if (0 == thread_in_use) {
-			addr_t ret_loc = vmi_translate_kv2p(vmi, thread_id);
+		addr_t ret_addr;
+		vmi_read_64_pa(vmi, ret_loc, &ret_addr);
 
-			addr_t ret_addr;
-			vmi_read_64_pa(vmi, ret_loc, &ret_addr);
-			
+		if (ret_addr == return_point_addr) {
 			os_functions->print_syscall(vmi, event, paddr_record);
 			vmi_write_64_pa(vmi, ret_loc, &trampoline_addr);
-			g_hash_table_insert(state->vf_ret_addr_mapping,
-			                    GSIZE_TO_POINTER(thread_id),
-			                    GSIZE_TO_POINTER(ret_addr));
+			g_ptr_array_add(state->vf_ret_addr_mapping,
+		                    GSIZE_TO_POINTER(thread_id));
 		}
 
 		/* Set VCPUs SLAT to use original for one step. */
@@ -593,14 +594,10 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 
 		os_functions->print_sysret(vmi, event);
 
-		/* todo: make sure it exists in here */
-		addr_t ret_addr = (addr_t)g_hash_table_lookup(state->vf_ret_addr_mapping,
-		                                      GSIZE_TO_POINTER(event->x86_regs->rsp - 8));
+		vmi_set_vcpureg(vmi, return_point_addr, RIP, event->vcpu_id);
 
-		g_hash_table_remove(state->vf_ret_addr_mapping,
-		                    GSIZE_TO_POINTER(event->x86_regs->rsp - 8));
-
-		vmi_set_vcpureg(vmi, ret_addr, RIP, event->vcpu_id);
+		g_ptr_array_remove_fast(state->vf_ret_addr_mapping,
+		                        GSIZE_TO_POINTER(event->x86_regs->rsp - 8));
 	}
 
 done:
@@ -659,6 +656,69 @@ vf_singlestep_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	/* Turn off single-step and switch slat_id. */
 	return VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
 	     | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
+}
+
+/*
+ * Disassemble a page of memory beginning at <start> until
+ * finding the correct mnemonic and op_str, returning the next address
+ * Note: op_str is be optional
+ */
+addr_t
+vf_find_addr_after_instruction (vf_state *state, addr_t start_v, char *mnemonic, char *op_str)
+{
+	csh handle;
+	cs_insn *inst;
+	size_t count, offset = ~0;
+	addr_t ret = 0;
+	uint8_t code[VF_PAGE_SIZE];
+
+	addr_t start_p = vmi_translate_kv2p(state->vmi, start_v);
+	if (0 == start_p) {
+		fprintf(stderr, "failed to translate virtual start address to physical address\n");
+		goto done;
+	}
+
+	/* Read kernel instructions into code. */
+	status_t status = vmi_read_pa(state->vmi, start_p, code, sizeof(code));
+	if (VMI_FAILURE == status) {
+		fprintf(stderr, "failed to read instructions from 0x%lx\n", start_p);
+		goto done;
+	}
+
+	if (cs_open(CS_ARCH_X86, CS_MODE_64, &handle) != CS_ERR_OK) {
+		fprintf(stderr, "failed to open capstone\n");
+		goto done;
+	}
+
+	/* Find CALL inst. and note address of inst. which follows. */
+	count = cs_disasm(handle, code, sizeof(code), 0, 0, &inst);
+	if (count > 0) {
+		size_t i;
+		for (i = 0; i < count; i++) {
+			if (0 == strcmp(inst[i].mnemonic, mnemonic)
+			 && NULL != op_str
+			 && 0 == strcmp(inst[i].op_str, op_str)) {
+				offset = inst[i + 1].address;
+				break;
+			}
+		}
+		cs_free(inst, count);
+	} else {
+		fprintf(stderr, "failed to disassemble system-call handler\n");
+		goto done;
+	}
+
+	if (~0 == offset) {
+		fprintf(stderr, "did not find call in system-call handler\n");
+		goto done;
+	}
+
+	cs_close(&handle);
+
+	ret = start_v + offset;
+
+done:
+	return ret;
 }
 
 /*
@@ -829,7 +889,7 @@ main (int argc, char **argv) {
 	                                                  NULL,
 	                                                  NULL,
 	                                                  vf_destroy_page_record);
-	state.vf_ret_addr_mapping = g_hash_table_new(NULL, NULL);
+	state.vf_ret_addr_mapping = g_ptr_array_new();
 
 	vmi_pause_vm(vmi);
 
@@ -863,6 +923,11 @@ main (int argc, char **argv) {
 	}
 
 	if (!os_functions->find_syscalls_and_setup_mem_traps(&state)) {
+		vmi_resume_vm(vmi);
+		goto done;
+	}
+
+	if (!os_functions->find_return_point_addr(&state)) {
 		vmi_resume_vm(vmi);
 		goto done;
 	}

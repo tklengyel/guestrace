@@ -1,5 +1,3 @@
-/* Generated on Linux_4.6.7-300.fc24.x86_64 on 30 Aug 2016o 16:18:03 */
-
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
 #include <inttypes.h>
@@ -11,10 +9,11 @@
 static const int RETURN_ADDR_WIDTH = sizeof(void *);
 
 struct os_functions os_functions_windows = {
-        .print_syscall          = vf_windows_print_syscall,
-        .print_sysret           = vf_windows_print_sysret,
-        .find_syscalls_and_setup_mem_traps \
-		                = vf_windows_find_syscalls_and_setup_mem_traps
+	.print_syscall          = vf_windows_print_syscall,
+	.print_sysret           = vf_windows_print_sysret,
+	.find_syscalls_and_setup_mem_traps \
+	                = vf_windows_find_syscalls_and_setup_mem_traps,
+	.find_return_point_addr = vf_windows_find_return_point_addr
 };
 
 struct win64_obj_attr {
@@ -706,4 +705,28 @@ vf_windows_find_syscalls_and_setup_mem_traps(vf_state *state)
 	return vf_find_syscalls_and_setup_mem_traps(state,
                                                     SYSCALLS,
                                                     TRACED_SYSCALLS);
+}
+
+bool
+vf_windows_find_return_point_addr(vf_state *state)
+{
+	bool status = false;
+	addr_t lstar;
+
+	status_t ret = vmi_get_vcpureg(state->vmi, &lstar, MSR_LSTAR, 0);
+	if (VMI_SUCCESS != ret) {
+		fprintf(stderr, "failed to get MSR_LSTAR address\n");
+		goto done;
+	}
+
+	return_point_addr = vf_find_addr_after_instruction(state, lstar, "call", "r10");
+	if (0 == return_point_addr) {
+		fprintf(stderr, "failed to get return pointer address\n");
+		goto done;
+	}
+
+	status = true;
+
+done:
+	return status;
 }

@@ -33,7 +33,7 @@ typedef struct vf_state {
 	GHashTable *vf_page_record_collection;
 
 	/* Contains the current mapping between [return_ptr] and our trampoline.  Used for restoring state during teardown */ 
-	GHashTable *vf_ret_addr_mapping;
+	GPtrArray *vf_ret_addr_mapping;
 
 	/* Fields used to interact directly with Xen driver. */
 	xc_interface *xch;
@@ -68,11 +68,18 @@ struct os_functions {
         void (*print_syscall) (vmi_instance_t vmi, vmi_event_t *event, vf_paddr_record *record);
         void (*print_sysret) (vmi_instance_t vmi, vmi_event_t *event);
         bool (*find_syscalls_and_setup_mem_traps) (vf_state *state);
+        bool (*find_return_point_addr) (vf_state *state);
 };
+
+extern addr_t return_point_addr;
 
 vf_paddr_record *vf_setup_mem_trap (vf_state *state, addr_t va);
 bool vf_find_syscalls_and_setup_mem_traps(vf_state *state,
                                           const struct syscall_defs syscalls[],
                                           const char *traced_syscalls[]);
+addr_t vf_find_addr_after_instruction(vf_state *state,
+                                      addr_t start_v,
+                                      char *mnemonic,
+                                      char *op_str);
 
 #endif
