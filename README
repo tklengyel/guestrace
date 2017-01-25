@@ -1,4 +1,4 @@
-On Linux DomU (monitoring target running Linux):
+For Linux DomU (monitoring target running Linux):
 
 	1. Build and run libvmi's linux-offset-finder on the Xen DomU
 	guest which you would like to monitor. See the README and source
@@ -7,18 +7,42 @@ On Linux DomU (monitoring target running Linux):
 	2. Copy the running kernel's System.map file from the DomU's
 	/boot to the Xen Dom0 guest.
 
-On Windows DomU (monitoring target running Windows):
+	3. Update /etc/libvmi.conf with the output of the linux-offset-finder
 
-	Run the windows-offset-finder utility on the Xen Dom0 guest
-	according to the instructions provided with libvmi.
+For Windows DomU (monitoring target running Windows):
 
-On Dom0 (monitor):
+	1. You must find the GUID and PDB filename of the image you plan
+	to run.  To find this,
+		
+		a. Run libvmi's dump-memory example, and save it into a file
+		b. Run ./getGUID <memory-file> from libvmi's windows-offset-tool
+		(see README for dependencies), which will output the GUID and PDB
+		filename for your image
 
-	1. Update /etc/libvmi.conf on the Xen Dom0 guest based on the
-	previous output from {linux,windows}-offset-finder and (for Linux)
-	the path to the System.map file.
+	2. Install rekall and it's dependencies
 
-	2. Add
+		$ sudo dnf install json-c json-c-devel virtualenv
+		$ virtualenv /tmp/MyEnv
+		$ source /tmp/MyEnv/bin/activate
+		$ pip install --upgrade setuptools pip wheel
+		$ pip install IPython
+		$ pip install rekall-agent
+
+	3. Run rekall to create the rekall file needed for Guestrace
+
+		$ rekall fetch_pdb --pdb_filename <PDB filename> --guid <GUID> -D
+		$ rekall parse_pdb <PDB filename> > rekall-profile.json
+
+	4. Update /etc/libvmi.conf to include your rekall configuration
+
+		<vm-name> {
+			ostype = "Windows";
+			rekall_profile = "<absolute-path-to-rekall-json-file>";
+		}
+
+For both:
+
+	1. Add
 
 		GRUB_CMDLINE_XEN_DEFAULT="altp2m=1"
 
