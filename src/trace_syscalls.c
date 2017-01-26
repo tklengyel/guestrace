@@ -601,6 +601,9 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 			fprintf(stderr, "VCPU: %d | ", event->vcpu_id);
 			os_functions->print_sysret(vmi, event, paddr_record);
 
+			/* Restore the stack before returning execution to VCPU */
+			vmi_write_64_pa(vmi, vmi_translate_kv2p(vmi, thread_id), &return_point_addr);
+
 			vmi_set_vcpureg(vmi, return_point_addr, RIP, event->vcpu_id);
 
 			g_hash_table_remove(state->vf_ret_addr_mapping,
