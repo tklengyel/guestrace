@@ -4,22 +4,28 @@ For Linux DomU (monitoring target running Linux):
 	guest which you would like to monitor. See the README and source
 	code in the libvmi source tree for how to do this.
 
-	2. Copy the running kernel's System.map file from the DomU's
+	2. Copy the running DomU kernel's System.map file from the DomU's
 	/boot to the Xen Dom0 guest.
 
-	3. Update /etc/libvmi.conf with the output of the linux-offset-finder
+	3. Update /etc/libvmi.conf with the output from
+	linux-offset-finder.
 
 For Windows DomU (monitoring target running Windows):
 
-	1. You must find the GUID and PDB filename of the image you plan
-	to run.  To find this,
-		
-		a. Run libvmi's dump-memory example, and save it into a file
-		b. Run ./getGUID <memory-file> from libvmi's windows-offset-tool
-		(see README for dependencies), which will output the GUID and PDB
-		filename for your image
+	1. First, you must find the GUID and PDB filename corresponding
+	to the image you plan to run. To find this:
 
-	2. Install rekall and it's dependencies
+		a. Run libvmi's dump-memory example, and save it into
+		a file
+
+		b. Run "./getGUID <memory-file>" from libvmi's
+		windows-offset-tool directory (see README for
+		dependencies); this will output the GUID and PDB filename
+		for your image
+
+	2. Next, install rekall and it's dependencies (this assumes a
+	DNF-based system; similar steps apply on distributions which
+	use other package managers):
 
 		$ sudo dnf install json-c json-c-devel virtualenv
 		$ virtualenv /tmp/MyEnv
@@ -28,25 +34,26 @@ For Windows DomU (monitoring target running Windows):
 		$ pip install IPython
 		$ pip install rekall-agent
 
-	3. Run rekall to create the rekall file needed for Guestrace
+	3. Run Rekall to create the Rekall file needed by guestrace:
 
 		$ rekall fetch_pdb --pdb_filename <PDB filename> --guid <GUID> -D
 		$ rekall parse_pdb <PDB filename> > rekall-profile.json
 
-	4. Update /etc/libvmi.conf to include your rekall configuration
+	4. Finally, update /etc/libvmi.conf to include your rekall
+	configuration:
 
 		<vm-name> {
 			ostype = "Windows";
 			rekall_profile = "<absolute-path-to-rekall-json-file>";
 		}
 
-For both:
+For both Linux and Windows:
 
 	1. Add
 
 		GRUB_CMDLINE_XEN_DEFAULT="altp2m=1"
 
-	to /etc/default/grub and add
+	to /etc/default/grub, and add
 
 		altp2mhvm = 1
 
