@@ -3530,7 +3530,7 @@ void vf_linux_print_syscall(vmi_instance_t vmi, vmi_event_t *event, vf_paddr_rec
 	VM_LINUX_SYSCALLS[syscall_id].print(vmi, event, pid, proc, VM_LINUX_SYSCALLS[syscall_id].name);
 }
 
-void vf_linux_print_sysret(vmi_instance_t vmi, vmi_event_t *event) {
+void vf_linux_print_sysret(vmi_instance_t vmi, vmi_event_t *event, vf_paddr_record *paddr_record) {
 	reg_t syscall_return = event->x86_regs->rax;
 	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 	reg_t rsp = event->x86_regs->rsp;

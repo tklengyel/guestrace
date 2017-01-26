@@ -673,7 +673,8 @@ vf_windows_print_syscall(vmi_instance_t vmi,
 
 void 
 vf_windows_print_sysret(vmi_instance_t vmi,
-                        vmi_event_t *event) 
+                        vmi_event_t *event,
+                        vf_paddr_record *paddr_record) 
 {
 	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 

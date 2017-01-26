@@ -148,10 +148,10 @@ done:
  * system-call return.
  */
 static void
-vf_restore_return_addr(gpointer value, gpointer user_data)
+vf_restore_return_addr(gpointer key, gpointer value, gpointer user_data)
 {
 	status_t status;
-	addr_t va       = GPOINTER_TO_SIZE(value);
+	addr_t va       = GPOINTER_TO_SIZE(key);
 	vf_state *state = user_data;
 
 	addr_t pa = vmi_translate_kv2p(state->vmi, va);
@@ -171,9 +171,9 @@ vf_teardown_state(vf_state *state)
 	g_hash_table_destroy(state->vf_page_record_collection);
 	g_hash_table_destroy(state->vf_page_translation);
 
-	g_ptr_array_foreach(state->vf_ret_addr_mapping, vf_restore_return_addr, state);
+	g_hash_table_foreach(state->vf_ret_addr_mapping, vf_restore_return_addr, state);
 
-	g_ptr_array_free(state->vf_ret_addr_mapping, false);
+	g_hash_table_destroy(state->vf_ret_addr_mapping);
 
 	status = xc_altp2m_switch_to_view(state->xch, state->domid, 0);
 	if (0 > status) {
@@ -577,10 +577,12 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		vmi_read_64_pa(vmi, ret_loc, &ret_addr);
 
 		if (ret_addr == return_point_addr) {
+			fprintf(stderr, "VCPU: %d | ", event->vcpu_id);
 			os_functions->print_syscall(vmi, event, paddr_record);
 			vmi_write_64_pa(vmi, ret_loc, &trampoline_addr);
-			g_ptr_array_add(state->vf_ret_addr_mapping,
-		                    GSIZE_TO_POINTER(thread_id));
+			g_hash_table_insert(state->vf_ret_addr_mapping,
+		                        GSIZE_TO_POINTER(thread_id),
+		                        paddr_record);
 		}
 
 		/* Set VCPUs SLAT to use original for one step. */
@@ -591,13 +593,19 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		       | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
 	} else {
 		/* Type-two breakpoint. */
+		addr_t thread_id = event->x86_regs->rsp - 8;
+		vf_paddr_record *paddr_record = g_hash_table_lookup(state->vf_ret_addr_mapping,
+		                                                    GSIZE_TO_POINTER(thread_id));
 
-		os_functions->print_sysret(vmi, event);
+		if (NULL != paddr_record) {
+			fprintf(stderr, "VCPU: %d | ", event->vcpu_id);
+			os_functions->print_sysret(vmi, event, paddr_record);
 
-		vmi_set_vcpureg(vmi, return_point_addr, RIP, event->vcpu_id);
+			vmi_set_vcpureg(vmi, return_point_addr, RIP, event->vcpu_id);
 
-		g_ptr_array_remove_fast(state->vf_ret_addr_mapping,
-		                        GSIZE_TO_POINTER(event->x86_regs->rsp - 8));
+			g_hash_table_remove(state->vf_ret_addr_mapping,
+			                    GSIZE_TO_POINTER(thread_id));
+		}
 	}
 
 done:
@@ -889,7 +897,7 @@ main (int argc, char **argv) {
 	                                                  NULL,
 	                                                  NULL,
 	                                                  vf_destroy_page_record);
-	state.vf_ret_addr_mapping = g_ptr_array_new();
+	state.vf_ret_addr_mapping = g_hash_table_new(NULL, NULL);
 
 	vmi_pause_vm(vmi);
 
