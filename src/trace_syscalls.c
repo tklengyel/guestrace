@@ -672,7 +672,7 @@ vf_singlestep_cb(vmi_instance_t vmi, vmi_event_t *event) {
  * Note: op_str is be optional
  */
 addr_t
-vf_find_addr_after_instruction (vf_state *state, addr_t start_v, char *mnemonic, char *op_str)
+vf_find_addr_after_instruction (vf_state *state, addr_t start_v, char *mnemonic, char *ops)
 {
 	csh handle;
 	cs_insn *inst;
@@ -704,8 +704,7 @@ vf_find_addr_after_instruction (vf_state *state, addr_t start_v, char *mnemonic,
 		size_t i;
 		for (i = 0; i < count; i++) {
 			if (0 == strcmp(inst[i].mnemonic, mnemonic)
-			 && NULL != op_str
-			 && 0 == strcmp(inst[i].op_str, op_str)) {
+			 && (NULL == ops || 0 == strcmp(inst[i].op_str, ops))) {
 				offset = inst[i + 1].address;
 				break;
 			}

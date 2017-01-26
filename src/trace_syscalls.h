@@ -80,6 +80,6 @@ bool vf_find_syscalls_and_setup_mem_traps(vf_state *state,
 addr_t vf_find_addr_after_instruction(vf_state *state,
                                       addr_t start_v,
                                       char *mnemonic,
-                                      char *op_str);
+                                      char *ops);
 
 #endif
