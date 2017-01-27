@@ -52,7 +52,7 @@ static uint8_t VF_BREAKPOINT_INST = 0xCC;
  * Handle terminating signals by setting interrupted flag. This allows
  * a graceful exit.
  */
-static gboolean vf_interrupted = FALSE;
+static gboolean gt_interrupted = FALSE;
 
 /*
  * Restore a stack return pointer; useful to ensure the kernel continues to
@@ -605,7 +605,7 @@ done:
  */
 void gt_loop_run(GTLoop *loop)
 {
-	while(!vf_interrupted){
+	while(!gt_interrupted){
 		status_t status = vmi_events_listen(loop->vmi, 500);
 		if (status != VMI_SUCCESS) {
 			fprintf(stderr, "error waiting for events\n");
@@ -627,7 +627,7 @@ void gt_loop_quit(GTLoop *loop)
 		vf_teardown(loop);
 	}
 
-	vf_interrupted = TRUE;
+	gt_interrupted = TRUE;
 }
 
 /* Allocate a new page of memory in the guest's address space. */
