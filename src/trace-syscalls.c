@@ -372,8 +372,7 @@ done:
  * gt_loop_new:
  * @guest_name: the name of a running guest virtual machine.
  *
- * Creates a new #GTLoop structure and uses libvmi to complete the preparations
- * necessary to trace a guest's system calls.
+ * Creates a new #GTLoop structure.
  *
  * Returns: a new #GTLoop.
  **/
@@ -538,7 +537,8 @@ done:
  * gt_loop_run:
  * @loop: a #GTLoop.
  *
- * Runs @loop until gt_loop_quit() is called on @loop.
+ * Uses libvmi to complete the preparations necessary to trace a guest's system
+ * calls. Runs @loop until gt_loop_quit() is called on @loop.
  */
 void gt_loop_run(GTLoop *loop)
 {
@@ -629,7 +629,9 @@ void gt_loop_quit(GTLoop *loop)
  * gt_loop_free:
  * @loop: a #GTLoop.
  *
- * Free @loop and its associated memory.
+ * Free @loop and its associated memory. If the loop is currently running, then
+ * gt_loop_quit() must first terminate the loop and remove the guest
+ * instrumentation.
  */
 void gt_loop_free(GTLoop *loop)
 {
