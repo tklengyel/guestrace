@@ -358,7 +358,7 @@ def create_struct_h(syscall_map, syscall_order, kernel_info):
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
 
-#include "trace_syscalls.h"
+#include "guestrace.h"
 
 extern const char *VM_LINUX_TRACED_SYSCALLS[];
 extern const struct syscall_defs VM_LINUX_SYSCALLS[];
@@ -366,8 +366,8 @@ extern const struct syscall_defs VM_LINUX_SYSCALLS[];
 #endif
 """
 
-    # write all the functions to generated_linux.c
-    f = open("generated_linux.h", "w+")
+    # write all the functions to generated-linux.c
+    f = open("generated-linux.h", "w+")
     f.write(str)
     f.close
 
@@ -382,7 +382,7 @@ def create_struct_c(syscall_map, syscall_order, kernel_info):
 #include <stdio.h>
 #include <inttypes.h>
 
-#include "generated_linux.h"
+#include "generated-linux.h"
 
 static const int RETURN_ADDR_WIDTH = sizeof(void *);
 
@@ -481,8 +481,8 @@ done:
 };
 """
 
-    # write all the functions to generated_linux.c
-    f = open("generated_linux.c", "w+")
+    # write all the functions to generated-linux.c
+    f = open("generated-linux.c", "w+")
     f.write(str)
     f.close
 
@@ -537,7 +537,7 @@ def main(get_kernel_source):
     is running on, parses Linux source files for syscall prototypes, parses the
     prototypes to generate a complete object which holds a syscall name number and
     all information about its arguments and using this data generates two C files
-    for use with trace_syscalls."""
+    for use with guestrace."""
     print "Getting kernel info!"
     kernel_info = get_kernel_info(get_kernel_source)
 
@@ -554,7 +554,7 @@ def main(get_kernel_source):
     else:
         print "Skipped functions invloving the linux source headers!"
 
-    print "Generating generated_linux.c!"
+    print "Generating generated-linux.c!"
     create_struct_h(syscall_map, syscall_order, kernel_info)
     create_struct_c(syscall_map, syscall_order, kernel_info)
 

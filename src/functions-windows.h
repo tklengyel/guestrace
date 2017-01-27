@@ -1,7 +1,7 @@
 #ifndef FUNCTIONS_WINDOWS_H
 #define FUNCTIONS_WINDOWS_H
 
-#include "trace_syscalls.h"
+#include "guestrace.h"
 
 extern struct os_functions os_functions_windows;
 

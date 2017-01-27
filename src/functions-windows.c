@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "trace_syscalls_private.h"
-#include "functions_windows.h"
+#include "guestrace-private.h"
+#include "functions-windows.h"
 
 static const int RETURN_ADDR_WIDTH = sizeof(void *);
 

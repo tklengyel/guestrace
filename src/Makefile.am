@@ -1,3 +1,8 @@
+bin_PROGRAMS = \
+	guestrace
+
+lib_LTLIBRARIES = libguestrace-0.0.la
+
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	$(CAPSTONE_CFLAGS) \
@@ -12,18 +17,25 @@ AM_LDFLAGS = \
 	$(GLIB_LIBS) \
 	$(LIBVMI_LIBS)
 
-bin_PROGRAMS = \
-	guestrace
+libguestrace_0_0_la_SOURCES = \
+	trace-syscalls.c
+
+libguestraceincludedir = \
+	$(includedir)/guestrace-@API_VERSION@/guestrace
+
+libguestraceinclude_HEADERS = \
+	guestrace.h \
+	guestrace-private.h
 
 guestrace_SOURCES = \
 	guestrace.c \
-	functions_linux.c \
-	functions_windows.c \
-	generated_linux.c \
-	trace_syscalls.c
+	functions-linux.c \
+	functions-windows.c \
+	generated-linux.c
+
+guestrace_LDADD = \
+	libguestrace-0.0.la
 
 noinst_HEADERS = \
-	functions_linux.h \
-	functions_windows.h \
-	trace_syscalls.h \
-	trace_syscalls_private.h
+	functions-linux.h \
+	functions-windows.h

@@ -1,7 +1,7 @@
 #ifndef FUNCTIONS_LINUX_H
 #define FUNCTIONS_LINUX_H
 
-#include "trace_syscalls.h"
+#include "guestrace.h"
 
 extern struct os_functions os_functions_linux;
 

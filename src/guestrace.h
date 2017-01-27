@@ -1,5 +1,5 @@
-#ifndef TRACE_SYSCALLS_H
-#define TRACE_SYSCALLS_H
+#ifndef GUESTRACE_H
+#define GUESTRACE_H
 
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>

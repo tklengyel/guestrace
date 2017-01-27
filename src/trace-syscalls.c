@@ -8,10 +8,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "trace_syscalls.h"
-#include "trace_syscalls_private.h"
-#include "functions_linux.h"
-#include "functions_windows.h"
+#include "guestrace.h"
+#include "guestrace-private.h"
+#include "functions-linux.h"
+#include "functions-windows.h"
 
 /* This code relies on Xen's interface to Second Level Address Translation,
  * or SLAT. See:

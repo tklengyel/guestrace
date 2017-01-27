@@ -1,11 +1,11 @@
-#ifndef TRACE_SYSCALLS_PRIVATE_H
-#define TRACE_SYSCALLS_PRIVATE_H
+#ifndef GUESTRACE_PRIVATE_H
+#define GUESTRACE_PRIVATE_H
 
 #include <glib.h>
 #include <libxl.h>
 #include <xenctrl.h>
 
-#include "trace_syscalls.h"
+#include "guestrace.h"
 
 /* Maximum number of VCPUs VisorFlow will support. */
 #define VF_MAX_VCPUS 16

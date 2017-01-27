@@ -1,4 +1,4 @@
-/* Generated on Linux_4.9.3-200.fc25.x86_64 on 27 Jan 2017 00:21:07*/
+/* Generated on Linux_4.9.3-200.fc25.x86_64 on 27 Jan 2017 01:20:20*/
 
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <inttypes.h>
 
-#include "generated_linux.h"
+#include "generated-linux.h"
 
 static const int RETURN_ADDR_WIDTH = sizeof(void *);
 

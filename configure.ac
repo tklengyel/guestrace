@@ -1,4 +1,4 @@
-AC_INIT(src/trace_syscalls.c)
+AC_INIT(src/guestrace.c)
 
 MAJOR_VERSION=0
 MINOR_VERSION=0

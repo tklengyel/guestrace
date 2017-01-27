@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <signal.h>
 #include <stdlib.h>
-#include <trace_syscalls.h>
+#include <guestrace.h>
 
-#include "functions_windows.h"
-#include "functions_linux.h"
+#include "functions-windows.h"
+#include "functions-linux.h"
 
 GTLoop *loop = NULL;
 

@@ -5,9 +5,9 @@
 #include <stdio.h>
 #include <inttypes.h>
 
-#include "trace_syscalls_private.h"
-#include "functions_linux.h"
-#include "generated_linux.h"
+#include "guestrace-private.h"
+#include "functions-linux.h"
+#include "generated-linux.h"
 
 struct os_functions os_functions_linux = {
 	.find_syscalls_and_setup_mem_traps \
