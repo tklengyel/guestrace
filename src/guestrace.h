@@ -25,11 +25,11 @@ typedef struct vf_page_record {
 typedef struct vf_paddr_record vf_paddr_record;
 
 typedef struct GTSyscallData {
-  vf_paddr_record   *syscall_trap;
-  vmi_instance_t     vmi;
-  vmi_event_t       *event;
-  vmi_pid_t          pid;
-  void              *data;
+	vf_paddr_record   *syscall_trap;
+	vmi_instance_t     vmi;
+	vmi_event_t       *event;
+	vmi_pid_t          pid;
+	void              *data;
 } GTSyscallData;
 
 /**
