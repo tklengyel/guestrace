@@ -1,83 +1,86 @@
 #ifndef TRACE_SYSCALLS_H
 #define TRACE_SYSCALLS_H
 
+#include <libvmi/libvmi.h>
+#include <libvmi/events.h>
 #include <glib.h>
 #include <libxl.h>
 #include <xenctrl.h>
 
-/* Collection of global state for callbacks.
+/**
+ * GTLoop
  *
- * Guestrace maintains three collections:
- *
- * The first collection (vf_page_translation) contains a mapping from
- * frame numbers to shadow page numbers. Given a frame, this will translate
- * it into a shadow page if one exists. TODO: the code has changed since
- * the original inception in my mind, so we might be able to delete this
- * without negative consequences
- *
- * The second collection (vf_page_record_collection) contains a
- * mapping from shadow page numbers to vf_page_record structures. This
- * serves as a record of the guest pages for which guestrace installed a
- * memory event. When the guest accesses such a page, control traps into
- * guestrace. The most notable field in vf_page_record is children; this
- * field points to the third collection.
- *
- * The third collection (each vf_page_record's children field) contains a
- * mapping from physical address offsets to vf_paddr_record structures.
- * This serves as a record for each breakpoint that guestrace sets within a
- * page.
+ * The `GTLoop` struct is an opaque data type
+ * representing the main event loop of a guestrace application.
  */
-typedef struct vf_state {
-	/* Fields used with libvmi. */
-	GHashTable *vf_page_translation;
-	GHashTable *vf_page_record_collection;
-
-	/* Contains the current mapping between a thread return ptr and vf_paddr_record */ 
-	GHashTable *vf_ret_addr_mapping;
-
-	/* Fields used to interact directly with Xen driver. */
-	xc_interface *xch;
-	libxl_ctx *ctx;
-	uint32_t domid;
-	uint64_t init_mem_size;
-	uint64_t curr_mem_size;
-	vmi_instance_t vmi;
-	uint16_t shadow_view;
-} vf_state;
+typedef struct _GTLoop GTLoop;
 
 typedef struct vf_page_record {
 	addr_t frame;
 	addr_t shadow_page;
 	GHashTable *children;
-	vf_state *state;
+	GTLoop *loop;
 } vf_page_record;
 
-typedef struct vf_paddr_record {
+typedef struct vf_paddr_record vf_paddr_record;
+
+/**
+ * GTSyscallFunc:
+ * 
+ * Specifies one of the two types of functions passed to gt_loop_set_cb().
+ */
+typedef void (*GTSyscallFunc) (vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid);
+
+/**
+ * GTSysretFunc:
+ * 
+ * Specifies one of the two types of functions passed to gt_loop_set_cb().
+ */
+typedef void (*GTSysretFunc) (vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid);
+
+struct vf_paddr_record {
 	addr_t offset;
+	GTSyscallFunc syscall_cb;
+        GTSysretFunc  sysret_cb;
 	vf_page_record *parent;
-	uint16_t identifier; /* Syscall identifier because we nix RAX. */
-} vf_paddr_record;
+};
 
 struct syscall_defs {
-	char *name;
-	void (*print) (vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, char *proc, char *syscall);
+	char         *name;
+	GTSyscallFunc syscall_cb;
+	GTSysretFunc  sysret_cb;
 };
+
+enum {
+	GT_OS_WINDOWS,
+	GT_OS_LINUX,
+};
+
+typedef int GTOSType;
+
+GTLoop  *gt_loop_new(const char *guest_name);
+GTOSType gt_loop_get_ostype(GTLoop *loop);
+void     gt_loop_set_cb(GTLoop *loop,
+                        const char *kernel_func,
+                        GTSyscallFunc syscall_cb,
+                        GTSysretFunc sysret_cb);
+void     gt_loop_run(GTLoop *loop);
+void     gt_loop_quit(GTLoop *loop);
 
 /* Operating-system-specific operations. */
 struct os_functions {
-        void (*print_syscall) (vmi_instance_t vmi, vmi_event_t *event, vf_paddr_record *record);
-        void (*print_sysret) (vmi_instance_t vmi, vmi_event_t *event, vf_paddr_record *record);
-        bool (*find_syscalls_and_setup_mem_traps) (vf_state *state);
-        bool (*find_return_point_addr) (vf_state *state);
+        bool (*find_syscalls_and_setup_mem_traps) (GTLoop *loop);
+        bool (*find_return_point_addr) (GTLoop *loop);
 };
 
-extern addr_t return_point_addr;
-
-vf_paddr_record *vf_setup_mem_trap (vf_state *state, addr_t va);
-bool vf_find_syscalls_and_setup_mem_traps(vf_state *state,
+struct vf_paddr_record *vf_setup_mem_trap (GTLoop *loop,
+                                           addr_t va,
+                                           GTSyscallFunc syscall_cb,
+                                           GTSysretFunc sysret_cb);
+bool vf_find_syscalls_and_setup_mem_traps(GTLoop *loop,
                                           const struct syscall_defs syscalls[],
                                           const char *traced_syscalls[]);
-addr_t vf_find_addr_after_instruction(vf_state *state,
+addr_t vf_find_addr_after_instruction(GTLoop *loop,
                                       addr_t start_v,
                                       char *mnemonic,
                                       char *ops);

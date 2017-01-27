@@ -387,7 +387,7 @@ def create_struct_c(syscall_map, syscall_order, kernel_info):
 static const int RETURN_ADDR_WIDTH = sizeof(void *);
 
 static char *
-get_proc_name(vmi_instance_t vmi, vmi_pid_t pid) 
+get_process_name(vmi_instance_t vmi, vmi_pid_t pid) 
 {
 	/* Gets the process name of the process with the input pid */
 	/* offsets from the LibVMI config file */	
@@ -447,6 +447,15 @@ done:
     for syscall in syscall_order:
         str += create_print_function(syscall_map[syscall])
 
+    # generate the print_sysret_info function
+    str += """void vf_linux_print_sysret(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid) {
+	reg_t syscall_return = event->x86_regs->rax;
+	reg_t rsp = event->x86_regs->rsp;
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) return: 0x%"PRIx64"\\n", pid, rsp - RETURN_ADDR_WIDTH, get_process_name(vmi, pid), syscall_return);
+}
+
+"""
+
     # Generate TRACED_SYSCALLS table.
     str += """const char *VM_LINUX_TRACED_SYSCALLS[] = {
 """
@@ -466,32 +475,10 @@ done:
     
     # generate the actual struct list
     for syscall_id in range(len(syscall_order)):
-        str += "\t{{ \"{0}\", vf_linux_print_syscall_{1} }},\n".format(syscall_order[syscall_id], syscall_order[syscall_id])
+        str += "\t{{ \"{0}\", vf_linux_print_syscall_{1}, vf_linux_print_sysret }},\n".format(syscall_order[syscall_id], syscall_order[syscall_id])
 
-    str += """\t{ NULL, NULL }
+    str += """\t{ NULL, NULL, NULL }
 };
-
-"""
-
-
-    # generate the print_syscall_info function
-    str += """void vf_linux_print_syscall(vmi_instance_t vmi, vmi_event_t *event, vf_paddr_record *paddr_record) {
-	reg_t syscall_id = event->x86_regs->rax;
-	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
-	char *proc = get_proc_name(vmi, pid);
-	VM_LINUX_SYSCALLS[syscall_id].print(vmi, event, pid, proc, VM_LINUX_SYSCALLS[syscall_id].name);
-}
-
-"""
-
-    # generate the print_sysret_info function
-    str += """void vf_linux_print_sysret(vmi_instance_t vmi, vmi_event_t *event) {
-	reg_t syscall_return = event->x86_regs->rax;
-	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
-	reg_t rsp = event->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) return: 0x%"PRIx64"\\n", pid, rsp - RETURN_ADDR_WIDTH, get_proc_name(vmi, pid), syscall_return);
-}
-
 """
 
     # write all the functions to generated_linux.c
@@ -501,8 +488,9 @@ done:
 
 def create_print_function(syscall_data):
     """Generate a print function for a single syscall"""
-    func_str = """void vf_linux_print_syscall_{0}(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, char *proc, char *syscall)
+    func_str = """void vf_linux_print_syscall_{0}(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid)
 {{
+    char *proc = get_process_name(vmi, pid);
 """.format(syscall_data.get_syscall_name())
     func_str += create_printf_statement(syscall_data.get_args_count(), syscall_data)
     func_str += "}\n\n"
@@ -533,7 +521,7 @@ def create_printf_statement(count, syscall_data):
             else:
                 func_str += ', {0}'.format(syscall_data.get_arg_format(i))
 
-    func_str += ')\\n", pid, rsp, proc, syscall'
+    func_str += ')\\n", pid, rsp, proc, "' + syscall_data.get_syscall_name() + '"'
 
     if count != 0:
         for i in range(0, count):

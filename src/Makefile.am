@@ -16,12 +16,14 @@ bin_PROGRAMS = \
 	guestrace
 
 guestrace_SOURCES = \
-	generated_linux.c \
+	guestrace.c \
 	functions_linux.c \
 	functions_windows.c \
+	generated_linux.c \
 	trace_syscalls.c
 
 noinst_HEADERS = \
 	functions_linux.h \
 	functions_windows.h \
-	trace_syscalls.h
+	trace_syscalls.h \
+	trace_syscalls_private.h

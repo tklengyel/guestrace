@@ -4,13 +4,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "trace_syscalls_private.h"
 #include "functions_windows.h"
 
 static const int RETURN_ADDR_WIDTH = sizeof(void *);
 
 struct os_functions os_functions_windows = {
-	.print_syscall          = vf_windows_print_syscall,
-	.print_sysret           = vf_windows_print_sysret,
 	.find_syscalls_and_setup_mem_traps \
 	                = vf_windows_find_syscalls_and_setup_mem_traps,
 	.find_return_point_addr = vf_windows_find_return_point_addr
@@ -89,515 +88,6 @@ done:
 	return res;
 }
 
-static void
-vf_windows_print_sysret_openfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, char *proc_name, char *syscall_symbol)
-{
-	uint8_t * filename = filename_from_arg(vmi, event->x86_regs->r8, pid);
-
-	uint64_t handle = 0;
-	vmi_read_64_va(vmi, event->x86_regs->rcx, pid, &handle);
-
-	fprintf(stderr, "pid: %d (%s) thread: 0x%lx syscall: %s(%s)\n", pid, proc_name, event->x86_regs->rsp, syscall_symbol, filename);
-	
-
-	/* TODO: presently omitted: handle, sysnum. */
-}
-
-static void
-vf_windows_print_sysret_opensymboliclinkobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, char *proc_name, char *syscall_symbol)
-{
-	uint8_t * filename = filename_from_arg(vmi, event->x86_regs->r8, pid);
-
-	uint64_t handle = 0;
-	vmi_read_64_va(vmi, event->x86_regs->rcx, pid, &handle);
-
-	fprintf(stderr, "pid: %d (%s) thread: 0x%lx syscall: %s(%s)\n", pid, proc_name, event->x86_regs->rsp, syscall_symbol, filename);
-	
-
-	/* TODO: presently omitted: handle, sysnum. */
-}
-
-static void
-vf_windows_print_sysret_createfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, char *proc_name, char *syscall_symbol)
-{
-	uint8_t * filename = filename_from_arg(vmi, event->x86_regs->r8, pid);
-
-	uint64_t handle = 0;
-	vmi_read_64_va(vmi, event->x86_regs->rcx, pid, &handle);
-
-	fprintf(stderr, "pid: %d (%s) thread: 0x%lx syscall: %s(%s)\n", pid, proc_name, event->x86_regs->rsp, syscall_symbol, filename);
-	
-
-	/* TODO: presently omitted: handle, sysnum. */
-}
-
-static void
-vf_windows_print_sysret_opendirectoryobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, char *proc_name, char *syscall_symbol)
-{
-	uint8_t * filename = filename_from_arg(vmi, event->x86_regs->r8, pid);
-
-	uint64_t handle = 0;
-	vmi_read_64_va(vmi, event->x86_regs->rcx, pid, &handle);
-
-	fprintf(stderr, "pid: %d (%s) thread: 0x%lx syscall: %s(%s)\n", pid, proc_name, event->x86_regs->rsp, syscall_symbol, filename);
-	
-
-	/* TODO: presently omitted: handle, sysnum. */
-}
-
-static void
-vf_windows_print_sysret_openprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, char *proc_name, char *syscall_symbol)
-{
-	struct win64_client_id client_id = {0};
-	vmi_read_va(vmi, event->x86_regs->r9, pid, &client_id, sizeof(struct win64_client_id));
-
-	uint64_t handle = 0;
-	vmi_read_64_va(vmi, event->x86_regs->rcx, pid, &handle);
-
-	fprintf(stderr, "pid: %d (%s) thread: 0x%lx syscall: %s(0x%lx)\n", pid, proc_name, event->x86_regs->rsp, syscall_symbol, client_id.unique_process);
-	
-
-	/* TODO: presently omitted: handle, sysnum. */
-}
-
-static void
-vf_windows_print_sysret_readfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, char *proc_name, char *syscall_symbol)
-{
-	fprintf(stderr, "pid: %d (%s) thread: 0x%lx syscall: %s(0x%lx)\n", pid, proc_name, event->x86_regs->rsp, syscall_symbol, event->x86_regs->rcx);
-	
-
-	/* TODO: presently omitted: handle, sysnum. */
-}
-
-static void
-vf_windows_print_sysret_writefile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, char *proc_name, char *syscall_symbol)
-{
-	fprintf(stderr, "pid: %d (%s) thread: 0x%lx syscall: %s(0x%lx)\n", pid, proc_name, event->x86_regs->rsp, syscall_symbol, event->x86_regs->rcx);
-	
-
-	/* TODO: presently omitted: handle, sysnum. */
-}
-
-static void
-vf_windows_print_sysret_def(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, char *proc_name, char *syscall_symbol)
-{
-	/* No-Op. for now. */
-}
-
-/* See Windows's KeServiceDescriptorTable. */
-static const struct syscall_defs SYSCALLS[] = {
-	{ "NtMapUserPhysicalPagesScatter", vf_windows_print_sysret_def },
-	{ "NtWaitForSingleObject", vf_windows_print_sysret_def },
-	{ "NtCallbackReturn", vf_windows_print_sysret_def },
-	{ "NtReadFile", vf_windows_print_sysret_readfile },
-	{ "NtDeviceIoControlFile", vf_windows_print_sysret_def },
-	{ "NtWriteFile", vf_windows_print_sysret_writefile },
-	{ "NtRemoveIoCompletion", vf_windows_print_sysret_def },
-	{ "NtReleaseSemaphore", vf_windows_print_sysret_def },
-	{ "NtReplyWaitReceivePort", vf_windows_print_sysret_def },
-	{ "NtReplyPort", vf_windows_print_sysret_def },
-	{ "NtSetInformationThread", vf_windows_print_sysret_def },
-	{ "NtSetEvent", vf_windows_print_sysret_def },
-	{ "NtClose", vf_windows_print_sysret_def },
-	{ "NtQueryObject", vf_windows_print_sysret_def },
-	{ "NtQueryInformationFile", vf_windows_print_sysret_def },
-	{ "NtOpenKey", vf_windows_print_sysret_def },
-	{ "NtEnumerateValueKey", vf_windows_print_sysret_def },
-	{ "NtFindAtom", vf_windows_print_sysret_def },
-	{ "NtQueryDefaultLocale", vf_windows_print_sysret_def },
-	{ "NtQueryKey", vf_windows_print_sysret_def },
-	{ "NtQueryValueKey", vf_windows_print_sysret_def },
-	{ "NtAllocateVirtualMemory", vf_windows_print_sysret_def },
-	{ "NtQueryInformationProcess", vf_windows_print_sysret_def },
-	{ "NtWaitForMultipleObjects32", vf_windows_print_sysret_def },
-	{ "NtWriteFileGather", vf_windows_print_sysret_def },
-	{ "NtSetInformationProcess", vf_windows_print_sysret_def },
-	{ "NtCreateKey", vf_windows_print_sysret_def },
-	{ "NtFreeVirtualMemory", vf_windows_print_sysret_def },
-	{ "NtImpersonateClientOfPort", vf_windows_print_sysret_def },
-	{ "NtReleaseMutant", vf_windows_print_sysret_def },
-	{ "NtQueryInformationToken", vf_windows_print_sysret_def },
-	{ "NtRequestWaitReplyPort", vf_windows_print_sysret_def },
-	{ "NtQueryVirtualMemory", vf_windows_print_sysret_def },
-	{ "NtOpenThreadToken", vf_windows_print_sysret_def },
-	{ "NtQueryInformationThread", vf_windows_print_sysret_def },
-	{ "NtOpenProcess", vf_windows_print_sysret_openprocess },
-	{ "NtSetInformationFile", vf_windows_print_sysret_def },
-	{ "NtMapViewOfSection", vf_windows_print_sysret_def },
-	{ "NtAccessCheckAndAuditAlarm", vf_windows_print_sysret_def },
-	{ "NtUnmapViewOfSection", vf_windows_print_sysret_def },
-	{ "NtReplyWaitReceivePortEx", vf_windows_print_sysret_def },
-	{ "NtTerminateProcess", vf_windows_print_sysret_def },
-	{ "NtSetEventBoostPriority", vf_windows_print_sysret_def },
-	{ "NtReadFileScatter", vf_windows_print_sysret_def },
-	{ "NtOpenThreadTokenEx", vf_windows_print_sysret_def },
-	{ "NtOpenProcessTokenEx", vf_windows_print_sysret_def },
-	{ "NtQueryPerformanceCounter", vf_windows_print_sysret_def },
-	{ "NtEnumerateKey", vf_windows_print_sysret_def },
-	{ "NtOpenFile", vf_windows_print_sysret_openfile },
-	{ "NtDelayExecution", vf_windows_print_sysret_def },
-	{ "NtQueryDirectoryFile", vf_windows_print_sysret_def },
-	{ "NtQuerySystemInformation", vf_windows_print_sysret_def },
-	{ "NtOpenSection", vf_windows_print_sysret_def },
-	{ "NtQueryTimer", vf_windows_print_sysret_def },
-	{ "NtFsControlFile", vf_windows_print_sysret_def },
-	{ "NtWriteVirtualMemory", vf_windows_print_sysret_def },
-	{ "NtCloseObjectAuditAlarm", vf_windows_print_sysret_def },
-	{ "NtDuplicateObject", vf_windows_print_sysret_def },
-	{ "NtQueryAttributesFile", vf_windows_print_sysret_def },
-	{ "NtClearEvent", vf_windows_print_sysret_def },
-	{ "NtReadVirtualMemory", vf_windows_print_sysret_def },
-	{ "NtOpenEvent", vf_windows_print_sysret_def },
-	{ "NtAdjustPrivilegesToken", vf_windows_print_sysret_def },
-	{ "NtDuplicateToken", vf_windows_print_sysret_def },
-	{ "NtContinue", vf_windows_print_sysret_def },
-	{ "NtQueryDefaultUILanguage", vf_windows_print_sysret_def },
-	{ "NtQueueApcThread", vf_windows_print_sysret_def },
-	{ "NtYieldExecution", vf_windows_print_sysret_def },
-	{ "NtAddAtom", vf_windows_print_sysret_def },
-	{ "NtCreateEvent", vf_windows_print_sysret_def },
-	{ "NtQueryVolumeInformationFile", vf_windows_print_sysret_def },
-	{ "NtCreateSection", vf_windows_print_sysret_def },
-	{ "NtFlushBuffersFile", vf_windows_print_sysret_def },
-	{ "NtApphelpCacheControl", vf_windows_print_sysret_def },
-	{ "NtCreateProcessEx", vf_windows_print_sysret_def },
-	{ "NtCreateThread", vf_windows_print_sysret_def },
-	{ "NtIsProcessInJob", vf_windows_print_sysret_def },
-	{ "NtProtectVirtualMemory", vf_windows_print_sysret_def },
-	{ "NtQuerySection", vf_windows_print_sysret_def },
-	{ "NtResumeThread", vf_windows_print_sysret_def },
-	{ "NtTerminateThread", vf_windows_print_sysret_def },
-	{ "NtReadRequestData", vf_windows_print_sysret_def },
-	{ "NtCreateFile", vf_windows_print_sysret_createfile },
-	{ "NtQueryEvent", vf_windows_print_sysret_def },
-	{ "NtWriteRequestData", vf_windows_print_sysret_def },
-	{ "NtOpenDirectoryObject", vf_windows_print_sysret_opendirectoryobject },
-	{ "NtAccessCheckByTypeAndAuditAlarm", vf_windows_print_sysret_def },
-	{ "NtQuerySystemTime", vf_windows_print_sysret_def },
-	{ "NtWaitForMultipleObjects", vf_windows_print_sysret_def },
-	{ "NtSetInformationObject", vf_windows_print_sysret_def },
-	{ "NtCancelIoFile", vf_windows_print_sysret_def },
-	{ "NtTraceEvent", vf_windows_print_sysret_def },
-	{ "NtPowerInformation", vf_windows_print_sysret_def },
-	{ "NtSetValueKey", vf_windows_print_sysret_def },
-	{ "NtCancelTimer", vf_windows_print_sysret_def },
-	{ "NtSetTimer", vf_windows_print_sysret_def },
-	{ "NtAcceptConnectPort", vf_windows_print_sysret_def },
-	{ "NtAccessCheck", vf_windows_print_sysret_def },
-	{ "NtAccessCheckByType", vf_windows_print_sysret_def },
-	{ "NtAccessCheckByTypeResultList", vf_windows_print_sysret_def },
-	{ "NtAccessCheckByTypeResultListAndAuditAlarm", vf_windows_print_sysret_def },
-	{ "NtAccessCheckByTypeResultListAndAuditAlarmByHandle", vf_windows_print_sysret_def },
-	{ "NtAddBootEntry", vf_windows_print_sysret_def },
-	{ "NtAddDriverEntry", vf_windows_print_sysret_def },
-	{ "NtAdjustGroupsToken", vf_windows_print_sysret_def },
-	{ "NtAlertResumeThread", vf_windows_print_sysret_def },
-	{ "NtAlertThread", vf_windows_print_sysret_def },
-	{ "NtAllocateLocallyUniqueId", vf_windows_print_sysret_def },
-	{ "NtAllocateReserveObject", vf_windows_print_sysret_def },
-	{ "NtAllocateUserPhysicalPages", vf_windows_print_sysret_def },
-	{ "NtAllocateUuids", vf_windows_print_sysret_def },
-	{ "NtAlpcAcceptConnectPort", vf_windows_print_sysret_def },
-	{ "NtAlpcCancelMessage", vf_windows_print_sysret_def },
-	{ "NtAlpcConnectPort", vf_windows_print_sysret_def },
-	{ "NtAlpcCreatePort", vf_windows_print_sysret_def },
-	{ "NtAlpcCreatePortSection", vf_windows_print_sysret_def },
-	{ "NtAlpcCreateResourceReserve", vf_windows_print_sysret_def },
-	{ "NtAlpcCreateSectionView", vf_windows_print_sysret_def },
-	{ "NtAlpcCreateSecurityContext", vf_windows_print_sysret_def },
-	{ "NtAlpcDeletePortSection", vf_windows_print_sysret_def },
-	{ "NtAlpcDeleteResourceReserve", vf_windows_print_sysret_def },
-	{ "NtAlpcDeleteSectionView", vf_windows_print_sysret_def },
-	{ "NtAlpcDeleteSecurityContext", vf_windows_print_sysret_def },
-	{ "NtAlpcDisconnectPort", vf_windows_print_sysret_def },
-	{ "NtAlpcImpersonateClientOfPort", vf_windows_print_sysret_def },
-	{ "NtAlpcOpenSenderProcess", vf_windows_print_sysret_def },
-	{ "NtAlpcOpenSenderThread", vf_windows_print_sysret_def },
-	{ "NtAlpcQueryInformation", vf_windows_print_sysret_def },
-	{ "NtAlpcQueryInformationMessage", vf_windows_print_sysret_def },
-	{ "NtAlpcRevokeSecurityContext", vf_windows_print_sysret_def },
-	{ "NtAlpcSendWaitReceivePort", vf_windows_print_sysret_def },
-	{ "NtAlpcSetInformation", vf_windows_print_sysret_def },
-	{ "NtAreMappedFilesTheSame", vf_windows_print_sysret_def },
-	{ "NtAssignProcessToJobObject", vf_windows_print_sysret_def },
-	{ "NtCancelIoFileEx", vf_windows_print_sysret_def },
-	{ "NtCancelSynchronousIoFile", vf_windows_print_sysret_def },
-	{ "NtCommitComplete", vf_windows_print_sysret_def },
-	{ "NtCommitEnlistment", vf_windows_print_sysret_def },
-	{ "NtCommitTransaction", vf_windows_print_sysret_def },
-	{ "NtCompactKeys", vf_windows_print_sysret_def },
-	{ "NtCompareTokens", vf_windows_print_sysret_def },
-	{ "NtCompleteConnectPort", vf_windows_print_sysret_def },
-	{ "NtCompressKey", vf_windows_print_sysret_def },
-	{ "NtConnectPort", vf_windows_print_sysret_def },
-	{ "NtCreateDebugObject", vf_windows_print_sysret_def },
-	{ "NtCreateDirectoryObject", vf_windows_print_sysret_def },
-	{ "NtCreateEnlistment", vf_windows_print_sysret_def },
-	{ "NtCreateEventPair", vf_windows_print_sysret_def },
-	{ "NtCreateIoCompletion", vf_windows_print_sysret_def },
-	{ "NtCreateJobObject", vf_windows_print_sysret_def },
-	{ "NtCreateJobSet", vf_windows_print_sysret_def },
-	{ "NtCreateKeyTransacted", vf_windows_print_sysret_def },
-	{ "NtCreateKeyedEvent", vf_windows_print_sysret_def },
-	{ "NtCreateMailslotFile", vf_windows_print_sysret_def },
-	{ "NtCreateMutant", vf_windows_print_sysret_def },
-	{ "NtCreateNamedPipeFile", vf_windows_print_sysret_def },
-	{ "NtCreatePagingFile", vf_windows_print_sysret_def },
-	{ "NtCreatePort", vf_windows_print_sysret_def },
-	{ "NtCreatePrivateNamespace", vf_windows_print_sysret_def },
-	{ "NtCreateProcess", vf_windows_print_sysret_def },
-	{ "NtCreateProfile", vf_windows_print_sysret_def },
-	{ "NtCreateProfileEx", vf_windows_print_sysret_def },
-	{ "NtCreateResourceManager", vf_windows_print_sysret_def },
-	{ "NtCreateSemaphore", vf_windows_print_sysret_def },
-	{ "NtCreateSymbolicLinkObject", vf_windows_print_sysret_def },
-	{ "NtCreateThreadEx", vf_windows_print_sysret_def },
-	{ "NtCreateTimer", vf_windows_print_sysret_def },
-	{ "NtCreateToken", vf_windows_print_sysret_def },
-	{ "NtCreateTransaction", vf_windows_print_sysret_def },
-	{ "NtCreateTransactionManager", vf_windows_print_sysret_def },
-	{ "NtCreateUserProcess", vf_windows_print_sysret_def },
-	{ "NtCreateWaitablePort", vf_windows_print_sysret_def },
-	{ "NtCreateWorkerFactory", vf_windows_print_sysret_def },
-	{ "NtDebugActiveProcess", vf_windows_print_sysret_def },
-	{ "NtDebugContinue", vf_windows_print_sysret_def },
-	{ "NtDeleteAtom", vf_windows_print_sysret_def },
-	{ "NtDeleteBootEntry", vf_windows_print_sysret_def },
-	{ "NtDeleteDriverEntry", vf_windows_print_sysret_def },
-	{ "NtDeleteFile", vf_windows_print_sysret_def },
-	{ "NtDeleteKey", vf_windows_print_sysret_def },
-	{ "NtDeleteObjectAuditAlarm", vf_windows_print_sysret_def },
-	{ "NtDeletePrivateNamespace", vf_windows_print_sysret_def },
-	{ "NtDeleteValueKey", vf_windows_print_sysret_def },
-	{ "NtDisableLastKnownGood", vf_windows_print_sysret_def },
-	{ "NtDisplayString", vf_windows_print_sysret_def },
-	{ "NtDrawText", vf_windows_print_sysret_def },
-	{ "NtEnableLastKnownGood", vf_windows_print_sysret_def },
-	{ "NtEnumerateBootEntries", vf_windows_print_sysret_def },
-	{ "NtEnumerateDriverEntries", vf_windows_print_sysret_def },
-	{ "NtEnumerateSystemEnvironmentValuesEx", vf_windows_print_sysret_def },
-	{ "NtEnumerateTransactionObject", vf_windows_print_sysret_def },
-	{ "NtExtendSection", vf_windows_print_sysret_def },
-	{ "NtFilterToken", vf_windows_print_sysret_def },
-	{ "NtFlushInstallUILanguage", vf_windows_print_sysret_def },
-	{ "NtFlushInstructionCache", vf_windows_print_sysret_def },
-	{ "NtFlushKey", vf_windows_print_sysret_def },
-	{ "NtFlushProcessWriteBuffers", vf_windows_print_sysret_def },
-	{ "NtFlushVirtualMemory", vf_windows_print_sysret_def },
-	{ "NtFlushWriteBuffer", vf_windows_print_sysret_def },
-	{ "NtFreeUserPhysicalPages", vf_windows_print_sysret_def },
-	{ "NtFreezeRegistry", vf_windows_print_sysret_def },
-	{ "NtFreezeTransactions", vf_windows_print_sysret_def },
-	{ "NtGetContextThread", vf_windows_print_sysret_def },
-	{ "NtGetCurrentProcessorNumber", vf_windows_print_sysret_def },
-	{ "NtGetDevicePowerState", vf_windows_print_sysret_def },
-	{ "NtGetMUIRegistryInfo", vf_windows_print_sysret_def },
-	{ "NtGetNextProcess", vf_windows_print_sysret_def },
-	{ "NtGetNextThread", vf_windows_print_sysret_def },
-	{ "NtGetNlsSectionPtr", vf_windows_print_sysret_def },
-	{ "NtGetNotificationResourceManager", vf_windows_print_sysret_def },
-	{ "NtGetPlugPlayEvent", vf_windows_print_sysret_def },
-	{ "NtGetWriteWatch", vf_windows_print_sysret_def },
-	{ "NtImpersonateAnonymousToken", vf_windows_print_sysret_def },
-	{ "NtImpersonateThread", vf_windows_print_sysret_def },
-	{ "NtInitializeNlsFiles", vf_windows_print_sysret_def },
-	{ "NtInitializeRegistry", vf_windows_print_sysret_def },
-	{ "NtInitiatePowerAction", vf_windows_print_sysret_def },
-	{ "NtIsSystemResumeAutomatic", vf_windows_print_sysret_def },
-	{ "NtIsUILanguageComitted", vf_windows_print_sysret_def },
-	{ "NtListenPort", vf_windows_print_sysret_def },
-	{ "NtLoadDriver", vf_windows_print_sysret_def },
-	{ "NtLoadKey", vf_windows_print_sysret_def },
-	{ "NtLoadKey2", vf_windows_print_sysret_def },
-	{ "NtLoadKeyEx", vf_windows_print_sysret_def },
-	{ "NtLockFile", vf_windows_print_sysret_def },
-	{ "NtLockProductActivationKeys", vf_windows_print_sysret_def },
-	{ "NtLockRegistryKey", vf_windows_print_sysret_def },
-	{ "NtLockVirtualMemory", vf_windows_print_sysret_def },
-	{ "NtMakePermanentObject", vf_windows_print_sysret_def },
-	{ "NtMakeTemporaryObject", vf_windows_print_sysret_def },
-	{ "NtMapCMFModule", vf_windows_print_sysret_def },
-	{ "NtMapUserPhysicalPages", vf_windows_print_sysret_def },
-	{ "NtModifyBootEntry", vf_windows_print_sysret_def },
-	{ "NtModifyDriverEntry", vf_windows_print_sysret_def },
-	{ "NtNotifyChangeDirectoryFile", vf_windows_print_sysret_def },
-	{ "NtNotifyChangeKey", vf_windows_print_sysret_def },
-	{ "NtNotifyChangeMultipleKeys", vf_windows_print_sysret_def },
-	{ "NtNotifyChangeSession", vf_windows_print_sysret_def },
-	{ "NtOpenEnlistment", vf_windows_print_sysret_def },
-	{ "NtOpenEventPair", vf_windows_print_sysret_def },
-	{ "NtOpenIoCompletion", vf_windows_print_sysret_def },
-	{ "NtOpenJobObject", vf_windows_print_sysret_def },
-	{ "NtOpenKeyEx", vf_windows_print_sysret_def },
-	{ "NtOpenKeyTransacted", vf_windows_print_sysret_def },
-	{ "NtOpenKeyTransactedEx", vf_windows_print_sysret_def },
-	{ "NtOpenKeyedEvent", vf_windows_print_sysret_def },
-	{ "NtOpenMutant", vf_windows_print_sysret_def },
-	{ "NtOpenObjectAuditAlarm", vf_windows_print_sysret_def },
-	{ "NtOpenPrivateNamespace", vf_windows_print_sysret_def },
-	{ "NtOpenProcessToken", vf_windows_print_sysret_def },
-	{ "NtOpenResourceManager", vf_windows_print_sysret_def },
-	{ "NtOpenSemaphore", vf_windows_print_sysret_def },
-	{ "NtOpenSession", vf_windows_print_sysret_def },
-	{ "NtOpenSymbolicLinkObject", vf_windows_print_sysret_opensymboliclinkobject },
-	{ "NtOpenThread", vf_windows_print_sysret_def },
-	{ "NtOpenTimer", vf_windows_print_sysret_def },
-	{ "NtOpenTransaction", vf_windows_print_sysret_def },
-	{ "NtOpenTransactionManager", vf_windows_print_sysret_def },
-	{ "NtPlugPlayControl", vf_windows_print_sysret_def },
-	{ "NtPrePrepareComplete", vf_windows_print_sysret_def },
-	{ "NtPrePrepareEnlistment", vf_windows_print_sysret_def },
-	{ "NtPrepareComplete", vf_windows_print_sysret_def },
-	{ "NtPrepareEnlistment", vf_windows_print_sysret_def },
-	{ "NtPrivilegeCheck", vf_windows_print_sysret_def },
-	{ "NtPrivilegeObjectAuditAlarm", vf_windows_print_sysret_def },
-	{ "NtPrivilegedServiceAuditAlarm", vf_windows_print_sysret_def },
-	{ "NtPropagationComplete", vf_windows_print_sysret_def },
-	{ "NtPropagationFailed", vf_windows_print_sysret_def },
-	{ "NtPulseEvent", vf_windows_print_sysret_def },
-	{ "NtQueryBootEntryOrder", vf_windows_print_sysret_def },
-	{ "NtQueryBootOptions", vf_windows_print_sysret_def },
-	{ "NtQueryDebugFilterState", vf_windows_print_sysret_def },
-	{ "NtQueryDirectoryObject", vf_windows_print_sysret_def },
-	{ "NtQueryDriverEntryOrder", vf_windows_print_sysret_def },
-	{ "NtQueryEaFile", vf_windows_print_sysret_def },
-	{ "NtQueryFullAttributesFile", vf_windows_print_sysret_def },
-	{ "NtQueryInformationAtom", vf_windows_print_sysret_def },
-	{ "NtQueryInformationEnlistment", vf_windows_print_sysret_def },
-	{ "NtQueryInformationJobObject", vf_windows_print_sysret_def },
-	{ "NtQueryInformationPort", vf_windows_print_sysret_def },
-	{ "NtQueryInformationResourceManager", vf_windows_print_sysret_def },
-	{ "NtQueryInformationTransaction", vf_windows_print_sysret_def },
-	{ "NtQueryInformationTransactionManager", vf_windows_print_sysret_def },
-	{ "NtQueryInformationWorkerFactory", vf_windows_print_sysret_def },
-	{ "NtQueryInstallUILanguage", vf_windows_print_sysret_def },
-	{ "NtQueryIntervalProfile", vf_windows_print_sysret_def },
-	{ "NtQueryIoCompletion", vf_windows_print_sysret_def },
-	{ "NtQueryLicenseValue", vf_windows_print_sysret_def },
-	{ "NtQueryMultipleValueKey", vf_windows_print_sysret_def },
-	{ "NtQueryMutant", vf_windows_print_sysret_def },
-	{ "NtQueryOpenSubKeys", vf_windows_print_sysret_def },
-	{ "NtQueryOpenSubKeysEx", vf_windows_print_sysret_def },
-	{ "NtQueryPortInformationProcess", vf_windows_print_sysret_def },
-	{ "NtQueryQuotaInformationFile", vf_windows_print_sysret_def },
-	{ "NtQuerySecurityAttributesToken", vf_windows_print_sysret_def },
-	{ "NtQuerySecurityObject", vf_windows_print_sysret_def },
-	{ "NtQuerySemaphore", vf_windows_print_sysret_def },
-	{ "NtQuerySymbolicLinkObject", vf_windows_print_sysret_def },
-	{ "NtQuerySystemEnvironmentValue", vf_windows_print_sysret_def },
-	{ "NtQuerySystemEnvironmentValueEx", vf_windows_print_sysret_def },
-	{ "NtQuerySystemInformationEx", vf_windows_print_sysret_def },
-	{ "NtQueryTimerResolution", vf_windows_print_sysret_def },
-	{ "NtQueueApcThreadEx", vf_windows_print_sysret_def },
-	{ "NtRaiseException", vf_windows_print_sysret_def },
-	{ "NtRaiseHardError", vf_windows_print_sysret_def },
-	{ "NtReadOnlyEnlistment", vf_windows_print_sysret_def },
-	{ "NtRecoverEnlistment", vf_windows_print_sysret_def },
-	{ "NtRecoverResourceManager", vf_windows_print_sysret_def },
-	{ "NtRecoverTransactionManager", vf_windows_print_sysret_def },
-	{ "NtRegisterProtocolAddressInformation", vf_windows_print_sysret_def },
-	{ "NtRegisterThreadTerminatePort", vf_windows_print_sysret_def },
-	{ "NtReleaseKeyedEvent", vf_windows_print_sysret_def },
-	{ "NtReleaseWorkerFactoryWorker", vf_windows_print_sysret_def },
-	{ "NtRemoveIoCompletionEx", vf_windows_print_sysret_def },
-	{ "NtRemoveProcessDebug", vf_windows_print_sysret_def },
-	{ "NtRenameKey", vf_windows_print_sysret_def },
-	{ "NtRenameTransactionManager", vf_windows_print_sysret_def },
-	{ "NtReplaceKey", vf_windows_print_sysret_def },
-	{ "NtReplacePartitionUnit", vf_windows_print_sysret_def },
-	{ "NtReplyWaitReplyPort", vf_windows_print_sysret_def },
-	{ "NtRequestPort", vf_windows_print_sysret_def },
-	{ "NtResetEvent", vf_windows_print_sysret_def },
-	{ "NtResetWriteWatch", vf_windows_print_sysret_def },
-	{ "NtRestoreKey", vf_windows_print_sysret_def },
-	{ "NtResumeProcess", vf_windows_print_sysret_def },
-	{ "NtRollbackComplete", vf_windows_print_sysret_def },
-	{ "NtRollbackEnlistment", vf_windows_print_sysret_def },
-	{ "NtRollbackTransaction", vf_windows_print_sysret_def },
-	{ "NtRollforwardTransactionManager", vf_windows_print_sysret_def },
-	{ "NtSaveKey", vf_windows_print_sysret_def },
-	{ "NtSaveKeyEx", vf_windows_print_sysret_def },
-	{ "NtSaveMergedKeys", vf_windows_print_sysret_def },
-	{ "NtSecureConnectPort", vf_windows_print_sysret_def },
-	{ "NtSerializeBoot", vf_windows_print_sysret_def },
-	{ "NtSetBootEntryOrder", vf_windows_print_sysret_def },
-	{ "NtSetBootOptions", vf_windows_print_sysret_def },
-	{ "NtSetContextThread", vf_windows_print_sysret_def },
-	{ "NtSetDebugFilterState", vf_windows_print_sysret_def },
-	{ "NtSetDefaultHardErrorPort", vf_windows_print_sysret_def },
-	{ "NtSetDefaultLocale", vf_windows_print_sysret_def },
-	{ "NtSetDefaultUILanguage", vf_windows_print_sysret_def },
-	{ "NtSetDriverEntryOrder", vf_windows_print_sysret_def },
-	{ "NtSetEaFile", vf_windows_print_sysret_def },
-	{ "NtSetHighEventPair", vf_windows_print_sysret_def },
-	{ "NtSetHighWaitLowEventPair", vf_windows_print_sysret_def },
-	{ "NtSetInformationDebugObject", vf_windows_print_sysret_def },
-	{ "NtSetInformationEnlistment", vf_windows_print_sysret_def },
-	{ "NtSetInformationJobObject", vf_windows_print_sysret_def },
-	{ "NtSetInformationKey", vf_windows_print_sysret_def },
-	{ "NtSetInformationResourceManager", vf_windows_print_sysret_def },
-	{ "NtSetInformationToken", vf_windows_print_sysret_def },
-	{ "NtSetInformationTransaction", vf_windows_print_sysret_def },
-	{ "NtSetInformationTransactionManager", vf_windows_print_sysret_def },
-	{ "NtSetInformationWorkerFactory", vf_windows_print_sysret_def },
-	{ "NtSetIntervalProfile", vf_windows_print_sysret_def },
-	{ "NtSetIoCompletion", vf_windows_print_sysret_def },
-	{ "NtSetIoCompletionEx", vf_windows_print_sysret_def },
-	{ "NtSetLdtEntries", vf_windows_print_sysret_def },
-	{ "NtSetLowEventPair", vf_windows_print_sysret_def },
-	{ "NtSetLowWaitHighEventPair", vf_windows_print_sysret_def },
-	{ "NtSetQuotaInformationFile", vf_windows_print_sysret_def },
-	{ "NtSetSecurityObject", vf_windows_print_sysret_def },
-	{ "NtSetSystemEnvironmentValue", vf_windows_print_sysret_def },
-	{ "NtSetSystemEnvironmentValueEx", vf_windows_print_sysret_def },
-	{ "NtSetSystemInformation", vf_windows_print_sysret_def },
-	{ "NtSetSystemPowerState", vf_windows_print_sysret_def },
-	{ "NtSetSystemTime", vf_windows_print_sysret_def },
-	{ "NtSetThreadExecutionState", vf_windows_print_sysret_def },
-	{ "NtSetTimerEx", vf_windows_print_sysret_def },
-	{ "NtSetTimerResolution", vf_windows_print_sysret_def },
-	{ "NtSetUuidSeed", vf_windows_print_sysret_def },
-	{ "NtSetVolumeInformationFile", vf_windows_print_sysret_def },
-	{ "NtShutdownSystem", vf_windows_print_sysret_def },
-	{ "NtShutdownWorkerFactory", vf_windows_print_sysret_def },
-	{ "NtSignalAndWaitForSingleObject", vf_windows_print_sysret_def },
-	{ "NtSinglePhaseReject", vf_windows_print_sysret_def },
-	{ "NtStartProfile", vf_windows_print_sysret_def },
-	{ "NtStopProfile", vf_windows_print_sysret_def },
-	{ "NtSuspendProcess", vf_windows_print_sysret_def },
-	{ "NtSuspendThread", vf_windows_print_sysret_def },
-	{ "NtSystemDebugControl", vf_windows_print_sysret_def },
-	{ "NtTerminateJobObject", vf_windows_print_sysret_def },
-	{ "NtTestAlert", vf_windows_print_sysret_def },
-	{ "NtThawRegistry", vf_windows_print_sysret_def },
-	{ "NtThawTransactions", vf_windows_print_sysret_def },
-	{ "NtTraceControl", vf_windows_print_sysret_def },
-	{ "NtTranslateFilePath", vf_windows_print_sysret_def },
-	{ "NtUmsThreadYield", vf_windows_print_sysret_def },
-	{ "NtUnloadDriver", vf_windows_print_sysret_def },
-	{ "NtUnloadKey", vf_windows_print_sysret_def },
-	{ "NtUnloadKey2", vf_windows_print_sysret_def },
-	{ "NtUnloadKeyEx", vf_windows_print_sysret_def },
-	{ "NtUnlockFile", vf_windows_print_sysret_def },
-	{ "NtUnlockVirtualMemory", vf_windows_print_sysret_def },
-	{ "NtVdmControl", vf_windows_print_sysret_def },
-	{ "NtWaitForDebugEvent", vf_windows_print_sysret_def },
-	{ "NtWaitForKeyedEvent", vf_windows_print_sysret_def },
-	{ "NtWaitForWorkViaWorkerFactory", vf_windows_print_sysret_def },
-	{ "NtWaitHighEventPair", vf_windows_print_sysret_def },
-	{ "NtWaitLowEventPair", vf_windows_print_sysret_def },
-	{ "NtWorkerFactoryWorkerReady", vf_windows_print_sysret_def },
-	{ NULL, NULL },
-};
-
-#define NUM_SYSCALL_ARGS 8
-
-/*
- * Tries to return a UTF-8 string representing the filename of an ObjectAttribute
- * vaddr must point to an ObjectAttribute virtual address
- * Must free what it returns
- */
-
 /* Gets the process name of the process with the PID that is input. */
 static char *
 get_process_name(vmi_instance_t vmi, vmi_pid_t pid) 
@@ -648,44 +138,533 @@ done:
 
 }
 
-
-void 
-vf_windows_print_syscall(vmi_instance_t vmi,
-                         vmi_event_t *event,
-                         vf_paddr_record *paddr_record)
+static void
+vf_windows_print_syscall_openfile_cb(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid)
 {
-	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
+	char *proc_name = get_process_name(vmi, pid);
+	uint8_t * filename = filename_from_arg(vmi, event->x86_regs->r8, pid);
 
-	if (0 == pid) { /* it can't find the PID sometimes... */
-		return;
-	}
+	uint64_t handle = 0;
+	vmi_read_64_va(vmi, event->x86_regs->rcx, pid, &handle);
 
-	char * proc_name = get_process_name(vmi, pid);
+	fprintf(stderr, "pid: %d (%s) thread: 0x%lx syscall: %s(%s)\n", pid, proc_name, event->x86_regs->rsp, "NtOpenFile", filename);
+	
 
-	SYSCALLS[paddr_record->identifier].print(vmi,
-	                                         event,
-	                                         pid,
-	                                         proc_name,
-	                                         SYSCALLS[paddr_record->identifier].name);
-
-	free(proc_name);
+	/* TODO: presently omitted: handle, sysnum. */
 }
 
-void 
-vf_windows_print_sysret(vmi_instance_t vmi,
-                        vmi_event_t *event,
-                        vf_paddr_record *paddr_record) 
+static void
+vf_windows_print_syscall_opensymboliclinkobject_cb(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid)
 {
-	vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
+	char *proc_name = get_process_name(vmi, pid);
+	uint8_t * filename = filename_from_arg(vmi, event->x86_regs->r8, pid);
 
+	uint64_t handle = 0;
+	vmi_read_64_va(vmi, event->x86_regs->rcx, pid, &handle);
+
+	fprintf(stderr, "pid: %d (%s) thread: 0x%lx syscall: %s(%s)\n", pid, proc_name, event->x86_regs->rsp, "NtOpenSymbolicLinkObject", filename);
+	
+
+	/* TODO: presently omitted: handle, sysnum. */
+}
+
+static void
+vf_windows_print_syscall_createfile_cb(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid)
+{
+	char *proc_name = get_process_name(vmi, pid);
+	uint8_t * filename = filename_from_arg(vmi, event->x86_regs->r8, pid);
+
+	uint64_t handle = 0;
+	vmi_read_64_va(vmi, event->x86_regs->rcx, pid, &handle);
+
+	fprintf(stderr, "pid: %d (%s) thread: 0x%lx syscall: %s(%s)\n", pid, proc_name, event->x86_regs->rsp, "NtCreateFile", filename);
+	
+
+	/* TODO: presently omitted: handle, sysnum. */
+}
+
+static void
+vf_windows_print_syscall_opendirectoryobject_cb(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid)
+{
+	char *proc_name = get_process_name(vmi, pid);
+	uint8_t * filename = filename_from_arg(vmi, event->x86_regs->r8, pid);
+
+	uint64_t handle = 0;
+	vmi_read_64_va(vmi, event->x86_regs->rcx, pid, &handle);
+
+	fprintf(stderr, "pid: %d (%s) thread: 0x%lx syscall: %s(%s)\n", pid, proc_name, event->x86_regs->rsp, "NtOpenDirectoryObject", filename);
+	
+
+	/* TODO: presently omitted: handle, sysnum. */
+}
+
+static void
+vf_windows_print_syscall_openprocess_cb(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid)
+{
+	char *proc_name = get_process_name(vmi, pid);
+	struct win64_client_id client_id = {0};
+	vmi_read_va(vmi, event->x86_regs->r9, pid, &client_id, sizeof(struct win64_client_id));
+
+	uint64_t handle = 0;
+	vmi_read_64_va(vmi, event->x86_regs->rcx, pid, &handle);
+
+	fprintf(stderr, "pid: %d (%s) thread: 0x%lx syscall: %s(0x%lx)\n", pid, proc_name, event->x86_regs->rsp, "NtOpenProcess", client_id.unique_process);
+	
+
+	/* TODO: presently omitted: handle, sysnum. */
+}
+
+static void
+vf_windows_print_syscall_readfile_cb(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid)
+{
+	char *proc_name = get_process_name(vmi, pid);
+	fprintf(stderr, "pid: %d (%s) thread: 0x%lx syscall: %s(0x%lx)\n", pid, proc_name, event->x86_regs->rsp, "NtReadFile", event->x86_regs->rcx);
+	
+
+	/* TODO: presently omitted: handle, sysnum. */
+}
+
+static void
+vf_windows_print_syscall_writefile_cb(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid)
+{
+	char *proc_name = get_process_name(vmi, pid);
+	fprintf(stderr, "pid: %d (%s) thread: 0x%lx syscall: %s(0x%lx)\n", pid, proc_name, event->x86_regs->rsp, "NtWriteFile", event->x86_regs->rcx);
+	
+
+	/* TODO: presently omitted: handle, sysnum. */
+}
+
+static void
+vf_windows_print_syscall_generic_cb(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid)
+{
+	/* No-Op. for now. */
+}
+
+static void
+vf_windows_print_sysret_generic_cb(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid)
+{
 	if (0 == pid) { /* it can't find the PID sometimes... */
 		return;
 	}
 
-	char * proc_name = get_process_name(vmi, pid);
+	char *proc_name = get_process_name(vmi, pid);
 
 	fprintf(stderr, "pid: %d (%s) thread: 0x%lx return: 0x%lx\n", pid, proc_name, event->x86_regs->rsp - RETURN_ADDR_WIDTH, event->x86_regs->rax);
 }
+
+/* See Windows's KeServiceDescriptorTable. */
+static const struct syscall_defs SYSCALLS[] = {
+	{ "NtMapUserPhysicalPagesScatter", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtWaitForSingleObject", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCallbackReturn", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtReadFile", vf_windows_print_syscall_readfile_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtDeviceIoControlFile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtWriteFile", vf_windows_print_syscall_writefile_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtRemoveIoCompletion", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtReleaseSemaphore", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtReplyWaitReceivePort", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtReplyPort", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetInformationThread", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetEvent", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtClose", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryObject", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryInformationFile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenKey", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtEnumerateValueKey", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtFindAtom", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryDefaultLocale", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryKey", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryValueKey", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAllocateVirtualMemory", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryInformationProcess", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtWaitForMultipleObjects32", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtWriteFileGather", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetInformationProcess", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateKey", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtFreeVirtualMemory", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtImpersonateClientOfPort", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtReleaseMutant", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryInformationToken", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtRequestWaitReplyPort", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryVirtualMemory", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenThreadToken", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryInformationThread", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenProcess", vf_windows_print_syscall_openprocess_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetInformationFile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtMapViewOfSection", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAccessCheckAndAuditAlarm", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtUnmapViewOfSection", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtReplyWaitReceivePortEx", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtTerminateProcess", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetEventBoostPriority", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtReadFileScatter", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenThreadTokenEx", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenProcessTokenEx", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryPerformanceCounter", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtEnumerateKey", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenFile", vf_windows_print_syscall_openfile_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtDelayExecution", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryDirectoryFile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQuerySystemInformation", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenSection", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryTimer", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtFsControlFile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtWriteVirtualMemory", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCloseObjectAuditAlarm", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtDuplicateObject", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryAttributesFile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtClearEvent", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtReadVirtualMemory", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenEvent", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAdjustPrivilegesToken", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtDuplicateToken", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtContinue", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryDefaultUILanguage", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueueApcThread", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtYieldExecution", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAddAtom", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateEvent", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryVolumeInformationFile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateSection", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtFlushBuffersFile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtApphelpCacheControl", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateProcessEx", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateThread", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtIsProcessInJob", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtProtectVirtualMemory", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQuerySection", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtResumeThread", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtTerminateThread", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtReadRequestData", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateFile", vf_windows_print_syscall_createfile_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryEvent", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtWriteRequestData", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenDirectoryObject", vf_windows_print_syscall_opendirectoryobject_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAccessCheckByTypeAndAuditAlarm", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQuerySystemTime", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtWaitForMultipleObjects", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetInformationObject", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCancelIoFile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtTraceEvent", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtPowerInformation", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetValueKey", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCancelTimer", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetTimer", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAcceptConnectPort", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAccessCheck", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAccessCheckByType", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAccessCheckByTypeResultList", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAccessCheckByTypeResultListAndAuditAlarm", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAccessCheckByTypeResultListAndAuditAlarmByHandle", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAddBootEntry", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAddDriverEntry", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAdjustGroupsToken", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAlertResumeThread", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAlertThread", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAllocateLocallyUniqueId", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAllocateReserveObject", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAllocateUserPhysicalPages", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAllocateUuids", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAlpcAcceptConnectPort", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAlpcCancelMessage", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAlpcConnectPort", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAlpcCreatePort", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAlpcCreatePortSection", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAlpcCreateResourceReserve", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAlpcCreateSectionView", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAlpcCreateSecurityContext", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAlpcDeletePortSection", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAlpcDeleteResourceReserve", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAlpcDeleteSectionView", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAlpcDeleteSecurityContext", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAlpcDisconnectPort", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAlpcImpersonateClientOfPort", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAlpcOpenSenderProcess", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAlpcOpenSenderThread", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAlpcQueryInformation", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAlpcQueryInformationMessage", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAlpcRevokeSecurityContext", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAlpcSendWaitReceivePort", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAlpcSetInformation", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAreMappedFilesTheSame", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtAssignProcessToJobObject", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCancelIoFileEx", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCancelSynchronousIoFile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCommitComplete", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCommitEnlistment", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCommitTransaction", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCompactKeys", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCompareTokens", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCompleteConnectPort", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCompressKey", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtConnectPort", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateDebugObject", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateDirectoryObject", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateEnlistment", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateEventPair", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateIoCompletion", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateJobObject", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateJobSet", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateKeyTransacted", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateKeyedEvent", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateMailslotFile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateMutant", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateNamedPipeFile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreatePagingFile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreatePort", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreatePrivateNamespace", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateProcess", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateProfile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateProfileEx", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateResourceManager", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateSemaphore", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateSymbolicLinkObject", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateThreadEx", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateTimer", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateToken", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateTransaction", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateTransactionManager", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateUserProcess", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateWaitablePort", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtCreateWorkerFactory", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtDebugActiveProcess", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtDebugContinue", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtDeleteAtom", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtDeleteBootEntry", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtDeleteDriverEntry", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtDeleteFile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtDeleteKey", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtDeleteObjectAuditAlarm", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtDeletePrivateNamespace", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtDeleteValueKey", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtDisableLastKnownGood", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtDisplayString", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtDrawText", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtEnableLastKnownGood", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtEnumerateBootEntries", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtEnumerateDriverEntries", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtEnumerateSystemEnvironmentValuesEx", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtEnumerateTransactionObject", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtExtendSection", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtFilterToken", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtFlushInstallUILanguage", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtFlushInstructionCache", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtFlushKey", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtFlushProcessWriteBuffers", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtFlushVirtualMemory", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtFlushWriteBuffer", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtFreeUserPhysicalPages", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtFreezeRegistry", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtFreezeTransactions", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtGetContextThread", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtGetCurrentProcessorNumber", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtGetDevicePowerState", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtGetMUIRegistryInfo", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtGetNextProcess", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtGetNextThread", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtGetNlsSectionPtr", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtGetNotificationResourceManager", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtGetPlugPlayEvent", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtGetWriteWatch", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtImpersonateAnonymousToken", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtImpersonateThread", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtInitializeNlsFiles", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtInitializeRegistry", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtInitiatePowerAction", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtIsSystemResumeAutomatic", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtIsUILanguageComitted", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtListenPort", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtLoadDriver", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtLoadKey", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtLoadKey2", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtLoadKeyEx", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtLockFile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtLockProductActivationKeys", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtLockRegistryKey", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtLockVirtualMemory", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtMakePermanentObject", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtMakeTemporaryObject", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtMapCMFModule", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtMapUserPhysicalPages", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtModifyBootEntry", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtModifyDriverEntry", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtNotifyChangeDirectoryFile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtNotifyChangeKey", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtNotifyChangeMultipleKeys", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtNotifyChangeSession", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenEnlistment", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenEventPair", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenIoCompletion", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenJobObject", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenKeyEx", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenKeyTransacted", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenKeyTransactedEx", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenKeyedEvent", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenMutant", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenObjectAuditAlarm", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenPrivateNamespace", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenProcessToken", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenResourceManager", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenSemaphore", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenSession", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenSymbolicLinkObject", vf_windows_print_syscall_opensymboliclinkobject_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenThread", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenTimer", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenTransaction", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtOpenTransactionManager", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtPlugPlayControl", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtPrePrepareComplete", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtPrePrepareEnlistment", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtPrepareComplete", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtPrepareEnlistment", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtPrivilegeCheck", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtPrivilegeObjectAuditAlarm", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtPrivilegedServiceAuditAlarm", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtPropagationComplete", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtPropagationFailed", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtPulseEvent", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryBootEntryOrder", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryBootOptions", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryDebugFilterState", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryDirectoryObject", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryDriverEntryOrder", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryEaFile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryFullAttributesFile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryInformationAtom", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryInformationEnlistment", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryInformationJobObject", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryInformationPort", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryInformationResourceManager", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryInformationTransaction", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryInformationTransactionManager", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryInformationWorkerFactory", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryInstallUILanguage", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryIntervalProfile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryIoCompletion", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryLicenseValue", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryMultipleValueKey", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryMutant", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryOpenSubKeys", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryOpenSubKeysEx", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryPortInformationProcess", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryQuotaInformationFile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQuerySecurityAttributesToken", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQuerySecurityObject", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQuerySemaphore", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQuerySymbolicLinkObject", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQuerySystemEnvironmentValue", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQuerySystemEnvironmentValueEx", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQuerySystemInformationEx", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueryTimerResolution", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtQueueApcThreadEx", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtRaiseException", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtRaiseHardError", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtReadOnlyEnlistment", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtRecoverEnlistment", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtRecoverResourceManager", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtRecoverTransactionManager", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtRegisterProtocolAddressInformation", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtRegisterThreadTerminatePort", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtReleaseKeyedEvent", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtReleaseWorkerFactoryWorker", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtRemoveIoCompletionEx", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtRemoveProcessDebug", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtRenameKey", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtRenameTransactionManager", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtReplaceKey", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtReplacePartitionUnit", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtReplyWaitReplyPort", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtRequestPort", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtResetEvent", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtResetWriteWatch", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtRestoreKey", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtResumeProcess", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtRollbackComplete", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtRollbackEnlistment", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtRollbackTransaction", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtRollforwardTransactionManager", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSaveKey", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSaveKeyEx", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSaveMergedKeys", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSecureConnectPort", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSerializeBoot", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetBootEntryOrder", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetBootOptions", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetContextThread", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetDebugFilterState", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetDefaultHardErrorPort", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetDefaultLocale", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetDefaultUILanguage", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetDriverEntryOrder", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetEaFile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetHighEventPair", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetHighWaitLowEventPair", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetInformationDebugObject", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetInformationEnlistment", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetInformationJobObject", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetInformationKey", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetInformationResourceManager", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetInformationToken", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetInformationTransaction", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetInformationTransactionManager", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetInformationWorkerFactory", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetIntervalProfile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetIoCompletion", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetIoCompletionEx", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetLdtEntries", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetLowEventPair", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetLowWaitHighEventPair", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetQuotaInformationFile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetSecurityObject", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetSystemEnvironmentValue", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetSystemEnvironmentValueEx", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetSystemInformation", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetSystemPowerState", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetSystemTime", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetThreadExecutionState", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetTimerEx", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetTimerResolution", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetUuidSeed", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSetVolumeInformationFile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtShutdownSystem", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtShutdownWorkerFactory", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSignalAndWaitForSingleObject", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSinglePhaseReject", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtStartProfile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtStopProfile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSuspendProcess", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSuspendThread", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtSystemDebugControl", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtTerminateJobObject", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtTestAlert", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtThawRegistry", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtThawTransactions", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtTraceControl", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtTranslateFilePath", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtUmsThreadYield", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtUnloadDriver", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtUnloadKey", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtUnloadKey2", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtUnloadKeyEx", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtUnlockFile", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtUnlockVirtualMemory", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtVdmControl", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtWaitForDebugEvent", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtWaitForKeyedEvent", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtWaitForWorkViaWorkerFactory", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtWaitHighEventPair", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtWaitLowEventPair", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ "NtWorkerFactoryWorkerReady", vf_windows_print_syscall_generic_cb, vf_windows_print_sysret_generic_cb },
+	{ NULL, NULL },
+};
+
+#define NUM_SYSCALL_ARGS 8
+
+/*
+ * Tries to return a UTF-8 string representing the filename of an ObjectAttribute
+ * vaddr must point to an ObjectAttribute virtual address
+ * Must free what it returns
+ */
 
 /*
  * For each of the system calls libvmi is interested in, establish a memory trap
@@ -695,7 +674,7 @@ vf_windows_print_sysret(vmi_instance_t vmi,
  * instruction.
  */
 bool
-vf_windows_find_syscalls_and_setup_mem_traps(vf_state *state)
+vf_windows_find_syscalls_and_setup_mem_traps(GTLoop *loop)
 {
 	static const char *TRACED_SYSCALLS[] = {
 		"NtCreateFile",
@@ -703,25 +682,25 @@ vf_windows_find_syscalls_and_setup_mem_traps(vf_state *state)
 		NULL
 	};
 
-	return vf_find_syscalls_and_setup_mem_traps(state,
+	return vf_find_syscalls_and_setup_mem_traps(loop,
                                                     SYSCALLS,
                                                     TRACED_SYSCALLS);
 }
 
 bool
-vf_windows_find_return_point_addr(vf_state *state)
+vf_windows_find_return_point_addr(GTLoop *loop)
 {
 	bool status = false;
 	addr_t lstar;
 
-	status_t ret = vmi_get_vcpureg(state->vmi, &lstar, MSR_LSTAR, 0);
+	status_t ret = vmi_get_vcpureg(loop->vmi, &lstar, MSR_LSTAR, 0);
 	if (VMI_SUCCESS != ret) {
 		fprintf(stderr, "failed to get MSR_LSTAR address\n");
 		goto done;
 	}
 
-	return_point_addr = vf_find_addr_after_instruction(state, lstar, "call", "r10");
-	if (0 == return_point_addr) {
+	loop->return_point_addr = vf_find_addr_after_instruction(loop, lstar, "call", "r10");
+	if (0 == loop->return_point_addr) {
 		fprintf(stderr, "failed to get return pointer address\n");
 		goto done;
 	}
