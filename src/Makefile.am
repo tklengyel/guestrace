@@ -23,11 +23,10 @@ libguestrace_0_0_la_SOURCES = \
 	trace-syscalls.c
 
 libguestraceincludedir = \
-	$(includedir)/guestrace-@API_VERSION@/guestrace
+	$(includedir)/libguestrace-@API_VERSION@/libguestrace
 
 libguestraceinclude_HEADERS = \
-	guestrace.h \
-	guestrace-private.h
+	guestrace.h
 
 guestrace_SOURCES = \
 	guestrace.c \
@@ -39,4 +38,5 @@ guestrace_LDADD = \
 
 noinst_HEADERS = \
 	functions-linux.h \
-	functions-windows.h
+	functions-windows.h \
+	guestrace-private.h
