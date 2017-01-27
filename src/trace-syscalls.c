@@ -581,6 +581,8 @@ void gt_loop_set_cb(GTLoop *loop,
 	addr_t sysaddr;
 	struct vf_paddr_record *syscall_trap;
 
+	vmi_pause_vm(loop->vmi);
+
 	sysaddr = vmi_translate_ksym2v(loop->vmi, kernel_func);
 	if (0 == sysaddr) {
 		fprintf(stderr, "could not find symbol %s\n", kernel_func);
@@ -594,6 +596,8 @@ void gt_loop_set_cb(GTLoop *loop,
 	}
 
 done:
+	vmi_resume_vm(loop->vmi);
+
 	return;
 }
 
