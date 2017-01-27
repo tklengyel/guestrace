@@ -236,11 +236,18 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 
 		if (ret_addr == loop->return_point_addr) {
 			vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
-			paddr_record->syscall_cb(vmi, event, pid);
+
+			GTSyscallData *sys_data = g_new0(GTSyscallData, 1);
+			sys_data->syscall_trap  = paddr_record;
+			sys_data->vmi           = vmi;
+			sys_data->event         = event;
+			sys_data->pid           = pid;
+
+			paddr_record->syscall_cb(sys_data);
 			vmi_write_64_pa(vmi, ret_loc, &loop->trampoline_addr);
 			g_hash_table_insert(loop->vf_ret_addr_mapping,
 		                        GSIZE_TO_POINTER(thread_id),
-		                        paddr_record);
+		                        sys_data);
 		}
 
 		/* Set VCPUs SLAT to use original for one step. */
@@ -252,20 +259,29 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	} else {
 		/* Type-two breakpoint. */
 		addr_t thread_id = event->x86_regs->rsp - 8;
-		struct vf_paddr_record *paddr_record = g_hash_table_lookup(loop->vf_ret_addr_mapping,
-		                                                    GSIZE_TO_POINTER(thread_id));
+		GTSyscallData *sys_data = g_hash_table_lookup(loop->vf_ret_addr_mapping,
+		                                              GSIZE_TO_POINTER(thread_id));
 
-		if (NULL != paddr_record) {
-			vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
-			paddr_record->sysret_cb(vmi, event, pid);
+		if (NULL != sys_data) {
+			sys_data->vmi = vmi;
+			sys_data->event = event;
+
+			sys_data->syscall_trap->sysret_cb(sys_data);
 
 			/* Restore the stack before returning execution to VCPU */
 			vmi_write_64_pa(vmi, vmi_translate_kv2p(vmi, thread_id), &loop->return_point_addr);
 
 			vmi_set_vcpureg(vmi, loop->return_point_addr, RIP, event->vcpu_id);
 
+			/* this will free our GTSyscallData object */
 			g_hash_table_remove(loop->vf_ret_addr_mapping,
 			                    GSIZE_TO_POINTER(thread_id));
+
+			/*
+			 * Do we want to free sys_data->data for the user no matter what?
+			 * if not and we let the use stored malloc'd data here and we never
+			 * reach the sysret (e.g. fork, segault), we will have a slight memory leak
+			 */
 		}
 	}
 
@@ -398,10 +414,13 @@ GTLoop *gt_loop_new(const char *guest_name)
 
 	loop->vf_page_translation = g_hash_table_new(NULL, NULL);
 	loop->vf_page_record_collection = g_hash_table_new_full(NULL,
+	                                                        NULL,
+	                                                        NULL,
+	                                                        vf_destroy_page_record);
+	loop->vf_ret_addr_mapping = g_hash_table_new_full(NULL,
 	                                                  NULL,
 	                                                  NULL,
-	                                                  vf_destroy_page_record);
-	loop->vf_ret_addr_mapping = g_hash_table_new(NULL, NULL);
+	                                                  g_free);
 
 	vmi_pause_vm(loop->vmi);
 
