@@ -509,34 +509,6 @@ GTLoop *gt_loop_new(const char *guest_name)
 		goto done;
 	}
 
-	rc = xc_altp2m_switch_to_view(loop->xch, loop->domid, loop->shadow_view);
-	if (rc < 0) {
-		fprintf(stderr, "failed to enable shadow view\n");
-                status = VMI_FAILURE;
-		goto done;
-	}
-
-	if (!vf_set_up_generic_events(loop)) {
-                status = VMI_FAILURE;
-		goto done;
-	}
-
-	if (!vf_set_up_step_events(loop)) {
-                status = VMI_FAILURE;
-		goto done;
-	}
-
-
-	if (!loop->os_functions->find_return_point_addr(loop)) {
-                status = VMI_FAILURE;
-		goto done;
-	}
-
-	if (!vf_find_trampoline_addr(loop)) {
-                status = VMI_FAILURE;
-		goto done;
-	}
-
 	vmi_resume_vm(loop->vmi);
 
 done:
@@ -616,6 +588,35 @@ done:
  */
 void gt_loop_run(GTLoop *loop)
 {
+	int rc;
+
+	vmi_pause_vm(loop->vmi);
+
+	rc = xc_altp2m_switch_to_view(loop->xch, loop->domid, loop->shadow_view);
+	if (rc < 0) {
+		fprintf(stderr, "failed to enable shadow view\n");
+		goto done;
+	}
+
+	if (!vf_set_up_generic_events(loop)) {
+		goto done;
+	}
+
+	if (!vf_set_up_step_events(loop)) {
+		goto done;
+	}
+
+
+	if (!loop->os_functions->find_return_point_addr(loop)) {
+		goto done;
+	}
+
+	if (!vf_find_trampoline_addr(loop)) {
+		goto done;
+	}
+
+	vmi_resume_vm(loop->vmi);
+
 	while(!gt_interrupted){
 		status_t status = vmi_events_listen(loop->vmi, 500);
 		if (status != VMI_SUCCESS) {
@@ -623,6 +624,10 @@ void gt_loop_run(GTLoop *loop)
 			break;
 		}
 	}
+
+done:
+
+	return;
 }
 
 /**
