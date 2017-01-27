@@ -118,6 +118,8 @@ vf_teardown(GTLoop *loop)
 
 		vmi_destroy(loop->vmi);
 	}
+
+	loop->vmi = NULL;
 }
 
 static void
@@ -621,11 +623,11 @@ void gt_loop_run(GTLoop *loop)
  */
 void gt_loop_quit(GTLoop *loop)
 {
-	vf_interrupted = TRUE;
-
 	if (NULL != loop) {
 		vf_teardown(loop);
 	}
+
+	vf_interrupted = TRUE;
 }
 
 /* Allocate a new page of memory in the guest's address space. */
