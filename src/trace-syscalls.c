@@ -388,8 +388,7 @@ done:
  * gt_loop_new:
  * @guest_name: the name of a running guest virtual machine.
  *
- * Creates a new #GTLoop structure and uses libvmi to complete the preparations
- * necessary to trace a guest's system calls.
+ * Creates a new #GTLoop structure.
  *
  * Returns: a new #GTLoop.
  **/
@@ -557,7 +556,8 @@ done:
  * gt_loop_run:
  * @loop: a #GTLoop.
  *
- * Runs @loop until gt_loop_quit() is called on @loop.
+ * Uses libvmi to complete the preparations necessary to trace a guest's system
+ * calls. Runs @loop until gt_loop_quit() is called on @loop.
  */
 void gt_loop_run(GTLoop *loop)
 {
@@ -618,6 +618,10 @@ void gt_loop_quit(GTLoop *loop)
 
 	vmi_pause_vm(loop->vmi);
 
+	g_hash_table_remove_all(loop->vf_page_translation);
+	g_hash_table_remove_all(loop->vf_page_record_collection);
+	g_hash_table_remove_all(loop->vf_ret_addr_mapping);
+
 	status = xc_altp2m_switch_to_view(loop->xch, loop->domid, 0);
 	if (0 > status) {
 		fprintf(stderr, "failed to reset EPT to point to default table\n");
@@ -648,7 +652,9 @@ void gt_loop_quit(GTLoop *loop)
  * gt_loop_free:
  * @loop: a #GTLoop.
  *
- * Free @loop and its associated memory.
+ * Free @loop and its associated memory. If the loop is currently running, then
+ * gt_loop_quit() must first terminate the loop and remove the guest
+ * instrumentation.
  */
 void gt_loop_free(GTLoop *loop)
 {
@@ -658,7 +664,6 @@ void gt_loop_free(GTLoop *loop)
 	g_hash_table_destroy(loop->vf_page_translation);
 	g_hash_table_foreach(loop->vf_ret_addr_mapping, vf_restore_return_addr, loop);
 	g_hash_table_destroy(loop->vf_ret_addr_mapping);
-
 
 	xc_altp2m_destroy_view(loop->xch, loop->domid, loop->shadow_view);
 	libxl_ctx_free(loop->ctx);
