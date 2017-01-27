@@ -1,4 +1,4 @@
-/* Generated on Linux_4.9.3-200.fc25.x86_64 on 27 Jan 2017 01:20:20*/
+/* Generated on Linux_4.9.3-200.fc25.x86_64 on 27 Jan 2017 01:42:51*/
 
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
@@ -10,6 +10,14 @@
 #include "generated-linux.h"
 
 static const int RETURN_ADDR_WIDTH = sizeof(void *);
+
+bool
+vf_linux_find_syscalls_and_setup_mem_traps(GTLoop *loop)
+{
+        return vf_find_syscalls_and_setup_mem_traps(loop,
+                                                    VM_LINUX_SYSCALLS,
+                                                    VM_LINUX_TRACED_SYSCALLS);
+}
 
 static char *
 get_process_name(vmi_instance_t vmi, vmi_pid_t pid) 

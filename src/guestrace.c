@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <guestrace.h>
 
-#include "functions-windows.h"
-#include "functions-linux.h"
+#include "generated-windows.h"
+#include "generated-linux.h"
 
 GTLoop *loop = NULL;
 

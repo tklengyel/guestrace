@@ -6,23 +6,6 @@
 #include <inttypes.h>
 
 #include "guestrace-private.h"
-#include "functions-linux.h"
-#include "generated-linux.h"
-
-struct os_functions os_functions_linux = {
-	.find_syscalls_and_setup_mem_traps \
-	                        = vf_linux_find_syscalls_and_setup_mem_traps,
-	.find_return_point_addr = vf_linux_find_return_point_addr
-};
-
-bool
-vf_linux_find_syscalls_and_setup_mem_traps(GTLoop *loop)
-{
-	return vf_find_syscalls_and_setup_mem_traps(loop,
-	                                            VM_LINUX_SYSCALLS,
-	                                            VM_LINUX_TRACED_SYSCALLS);
-}
-
 
 bool
 vf_linux_find_return_point_addr(GTLoop *loop)
@@ -47,3 +30,7 @@ vf_linux_find_return_point_addr(GTLoop *loop)
 done:
 	return status;
 }
+
+struct os_functions os_functions_linux = {
+	.find_return_point_addr = vf_linux_find_return_point_addr
+};

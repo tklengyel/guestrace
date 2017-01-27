@@ -18,6 +18,8 @@ AM_LDFLAGS = \
 	$(LIBVMI_LIBS)
 
 libguestrace_0_0_la_SOURCES = \
+	functions-linux.c \
+	functions-windows.c \
 	trace-syscalls.c
 
 libguestraceincludedir = \
@@ -29,9 +31,8 @@ libguestraceinclude_HEADERS = \
 
 guestrace_SOURCES = \
 	guestrace.c \
-	functions-linux.c \
-	functions-windows.c \
-	generated-linux.c
+	generated-linux.c \
+	generated-windows.c
 
 guestrace_LDADD = \
 	libguestrace-0.0.la

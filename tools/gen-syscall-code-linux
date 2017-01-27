@@ -355,10 +355,9 @@ def create_struct_h(syscall_map, syscall_order, kernel_info):
 #ifndef GENERATED_LINUX_H
 #define GENERATED_LINUX_H
 
-#include <libvmi/libvmi.h>
-#include <libvmi/events.h>
-
 #include "guestrace.h"
+
+bool vf_linux_find_syscalls_and_setup_mem_traps(GTLoop *loop);
 
 extern const char *VM_LINUX_TRACED_SYSCALLS[];
 extern const struct syscall_defs VM_LINUX_SYSCALLS[];
@@ -385,6 +384,14 @@ def create_struct_c(syscall_map, syscall_order, kernel_info):
 #include "generated-linux.h"
 
 static const int RETURN_ADDR_WIDTH = sizeof(void *);
+
+bool
+vf_linux_find_syscalls_and_setup_mem_traps(GTLoop *loop)
+{
+        return vf_find_syscalls_and_setup_mem_traps(loop,
+                                                    VM_LINUX_SYSCALLS,
+                                                    VM_LINUX_TRACED_SYSCALLS);
+}
 
 static char *
 get_process_name(vmi_instance_t vmi, vmi_pid_t pid) 
