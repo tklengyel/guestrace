@@ -65,7 +65,8 @@ AC_CHECK_LIB(xenctrl, xc_altp2m_create_view, , AC_MSG_ERROR(You are missing libx
 AM_CONDITIONAL(FLYN, test "$FLYN")
 
 AC_OUTPUT([
-Makefile
 doc/Makefile
 src/Makefile
+Makefile
+libguestrace-${API_VERSION}.pc
 ])
