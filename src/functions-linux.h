@@ -5,6 +5,6 @@
 
 extern struct os_functions os_functions_linux;
 
-bool vf_linux_find_return_point_addr(GTLoop *loop);
+addr_t vf_linux_find_return_point_addr(GTLoop *loop);
 
 #endif

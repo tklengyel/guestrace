@@ -102,7 +102,7 @@ main (int argc, char **argv) {
 done:
 	printf("Shutting down guestrace\n");
 
-	gt_loop_quit(loop);
+	gt_loop_free(loop);
 
 	exit(VMI_SUCCESS == status ? EXIT_SUCCESS : EXIT_FAILURE);
 }

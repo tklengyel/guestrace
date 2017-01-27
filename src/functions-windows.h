@@ -5,6 +5,6 @@
 
 extern struct os_functions os_functions_windows;
 
-bool vf_windows_find_return_point_addr(GTLoop *loop);
+addr_t vf_windows_find_return_point_addr(GTLoop *loop);
 
 #endif

@@ -76,53 +76,6 @@ vf_restore_return_addr(gpointer key, gpointer value, gpointer user_data)
 }
 
 static void
-vf_teardown(GTLoop *loop)
-{
-	if (loop->vmi != NULL) {
-		int status;
-
-		vmi_pause_vm(loop->vmi);
-
-		g_hash_table_destroy(loop->vf_page_record_collection);
-		g_hash_table_destroy(loop->vf_page_translation);
-
-		g_hash_table_foreach(loop->vf_ret_addr_mapping, vf_restore_return_addr, loop);
-
-		g_hash_table_destroy(loop->vf_ret_addr_mapping);
-
-		status = xc_altp2m_switch_to_view(loop->xch, loop->domid, 0);
-		if (0 > status) {
-			fprintf(stderr, "failed to reset EPT to point to default table\n");
-		}
-
-		status = xc_altp2m_destroy_view(loop->xch, loop->domid, loop->shadow_view);
-		if (0 > status) {
-			fprintf(stderr, "failed to destroy shadow view\n");
-		}
-
-		status = xc_altp2m_set_domain_state(loop->xch, loop->domid, 0);
-		if (0 > status) {
-			fprintf(stderr, "failed to turn off altp2m on guest\n");
-		}
-
-		/* TODO: find out why this isn't decreasing main memory on next run of guestrace */
-		status = xc_domain_setmaxmem(loop->xch, loop->domid, loop->init_mem_size);
-		if (0 > status) {
-			fprintf(stderr, "failed to reset max memory on guest");
-		}
-
-		libxl_ctx_free(loop->ctx);
-		xc_interface_close(loop->xch);
-
-		vmi_resume_vm(loop->vmi);
-
-		vmi_destroy(loop->vmi);
-	}
-
-	loop->vmi = NULL;
-}
-
-static void
 vf_destroy_page_record (gpointer data) {
 	vf_page_record *page_record = data;
 
@@ -513,7 +466,8 @@ GTLoop *gt_loop_new(const char *guest_name)
 
 done:
 	if (VMI_SUCCESS != status) {
-		vf_teardown(loop);
+		gt_loop_free(loop);
+		loop = NULL;
 	}
 
 	return loop;
@@ -607,7 +561,8 @@ void gt_loop_run(GTLoop *loop)
 	}
 
 
-	if (!loop->os_functions->find_return_point_addr(loop)) {
+	loop->return_point_addr = loop->os_functions->find_return_point_addr(loop);
+	if (0 == loop->return_point_addr) {
 		goto done;
 	}
 
@@ -634,16 +589,67 @@ done:
  * gt_loop_quit:
  * @loop: a #GTLoop.
  *
- * Tear down @loop and allow the guest kernel to continue without
- * instrumentation.
+ * Stops @loop from running. Any calls to gt_loop_run() for the loop will return.
+ * This removes any modifications to the guest's memory and allows the guest
+ * to run without instrumentation.
  */
 void gt_loop_quit(GTLoop *loop)
 {
-	if (NULL != loop) {
-		vf_teardown(loop);
+	int status;
+
+	vmi_pause_vm(loop->vmi);
+
+	status = xc_altp2m_switch_to_view(loop->xch, loop->domid, 0);
+	if (0 > status) {
+		fprintf(stderr, "failed to reset EPT to point to default table\n");
 	}
 
+	status = xc_altp2m_destroy_view(loop->xch, loop->domid, loop->shadow_view);
+	if (0 > status) {
+		fprintf(stderr, "failed to destroy shadow view\n");
+	}
+
+	status = xc_altp2m_set_domain_state(loop->xch, loop->domid, 0);
+	if (0 > status) {
+		fprintf(stderr, "failed to turn off altp2m on guest\n");
+	}
+
+	/* TODO: find out why this isn't decreasing main memory on next run of guestrace */
+	status = xc_domain_setmaxmem(loop->xch, loop->domid, loop->init_mem_size);
+	if (0 > status) {
+		fprintf(stderr, "failed to reset max memory on guest");
+	}
+
+	vmi_resume_vm(loop->vmi);
+
 	gt_interrupted = TRUE;
+}
+
+/**
+ * gt_loop_free:
+ * @loop: a #GTLoop.
+ *
+ * Free @loop and its associated memory.
+ */
+void gt_loop_free(GTLoop *loop)
+{
+	vmi_pause_vm(loop->vmi);
+
+	g_hash_table_destroy(loop->vf_page_record_collection);
+	g_hash_table_destroy(loop->vf_page_translation);
+	g_hash_table_foreach(loop->vf_ret_addr_mapping, vf_restore_return_addr, loop);
+	g_hash_table_destroy(loop->vf_ret_addr_mapping);
+
+
+	xc_altp2m_destroy_view(loop->xch, loop->domid, loop->shadow_view);
+	libxl_ctx_free(loop->ctx);
+	xc_interface_close(loop->xch);
+
+	vmi_resume_vm(loop->vmi);
+
+	vmi_destroy(loop->vmi);
+
+	g_free(loop);
 }
 
 /* Allocate a new page of memory in the guest's address space. */

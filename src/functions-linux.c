@@ -7,11 +7,10 @@
 
 #include "guestrace-private.h"
 
-bool
+addr_t
 vf_linux_find_return_point_addr(GTLoop *loop)
 {
-	bool status = false;
-	addr_t lstar;
+	addr_t lstar, return_point_addr = 0;
 
 	status_t ret = vmi_get_vcpureg(loop->vmi, &lstar, MSR_LSTAR, 0);
 	if (VMI_SUCCESS != ret) {
@@ -19,16 +18,10 @@ vf_linux_find_return_point_addr(GTLoop *loop)
 		goto done;
 	}
 
-	loop->return_point_addr = vf_find_addr_after_instruction(loop, lstar, "call", NULL);
-	if (0 == loop->return_point_addr) {
-		fprintf(stderr, "failed to get return pointer address\n");
-		goto done;
-	}
-
-	status = true;
+	return_point_addr = vf_find_addr_after_instruction(loop, lstar, "call", NULL);
 
 done:
-	return status;
+	return return_point_addr;
 }
 
 struct os_functions os_functions_linux = {

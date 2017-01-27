@@ -67,11 +67,11 @@ void     gt_loop_set_cb(GTLoop *loop,
                         GTSysretFunc sysret_cb);
 void     gt_loop_run(GTLoop *loop);
 void     gt_loop_quit(GTLoop *loop);
+void     gt_loop_free(GTLoop *loop);
 
 /* Operating-system-specific operations. */
 struct os_functions {
-        bool (*find_syscalls_and_setup_mem_traps) (GTLoop *loop);
-        bool (*find_return_point_addr) (GTLoop *loop);
+        addr_t (*find_return_point_addr) (GTLoop *loop);
 };
 
 struct vf_paddr_record *vf_setup_mem_trap (GTLoop *loop,
