@@ -49,7 +49,7 @@ typedef void (*GTSysretFunc) (GTSyscallData *data);
 struct vf_paddr_record {
 	addr_t offset;
 	GTSyscallFunc syscall_cb;
-  GTSysretFunc  sysret_cb;
+        GTSysretFunc  sysret_cb;
 	vf_page_record *parent;
 };
 
