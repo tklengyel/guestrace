@@ -627,22 +627,6 @@ void gt_loop_quit(GTLoop *loop)
 		fprintf(stderr, "failed to reset EPT to point to default table\n");
 	}
 
-	status = xc_altp2m_destroy_view(loop->xch, loop->domid, loop->shadow_view);
-	if (0 > status) {
-		fprintf(stderr, "failed to destroy shadow view\n");
-	}
-
-	status = xc_altp2m_set_domain_state(loop->xch, loop->domid, 0);
-	if (0 > status) {
-		fprintf(stderr, "failed to turn off altp2m on guest\n");
-	}
-
-	/* TODO: find out why this isn't decreasing main memory on next run of guestrace */
-	status = xc_domain_setmaxmem(loop->xch, loop->domid, loop->init_mem_size);
-	if (0 > status) {
-		fprintf(stderr, "failed to reset max memory on guest");
-	}
-
 	vmi_resume_vm(loop->vmi);
 
 	gt_interrupted = TRUE;
@@ -666,6 +650,10 @@ void gt_loop_free(GTLoop *loop)
 	g_hash_table_destroy(loop->vf_ret_addr_mapping);
 
 	xc_altp2m_destroy_view(loop->xch, loop->domid, loop->shadow_view);
+	xc_altp2m_set_domain_state(loop->xch, loop->domid, 0);
+	/* TODO: find out why this isn't decreasing main memory on next run of guestrace */
+	xc_domain_setmaxmem(loop->xch, loop->domid, loop->init_mem_size);
+
 	libxl_ctx_free(loop->ctx);
 	xc_interface_close(loop->xch);
 
