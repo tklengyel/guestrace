@@ -555,7 +555,14 @@ done:
  **/
 int gt_loop_get_ostype(GTLoop *loop)
 {
-	return loop->os;
+	switch (loop->os) {
+	case VMI_OS_LINUX:
+		return GT_OS_LINUX;
+	case VMI_OS_WINDOWS:
+		return GT_OS_WINDOWS;
+	default:
+		return GT_OS_UNKNOWN;
+	}
 }
 
 /**

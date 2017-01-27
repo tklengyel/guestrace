@@ -52,6 +52,7 @@ struct syscall_defs {
 };
 
 enum {
+	GT_OS_UNKNOWN,
 	GT_OS_WINDOWS,
 	GT_OS_LINUX,
 };
