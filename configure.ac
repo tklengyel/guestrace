@@ -13,6 +13,9 @@ AC_SUBST(ACLOCAL_AMFLAGS, "-I m4")
 AC_PROG_CC
 AC_PROG_LIBTOOL
 
+GTK_DOC_CHECK(1.0)
+AC_CONFIG_MACRO_DIR(m4)
+
 AC_CHECK_PROG(HAVE_PKGCONFIG, pkg-config, yes, no)
 if test "x$HAVE_PKGCONFIG" = "xno"; then
   AC_MSG_ERROR(you need to have pkgconfig installed !)
@@ -60,5 +63,6 @@ AM_CONDITIONAL(FLYN, test "$FLYN")
 
 AC_OUTPUT([
 Makefile
+doc/Makefile
 src/Makefile
 ])
