@@ -268,7 +268,10 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 
 			vmi_set_vcpureg(vmi, loop->return_point_addr, RIP, event->vcpu_id);
 
-			/* this will free our GTSyscallState object */
+			/*
+			 * This will free our GTSyscallState object, but sysret_cb must have
+			 * freed sys_state->data.
+			 */
 			g_hash_table_remove(loop->vf_ret_addr_mapping,
 			                    GSIZE_TO_POINTER(thread_id));
 		}
