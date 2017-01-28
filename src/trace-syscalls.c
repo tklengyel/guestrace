@@ -237,17 +237,14 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		if (ret_addr == loop->return_point_addr) {
 			vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 
-			GTSyscallData *sys_data = g_new0(GTSyscallData, 1);
-			sys_data->syscall_trap  = paddr_record;
-			sys_data->vmi           = vmi;
-			sys_data->event         = event;
-			sys_data->pid           = pid;
+			GTSyscallState *sys_state = g_new0(GTSyscallState, 1);
+			sys_state->syscall_trap   = paddr_record;
+			sys_state->data           = paddr_record->syscall_cb(vmi, event, pid);
 
-			paddr_record->syscall_cb(sys_data);
 			vmi_write_64_pa(vmi, ret_loc, &loop->trampoline_addr);
 			g_hash_table_insert(loop->vf_ret_addr_mapping,
 		                        GSIZE_TO_POINTER(thread_id),
-		                        sys_data);
+		                        sys_state);
 		}
 
 		/* Set VCPUs SLAT to use original for one step. */
@@ -259,29 +256,21 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	} else {
 		/* Type-two breakpoint. */
 		addr_t thread_id = event->x86_regs->rsp - 8;
-		GTSyscallData *sys_data = g_hash_table_lookup(loop->vf_ret_addr_mapping,
-		                                              GSIZE_TO_POINTER(thread_id));
+		GTSyscallState *sys_state = g_hash_table_lookup(loop->vf_ret_addr_mapping,
+		                                                GSIZE_TO_POINTER(thread_id));
 
-		if (NULL != sys_data) {
-			sys_data->vmi = vmi;
-			sys_data->event = event;
-
-			sys_data->syscall_trap->sysret_cb(sys_data);
+		if (NULL != sys_state) {
+			vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
+			sys_state->syscall_trap->sysret_cb(vmi, event, pid, sys_state->data);
 
 			/* Restore the stack before returning execution to VCPU */
 			vmi_write_64_pa(vmi, vmi_translate_kv2p(vmi, thread_id), &loop->return_point_addr);
 
 			vmi_set_vcpureg(vmi, loop->return_point_addr, RIP, event->vcpu_id);
 
-			/* this will free our GTSyscallData object */
+			/* this will free our GTSyscallState object */
 			g_hash_table_remove(loop->vf_ret_addr_mapping,
 			                    GSIZE_TO_POINTER(thread_id));
-
-			/*
-			 * Do we want to free sys_data->data for the user no matter what?
-			 * if not and we let the use stored malloc'd data here and we never
-			 * reach the sysret (e.g. fork, segault), we will have a slight memory leak
-			 */
 		}
 	}
 

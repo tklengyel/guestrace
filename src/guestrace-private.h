@@ -33,35 +33,35 @@
  * page.
  */
 struct _GTLoop {
-        vmi_instance_t vmi;
+	vmi_instance_t vmi;
 
 	os_t os;
 
-        /*
+	/*
 	 * Function pointers which allow for polymorphism; cleanly support both
 	 * Linux and Windows.
 	 */
-        struct os_functions *os_functions;
+	struct os_functions *os_functions;
 
-        /* Fields used with libvmi. */
-        GHashTable *vf_page_translation;
-        GHashTable *vf_page_record_collection;
+	/* Fields used with libvmi. */
+	GHashTable *vf_page_translation;
+	GHashTable *vf_page_record_collection;
 
-        /* Contains the current mapping between a thread return ptr and vf_paddr_record */
-        GHashTable *vf_ret_addr_mapping;
+	/* Contains the current mapping between a thread return ptr and vf_paddr_record */
+	GHashTable *vf_ret_addr_mapping;
 
-        /* Fields used to interact directly with Xen driver. */
-        xc_interface *xch;
-        libxl_ctx *ctx;
-        uint32_t domid;
-        uint64_t init_mem_size;
-        uint64_t curr_mem_size;
-        uint16_t shadow_view;
+	/* Fields used to interact directly with Xen driver. */
+	xc_interface *xch;
+	libxl_ctx *ctx;
+	uint32_t domid;
+	uint64_t init_mem_size;
+	uint64_t curr_mem_size;
+	uint16_t shadow_view;
 	vmi_event_t breakpoint_event;
 	vmi_event_t memory_event;
 	vmi_event_t step_event[VF_MAX_VCPUS];
 
-        /*
+	/*
 	 * Two addresses relevant to type-two breakpoints, which capture system
 	 * call returns:
 	 *

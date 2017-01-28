@@ -24,27 +24,25 @@ typedef struct vf_page_record {
 
 typedef struct vf_paddr_record vf_paddr_record;
 
-typedef struct GTSyscallData {
+typedef struct GTSyscallState {
 	vf_paddr_record   *syscall_trap;
-	vmi_instance_t     vmi;
-	vmi_event_t       *event;
-	vmi_pid_t          pid;
 	void              *data;
-} GTSyscallData;
+} GTSyscallState;
 
 /**
  * GTSyscallFunc:
  * 
  * Specifies one of the two types of functions passed to gt_loop_set_cb().
+ * Returns a pointer that gets passed to the sysret function
  */
-typedef void (*GTSyscallFunc) (GTSyscallData *data);
+typedef void *(*GTSyscallFunc) (vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid);
 
 /**
  * GTSysretFunc:
  * 
  * Specifies one of the two types of functions passed to gt_loop_set_cb().
  */
-typedef void (*GTSysretFunc) (GTSyscallData *data);
+typedef void (*GTSysretFunc) (vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, void * data);
 
 struct vf_paddr_record {
 	addr_t offset;
