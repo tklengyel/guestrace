@@ -54,6 +54,8 @@ static uint8_t VF_BREAKPOINT_INST = 0xCC;
  */
 static gboolean gt_interrupted = FALSE;
 
+static const int RETURN_ADDR_WIDTH = sizeof(void *);
+
 /*
  * Restore a stack return pointer; useful to ensure the kernel continues to
  * run after guestrace exit. Otherwise, guestrace's stack manipulation might
@@ -255,7 +257,7 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		       | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
 	} else {
 		/* Type-two breakpoint. */
-		addr_t thread_id = event->x86_regs->rsp - 8;
+		addr_t thread_id = event->x86_regs->rsp - RETURN_ADDR_WIDTH;
 		GTSyscallState *sys_state = g_hash_table_lookup(loop->vf_ret_addr_mapping,
 		                                                GSIZE_TO_POINTER(thread_id));
 
