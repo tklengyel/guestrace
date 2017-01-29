@@ -71,10 +71,10 @@ struct gt_paddr_record {
         gt_page_record *parent;
 };
 
-typedef struct GTSyscallState {
+typedef struct syscall_state {
         struct gt_paddr_record *syscall_trap;
         void                   *data;
-} GTSyscallState;
+} syscall_state;
 
 /*
  * Restore a stack return pointer; useful to ensure the kernel continues to
@@ -259,7 +259,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		if (ret_addr == loop->return_point_addr) {
 			vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 
-			GTSyscallState *sys_state = g_new0(GTSyscallState, 1);
+			syscall_state *sys_state = g_new0(syscall_state, 1);
 			sys_state->syscall_trap   = paddr_record;
 			sys_state->data           = paddr_record->syscall_cb(vmi, event, pid);
 
@@ -278,7 +278,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	} else {
 		/* Type-two breakpoint. */
 		addr_t thread_id = event->x86_regs->rsp - RETURN_ADDR_WIDTH;
-		GTSyscallState *sys_state = g_hash_table_lookup(loop->gt_ret_addr_mapping,
+		syscall_state *sys_state = g_hash_table_lookup(loop->gt_ret_addr_mapping,
 		                                                GSIZE_TO_POINTER(thread_id));
 
 		if (NULL != sys_state) {
@@ -291,7 +291,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 			vmi_set_vcpureg(vmi, loop->return_point_addr, RIP, event->vcpu_id);
 
 			/*
-			 * This will free our GTSyscallState object, but sysret_cb must have
+			 * This will free our syscall_state object, but sysret_cb must have
 			 * freed sys_state->data.
 			 */
 			g_hash_table_remove(loop->gt_ret_addr_mapping,

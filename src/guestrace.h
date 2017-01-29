@@ -41,7 +41,8 @@ typedef void *(*GTSyscallFunc) (vmi_instance_t vmi,
  * Specifies one of the two types of functions passed to gt_loop_set_cb().
  * The guestrace event loop invokes this callback each time a system call on
  * the guest returns control to a program. It is the responsibility of each
- * #GTSysretFunc implementation to free @data.
+ * #GTSysretFunc implementation to free @user_data if the corresponding
+ * #GTSyscallFunc returned a pointer to a dynamically-allocated object.
  */
 typedef void (*GTSysretFunc) (vmi_instance_t vmi,
                               vmi_event_t *event,
