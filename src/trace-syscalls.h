@@ -2,6 +2,7 @@
 #define TRACE_SYSCALLS_H
 
 typedef struct vf_page_record {
+	/* <private> */
         addr_t frame;
         addr_t shadow_page;
         GHashTable *children;
@@ -9,6 +10,7 @@ typedef struct vf_page_record {
 } vf_page_record;
 
 struct vf_paddr_record {
+	/* <private> */
         addr_t offset;
         GTSyscallFunc syscall_cb;
         GTSysretFunc  sysret_cb;
@@ -16,11 +18,13 @@ struct vf_paddr_record {
 };
 
 typedef struct GTSyscallState {
+	/* <private> */
         struct vf_paddr_record *syscall_trap;
         void                   *data;
 } GTSyscallState;
 
 struct syscall_defs {
+	/* <private> */
         char         *name;
         GTSyscallFunc syscall_cb;
         GTSysretFunc  sysret_cb;
@@ -28,6 +32,7 @@ struct syscall_defs {
 
 /* Operating-system-specific operations. */
 struct os_functions {
+	/* <private> */
         addr_t (*find_return_point_addr) (GTLoop *loop);
 };
 

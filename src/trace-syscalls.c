@@ -492,7 +492,8 @@ done:
  *
  * Returns: the OS type of #GTLoop.
  **/
-int gt_loop_get_ostype(GTLoop *loop)
+GTOSType
+gt_loop_get_ostype(GTLoop *loop)
 {
 	switch (loop->os) {
 	case VMI_OS_LINUX:
@@ -512,7 +513,6 @@ int gt_loop_get_ostype(GTLoop *loop)
  * @syscall_cb: a #GTSyscallFunc which will handle the named system call.
  * @sysret_cb: a #GTSysretFunc which will handle returns from the named
  * system call.
- * @user_data: pointer to callback data "object."
  *
  * Sets the callback functions associated with @kernel_func. Each time
  * processing a system call in the guest kernel calls @kernel_func,

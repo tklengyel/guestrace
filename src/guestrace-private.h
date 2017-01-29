@@ -33,6 +33,7 @@
  * page.
  */
 struct _GTLoop {
+	/* <private> */
 	vmi_instance_t vmi;
 
 	os_t os;

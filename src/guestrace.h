@@ -17,26 +17,52 @@ typedef struct _GTLoop GTLoop;
 
 /**
  * GTSyscallFunc:
+ * @vmi: the libvmi instance which abstracts the guest.
+ * @event: the event which abstracts the system call which caused the guestrace event loop to invoke this function.
+ * @pid: the process ID of the process running when the event occurred.
  * 
  * Specifies one of the two types of functions passed to gt_loop_set_cb().
- * Returns a pointer that gets passed to the sysret function
+ * The guestrace event loop invokes this callback each time a program running
+ * on the guest invokes the corresponding system call. Implementations can
+ * optionally return a pointer which the guestrace event loop will later pass
+ * to the corresponding #GTSysretFunc after the system call returns.
  */
-typedef void *(*GTSyscallFunc) (vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid);
+typedef void *(*GTSyscallFunc) (vmi_instance_t vmi,
+                                vmi_event_t *event,
+                                vmi_pid_t pid);
 
 /**
  * GTSysretFunc:
+ * @vmi: the libvmi instance which abstracts the guest.
+ * @event: the event which abstracts the system return which caused the guestrace event loop to invoke this function.
+ * @pid: the process ID of the process running when the event occurred.
+ * @user_data: the return value from #GTSyscallFunc which the guestrace event loop passes to #GTSysretFunc.
  * 
  * Specifies one of the two types of functions passed to gt_loop_set_cb().
+ * The guestrace event loop invokes this callback each time a system call on
+ * the guest returns control to a program. It is the responsibility of each
+ * #GTSysretFunc implementation to free @data.
  */
-typedef void (*GTSysretFunc) (vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, void * data);
+typedef void (*GTSysretFunc) (vmi_instance_t vmi,
+                              vmi_event_t *event,
+                              vmi_pid_t pid,
+                              void *user_data);
 
-enum {
+/**
+ * GTOSType:
+ * @GT_OS_UNKNOWN: an unknown operating system.
+ * @GT_OS_LINUX: a Linux operating system.
+ * @GT_OS_WINDOWS: a Windows operating system.
+ *
+ * Enum values which specify the operating system running on the guest.
+ */
+typedef enum GTOSType {
 	GT_OS_UNKNOWN,
 	GT_OS_WINDOWS,
 	GT_OS_LINUX,
-};
-
-typedef int GTOSType;
+	/* <private> */
+	GT_OS_COUNT,
+} GTOSType;
 
 GTLoop  *gt_loop_new(const char *guest_name);
 GTOSType gt_loop_get_ostype(GTLoop *loop);
