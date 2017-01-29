@@ -14,46 +14,41 @@ vf_close_handler (int sig)
 	gt_loop_quit(loop);
 }
 
-static bool
+static int
 vf_set_up_signal_handler (struct sigaction act)
 {
-	int status = 0;
+	int rc = 0;
 
 	act.sa_handler = vf_close_handler;
 	act.sa_flags = 0;
 
-	status = sigemptyset(&act.sa_mask);
-	if (-1 == status) {
-		perror("failed to initialize signal handler.\n");
+	rc = sigemptyset(&act.sa_mask);
+	if (-1 == rc) {
 		goto done;
 	}
 
-	status = sigaction(SIGHUP,  &act, NULL);
-	if (-1 == status) {
-		perror("failed to register SIGHUP handler.\n");
+	rc = sigaction(SIGHUP,  &act, NULL);
+	if (-1 == rc ) {
 		goto done;
 	}
 
-	status = sigaction(SIGTERM, &act, NULL);
-	if (-1 == status) {
-		perror("failed to register SIGTERM handler.\n");
+	rc = sigaction(SIGTERM, &act, NULL);
+	if (-1 == rc) {
 		goto done;
 	}
 
-	status = sigaction(SIGINT,  &act, NULL);
-	if (-1 == status) {
-		perror("failed to register SIGINT handler.\n");
+	rc = sigaction(SIGINT,  &act, NULL);
+	if (-1 == rc) {
 		goto done;
 	}
 
-	status = sigaction(SIGALRM, &act, NULL);
-	if (-1 == status) {
-		perror("failed to register SIGALRM handler.\n");
+	rc = sigaction(SIGALRM, &act, NULL);
+	if (-1 == rc) {
 		goto done;
 	}
 
 done:
-	return -1 != status;
+	return rc;
 }
 
 int
@@ -61,12 +56,13 @@ main (int argc, char **argv) {
 	struct sigaction act;
 	status_t status = VMI_FAILURE;
 
-	if (argc < 2){
-		fprintf(stderr, "Usage: guestrace <name of VM>\n");
-		exit(EXIT_FAILURE);
+	if (argc < 2) {
+		fprintf(stderr, "usage: guestrace <VM name>\n");
+		goto done;
 	}
 
-	if (!vf_set_up_signal_handler(act)) {
+	if (-1 == vf_set_up_signal_handler(act)) {
+		perror("failed to setup signal handler.\n");
 		goto done;
 	}
 
@@ -95,12 +91,13 @@ main (int argc, char **argv) {
 		goto done;
 	}
 
-	printf("Waiting for events...\n");
+	printf("Waiting for events.\n");
 
+	status = VMI_SUCCESS;
 	gt_loop_run(loop);
 
 done:
-	printf("Shutting down guestrace\n");
+	printf("Shutting down guestrace.\n");
 
 	gt_loop_free(loop);
 
