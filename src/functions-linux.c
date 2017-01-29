@@ -1,12 +1,17 @@
 #include <libvmi/libvmi.h>
-#include <libvmi/events.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <inttypes.h>
 
+#include "guestrace.h"
 #include "guestrace-private.h"
 
+/*
+ * Within the kernel's system-call handler function (that function pointed to
+ * by the value in register LSTAR) there exists a call instruction which
+ * invokes the per-system-call handler function. The function here finds
+ * the address immediately following the call instruction. This is
+ * necessary to later differentiate per-system-call handler functions which
+ * are returning directly to the kernel's system-call handler function from
+ * those that have been called in a nested manner.
+ */
 addr_t
 vf_linux_find_return_point_addr(GTLoop *loop)
 {
@@ -18,7 +23,10 @@ vf_linux_find_return_point_addr(GTLoop *loop)
 		goto done;
 	}
 
-	return_point_addr = vf_find_addr_after_instruction(loop, lstar, "call", NULL);
+	return_point_addr = vf_find_addr_after_instruction(loop,
+	                                                   lstar,
+	                                                  "call",
+	                                                   NULL);
 
 done:
 	return return_point_addr;
