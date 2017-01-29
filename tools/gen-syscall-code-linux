@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 """
 This program inspects a Linux operating system and generates C source
@@ -11,7 +11,7 @@ to gather information about the arguments to each system call.
 """
 
 import subprocess
-import urllib2
+import urllib.request
 import re
 import time
 from optparse import OptionParser
@@ -39,7 +39,7 @@ class syscall_data:
         self.__name             = syscall_name
         self.__arg_names        = []
         self.__arg_types        = []
-        self.__arg_printf_types = [] # Basic for esoteric (e.g., int for pid_t)
+        self.__arg_printf_types = [] # Basic for esoteric (e.g., int for pid_t))
         self.__arg_formats      = []
 
 
@@ -82,11 +82,11 @@ class syscall_data:
 	
     def get_arg_printf_type(self, arg_num):
         """Return the printf type of the argument at index arg_num"""
-	return self.__arg_printf_types[arg_num]
+        return self.__arg_printf_types[arg_num]
 
     def get_arg_format(self, arg_num):
         """Return the format string for the argument at index arg_num"""
-	return self.__arg_formats[arg_num]
+        return self.__arg_formats[arg_num]
 
     def add_argument(self, arg_type, arg_name = ""):
         """Add an argument to the syscall. This method will append a value
@@ -227,15 +227,13 @@ class kernel_data:
         arch_h_url = "http://lxr.free-electrons.com/source/arch/{0}/include/asm/syscalls.h?v={1};raw=1".format(self.get_kernel_arch(), self.get_kernel_version_short())
 
         try:
-            linux_h_src = urllib2.urlopen(linux_h_url)
-            arch_h_src = urllib2.urlopen(arch_h_url)
+            linux_h_src = urllib.request.urlopen(linux_h_url)
+            arch_h_src = urllib.request.urlopen(arch_h_url)
             linux_h = linux_h_src.readlines()
             linux_h.extend(arch_h_src.readlines())
             return linux_h
-
         except urllib2.URLError:
-            print "failed to open source-code URLs; attempting to open local files"
-            
+            print("failed to open source-code URLs; attempting to open local files")
 
         try:
             linux_h_src = open("linux_syscalls.h", "r")
@@ -245,13 +243,13 @@ class kernel_data:
             return linux_h
        
         except IOError:
-            print "failed to open local files"
+            print("failed to open local files")
 
 def get_kernel_info(get_kernel_source):
     """Get kernel information and create a kernel_data object"""
-    kernel_name = subprocess.check_output(["uname", "-s"]).strip()
-    kernel_version = kernel_name + "_" + subprocess.check_output(["uname", "-r"]).strip()
-    arch = subprocess.check_output(["uname", "-m"]).strip()
+    kernel_name = subprocess.check_output(["uname", "-s"]).decode().strip()
+    kernel_version = kernel_name + "_" + subprocess.check_output(["uname", "-r"]).decode().strip()
+    arch = subprocess.check_output(["uname", "-m"]).decode().strip()
     kernel_info = [kernel_name, kernel_version, arch]
     return kernel_data(kernel_info, get_kernel_source)
 
@@ -259,7 +257,7 @@ def get_kernel_info(get_kernel_source):
 def get_syscalls():
     """For each syscall number, parse the name and create a syscall_data object"""
     syscall_id = 0
-    syscall_name = subprocess.check_output(["ausyscall", "{0}".format(syscall_id)], stderr=subprocess.STDOUT)
+    syscall_name = subprocess.check_output(["ausyscall", "{0}".format(syscall_id)], stderr=subprocess.STDOUT).decode()
     syscall_map = {}
     syscall_order = []
     
@@ -270,7 +268,7 @@ def get_syscalls():
         syscall_id += 1
 
         try: 
-            syscall_name = subprocess.check_output(["ausyscall", "{0}".format(syscall_id)], stderr=subprocess.STDOUT)
+            syscall_name = subprocess.check_output(["ausyscall", "{0}".format(syscall_id)], stderr=subprocess.STDOUT).decode()
             if syscall_name[0] == "_":
                 syscall_name = syscall_name[1:]
     
@@ -286,13 +284,13 @@ def extract_syscall_prototypes(source_data):
     end = len(source_data)
 
     while (line < end):
-        if "asmlinkage" == source_data[line].split(" ")[0]:
-            curr_syscall = source_data[line].strip()
+        if "asmlinkage" == source_data[line].decode().split(" ")[0]:
+            curr_syscall = source_data[line].decode().strip()
             line += 1
-            while ("#" not in source_data[line]
-               and "/*" not in source_data[line]
-               and "asmlinkage" not in source_data[line]):
-                curr_syscall += " " + source_data[line].strip()
+            while ("#" not in source_data[line].decode()
+               and "/*" not in source_data[line].decode()
+               and "asmlinkage" not in source_data[line].decode()):
+                curr_syscall += " " + source_data[line].decode().strip()
                 line += 1
             syscall_prototypes.append(curr_syscall)
         else:
@@ -325,7 +323,7 @@ def parse_syscall_protos(syscall_prototypes, syscall_map):
 
             if syscall_map[syscall_name].get_args_count() != 0:
                 # Likely uses #ifdef to provide alternate definitions of syscall.
-                print "skip repeat", syscall_name, "def.: ", syscall_map[syscall_name]
+                print("skip repeat", syscall_name, "def.: ", syscall_map[syscall_name])
                 continue
 
             for arg in curr_args:
@@ -455,7 +453,7 @@ done:
         str += create_print_function(syscall_map[syscall])
 
     # generate the print_sysret_info function
-    str += """void vf_linux_print_sysret(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid) {
+    str += """void vf_linux_print_sysret(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, void *data) {
 	reg_t syscall_return = event->x86_regs->rax;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) return: 0x%"PRIx64"\\n", pid, rsp - RETURN_ADDR_WIDTH, get_process_name(vmi, pid), syscall_return);
@@ -495,12 +493,13 @@ done:
 
 def create_print_function(syscall_data):
     """Generate a print function for a single syscall"""
-    func_str = """void vf_linux_print_syscall_{0}(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid)
+    func_str = """void *vf_linux_print_syscall_{0}(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid)
 {{
-    char *proc = get_process_name(vmi, pid);
+	char *proc = get_process_name(vmi, pid);
 """.format(syscall_data.get_syscall_name())
     func_str += create_printf_statement(syscall_data.get_args_count(), syscall_data)
-    func_str += "}\n\n"
+    func_str += """	return NULL;
+}\n\n"""
 
     return func_str
 
@@ -545,23 +544,23 @@ def main(get_kernel_source):
     prototypes to generate a complete object which holds a syscall name number and
     all information about its arguments and using this data generates two C files
     for use with guestrace."""
-    print "Getting kernel info!"
+    print("Getting kernel info!")
     kernel_info = get_kernel_info(get_kernel_source)
 
-    print "Getting syscall info! takes a few seconds..."
+    print("Getting syscall info! takes a few seconds...")
     (syscall_map, syscall_order) = get_syscalls()
     
     if get_kernel_source:
-        print "Gathering syscall prototypes!"
+        print("Gathering syscall prototypes!")
         syscall_protos = extract_syscall_prototypes(kernel_info.get_header_src())
         
-        print "Parsing prototypes!"
+        print("Parsing prototypes!")
         syscall_map_complete = parse_syscall_protos(syscall_protos, syscall_map)
         
     else:
-        print "Skipped functions invloving the linux source headers!"
+        print("Skipped functions invloving the linux source headers!")
 
-    print "Generating generated-linux.c!"
+    print("Generating generated-linux.c!")
     create_struct_h(syscall_map, syscall_order, kernel_info)
     create_struct_c(syscall_map, syscall_order, kernel_info)
 
