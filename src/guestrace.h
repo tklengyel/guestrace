@@ -15,20 +15,6 @@
  */
 typedef struct _GTLoop GTLoop;
 
-typedef struct vf_page_record {
-	addr_t frame;
-	addr_t shadow_page;
-	GHashTable *children;
-	GTLoop *loop;
-} vf_page_record;
-
-typedef struct vf_paddr_record vf_paddr_record;
-
-typedef struct GTSyscallState {
-	vf_paddr_record   *syscall_trap;
-	void              *data;
-} GTSyscallState;
-
 /**
  * GTSyscallFunc:
  * 
