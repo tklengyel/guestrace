@@ -14,7 +14,7 @@
  * those that have been called in a nested manner.
  */
 addr_t
-vf_linux_find_return_point_addr(GTLoop *loop)
+_gt_linux_find_return_point_addr(GTLoop *loop)
 {
 	addr_t lstar, return_point_addr = 0;
 
@@ -24,7 +24,7 @@ vf_linux_find_return_point_addr(GTLoop *loop)
 		goto done;
 	}
 
-	return_point_addr = vf_find_addr_after_instruction(loop,
+	return_point_addr = _gt_find_addr_after_instruction(loop,
 	                                                   lstar,
 	                                                  "call",
 	                                                   NULL);
@@ -34,5 +34,5 @@ done:
 }
 
 struct os_functions os_functions_linux = {
-	.find_return_point_addr = vf_linux_find_return_point_addr
+	.find_return_point_addr = _gt_linux_find_return_point_addr
 };

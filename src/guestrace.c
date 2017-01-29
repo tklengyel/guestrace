@@ -9,17 +9,17 @@
 GTLoop *loop = NULL;
 
 static void
-vf_close_handler (int sig)
+gt_close_handler (int sig)
 {
 	gt_loop_quit(loop);
 }
 
 static int
-vf_set_up_signal_handler (struct sigaction act)
+gt_set_up_signal_handler (struct sigaction act)
 {
 	int rc = 0;
 
-	act.sa_handler = vf_close_handler;
+	act.sa_handler = gt_close_handler;
 	act.sa_flags = 0;
 
 	rc = sigemptyset(&act.sa_mask);
@@ -61,7 +61,7 @@ main (int argc, char **argv) {
 		goto done;
 	}
 
-	if (-1 == vf_set_up_signal_handler(act)) {
+	if (-1 == gt_set_up_signal_handler(act)) {
 		perror("failed to setup signal handler.\n");
 		goto done;
 	}
@@ -75,13 +75,13 @@ main (int argc, char **argv) {
 	GTOSType os = gt_loop_get_ostype(loop);
 	switch (os) {
 	case GT_OS_LINUX:
-		if (!vf_linux_find_syscalls_and_setup_mem_traps(loop)) {
+		if (!_gt_linux_find_syscalls_and_setup_mem_traps(loop)) {
 			fprintf(stderr, "could not setup memory traps\n");
 			goto done;
 		}
 		break;
 	case GT_OS_WINDOWS:
-		if (!vf_windows_find_syscalls_and_setup_mem_traps(loop)) {
+		if (!_gt_windows_find_syscalls_and_setup_mem_traps(loop)) {
 			fprintf(stderr, "could not setup memory traps\n");
 			goto done;
 		}

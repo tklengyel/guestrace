@@ -57,6 +57,25 @@ static gboolean gt_interrupted = FALSE;
 
 static const int RETURN_ADDR_WIDTH = sizeof(void *);
 
+typedef struct gt_page_record {
+        addr_t frame;
+        addr_t shadow_page;
+        GHashTable *children;
+        GTLoop *loop;
+} gt_page_record;
+
+struct gt_paddr_record {
+        addr_t offset;
+        GTSyscallFunc syscall_cb;
+        GTSysretFunc  sysret_cb;
+        gt_page_record *parent;
+};
+
+typedef struct GTSyscallState {
+        struct gt_paddr_record *syscall_trap;
+        void                   *data;
+} GTSyscallState;
+
 /*
  * Restore a stack return pointer; useful to ensure the kernel continues to
  * run after guestrace exit. Otherwise, guestrace's stack manipulation might
@@ -64,7 +83,7 @@ static const int RETURN_ADDR_WIDTH = sizeof(void *);
  * system-call return.
  */
 static void
-vf_restore_return_addr(gpointer key, gpointer value, gpointer user_data)
+gt_restore_return_addr(gpointer key, gpointer value, gpointer user_data)
 {
 	status_t status;
 	addr_t va       = GPOINTER_TO_SIZE(key);
@@ -79,8 +98,8 @@ vf_restore_return_addr(gpointer key, gpointer value, gpointer user_data)
 }
 
 static void
-vf_destroy_page_record (gpointer data) {
-	vf_page_record *page_record = data;
+gt_destroy_page_record (gpointer data) {
+	gt_page_record *page_record = data;
 
 	fprintf(stderr,
 	       "destroying page record on shadow page %lx\n",
@@ -113,7 +132,7 @@ vf_destroy_page_record (gpointer data) {
  * Here we must reset any single-step changes we made.
  */
 static event_response_t
-vf_singlestep_cb(vmi_instance_t vmi, vmi_event_t *event) {
+gt_singlestep_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	/* Resume use of shadow SLAT. */
 	GTLoop *loop = event->data;
 	event->slat_id = loop->shadow_view;
@@ -128,7 +147,7 @@ vf_singlestep_cb(vmi_instance_t vmi, vmi_event_t *event) {
  * create a new event each time we want to single-step.
  */
 static bool
-vf_set_up_step_events (GTLoop *loop)
+gt_set_up_step_events (GTLoop *loop)
 {
 	bool status = false;
 
@@ -138,13 +157,13 @@ vf_set_up_step_events (GTLoop *loop)
 		goto done;
 	}
 
-	if (vcpus > VF_MAX_VCPUS) {
+	if (vcpus > _GT_MAX_VCPUS) {
 		fprintf(stderr, "guest has more VCPUs than supported\n");
 		goto done;
 	}
 
 	for (int vcpu = 0; vcpu < vcpus; vcpu++) {
-		SETUP_SINGLESTEP_EVENT(&(loop->step_event[vcpu]), 1u << vcpu, vf_singlestep_cb, 0);
+		SETUP_SINGLESTEP_EVENT(&(loop->step_event[vcpu]), 1u << vcpu, gt_singlestep_cb, 0);
 		loop->step_event[vcpu].data = loop;
 
 		if (VMI_SUCCESS != vmi_register_event(loop->vmi, &loop->step_event[vcpu])) {
@@ -169,20 +188,20 @@ done:
  * with the physical address. Recall that a given page might contain
  * multiple breakpoints.
  */
-static struct vf_paddr_record *
-vf_paddr_record_from_pa(GTLoop *loop, addr_t pa) {
-	struct vf_paddr_record *paddr_record = NULL;
-	vf_page_record         *page_record  = NULL;
+static struct gt_paddr_record *
+gt_paddr_record_from_pa(GTLoop *loop, addr_t pa) {
+	struct gt_paddr_record *paddr_record = NULL;
+	gt_page_record         *page_record  = NULL;
 
 	addr_t frame  = pa >> VF_PAGE_OFFSET_BITS;
 	addr_t offset = pa % VF_PAGE_SIZE;
-	addr_t shadow = (addr_t)g_hash_table_lookup(loop->vf_page_translation,
+	addr_t shadow = (addr_t)g_hash_table_lookup(loop->gt_page_translation,
 	                                            GSIZE_TO_POINTER(frame));
 	if (0 == shadow) {
 		goto done;
 	}
 
-	page_record = g_hash_table_lookup(loop->vf_page_record_collection,
+	page_record = g_hash_table_lookup(loop->gt_page_record_collection,
 	                                          GSIZE_TO_POINTER(shadow));
 	if (NULL == page_record) {
 		goto done;
@@ -196,9 +215,9 @@ done:
 }
 
 /* Return the paddr_record associated with the given virtual address. */
-static struct vf_paddr_record *
-vf_paddr_record_from_va(GTLoop *loop, addr_t va) {
-	return vf_paddr_record_from_pa(loop, vmi_translate_kv2p(loop->vmi, va));
+static struct gt_paddr_record *
+gt_paddr_record_from_va(GTLoop *loop, addr_t va) {
+	return gt_paddr_record_from_pa(loop, vmi_translate_kv2p(loop->vmi, va));
 }
 
 /*
@@ -212,7 +231,7 @@ vf_paddr_record_from_va(GTLoop *loop, addr_t va) {
  * the next system call enables it.
  */
 static event_response_t
-vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
+gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	status_t status = VMI_EVENT_RESPONSE_NONE;
 
 	GTLoop *loop = event->data;
@@ -220,8 +239,8 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 
 	if (event->interrupt_event.gla != loop->trampoline_addr) {
 		/* Type-one breakpoint. */
-		struct vf_paddr_record *paddr_record
-			= vf_paddr_record_from_va(event->data, event->interrupt_event.gla);
+		struct gt_paddr_record *paddr_record
+			= gt_paddr_record_from_va(event->data, event->interrupt_event.gla);
 
 		/* If paddr_record is null, we assume we didn't emplace interrupt. */
 		if (NULL == paddr_record) {
@@ -245,7 +264,7 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 			sys_state->data           = paddr_record->syscall_cb(vmi, event, pid);
 
 			vmi_write_64_pa(vmi, ret_loc, &loop->trampoline_addr);
-			g_hash_table_insert(loop->vf_ret_addr_mapping,
+			g_hash_table_insert(loop->gt_ret_addr_mapping,
 		                        GSIZE_TO_POINTER(thread_id),
 		                        sys_state);
 		}
@@ -259,7 +278,7 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	} else {
 		/* Type-two breakpoint. */
 		addr_t thread_id = event->x86_regs->rsp - RETURN_ADDR_WIDTH;
-		GTSyscallState *sys_state = g_hash_table_lookup(loop->vf_ret_addr_mapping,
+		GTSyscallState *sys_state = g_hash_table_lookup(loop->gt_ret_addr_mapping,
 		                                                GSIZE_TO_POINTER(thread_id));
 
 		if (NULL != sys_state) {
@@ -275,7 +294,7 @@ vf_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 			 * This will free our GTSyscallState object, but sysret_cb must have
 			 * freed sys_state->data.
 			 */
-			g_hash_table_remove(loop->vf_ret_addr_mapping,
+			g_hash_table_remove(loop->gt_ret_addr_mapping,
 			                    GSIZE_TO_POINTER(thread_id));
 		}
 	}
@@ -289,7 +308,7 @@ done:
  * Switch the VCPUs SLAT to its original, step once, switch SLAT back
  */
 static event_response_t
-vf_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
+gt_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
 	/* Switch back to original SLAT for one step. */
 	event->slat_id = 0;
 
@@ -301,10 +320,10 @@ vf_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
  * Setup our global interrupt to catch any interrupts on any pages.
  */
 static bool
-vf_set_up_generic_events (GTLoop *loop) {
+gt_set_up_generic_events (GTLoop *loop) {
 	bool status = false;
 
-	SETUP_INTERRUPT_EVENT(&loop->breakpoint_event, 0, vf_breakpoint_cb);
+	SETUP_INTERRUPT_EVENT(&loop->breakpoint_event, 0, gt_breakpoint_cb);
 	loop->breakpoint_event.data = loop;
 
 	status_t ret = vmi_register_event(loop->vmi, &loop->breakpoint_event);
@@ -317,7 +336,7 @@ vf_set_up_generic_events (GTLoop *loop) {
 	SETUP_MEM_EVENT(&loop->memory_event,
 	                ~0ULL,
 	                 VMI_MEMACCESS_RW,
-	                 vf_mem_rw_cb,
+	                 gt_mem_rw_cb,
 	                 1);
 
 	loop->memory_event.data = loop;
@@ -335,7 +354,7 @@ done:
 }
 
 static bool
-vf_find_trampoline_addr (GTLoop *loop)
+gt_find_trampoline_addr (GTLoop *loop)
 {
 	bool status = false;
 	status_t vmi_status;
@@ -406,12 +425,12 @@ GTLoop *gt_loop_new(const char *guest_name)
 		printf("LibVMI init succeeded!\n");
 	}
 
-	loop->vf_page_translation = g_hash_table_new(NULL, NULL);
-	loop->vf_page_record_collection = g_hash_table_new_full(NULL,
+	loop->gt_page_translation = g_hash_table_new(NULL, NULL);
+	loop->gt_page_record_collection = g_hash_table_new_full(NULL,
 	                                                        NULL,
 	                                                        NULL,
-	                                                        vf_destroy_page_record);
-	loop->vf_ret_addr_mapping = g_hash_table_new_full(NULL,
+	                                                        gt_destroy_page_record);
+	loop->gt_ret_addr_mapping = g_hash_table_new_full(NULL,
 	                                                  NULL,
 	                                                  NULL,
 	                                                  g_free);
@@ -506,48 +525,6 @@ gt_loop_get_ostype(GTLoop *loop)
 }
 
 /**
- * gt_loop_set_cb:
- * @loop: a #GTLoop.
- * @kernel_func: the name of a function in the traced kernel which implements
- * a system call.
- * @syscall_cb: a #GTSyscallFunc which will handle the named system call.
- * @sysret_cb: a #GTSysretFunc which will handle returns from the named
- * system call.
- *
- * Sets the callback functions associated with @kernel_func. Each time
- * processing a system call in the guest kernel calls @kernel_func,
- * The loop will invoke @syscall_cb with the parameters associated with the
- * call. When @kernel_func returns, the loop will invoke @sysret_cb.
- **/
-void gt_loop_set_cb(GTLoop *loop,
-                    const char *kernel_func,
-                    GTSyscallFunc syscall_cb,
-                    GTSysretFunc sysret_cb)
-{
-	addr_t sysaddr;
-	struct vf_paddr_record *syscall_trap;
-
-	vmi_pause_vm(loop->vmi);
-
-	sysaddr = vmi_translate_ksym2v(loop->vmi, kernel_func);
-	if (0 == sysaddr) {
-		fprintf(stderr, "could not find symbol %s\n", kernel_func);
-		goto done;
-	}
-
-	syscall_trap = vf_setup_mem_trap(loop, sysaddr, syscall_cb, sysret_cb);
-	if (NULL == syscall_trap) {
-		fprintf(stderr, "failed to set trap on %s\n", kernel_func);
-		goto done;
-	}
-
-done:
-	vmi_resume_vm(loop->vmi);
-
-	return;
-}
-
-/**
  * gt_loop_run:
  * @loop: a #GTLoop.
  *
@@ -566,11 +543,11 @@ void gt_loop_run(GTLoop *loop)
 		goto done;
 	}
 
-	if (!vf_set_up_generic_events(loop)) {
+	if (!gt_set_up_generic_events(loop)) {
 		goto done;
 	}
 
-	if (!vf_set_up_step_events(loop)) {
+	if (!gt_set_up_step_events(loop)) {
 		goto done;
 	}
 
@@ -580,7 +557,7 @@ void gt_loop_run(GTLoop *loop)
 		goto done;
 	}
 
-	if (!vf_find_trampoline_addr(loop)) {
+	if (!gt_find_trampoline_addr(loop)) {
 		goto done;
 	}
 
@@ -613,9 +590,9 @@ void gt_loop_quit(GTLoop *loop)
 
 	vmi_pause_vm(loop->vmi);
 
-	g_hash_table_remove_all(loop->vf_page_translation);
-	g_hash_table_remove_all(loop->vf_page_record_collection);
-	g_hash_table_remove_all(loop->vf_ret_addr_mapping);
+	g_hash_table_remove_all(loop->gt_page_translation);
+	g_hash_table_remove_all(loop->gt_page_record_collection);
+	g_hash_table_remove_all(loop->gt_ret_addr_mapping);
 
 	status = xc_altp2m_switch_to_view(loop->xch, loop->domid, 0);
 	if (0 > status) {
@@ -643,10 +620,10 @@ void gt_loop_free(GTLoop *loop)
 
 	vmi_pause_vm(loop->vmi);
 
-	g_hash_table_destroy(loop->vf_page_record_collection);
-	g_hash_table_destroy(loop->vf_page_translation);
-	g_hash_table_foreach(loop->vf_ret_addr_mapping, vf_restore_return_addr, loop);
-	g_hash_table_destroy(loop->vf_ret_addr_mapping);
+	g_hash_table_destroy(loop->gt_page_record_collection);
+	g_hash_table_destroy(loop->gt_page_translation);
+	g_hash_table_foreach(loop->gt_ret_addr_mapping, gt_restore_return_addr, loop);
+	g_hash_table_destroy(loop->gt_ret_addr_mapping);
 
 	xc_altp2m_destroy_view(loop->xch, loop->domid, loop->shadow_view);
 	xc_altp2m_set_domain_state(loop->xch, loop->domid, 0);
@@ -668,7 +645,7 @@ done:
 
 /* Allocate a new page of memory in the guest's address space. */
 static addr_t
-vf_allocate_shadow_page (GTLoop *loop)
+gt_allocate_shadow_page (GTLoop *loop)
 {
 	int status;
 	xen_pfn_t gfn = 0;
@@ -709,7 +686,7 @@ done:
  * Remove the breakpoint associated with paddr_record.
  */
 static status_t
-vf_remove_breakpoint(struct vf_paddr_record *paddr_record) {
+gt_remove_breakpoint(struct gt_paddr_record *paddr_record) {
 	uint8_t curr_inst;
 	status_t status    = VMI_FAILURE;
 	addr_t shadow_page = paddr_record->parent->shadow_page;
@@ -732,15 +709,15 @@ done:
 }
 
 static void
-vf_destroy_paddr_record (gpointer data) {
-	struct vf_paddr_record *paddr_record = data;
+gt_destroy_paddr_record (gpointer data) {
+	struct gt_paddr_record *paddr_record = data;
 
 	fprintf(stderr,
 	       "destroying paddr record at shadow physical address %lx\n",
 	       (paddr_record->parent->shadow_page << VF_PAGE_OFFSET_BITS)
 	      + paddr_record->offset);
 
-	vf_remove_breakpoint(paddr_record);
+	gt_remove_breakpoint(paddr_record);
 
 	g_free(paddr_record);
 }
@@ -751,16 +728,16 @@ vf_destroy_paddr_record (gpointer data) {
  * physical-address record corresponding to va to the page record's collection
  * of children.
  */
-struct vf_paddr_record *
-vf_setup_mem_trap (GTLoop *loop,
+static struct gt_paddr_record *
+gt_setup_mem_trap (GTLoop *loop,
                    addr_t va,
                    GTSyscallFunc syscall_cb,
                    GTSysretFunc sysret_cb)
 {
 	size_t ret;
 	status_t status;
-	vf_page_record  *page_record  = NULL;
-	struct vf_paddr_record *paddr_record = NULL;
+	gt_page_record  *page_record  = NULL;
+	struct gt_paddr_record *paddr_record = NULL;
 
 	addr_t pa = vmi_translate_kv2p(loop->vmi, va);
 	if (0 == pa) {
@@ -769,19 +746,19 @@ vf_setup_mem_trap (GTLoop *loop,
 	}
 
 	addr_t frame = pa >> VF_PAGE_OFFSET_BITS;
-	addr_t shadow = (addr_t) g_hash_table_lookup(loop->vf_page_translation,
+	addr_t shadow = (addr_t) g_hash_table_lookup(loop->gt_page_translation,
 		                                     GSIZE_TO_POINTER(frame));
 	addr_t shadow_offset = pa % VF_PAGE_SIZE;
 
 	if (0 == shadow) {
 		/* Record does not exist; allocate new page and create record. */
-		shadow = vf_allocate_shadow_page(loop);
+		shadow = gt_allocate_shadow_page(loop);
 		if (0 == shadow) {
 			fprintf(stderr, "failed to allocate shadow page\n");
 			goto done;
 		}
 
-		g_hash_table_insert(loop->vf_page_translation,
+		g_hash_table_insert(loop->gt_page_translation,
 		                    GSIZE_TO_POINTER(frame),
 		                    GSIZE_TO_POINTER(shadow));
 
@@ -797,7 +774,7 @@ vf_setup_mem_trap (GTLoop *loop,
 		}
 	}
 
-	page_record = g_hash_table_lookup(loop->vf_page_record_collection,
+	page_record = g_hash_table_lookup(loop->gt_page_record_collection,
 	                                  GSIZE_TO_POINTER(shadow));
 	if (NULL == page_record) {
 		/* No record for this page yet; create one. */
@@ -825,16 +802,16 @@ vf_setup_mem_trap (GTLoop *loop,
 		}
 
 		/* Initialize record of this page. */
-		page_record              = g_new0(vf_page_record, 1);
+		page_record              = g_new0(gt_page_record, 1);
 		page_record->shadow_page = shadow;
 		page_record->frame       = frame;
 		page_record->loop        = loop;
 		page_record->children    = g_hash_table_new_full(NULL,
 		                                       NULL,
 		                                       NULL,
-		                                       vf_destroy_paddr_record);
+		                                       gt_destroy_paddr_record);
 
-		g_hash_table_insert(loop->vf_page_record_collection,
+		g_hash_table_insert(loop->gt_page_record_collection,
 		                    GSIZE_TO_POINTER(shadow),
 		                    page_record);
 
@@ -852,7 +829,7 @@ vf_setup_mem_trap (GTLoop *loop,
 	}
 
 	/* Create physical-address record and add to page record. */
-	paddr_record             = g_new0(struct vf_paddr_record, 1);
+	paddr_record             = g_new0(struct gt_paddr_record, 1);
 	paddr_record->offset     = shadow_offset;
 	paddr_record->parent     = page_record;
 	paddr_record->syscall_cb = syscall_cb;
@@ -876,10 +853,52 @@ done:
 	return paddr_record;
 }
 
+/**
+ * gt_loop_set_cb:
+ * @loop: a #GTLoop.
+ * @kernel_func: the name of a function in the traced kernel which implements
+ * a system call.
+ * @syscall_cb: a #GTSyscallFunc which will handle the named system call.
+ * @sysret_cb: a #GTSysretFunc which will handle returns from the named
+ * system call.
+ *
+ * Sets the callback functions associated with @kernel_func. Each time
+ * processing a system call in the guest kernel calls @kernel_func,
+ * The loop will invoke @syscall_cb with the parameters associated with the
+ * call. When @kernel_func returns, the loop will invoke @sysret_cb.
+ **/
+void gt_loop_set_cb(GTLoop *loop,
+                    const char *kernel_func,
+                    GTSyscallFunc syscall_cb,
+                    GTSysretFunc sysret_cb)
+{
+	addr_t sysaddr;
+	struct gt_paddr_record *syscall_trap;
+
+	vmi_pause_vm(loop->vmi);
+
+	sysaddr = vmi_translate_ksym2v(loop->vmi, kernel_func);
+	if (0 == sysaddr) {
+		fprintf(stderr, "could not find symbol %s\n", kernel_func);
+		goto done;
+	}
+
+	syscall_trap = gt_setup_mem_trap(loop, sysaddr, syscall_cb, sysret_cb);
+	if (NULL == syscall_trap) {
+		fprintf(stderr, "failed to set trap on %s\n", kernel_func);
+		goto done;
+	}
+
+done:
+	vmi_resume_vm(loop->vmi);
+
+	return;
+}
+
 bool
-vf_find_syscalls_and_setup_mem_traps(GTLoop *loop,
-                                     const struct syscall_defs syscalls[],
-                                     const char *traced_syscalls[])
+_gt_find_syscalls_and_setup_mem_traps(GTLoop *loop,
+                                      const struct syscall_defs syscalls[],
+                                      const char *traced_syscalls[])
 {
 	bool status = false;
 
@@ -909,7 +928,7 @@ vf_find_syscalls_and_setup_mem_traps(GTLoop *loop,
  * Note: op_str is be optional
  */
 addr_t
-vf_find_addr_after_instruction (GTLoop *loop, addr_t start_v, char *mnemonic, char *ops)
+_gt_find_addr_after_instruction (GTLoop *loop, addr_t start_v, char *mnemonic, char *ops)
 {
 	csh handle;
 	cs_insn *inst;

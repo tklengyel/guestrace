@@ -152,13 +152,13 @@ static const struct syscall_defs SYSCALLS[] = {
  * instruction.
  */
 bool
-vf_windows_find_syscalls_and_setup_mem_traps(GTLoop *loop)
+_gt_windows_find_syscalls_and_setup_mem_traps(GTLoop *loop)
 {
 	static const char *TRACED_SYSCALLS[] = {
 		NULL,
 	};
 
-	return vf_find_syscalls_and_setup_mem_traps(loop,
-                                                    SYSCALLS,
-                                                    TRACED_SYSCALLS);
+	return _gt_find_syscalls_and_setup_mem_traps(loop,
+                                                     SYSCALLS,
+                                                     TRACED_SYSCALLS);
 }
