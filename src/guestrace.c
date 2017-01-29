@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <signal.h>
 #include <stdlib.h>
-#include <guestrace.h>
 
+#include "guestrace.h"
 #include "generated-windows.h"
 #include "generated-linux.h"
 

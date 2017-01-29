@@ -4,6 +4,7 @@
 #define GENERATED_WINDOWS_H
 
 #include "guestrace.h"
+#include "trace-syscalls.h"
 
 bool vf_windows_find_syscalls_and_setup_mem_traps(GTLoop *loop);
 

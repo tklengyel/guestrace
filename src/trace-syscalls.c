@@ -12,6 +12,7 @@
 #include "guestrace-private.h"
 #include "functions-linux.h"
 #include "functions-windows.h"
+#include "trace-syscalls.h"
 
 /* This code relies on Xen's interface to Second Level Address Translation,
  * or SLAT. See:
@@ -636,6 +637,10 @@ void gt_loop_quit(GTLoop *loop)
  */
 void gt_loop_free(GTLoop *loop)
 {
+	if (NULL == loop) {
+		goto done;
+	}
+
 	vmi_pause_vm(loop->vmi);
 
 	g_hash_table_destroy(loop->vf_page_record_collection);
@@ -656,6 +661,9 @@ void gt_loop_free(GTLoop *loop)
 	vmi_destroy(loop->vmi);
 
 	g_free(loop);
+
+done:
+	return;
 }
 
 /* Allocate a new page of memory in the guest's address space. */

@@ -2,6 +2,7 @@
 
 #include "guestrace.h"
 #include "guestrace-private.h"
+#include "trace-syscalls.h"
 
 /*
  * Within the kernel's system-call handler function (that function pointed to

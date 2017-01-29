@@ -354,6 +354,7 @@ def create_struct_h(syscall_map, syscall_order, kernel_info):
 #define GENERATED_LINUX_H
 
 #include "guestrace.h"
+#include "trace-syscalls.h"
 
 bool vf_linux_find_syscalls_and_setup_mem_traps(GTLoop *loop);
 

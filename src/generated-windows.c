@@ -3,7 +3,8 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <guestrace.h>
+
+#include "generated-windows.h"
 
 static const int RETURN_ADDR_WIDTH = sizeof(void *);
 
