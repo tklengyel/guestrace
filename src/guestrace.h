@@ -23,6 +23,7 @@ typedef addr_t gt_tid_t;
  * @event: the event which abstracts the system call which caused the guestrace event loop to invoke this function.
  * @pid: the process ID of the process running when the event occurred.
  * @tid: the unique ID of the thread running within the current process
+ * @user_data: optional data set by the user during syscall initialization
  * 
  * Specifies one of the two types of functions passed to gt_loop_set_cb().
  * The guestrace event loop invokes this callback each time a program running
@@ -33,7 +34,8 @@ typedef addr_t gt_tid_t;
 typedef void *(*GTSyscallFunc) (vmi_instance_t vmi,
                                 vmi_event_t *event,
                                 vmi_pid_t pid,
-                                gt_tid_t tid);
+                                gt_tid_t tid,
+                                void *user_data);
 
 /**
  * GTSysretFunc:
@@ -68,6 +70,7 @@ typedef struct GTSyscallCallback {
         char         *name;
         GTSyscallFunc syscall_cb;
         GTSysretFunc  sysret_cb;
+        void         *user_data;
 } GTSyscallCallback;
 
 /**
@@ -91,7 +94,8 @@ GTOSType gt_loop_get_ostype(GTLoop *loop);
 void     gt_loop_set_cb(GTLoop *loop,
                         const char *kernel_func,
                         GTSyscallFunc syscall_cb,
-                        GTSysretFunc sysret_cb);
+                        GTSysretFunc sysret_cb,
+                        void *user_data);
 void     gt_loop_set_cbs(GTLoop *loop, const GTSyscallCallback callbacks[]);
 void     gt_loop_run(GTLoop *loop);
 void     gt_loop_quit(GTLoop *loop);
