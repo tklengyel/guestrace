@@ -20,7 +20,6 @@ src/.deps/
 src/Makefile
 src/Makefile.in
 src/guestrace
-src/syscalls.txt
 src/trace_syscalls.o
 src/functions_windows.o
 src/functions_linux.o
