@@ -264,7 +264,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 
 			syscall_state *sys_state = g_new0(syscall_state, 1);
 			sys_state->syscall_trap  = paddr_record;
-			sys_state->data          = paddr_record->syscall_cb(vmi, event, pid);
+			sys_state->data          = paddr_record->syscall_cb(vmi, event, pid, thread_id);
 			sys_state->thread_id     = thread_id;
 
 			vmi_write_64_pa(vmi, ret_loc, &loop->trampoline_addr);
@@ -287,7 +287,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 
 		if (NULL != sys_state) {
 			vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
-			sys_state->syscall_trap->sysret_cb(vmi, event, pid, sys_state->data);
+			sys_state->syscall_trap->sysret_cb(vmi, event, pid, thread_id, sys_state->data);
 
 			vmi_set_vcpureg(vmi, loop->return_point_addr, RIP, event->vcpu_id);
 

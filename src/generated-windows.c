@@ -230,16 +230,16 @@ void
 gt_windows_print_sysret(vmi_instance_t vmi,
                         vmi_event_t *event,
                         vmi_pid_t pid,
+                        gt_tid_t tid,
                         void *data) 
 {
 
 }
 
-void *gt_windows_print_syscall_ntcreatefile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid)
+void *gt_windows_print_syscall_ntcreatefile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
-	reg_t rsp = event->x86_regs->rsp;
 
 	char *permissions_1 = vf_get_simple_permissions(args[1]);
 
@@ -254,7 +254,7 @@ void *gt_windows_print_syscall_ntcreatefile(vmi_instance_t vmi, vmi_event_t *eve
 		attributes_2 = obj_attr_2->attributes;
 	}
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) syscall: NtCreateFile(DesiredAccess: %s [0x%lx], ObjectAttributes: RootDirectory = 0x%lx | ObjectName = %s | Attributes = 0x%lx, AllocationSize: 0x%lx, FileAttributes: 0x%lx, ShareAccess: 0x%lx, CreateDisposition: 0x%lx, CreateOptions: 0x%lx, EaLength: 0x%lx)\n", pid, rsp, proc, permissions_1, args[1], root_dir_2, filename_2, attributes_2, args[4], args[5], args[6], args[7], args[8], args[10]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) syscall: NtCreateFile(DesiredAccess: %s [0x%lx], ObjectAttributes: RootDirectory = 0x%lx | ObjectName = %s | Attributes = 0x%lx, AllocationSize: 0x%lx, FileAttributes: 0x%lx, ShareAccess: 0x%lx, CreateDisposition: 0x%lx, CreateOptions: 0x%lx, EaLength: 0x%lx)\n", pid, tid, proc, permissions_1, args[1], root_dir_2, filename_2, attributes_2, args[4], args[5], args[6], args[7], args[8], args[10]);
 
 	free(permissions_1);
 
@@ -265,11 +265,10 @@ void *gt_windows_print_syscall_ntcreatefile(vmi_instance_t vmi, vmi_event_t *eve
 	return NULL;
 }
 
-void *gt_windows_print_syscall_ntopenfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid)
+void *gt_windows_print_syscall_ntopenfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
-	reg_t rsp = event->x86_regs->rsp;
 
 	char *permissions_1 = vf_get_simple_permissions(args[1]);
 
@@ -284,7 +283,7 @@ void *gt_windows_print_syscall_ntopenfile(vmi_instance_t vmi, vmi_event_t *event
 		attributes_2 = obj_attr_2->attributes;
 	}
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) syscall: NtOpenFile(DesiredAccess: %s [0x%lx], ObjectAttributes: RootDirectory = 0x%lx | ObjectName = %s | Attributes = 0x%lx, ShareAccess: 0x%lx, OpenOptions: 0x%lx)\n", pid, rsp, proc, permissions_1, args[1], root_dir_2, filename_2, attributes_2, args[4], args[5]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) syscall: NtOpenFile(DesiredAccess: %s [0x%lx], ObjectAttributes: RootDirectory = 0x%lx | ObjectName = %s | Attributes = 0x%lx, ShareAccess: 0x%lx, OpenOptions: 0x%lx)\n", pid, tid, proc, permissions_1, args[1], root_dir_2, filename_2, attributes_2, args[4], args[5]);
 
 	free(permissions_1);
 
@@ -295,11 +294,10 @@ void *gt_windows_print_syscall_ntopenfile(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_windows_print_syscall_ntopenprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid)
+void *gt_windows_print_syscall_ntopenprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
-	reg_t rsp = event->x86_regs->rsp;
 
 	char *permissions_1 = vf_get_simple_permissions(args[1]);
 
@@ -314,7 +312,7 @@ void *gt_windows_print_syscall_ntopenprocess(vmi_instance_t vmi, vmi_event_t *ev
 		attributes_2 = obj_attr_2->attributes;
 	}
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) syscall: NtOpenProcess(DesiredAccess: %s [0x%lx], ObjectAttributes: RootDirectory = 0x%lx | ObjectName = %s | Attributes = 0x%lx, ClientId: 0x%lx)\n", pid, rsp, proc, permissions_1, args[1], root_dir_2, filename_2, attributes_2, args[3]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) syscall: NtOpenProcess(DesiredAccess: %s [0x%lx], ObjectAttributes: RootDirectory = 0x%lx | ObjectName = %s | Attributes = 0x%lx, ClientId: 0x%lx)\n", pid, tid, proc, permissions_1, args[1], root_dir_2, filename_2, attributes_2, args[3]);
 
 	free(permissions_1);
 
