@@ -897,8 +897,7 @@ done:
 
 bool
 _gt_find_syscalls_and_setup_mem_traps(GTLoop *loop,
-                                      const struct syscall_defs syscalls[],
-                                      const char *traced_syscalls[])
+                                      const struct syscall_defs syscalls[])
 {
 	bool status = false;
 
@@ -906,13 +905,10 @@ _gt_find_syscalls_and_setup_mem_traps(GTLoop *loop,
 	fprintf(stderr, "Finding and creating syscall traps...\n");
 
 	for (int i = 0; syscalls[i].name; i++) {
-		for (int j = 0; traced_syscalls[j]; j++) {
-			gt_loop_set_cb(loop,
-			               syscalls[i].name,
-			               syscalls[i].syscall_cb, 
-			               syscalls[i].sysret_cb);
-			break;
-		}
+		gt_loop_set_cb(loop,
+			       syscalls[i].name,
+			       syscalls[i].syscall_cb,
+			       syscalls[i].sysret_cb);
 	}
 
 	fprintf(stderr, "Finished finding and creating syscall traps\n");

@@ -358,7 +358,6 @@ def create_struct_h(syscall_map, syscall_order, kernel_info):
 
 bool _gt_linux_find_syscalls_and_setup_mem_traps(GTLoop *loop);
 
-extern const char *VM_LINUX_TRACED_SYSCALLS[];
 extern const struct syscall_defs VM_LINUX_SYSCALLS[];
 
 #endif
@@ -387,9 +386,7 @@ static const int RETURN_ADDR_WIDTH = sizeof(void *);
 bool
 _gt_linux_find_syscalls_and_setup_mem_traps(GTLoop *loop)
 {
-        return _gt_find_syscalls_and_setup_mem_traps(loop,
-                                                     VM_LINUX_SYSCALLS,
-                                                     VM_LINUX_TRACED_SYSCALLS);
+        return _gt_find_syscalls_and_setup_mem_traps(loop, VM_LINUX_SYSCALLS);
 }
 
 static char *
@@ -459,19 +456,6 @@ done:
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) return: 0x%"PRIx64"\\n", pid, rsp - RETURN_ADDR_WIDTH, get_process_name(vmi, pid), syscall_return);
 }
-
-"""
-
-    # Generate TRACED_SYSCALLS table.
-    str += """const char *VM_LINUX_TRACED_SYSCALLS[] = {
-"""
-    
-    # generate the actual string list
-    for syscall_id in range(len(syscall_order)):
-        str += "\t\"{0}\",\n".format(syscall_order[syscall_id])
-
-    str += """\tNULL,
-};
 
 """
 

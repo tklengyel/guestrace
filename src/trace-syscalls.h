@@ -15,8 +15,7 @@ struct os_functions {
 };
 
 bool _gt_find_syscalls_and_setup_mem_traps(GTLoop *loop,
-                                           const struct syscall_defs syscalls[],
-                                           const char *traced_syscalls[]);
+                                           const struct syscall_defs syscalls[]);
 
 addr_t _gt_find_addr_after_instruction(GTLoop *loop,
                                       addr_t start_v,
