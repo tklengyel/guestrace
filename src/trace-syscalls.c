@@ -58,22 +58,23 @@ static gboolean gt_interrupted = FALSE;
 static const int RETURN_ADDR_WIDTH = sizeof(void *);
 
 typedef struct gt_page_record {
-        addr_t frame;
-        addr_t shadow_page;
-        GHashTable *children;
-        GTLoop *loop;
+	addr_t      frame;
+	addr_t      shadow_page;
+	GHashTable *children;
+	GTLoop     *loop;
 } gt_page_record;
 
 struct gt_paddr_record {
-        addr_t offset;
-        GTSyscallFunc syscall_cb;
-        GTSysretFunc  sysret_cb;
-        gt_page_record *parent;
+	addr_t          offset;
+	GTSyscallFunc   syscall_cb;
+	GTSysretFunc    sysret_cb;
+	gt_page_record *parent;
 };
 
 typedef struct syscall_state {
-        struct gt_paddr_record *syscall_trap;
-        void                   *data;
+	struct gt_paddr_record *syscall_trap;
+	void                   *data;
+	addr_t                  thread_id; /* needed for teardown */
 } syscall_state;
 
 /*
@@ -83,18 +84,20 @@ typedef struct syscall_state {
  * system-call return.
  */
 static void
-gt_restore_return_addr(gpointer key, gpointer value, gpointer user_data)
+gt_restore_return_addr (gpointer data)
 {
 	status_t status;
-	addr_t va       = GPOINTER_TO_SIZE(key);
-	GTLoop *loop    = user_data;
+	syscall_state *sys_state = data;
+	GTLoop *loop = sys_state->syscall_trap->parent->loop;
 
-	addr_t pa = vmi_translate_kv2p(loop->vmi, va);
+	addr_t pa = vmi_translate_kv2p(loop->vmi, sys_state->thread_id);
 
 	status = vmi_write_64_pa(loop->vmi, pa, &loop->return_point_addr);
 	if (VMI_SUCCESS != status) {
 		fprintf(stderr, "error restoring stack; guest will likely fail\n");
 	}
+
+	g_free(sys_state);
 }
 
 static void
@@ -260,8 +263,9 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 			vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 
 			syscall_state *sys_state = g_new0(syscall_state, 1);
-			sys_state->syscall_trap   = paddr_record;
-			sys_state->data           = paddr_record->syscall_cb(vmi, event, pid);
+			sys_state->syscall_trap  = paddr_record;
+			sys_state->data          = paddr_record->syscall_cb(vmi, event, pid);
+			sys_state->thread_id     = thread_id;
 
 			vmi_write_64_pa(vmi, ret_loc, &loop->trampoline_addr);
 			g_hash_table_insert(loop->gt_ret_addr_mapping,
@@ -284,9 +288,6 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		if (NULL != sys_state) {
 			vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 			sys_state->syscall_trap->sysret_cb(vmi, event, pid, sys_state->data);
-
-			/* Restore the stack before returning execution to VCPU */
-			vmi_write_64_pa(vmi, vmi_translate_kv2p(vmi, thread_id), &loop->return_point_addr);
 
 			vmi_set_vcpureg(vmi, loop->return_point_addr, RIP, event->vcpu_id);
 
@@ -433,23 +434,23 @@ GTLoop *gt_loop_new(const char *guest_name)
 	loop->gt_ret_addr_mapping = g_hash_table_new_full(NULL,
 	                                                  NULL,
 	                                                  NULL,
-	                                                  g_free);
+	                                                  gt_restore_return_addr);
 
 	vmi_pause_vm(loop->vmi);
 
 	loop->os = vmi_get_ostype(loop->vmi);
-        switch (loop->os) {
-        case VMI_OS_LINUX:
-                loop->os_functions = &os_functions_linux;
-                break;
-        case VMI_OS_WINDOWS:
-                loop->os_functions = &os_functions_windows;
-                break;
-        default:
+	switch (loop->os) {
+	case VMI_OS_LINUX:
+		loop->os_functions = &os_functions_linux;
+		break;
+	case VMI_OS_WINDOWS:
+		loop->os_functions = &os_functions_windows;
+		break;
+	default:
 		fprintf(stderr, "unknown guest operating system\n");
-                status = VMI_FAILURE;
-                goto done;
-        }
+		status = VMI_FAILURE;
+		goto done;
+	}
 
 	loop->xch = xc_interface_open(0, 0, 0);
 	if (NULL == loop->xch) {
@@ -622,7 +623,6 @@ void gt_loop_free(GTLoop *loop)
 
 	g_hash_table_destroy(loop->gt_page_record_collection);
 	g_hash_table_destroy(loop->gt_page_translation);
-	g_hash_table_foreach(loop->gt_ret_addr_mapping, gt_restore_return_addr, loop);
 	g_hash_table_destroy(loop->gt_ret_addr_mapping);
 
 	xc_altp2m_destroy_view(loop->xch, loop->domid, loop->shadow_view);
@@ -911,7 +911,7 @@ gt_loop_set_cbs(GTLoop *loop, const GTSyscallCallback callbacks[])
 	/* this might take a while */
 	fprintf(stderr, "Finding and creating syscall traps...\n");
 
-	for (int i = 0; callbacks[i].name; i++) {
+	for (int i = 0; !gt_interrupted && callbacks[i].name; i++) {
 		gt_loop_set_cb(loop,
 			       callbacks[i].name,
 			       callbacks[i].syscall_cb,

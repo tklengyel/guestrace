@@ -7,7 +7,39 @@
 #include "guestrace.h"
 #include "generated-windows.h"
 
-static const int RETURN_ADDR_WIDTH = sizeof(void *);
+#define NUM_SYSCALL_ARGS 18
+
+enum AccessMaskEnum
+{
+    FILE_READ_DATA        = 0x000001,
+    FILE_LIST_DIRECTORY   = 0x000001,
+    FILE_WRITE_DATA       = 0x000002,
+    FILE_ADD_FILE         = 0x000002,
+    FILE_APPEND_DATA      = 0x000004,
+    FILE_ADD_SUBDIRECTORY = 0x000004,
+    FILE_READ_EA          = 0x000008,
+    FILE_WRITE_EA         = 0x000010,
+    FILE_EXECUTE          = 0x000020,
+    FILE_TRAVERSE         = 0x000020,
+    FILE_DELETE_CHILD     = 0x000040,
+    FILE_READ_ATTRIBUTES  = 0x000080,
+    FILE_WRITE_ATTRIBUTES = 0x000100,
+    DELETE                = 0x010000,
+    READ_CONTROL          = 0x020000,
+    WRITE_DAC             = 0x040000,
+    WRITE_OWNER           = 0x080000,
+    SYNCHRONIZE           = 0x100000,
+    OWNER                 = FILE_READ_DATA | FILE_LIST_DIRECTORY | FILE_WRITE_DATA |
+                            FILE_ADD_FILE  | FILE_APPEND_DATA    | FILE_ADD_SUBDIRECTORY |
+                            FILE_READ_EA   | FILE_WRITE_EA       | FILE_EXECUTE |
+                            FILE_TRAVERSE  | FILE_DELETE_CHILD   | FILE_READ_ATTRIBUTES |
+                            FILE_WRITE_ATTRIBUTES | DELETE       | READ_CONTROL | 
+                            WRITE_DAC      | WRITE_OWNER         | SYNCHRONIZE,
+    READ_ONLY             = FILE_READ_DATA | FILE_LIST_DIRECTORY | FILE_READ_EA |
+                            FILE_EXECUTE   | FILE_TRAVERSE | FILE_READ_ATTRIBUTES |
+                            READ_CONTROL   | SYNCHRONIZE, 
+    CONTRIBUTOR           = OWNER & ~(FILE_DELETE_CHILD | WRITE_DAC | WRITE_OWNER)
+};
 
 struct win64_obj_attr {
 	uint32_t length; // sizeof given struct
@@ -50,36 +82,98 @@ done:
 	return buff;
 }
 
-static uint8_t *
-filename_from_arg(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid) {
-	struct win64_obj_attr * obj_attr = obj_attr_from_va(vmi, vaddr, pid);
-
-	uint8_t * res = NULL;
-
-	if (obj_attr == NULL) {
-		goto done;
+static char *
+vf_get_simple_permissions(uint32_t permissions)
+{
+	char *buff = calloc(1, 1024);
+	if (OWNER == permissions) {
+		strcpy(buff, "OWNER");
+		return buff;
 	}
+	if (READ_ONLY == permissions) {
+		strcpy(buff, "READ_ONLY");
+		return buff;
+	}
+	if (CONTRIBUTOR == permissions) {
+		strcpy(buff, "CONTRIBUTOR");
+		return buff;
+	}
+	if (permissions & FILE_READ_DATA)
+		strcat(buff, "FILE_READ_DATA|");
+	if (permissions & FILE_LIST_DIRECTORY)
+		strcat(buff, "FILE_LIST_DIRECTORY|");
+	if (permissions & FILE_WRITE_DATA)
+		strcat(buff, "FILE_WRITE_DATA|");
+	if (permissions & FILE_ADD_FILE)
+		strcat(buff, "FILE_ADD_FILE|");
+	if (permissions & FILE_APPEND_DATA)
+		strcat(buff, "FILE_APPEND_DATA|");
+	if (permissions & FILE_ADD_SUBDIRECTORY)
+		strcat(buff, "FILE_ADD_SUBDIRECTORY|");
+	if (permissions & FILE_READ_EA)
+		strcat(buff, "FILE_READ_EA|");
+	if (permissions & FILE_WRITE_EA)
+		strcat(buff, "FILE_WRITE_EA|");
+	if (permissions & FILE_EXECUTE)
+		strcat(buff, "FILE_EXECUTE|");
+	if (permissions & FILE_TRAVERSE)
+		strcat(buff, "FILE_TRAVERSE|");
+	if (permissions & FILE_DELETE_CHILD)
+		strcat(buff, "FILE_DELETE_CHILD|");
+	if (permissions & FILE_READ_ATTRIBUTES)
+		strcat(buff, "FILE_READ_ATTRIBUTES|");
+	if (permissions & FILE_WRITE_ATTRIBUTES)
+		strcat(buff, "FILE_WRITE_ATTRIBUTES|");
+	if (permissions & DELETE)
+		strcat(buff, "DELETE|");
+	if (permissions & READ_CONTROL)
+		strcat(buff, "READ_CONTROL|");
+	if (permissions & WRITE_DAC)
+		strcat(buff, "WRITE_DAC|");
+	if (permissions & WRITE_OWNER)
+		strcat(buff, "WRITE_OWNER|");
+	if (permissions & SYNCHRONIZE)
+		strcat(buff, "SYNCHRONIZE|");
+	if (strlen(buff) > 0) {
+		buff[strlen(buff)-1] = 0;
+	} else {
+		strcpy(buff, "NONE");
+	}
+	return buff;
+}
 
+static uint8_t *
+filename_from_obj_attr(vmi_instance_t vmi, struct win64_obj_attr * obj_attr, vmi_pid_t pid) {
+	uint8_t *res = NULL;
 	unicode_string_t * filename = vmi_read_unicode_str_va(vmi, obj_attr->object_name, pid);
 
 	if (filename == NULL) {
-		free(obj_attr);
 		goto done;
 	}
 
 	unicode_string_t nfilename;
 	if (VMI_SUCCESS != vmi_convert_str_encoding(filename, &nfilename, "UTF-8")) {
-		free(obj_attr);
 		vmi_free_unicode_str(filename);
 		goto done;
 	}
 
 	res = nfilename.contents; /* points to malloc'd memory */
-	free(obj_attr);
 	vmi_free_unicode_str(filename);
 
 done:
 	return res;
+}
+
+static uint64_t *
+vf_get_args(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid) {
+	uint64_t *args = calloc(NUM_SYSCALL_ARGS, sizeof(uint64_t));
+	args[0] = event->x86_regs->rcx;
+	args[1] = event->x86_regs->rdx;
+	args[2] = event->x86_regs->r8;
+	args[3] = event->x86_regs->r9;
+	
+	vmi_read_va(vmi, event->x86_regs->rsp, pid, &args[4], sizeof(uint64_t) * (NUM_SYSCALL_ARGS - 4));
+	return args;
 }
 
 /* Gets the process name of the process with the PID that is input. */
@@ -132,19 +226,111 @@ done:
 
 }
 
-/* See Windows's KeServiceDescriptorTable. */
-static const GTSyscallCallback SYSCALLS[] = {
+void 
+gt_windows_print_sysret(vmi_instance_t vmi,
+                        vmi_event_t *event,
+                        vmi_pid_t pid,
+                        void *data) 
+{
+
+}
+
+void *gt_windows_print_syscall_ntcreatefile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid)
+{
+	char *proc = get_process_name(vmi, pid);
+	uint64_t *args = vf_get_args(vmi, event, pid);
+	reg_t rsp = event->x86_regs->rsp;
+
+	char *permissions_1 = vf_get_simple_permissions(args[1]);
+
+
+	uint8_t *filename_2 = NULL;
+	uint64_t root_dir_2 = 0;
+	uint64_t attributes_2 = 0;
+	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(vmi, args[2], pid);
+	if (NULL != obj_attr_2) {
+		filename_2 = filename_from_obj_attr(vmi, obj_attr_2, pid);
+		root_dir_2 = obj_attr_2->root_directory;
+		attributes_2 = obj_attr_2->attributes;
+	}
+
+	fprintf(stderr, "pid: %u/0x%lx (%s) syscall: NtCreateFile(DesiredAccess: %s [0x%lx], ObjectAttributes: RootDirectory = 0x%lx | ObjectName = %s | Attributes = 0x%lx, AllocationSize: 0x%lx, FileAttributes: 0x%lx, ShareAccess: 0x%lx, CreateDisposition: 0x%lx, CreateOptions: 0x%lx, EaLength: 0x%lx)\n", pid, rsp, proc, permissions_1, args[1], root_dir_2, filename_2, attributes_2, args[4], args[5], args[6], args[7], args[8], args[10]);
+
+	free(permissions_1);
+
+
+	free(filename_2);
+	free(obj_attr_2);
+	free(args);
+	return NULL;
+}
+
+void *gt_windows_print_syscall_ntopenfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid)
+{
+	char *proc = get_process_name(vmi, pid);
+	uint64_t *args = vf_get_args(vmi, event, pid);
+	reg_t rsp = event->x86_regs->rsp;
+
+	char *permissions_1 = vf_get_simple_permissions(args[1]);
+
+
+	uint8_t *filename_2 = NULL;
+	uint64_t root_dir_2 = 0;
+	uint64_t attributes_2 = 0;
+	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(vmi, args[2], pid);
+	if (NULL != obj_attr_2) {
+		filename_2 = filename_from_obj_attr(vmi, obj_attr_2, pid);
+		root_dir_2 = obj_attr_2->root_directory;
+		attributes_2 = obj_attr_2->attributes;
+	}
+
+	fprintf(stderr, "pid: %u/0x%lx (%s) syscall: NtOpenFile(DesiredAccess: %s [0x%lx], ObjectAttributes: RootDirectory = 0x%lx | ObjectName = %s | Attributes = 0x%lx, ShareAccess: 0x%lx, OpenOptions: 0x%lx)\n", pid, rsp, proc, permissions_1, args[1], root_dir_2, filename_2, attributes_2, args[4], args[5]);
+
+	free(permissions_1);
+
+
+	free(filename_2);
+	free(obj_attr_2);
+	free(args);
+	return NULL;
+}
+
+void *gt_windows_print_syscall_ntopenprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid)
+{
+	char *proc = get_process_name(vmi, pid);
+	uint64_t *args = vf_get_args(vmi, event, pid);
+	reg_t rsp = event->x86_regs->rsp;
+
+	char *permissions_1 = vf_get_simple_permissions(args[1]);
+
+
+	uint8_t *filename_2 = NULL;
+	uint64_t root_dir_2 = 0;
+	uint64_t attributes_2 = 0;
+	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(vmi, args[2], pid);
+	if (NULL != obj_attr_2) {
+		filename_2 = filename_from_obj_attr(vmi, obj_attr_2, pid);
+		root_dir_2 = obj_attr_2->root_directory;
+		attributes_2 = obj_attr_2->attributes;
+	}
+
+	fprintf(stderr, "pid: %u/0x%lx (%s) syscall: NtOpenProcess(DesiredAccess: %s [0x%lx], ObjectAttributes: RootDirectory = 0x%lx | ObjectName = %s | Attributes = 0x%lx, ClientId: 0x%lx)\n", pid, rsp, proc, permissions_1, args[1], root_dir_2, filename_2, attributes_2, args[3]);
+
+	free(permissions_1);
+
+
+	free(filename_2);
+	free(obj_attr_2);
+	free(args);
+	return NULL;
+}
+
+const GTSyscallCallback SYSCALLS[] = {
+	{ "NtCreateFile", gt_windows_print_syscall_ntcreatefile, gt_windows_print_sysret },
+	{ "NtOpenFile", gt_windows_print_syscall_ntopenfile, gt_windows_print_sysret },
+	{ "NtOpenProcess", gt_windows_print_syscall_ntopenprocess, gt_windows_print_sysret },
 	{ NULL, NULL },
 };
-
-#define NUM_SYSCALL_ARGS 8
-
-/*
- * Tries to return a UTF-8 string representing the filename of an ObjectAttribute
- * vaddr must point to an ObjectAttribute virtual address
- * Must free what it returns
- */
-
 /*
  * For each of the system calls libvmi is interested in, establish a memory trap
  * on the page containing the system call handler's first instruction. An
