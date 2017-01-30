@@ -50,6 +50,21 @@ typedef void (*GTSysretFunc) (vmi_instance_t vmi,
                               void *user_data);
 
 /**
+ * GTSyscallCallbacks:
+ * @name: the name of the kernel function to instrument.
+ * @syscall_cb: the #GTSyscallFunc which the guestrace event loop will invoke upon @name being called.
+ * @sysret_cb: the #GTSysretFunc which the guestrace event loop will invoke when @name returns.
+ *
+ * Full callback definition for use with gt_loop_set_cbs().
+ */
+typedef struct GTSyscallCallback {
+        /* <private> */
+        char         *name;
+        GTSyscallFunc syscall_cb;
+        GTSysretFunc  sysret_cb;
+} GTSyscallCallback;
+
+/**
  * GTOSType:
  * @GT_OS_UNKNOWN: an unknown operating system.
  * @GT_OS_LINUX: a Linux operating system.
@@ -71,6 +86,7 @@ void     gt_loop_set_cb(GTLoop *loop,
                         const char *kernel_func,
                         GTSyscallFunc syscall_cb,
                         GTSysretFunc sysret_cb);
+void     gt_loop_set_cbs(GTLoop *loop, const GTSyscallCallback callbacks[]);
 void     gt_loop_run(GTLoop *loop);
 void     gt_loop_quit(GTLoop *loop);
 void     gt_loop_free(GTLoop *loop);

@@ -894,28 +894,31 @@ done:
 
 	return;
 }
+/**
+ * gt_loop_set_cbs:
+ * @loop: a #GTLoop.
+ * @syscalls: an array of #GTSyscallCallback values, where each contains a
+ * function name and corresponding #GTSyscallFunc and #GTSysretFunc.
+ *
+ * A convenience function which repeatedly invoke gt_loop_set_cb for each
+ * callback defined in @syscalls. The @syscalls array must be terminated with
+ * an #GTSyscallCallback with each field set to NULL.
+ **/
 
-bool
-_gt_find_syscalls_and_setup_mem_traps(GTLoop *loop,
-                                      const struct syscall_defs syscalls[])
+void
+gt_loop_set_cbs(GTLoop *loop, const GTSyscallCallback callbacks[])
 {
-	bool status = false;
-
 	/* this might take a while */
 	fprintf(stderr, "Finding and creating syscall traps...\n");
 
-	for (int i = 0; syscalls[i].name; i++) {
+	for (int i = 0; callbacks[i].name; i++) {
 		gt_loop_set_cb(loop,
-			       syscalls[i].name,
-			       syscalls[i].syscall_cb,
-			       syscalls[i].sysret_cb);
+			       callbacks[i].name,
+			       callbacks[i].syscall_cb,
+			       callbacks[i].sysret_cb);
 	}
 
 	fprintf(stderr, "Finished finding and creating syscall traps\n");
-
-	status = true;
-
-	return status;
 }
 
 /*

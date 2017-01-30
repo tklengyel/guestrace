@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "guestrace.h"
 #include "generated-windows.h"
 
 static const int RETURN_ADDR_WIDTH = sizeof(void *);
@@ -132,7 +133,7 @@ done:
 }
 
 /* See Windows's KeServiceDescriptorTable. */
-static const struct syscall_defs SYSCALLS[] = {
+static const GTSyscallCallback SYSCALLS[] = {
 	{ NULL, NULL },
 };
 
@@ -151,8 +152,8 @@ static const struct syscall_defs SYSCALLS[] = {
  * (i.e., kernel patch protection) will cause guestrace to restore the original
  * instruction.
  */
-bool
+void
 _gt_windows_find_syscalls_and_setup_mem_traps(GTLoop *loop)
 {
-	return _gt_find_syscalls_and_setup_mem_traps(loop, SYSCALLS);
+	gt_loop_set_cbs(loop, SYSCALLS);
 }

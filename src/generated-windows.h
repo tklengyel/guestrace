@@ -6,9 +6,9 @@
 #include "guestrace.h"
 #include "trace-syscalls.h"
 
-bool _gt_windows_find_syscalls_and_setup_mem_traps(GTLoop *loop);
+void _gt_windows_find_syscalls_and_setup_mem_traps(GTLoop *loop);
 
 extern const char *VM_LINUX_TRACED_SYSCALLS[];
-extern const struct syscall_defs VM_LINUX_SYSCALLS[];
+extern const GTSyscallCallback VM_WINDOWS_SYSCALLS[];
 
 #endif
