@@ -1,0 +1,543 @@
+import re
+
+save_loc = open("generated-windows.c", "w");
+
+save_loc.write('''#include <libvmi/libvmi.h>
+#include <libvmi/events.h>
+#include <inttypes.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "guestrace.h"
+#include "generated-windows.h"
+
+#define NUM_SYSCALL_ARGS 18
+
+enum AccessMaskEnum
+{
+    FILE_READ_DATA        = 0x000001,
+    FILE_LIST_DIRECTORY   = 0x000001,
+    FILE_WRITE_DATA       = 0x000002,
+    FILE_ADD_FILE         = 0x000002,
+    FILE_APPEND_DATA      = 0x000004,
+    FILE_ADD_SUBDIRECTORY = 0x000004,
+    FILE_READ_EA          = 0x000008,
+    FILE_WRITE_EA         = 0x000010,
+    FILE_EXECUTE          = 0x000020,
+    FILE_TRAVERSE         = 0x000020,
+    FILE_DELETE_CHILD     = 0x000040,
+    FILE_READ_ATTRIBUTES  = 0x000080,
+    FILE_WRITE_ATTRIBUTES = 0x000100,
+    DELETE                = 0x010000,
+    READ_CONTROL          = 0x020000,
+    WRITE_DAC             = 0x040000,
+    WRITE_OWNER           = 0x080000,
+    SYNCHRONIZE           = 0x100000,
+    OWNER                 = FILE_READ_DATA | FILE_LIST_DIRECTORY | FILE_WRITE_DATA |
+                            FILE_ADD_FILE  | FILE_APPEND_DATA    | FILE_ADD_SUBDIRECTORY |
+                            FILE_READ_EA   | FILE_WRITE_EA       | FILE_EXECUTE |
+                            FILE_TRAVERSE  | FILE_DELETE_CHILD   | FILE_READ_ATTRIBUTES |
+                            FILE_WRITE_ATTRIBUTES | DELETE       | READ_CONTROL | 
+                            WRITE_DAC      | WRITE_OWNER         | SYNCHRONIZE,
+    READ_ONLY             = FILE_READ_DATA | FILE_LIST_DIRECTORY | FILE_READ_EA |
+                            FILE_EXECUTE   | FILE_TRAVERSE | FILE_READ_ATTRIBUTES |
+                            READ_CONTROL   | SYNCHRONIZE, 
+    CONTRIBUTOR           = OWNER & ~(FILE_DELETE_CHILD | WRITE_DAC | WRITE_OWNER)
+};
+
+struct win64_obj_attr {
+	uint32_t length; // sizeof given struct
+	uint64_t root_directory; // if not null, object_name is relative to this directory
+	uint64_t object_name; // pointer to unicode string
+	uint32_t attributes; // see microsoft documentation
+	uint64_t security_descriptor; // see microsoft documentation
+	uint64_t security_quality_of_service; // see microsoft documentation
+};
+
+struct win64_client_id {
+	uint64_t unique_process; /* process id */
+	uint64_t unique_thread; /* thread id */
+};
+
+/*
+ * Get ObjectAttributes struct from virtual address
+ */
+static struct win64_obj_attr *
+obj_attr_from_va(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid) {
+	struct win64_obj_attr * buff = NULL;
+
+	uint32_t struct_size = 0;
+
+	if (VMI_SUCCESS != vmi_read_32_va(vmi, vaddr, pid, &struct_size)) {
+		goto done;
+	}
+
+	struct_size = struct_size <= sizeof(struct win64_obj_attr) ? struct_size : sizeof(struct win64_obj_attr); // don't wanna read too much data
+
+	buff = calloc(1, sizeof(struct win64_obj_attr));
+
+	if (struct_size != vmi_read_va(vmi, vaddr, pid, buff, struct_size)) {
+		free(buff);
+		buff = NULL;
+		goto done;
+	}
+
+done:
+	return buff;
+}
+
+static char *
+vf_get_simple_permissions(uint32_t permissions)
+{
+	char *buff = calloc(1, 1024);
+	if (OWNER == permissions) {
+		strcpy(buff, "OWNER");
+		return buff;
+	}
+	if (READ_ONLY == permissions) {
+		strcpy(buff, "READ_ONLY");
+		return buff;
+	}
+	if (CONTRIBUTOR == permissions) {
+		strcpy(buff, "CONTRIBUTOR");
+		return buff;
+	}
+	if (permissions & FILE_READ_DATA)
+		strcat(buff, "FILE_READ_DATA|");
+	if (permissions & FILE_LIST_DIRECTORY)
+		strcat(buff, "FILE_LIST_DIRECTORY|");
+	if (permissions & FILE_WRITE_DATA)
+		strcat(buff, "FILE_WRITE_DATA|");
+	if (permissions & FILE_ADD_FILE)
+		strcat(buff, "FILE_ADD_FILE|");
+	if (permissions & FILE_APPEND_DATA)
+		strcat(buff, "FILE_APPEND_DATA|");
+	if (permissions & FILE_ADD_SUBDIRECTORY)
+		strcat(buff, "FILE_ADD_SUBDIRECTORY|");
+	if (permissions & FILE_READ_EA)
+		strcat(buff, "FILE_READ_EA|");
+	if (permissions & FILE_WRITE_EA)
+		strcat(buff, "FILE_WRITE_EA|");
+	if (permissions & FILE_EXECUTE)
+		strcat(buff, "FILE_EXECUTE|");
+	if (permissions & FILE_TRAVERSE)
+		strcat(buff, "FILE_TRAVERSE|");
+	if (permissions & FILE_DELETE_CHILD)
+		strcat(buff, "FILE_DELETE_CHILD|");
+	if (permissions & FILE_READ_ATTRIBUTES)
+		strcat(buff, "FILE_READ_ATTRIBUTES|");
+	if (permissions & FILE_WRITE_ATTRIBUTES)
+		strcat(buff, "FILE_WRITE_ATTRIBUTES|");
+	if (permissions & DELETE)
+		strcat(buff, "DELETE|");
+	if (permissions & READ_CONTROL)
+		strcat(buff, "READ_CONTROL|");
+	if (permissions & WRITE_DAC)
+		strcat(buff, "WRITE_DAC|");
+	if (permissions & WRITE_OWNER)
+		strcat(buff, "WRITE_OWNER|");
+	if (permissions & SYNCHRONIZE)
+		strcat(buff, "SYNCHRONIZE|");
+	if (strlen(buff) > 0) {
+		buff[strlen(buff)-1] = 0;
+	} else {
+		strcpy(buff, "NONE");
+	}
+	return buff;
+}
+
+static uint8_t *
+unicode_str_from_va(vmi_instance_t vmi, addr_t va, vmi_pid_t pid) {
+	uint8_t *res = NULL;
+	unicode_string_t * unicode_str = vmi_read_unicode_str_va(vmi, va, pid);
+
+	if (unicode_str == NULL) {
+		goto done;
+	}
+
+	unicode_string_t nunicode_str;
+	if (VMI_SUCCESS != vmi_convert_str_encoding(unicode_str, &nunicode_str, "UTF-8")) {
+		vmi_free_unicode_str(unicode_str);
+		goto done;
+	}
+
+	res = nunicode_str.contents; /* points to malloc'd memory */
+	vmi_free_unicode_str(unicode_str);
+
+done:
+	return res;
+}
+
+static uint64_t *
+vf_get_args(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid) {
+	uint64_t *args = calloc(NUM_SYSCALL_ARGS, sizeof(uint64_t));
+	args[0] = event->x86_regs->rcx;
+	args[1] = event->x86_regs->rdx;
+	args[2] = event->x86_regs->r8;
+	args[3] = event->x86_regs->r9;
+	
+	vmi_read_va(vmi, event->x86_regs->rsp + vmi_get_address_width(vmi) * 5, pid, &args[4], sizeof(uint64_t) * (NUM_SYSCALL_ARGS - 4));
+	return args;
+}
+
+/* Gets the process name of the process with the PID that is input. */
+static char *
+get_process_name(vmi_instance_t vmi, vmi_pid_t pid) 
+{
+	/* Gets the process name of the process with the input pid */
+	/* offsets from the LibVMI config file */	
+	unsigned long task_offset = vmi_get_offset(vmi, "win_tasks");
+	unsigned long pid_offset = vmi_get_offset(vmi, "win_pid");
+	unsigned long name_offset = vmi_get_offset(vmi, "win_pname");
+	
+	/* addresses for the linux process list and current process */
+	addr_t list_head = 0;
+	addr_t list_curr = 0;
+	addr_t curr_proc = 0;
+	
+	vmi_pid_t curr_pid = 0;		/* pid of the processes task struct we are examining */
+	char *proc = NULL;		/* process name of the current process we are examining */
+
+    if(VMI_FAILURE == vmi_read_addr_ksym(vmi, "PsActiveProcessHead", &list_head)) {
+        printf("Failed to find PsActiveProcessHead\\n");
+        goto done;
+    }
+
+	list_curr = list_head;							/* set the current process to the head */
+
+	do{
+		curr_proc = list_curr - task_offset;						/* subtract the task offset to get to the start of the task_struct */
+		if (VMI_FAILURE == vmi_read_32_va(vmi, curr_proc + pid_offset, 0, (uint32_t*)&curr_pid)) {		/* read the current pid using the pid offset from the start of the task struct */
+			printf("Failed to get the pid of the process we are examining!\\n");
+			goto done;
+		}
+	
+		if (pid == curr_pid) {
+			proc = vmi_read_str_va(vmi, curr_proc + name_offset, 0);		/* get the process name if the current pid is equal to the pis we are looking for */
+			goto done;								/* go to done to exit */
+		}
+	
+		if (VMI_FAILURE == vmi_read_addr_va(vmi, list_curr, 0, &list_curr)) {				/* read the memory from the address of list_curr which will return a pointer to the */
+			printf("Failed to get the next task in the process list!\\n");
+			goto done;
+		}
+
+	} while (list_curr != list_head);							/* next task_struct. Continue the loop until we get back to the beginning as the  */
+												/* process list is doubly linked and circular */
+
+done:	
+	return proc;
+
+}
+''')
+
+def print_obj_attr(arg, arg_num):
+	return ('''\tuint8_t *unicode_str_%d = NULL;
+	uint64_t root_dir_%d = 0;
+	uint64_t attributes_%d = 0;
+	struct win64_obj_attr *obj_attr_%d = obj_attr_from_va(vmi, args[%d], pid);
+	if (NULL != obj_attr_%d) {
+		unicode_str_%d = unicode_str_from_va(vmi, obj_attr_%d->object_name, pid);
+		root_dir_%d = obj_attr_%d->root_directory;
+		attributes_%d = obj_attr_%d->attributes;
+	}''' % (arg_num, arg_num, arg_num, arg_num, arg_num, arg_num, arg_num, arg_num, arg_num, arg_num, arg_num, arg_num),
+	"%s: RootDirectory = 0x%%lx | ObjectName = %%s | Attributes = 0x%%lx" % arg['name'],
+	"root_dir_%d, unicode_str_%d, attributes_%d" % (arg_num, arg_num, arg_num), '''\tfree(unicode_str_%d);
+	free(obj_attr_%d);''' % (arg_num, arg_num))
+
+def print_pulong(arg, arg_num):
+	return '''\tuint64_t pulong_%d = 0;
+	vmi_read_64_va(vmi, args[%d], pid, &pulong_%d);''' % (arg_num, arg_num, arg_num), "%s: 0x%%lx" % arg['name'], "pulong_%d" % arg_num, ""
+
+def print_phandle(arg, arg_num):
+	return '''\tuint64_t phandle_%d = 0;
+	vmi_read_64_va(vmi, args[%d], pid, &phandle_%d);''' % (arg_num, arg_num, arg_num), "%s: 0x%%lx" % arg['name'], "phandle_%d" % arg_num, ""
+
+def print_access_mask(arg, arg_num):
+	return '''\tchar *permissions_%d = vf_get_simple_permissions(args[%d]);''' % (arg_num, arg_num), "%s: %%s [0x%%lx]" % arg['name'], "permissions_%d, args[%d]" % (arg_num, arg_num), '''\tfree(permissions_%d);''' % arg_num
+
+def print_boolean(arg, arg_num):
+	return '''\tchar *bool_%d = args[%d] ? "TRUE" : "FALSE";''' % (arg_num, arg_num), "%s: %%s" % arg['name'], "bool_%d" % arg_num, ""
+
+def print_string(arg, arg_num):
+	return '''\tuint8_t *unicode_str_%d = unicode_str_from_va(vmi, args[%d], pid);''' % (arg_num, arg_num), "%s: %%s" % arg['name'], "unicode_str_%d" % arg_num, '''\tfree(unicode_str_%d);''' % arg_num
+
+print_types = {
+	"pobject_attributes": print_obj_attr,
+	"pulong": print_pulong,
+	"phandle": print_phandle,
+	"access_mask": print_access_mask,
+	"boolean": print_boolean,
+	"punicode_string": print_string
+}
+
+def print_arg(arg, arg_num):
+	if arg['type'].lower() in print_types:
+		return print_types[arg['type'].lower()](arg, arg_num)
+
+	return "", "%s: 0x%%lx" % arg['name'], "args[%d]" % arg_num, ""
+
+fi = open("syscalls.txt", 'r')
+syscalls = fi.read()
+fi.close()
+parsed = []
+
+for line in syscalls.split("\n"):
+	first_p = line.find("(")
+	last_p = line.rfind(")")
+	decl = line[:first_p].strip().split(" ")
+	args = line[first_p+1:last_p].strip().split(", ")
+	
+	parse = {}
+	parse['decl'] = {'ret_type': decl[0], 'name': decl[1]}
+	parse['args'] = []
+
+	for arg in args:
+		parg = arg.strip().split(" ")
+		if parg[0] == 'VOID':
+			parse['args'].append({'direction': False, 'type': parg[0], 'name': False, 'optional': False})
+		else:
+			parse['args'].append({'direction': parg[0], 'type': parg[1], 'name': parg[2], 'optional': len(parg) == 4})
+
+	parsed.append(parse)
+
+def write_syscall(syscall):
+	save_loc.write("void *gt_windows_print_syscall_%s(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid)\n{\n" % syscall['decl']['name'].lower())
+	save_loc.write("\tchar *proc = get_process_name(vmi, pid);\n")
+	save_loc.write("\tuint64_t *args = vf_get_args(vmi, event, pid);\n")
+	format_vars = []
+	format_strings = []
+	format_args = [""]
+	format_cleanup = []
+	count = 0
+	for arg in syscall['args']:
+		if arg['direction'] in ["__in", "__in_opt", "__inout_opt", "__inout"]:
+			res = print_arg(arg, count)
+			format_vars.append(res[0])
+			format_strings.append(res[1])
+			format_args.append(res[2])
+			format_cleanup.append(res[3])
+		count += 1
+	save_loc.write("\n".join(x for x in format_vars if x != ""))
+	save_loc.write('\n\tfprintf(stderr, "pid: %%u/0x%%lx (%%s) syscall: %s(%s)\\n", pid, tid, proc%s);\n' % (syscall['decl']['name'], ", ".join(format_strings), ", ".join(format_args)))
+	save_loc.write("\n".join(x for x in format_cleanup if x != ""))
+	save_loc.write("\treturn args;\n")
+	save_loc.write("}\n\n")
+
+def write_sysret(syscall):
+	save_loc.write("void gt_windows_print_sysret_%s(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)\n{\n" % syscall['decl']['name'].lower())
+	save_loc.write("\tuint64_t *args = (uint64_t*)data;\n")
+	save_loc.write("\tchar *proc = get_process_name(vmi, pid);\n")
+	format_vars = []
+	format_strings = []
+	format_args = [""]
+	format_cleanup = []
+	count = 0
+	for arg in syscall['args']:
+		if arg['direction'] in ["__out", "__out_opt", "__inout_opt", "__inout"]:
+			res = print_arg(arg, count)
+			format_vars.append(res[0])
+			format_strings.append(res[1])
+			format_args.append(res[2])
+			format_cleanup.append(res[3])
+		count += 1
+	save_loc.write("\n".join(x for x in format_vars if x != ""))
+	save_loc.write('\n\tfprintf(stderr, "pid: %%u/0x%%lx (%%s) sysret: Status(0x%%lx) OUT(%s)\\n", pid, tid, proc, event->x86_regs->rax%s);\n' % (", ".join(format_strings), ", ".join(format_args)))
+	save_loc.write("\n".join(x for x in format_cleanup if x != ""))
+	save_loc.write("\tfree(args);\n")
+	save_loc.write("}\n\n")
+
+for syscall in parsed:
+	write_syscall(syscall)
+	write_sysret(syscall)
+
+save_loc.write("const GTSyscallCallback SYSCALLS[] = {\n")
+for syscall in parsed:
+	save_loc.write("\t{ \"%s\", gt_windows_print_syscall_%s, gt_windows_print_sysret_%s },\n" % (syscall['decl']['name'], syscall['decl']['name'].lower(), syscall['decl']['name'].lower()))
+
+save_loc.write("\t{ NULL, NULL, NULL },\n")
+save_loc.write("};")
+
+save_loc.write('''
+/*
+ * For each of the system calls libvmi is interested in, establish a memory trap
+ * on the page containing the system call handler's first instruction. An
+ * execute trap will cause guestrace to emplace a breakpoint. A read/write trap
+ * (i.e., kernel patch protection) will cause guestrace to restore the original
+ * instruction.
+ */
+void
+_gt_windows_find_syscalls_and_setup_mem_traps(GTLoop *loop)
+{
+	/*
+	 * Delete everything but the line below if you want to release
+	 * hell on your processor...
+	 *     gt_loop_set_cbs(loop, SYSCALLS);
+	 */
+	char *TRACED_SYSCALLS[] = {
+		"NtOpenFile",
+		"NtOpenProcess",
+		"NtClose",
+		"NtReadFile",
+		"NtOpenFile",
+		"NtOpenProcess",
+		NULL,
+	};
+
+	for (int i = 0; TRACED_SYSCALLS[i]; i++) {
+		for (int j = 0; SYSCALLS[j].name; j++) {
+			if (strcmp(TRACED_SYSCALLS[i], SYSCALLS[j].name)) {
+				continue;
+			}
+
+			gt_loop_set_cb(loop, SYSCALLS[j].name, SYSCALLS[j].syscall_cb, SYSCALLS[j].sysret_cb);
+		}
+	}
+}
+''')
+
+save_loc.close()
+'''
+IMPORTANCE
++ -> finished
+- -> uses default (prints the value in hex)
+
+- HANDLE 283
+- ULONG 257
+- PVOID 172
++ PULONG 96
++ POBJECT_ATTRIBUTES 79
++ PHANDLE 76
++ ACCESS_MASK 72
++ BOOLEAN 55
+PLARGE_INTEGER 52
+PUNICODE_STRING 51
+PIO_STATUS_BLOCK 32
+PPORT_MESSAGE 22
+SIZE_T 18
+PSIZE_T 14
+VOID 13
+PIO_APC_ROUTINE 11
+PSECURITY_DESCRIPTOR 10
+LPGUID 9
+PBOOLEAN 9
+NTSTATUS 9
+ULONG_PTR 8
+PULONG_PTR 8
+PNTSTATUS 7
+PSID 7
+PACCESS_MASK 7
+PGENERIC_MAPPING 7
+PPRIVILEGE_SET 7
+LONG 6
+POBJECT_TYPE_LIST 5
+PCONTEXT 5
+PLONG 5
+PTOKEN_GROUPS 5
+PALPC_MESSAGE_ATTRIBUTES 5
+ALPC_HANDLE 4
+PTOKEN_PRIVILEGES 4
+PCLIENT_ID 4
+KPROFILE_SOURCE 4
+LANGID 4
+PSECURITY_QUALITY_OF_SERVICE 3
+PREMOTE_PORT_VIEW 3
+PALPC_PORT_ATTRIBUTES 3
+SYSTEM_INFORMATION_CLASS 3
+PPORT_VIEW 3
+AUDIT_EVENT_TYPE 3
+FILE_INFORMATION_CLASS 3
+PWSTR 3
+PLCID 2
+FS_INFORMATION_CLASS 2
+PEFI_DRIVER_ENTRY 2
+ALPC_PORT_INFORMATION_CLASS 2
+RTL_ATOM 2
+PBOOT_OPTIONS 2
+WAIT_TYPE 2
+IO_SESSION_STATE 2
+POWER_ACTION 2
+PBOOT_ENTRY 2
+ENLISTMENT_INFORMATION_CLASS 2
+PFILE_SEGMENT_ELEMENT 2
+PLUID 2
+PFILE_PATH 2
+TRANSACTIONMANAGER_INFORMATION_CLASS 2
+TOKEN_INFORMATION_CLASS 2
+KEY_INFORMATION_CLASS 2
+JOBOBJECTINFOCLASS 2
+SYSTEM_POWER_STATE 2
+WIN32_PROTECTION_MASK 2
+SECURITY_INFORMATION 2
+OBJECT_INFORMATION_CLASS 2
+TRANSACTION_INFORMATION_CLASS 2
+PROCESSINFOCLASS 2
+WORKERFACTORYINFOCLASS 2
+KEY_VALUE_INFORMATION_CLASS 2
+USHORT 2
+PFILE_IO_COMPLETION_INFORMATION 2
+EXECUTION_STATE 2
+RESOURCEMANAGER_INFORMATION_CLASS 2
+PCHAR 2
+THREADINFOCLASS 2
+PPS_APC_ROUTINE 2
+PRTL_ATOM 2
+TOKEN_TYPE 2
+PALPC_HANDLE 2
+PTOKEN_USER 1
+PLUGPLAY_CONTROL_CLASS 1
+PDBGUI_WAIT_STATE_CHANGE 1
+MEMORY_RESERVE_TYPE 1
+EVENT_TYPE 1
+SECTION_INFORMATION_CLASS 1
+POWER_INFORMATION_LEVEL 1
+PUSHORT 1
+OBJECT_ATTRIBUTES 1
+SHUTDOWN_ACTION 1
+PRTL_USER_PROCESS_PARAMETERS 1
+SEMAPHORE_INFORMATION_CLASS 1
+NOTIFICATION_MASK 1
+KTMOBJECT_TYPE 1
+APPHELPCOMMAND 1
+MEMORY_INFORMATION_CLASS 1
+PEXCEPTION_RECORD 1
+VDMSERVICECLASS 1
+PFILE_NETWORK_OPEN_INFORMATION 1
+PTOKEN_SOURCE 1
+SYSDBG_COMMAND 1
+PFILE_BASIC_INFORMATION 1
+PULARGE_INTEGER 1
+PCRM_PROTOCOL_ID 1
+PKEY_VALUE_ENTRY 1
+PTOKEN_PRIMARY_GROUP 1
+PINITIAL_TEB 1
+PPROCESS_ATTRIBUTE_LIST 1
+PJOB_SET_ARRAY 1
+KAFFINITY 1
+DEBUGOBJECTINFOCLASS 1
+ALPC_MESSAGE_INFORMATION_CLASS 1
+TIMER_TYPE 1
+PPROCESS_CREATE_INFO 1
+PPS_ATTRIBUTE_LIST 1
+SECTION_INHERIT 1
+PTIMER_APC_ROUTINE 1
+TIMER_SET_INFORMATION_CLASS 1
+PTOKEN_OWNER 1
+PALPC_CONTEXT_ATTR 1
+PPLUGPLAY_EVENT_BLOCK 1
+PGROUP_AFFINITY 1
+PKTMOBJECT_CURSOR 1
+PALPC_SECURITY_ATTR 1
+DEVICE_POWER_STATE 1
+ATOM_INFORMATION_CLASS 1
+TIMER_INFORMATION_CLASS 1
+IO_COMPLETION_INFORMATION_CLASS 1
+PALPC_DATA_VIEW_ATTR 1
+LCID 1
+PTOKEN_DEFAULT_DACL 1
+PTRANSACTION_NOTIFICATION 1
+EVENT_INFORMATION_CLASS 1
+PORT_INFORMATION_CLASS 1
+KEY_SET_INFORMATION_CLASS 1
+MUTANT_INFORMATION_CLASS 1
+'''
