@@ -37,6 +37,7 @@ struct _GTLoop {
 	vmi_instance_t vmi;
 
 	os_t os;
+	uint8_t return_address_width;
 
 	/*
 	 * Function pointers which allow for polymorphism; cleanly support both

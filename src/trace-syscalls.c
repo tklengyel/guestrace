@@ -55,8 +55,6 @@ static uint8_t VF_BREAKPOINT_INST = 0xCC;
  */
 static gboolean gt_interrupted = FALSE;
 
-static const int RETURN_ADDR_WIDTH = sizeof(void *);
-
 typedef struct gt_page_record {
 	addr_t      frame;
 	addr_t      shadow_page;
@@ -282,7 +280,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		       | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
 	} else {
 		/* Type-two breakpoint. */
-		addr_t thread_id = event->x86_regs->rsp - RETURN_ADDR_WIDTH;
+		addr_t thread_id = event->x86_regs->rsp - loop->return_address_width;
 		syscall_state *sys_state = g_hash_table_lookup(loop->gt_ret_addr_mapping,
 		                                                GSIZE_TO_POINTER(thread_id));
 
@@ -452,6 +450,8 @@ GTLoop *gt_loop_new(const char *guest_name)
 		status = VMI_FAILURE;
 		goto done;
 	}
+
+	loop->return_address_width = vmi_get_address_width(loop->vmi);
 
 	loop->xch = xc_interface_open(0, 0, 0);
 	if (NULL == loop->xch) {

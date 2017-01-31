@@ -9,8 +9,6 @@
 
 #include "generated-linux.h"
 
-static const int RETURN_ADDR_WIDTH = sizeof(void *);
-
 int
 _gt_linux_find_syscalls_and_setup_mem_traps(GTLoop *loop)
 {
@@ -3523,8 +3521,7 @@ void *gt_linux_print_syscall_sys_copy_file_range(vmi_instance_t vmi, vmi_event_t
 
 void gt_linux_print_sysret(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data) {
 	reg_t syscall_return = event->x86_regs->rax;
-	reg_t rsp = event->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) return: 0x%"PRIx64"\n", pid, rsp - RETURN_ADDR_WIDTH, get_process_name(vmi, pid), syscall_return);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) return: 0x%"PRIx64"\n", pid, tid, get_process_name(vmi, pid), syscall_return);
 }
 
 const GTSyscallCallback VM_LINUX_SYSCALLS[] = {
