@@ -302,7 +302,7 @@ for line in syscalls.split("\n"):
 	parsed.append(parse)
 
 def write_syscall(syscall):
-	save_loc.write("void *gt_windows_print_syscall_%s(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid)\n{\n" % syscall['decl']['name'].lower())
+	save_loc.write("void *gt_windows_print_syscall_%s(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)\n{\n" % syscall['decl']['name'].lower())
 	save_loc.write("\tchar *proc = get_process_name(vmi, pid);\n")
 	save_loc.write("\tuint64_t *args = vf_get_args(vmi, event, pid);\n")
 	format_vars = []
@@ -353,7 +353,7 @@ for syscall in parsed:
 
 save_loc.write("const GTSyscallCallback SYSCALLS[] = {\n")
 for syscall in parsed:
-	save_loc.write("\t{ \"%s\", gt_windows_print_syscall_%s, gt_windows_print_sysret_%s },\n" % (syscall['decl']['name'], syscall['decl']['name'].lower(), syscall['decl']['name'].lower()))
+	save_loc.write("\t{ \"%s\", gt_windows_print_syscall_%s, gt_windows_print_sysret_%s, NULL },\n" % (syscall['decl']['name'], syscall['decl']['name'].lower(), syscall['decl']['name'].lower()))
 
 save_loc.write("\t{ NULL, NULL, NULL },\n")
 save_loc.write("};")
@@ -390,7 +390,7 @@ _gt_windows_find_syscalls_and_setup_mem_traps(GTLoop *loop)
 				continue;
 			}
 
-			gt_loop_set_cb(loop, SYSCALLS[j].name, SYSCALLS[j].syscall_cb, SYSCALLS[j].sysret_cb);
+			gt_loop_set_cb(loop, SYSCALLS[j].name, SYSCALLS[j].syscall_cb, SYSCALLS[j].sysret_cb, SYSCALLS[j].user_data);
 		}
 	}
 }

@@ -69,6 +69,7 @@ struct gt_paddr_record {
 	GTSyscallFunc   syscall_cb;
 	GTSysretFunc    sysret_cb;
 	gt_page_record *parent;
+	void           *data; /* Optional user data set at initialization.  Passed to syscall_cb. */
 };
 
 typedef struct syscall_state {
@@ -264,7 +265,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 
 			syscall_state *sys_state = g_new0(syscall_state, 1);
 			sys_state->syscall_trap  = paddr_record;
-			sys_state->data          = paddr_record->syscall_cb(vmi, event, pid, thread_id);
+			sys_state->data          = paddr_record->syscall_cb(vmi, event, pid, thread_id, paddr_record->data);
 			sys_state->thread_id     = thread_id;
 
 			vmi_write_64_pa(vmi, ret_loc, &loop->trampoline_addr);
@@ -732,7 +733,8 @@ static struct gt_paddr_record *
 gt_setup_mem_trap (GTLoop *loop,
                    addr_t va,
                    GTSyscallFunc syscall_cb,
-                   GTSysretFunc sysret_cb)
+                   GTSysretFunc sysret_cb,
+                   void *user_data)
 {
 	size_t ret;
 	status_t status;
@@ -834,6 +836,7 @@ gt_setup_mem_trap (GTLoop *loop,
 	paddr_record->parent     = page_record;
 	paddr_record->syscall_cb = syscall_cb;
 	paddr_record->sysret_cb  = sysret_cb;
+	paddr_record->data       = user_data;
 
 	/* Write interrupt to our shadow page at the correct location. */
 	status = vmi_write_8_pa(loop->vmi,
@@ -861,6 +864,7 @@ done:
  * @syscall_cb: a #GTSyscallFunc which will handle the named system call.
  * @sysret_cb: a #GTSysretFunc which will handle returns from the named
  * system call.
+ * @user_data: optional data that gets passed every time syscall_cb gets called
  *
  * Sets the callback functions associated with @kernel_func. Each time
  * processing a system call in the guest kernel calls @kernel_func,
@@ -870,7 +874,8 @@ done:
 void gt_loop_set_cb(GTLoop *loop,
                     const char *kernel_func,
                     GTSyscallFunc syscall_cb,
-                    GTSysretFunc sysret_cb)
+                    GTSysretFunc sysret_cb,
+                    void *user_data)
 {
 	addr_t sysaddr;
 	struct gt_paddr_record *syscall_trap;
@@ -883,7 +888,7 @@ void gt_loop_set_cb(GTLoop *loop,
 		goto done;
 	}
 
-	syscall_trap = gt_setup_mem_trap(loop, sysaddr, syscall_cb, sysret_cb);
+	syscall_trap = gt_setup_mem_trap(loop, sysaddr, syscall_cb, sysret_cb, user_data);
 	if (NULL == syscall_trap) {
 		fprintf(stderr, "failed to set trap on %s\n", kernel_func);
 		goto done;
@@ -915,7 +920,8 @@ gt_loop_set_cbs(GTLoop *loop, const GTSyscallCallback callbacks[])
 		gt_loop_set_cb(loop,
 			       callbacks[i].name,
 			       callbacks[i].syscall_cb,
-			       callbacks[i].sysret_cb);
+			       callbacks[i].sysret_cb,
+			       callbacks[i].user_data);
 	}
 
 	fprintf(stderr, "Finished finding and creating syscall traps\n");
