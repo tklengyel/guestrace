@@ -37,7 +37,7 @@ struct _GTLoop {
 	vmi_instance_t vmi;
 
 	os_t os;
-	uint8_t return_address_width;
+	uint8_t return_addr_width;
 
 	/*
 	 * Function pointers which allow for polymorphism; cleanly support both
@@ -77,7 +77,7 @@ struct _GTLoop {
 	 *
 	 * trampoline_addr is the address of the type-two breakpoint.
 	 */
-	addr_t return_point_addr;
+	addr_t return_addr;
 	addr_t trampoline_addr;
 };
 

@@ -90,22 +90,24 @@ gt_restore_return_addr (gpointer data)
 	GTLoop *loop = sys_state->syscall_trap->parent->loop;
 
 	addr_t pa = vmi_translate_kv2p(loop->vmi, sys_state->thread_id);
-
-	status = vmi_write_64_pa(loop->vmi, pa, &loop->return_point_addr);
-	if (VMI_SUCCESS != status) {
+	if (0 == pa) {
 		fprintf(stderr, "error restoring stack; guest will likely fail\n");
+		goto done;
 	}
 
+	status = vmi_write_64_pa(loop->vmi, pa, &loop->return_addr);
+	if (VMI_SUCCESS != status) {
+		fprintf(stderr, "error restoring stack; guest will likely fail\n");
+		goto done;
+	}
+
+done:
 	g_free(sys_state);
 }
 
 static void
 gt_destroy_page_record (gpointer data) {
 	gt_page_record *page_record = data;
-
-	fprintf(stderr,
-	       "destroying page record on shadow page %lx\n",
-	        page_record->shadow_frame);
 
 	g_hash_table_destroy(page_record->children);
 
@@ -151,7 +153,7 @@ gt_singlestep_cb(vmi_instance_t vmi, vmi_event_t *event) {
 static bool
 gt_set_up_step_events (GTLoop *loop)
 {
-	bool status = false;
+	bool ok = false;
 
 	int vcpus = vmi_get_num_vcpus(loop->vmi);
 	if (0 == vcpus) {
@@ -165,21 +167,25 @@ gt_set_up_step_events (GTLoop *loop)
 	}
 
 	for (int vcpu = 0; vcpu < vcpus; vcpu++) {
-		SETUP_SINGLESTEP_EVENT(&(loop->step_event[vcpu]), 1u << vcpu, gt_singlestep_cb, 0);
+		SETUP_SINGLESTEP_EVENT(&(loop->step_event[vcpu]),
+		                       1u << vcpu,
+		                       gt_singlestep_cb,
+		                       0);
 		loop->step_event[vcpu].data = loop;
 
-		if (VMI_SUCCESS != vmi_register_event(loop->vmi, &loop->step_event[vcpu])) {
+		if (VMI_SUCCESS != vmi_register_event(loop->vmi,
+		                                     &loop->step_event[vcpu])) {
 			fprintf(stderr,
-			       "failed to register single-step event on VCPU %d\n",
+			       "register single-step event on VCPU failed %d\n",
 			        vcpu);
 			goto done;
 		}
 	}
 
-	status = true;
+	ok = true;
 
 done:
-	return status;
+	return ok;
 }
 
 /*
@@ -196,7 +202,7 @@ gt_paddr_record_from_pa(GTLoop *loop, addr_t pa) {
 	gt_page_record         *page_record  = NULL;
 
 	addr_t frame  = pa >> GT_PAGE_OFFSET_BITS;
-	addr_t offset = pa % GT_PAGE_SIZE;
+	addr_t offset = pa  % GT_PAGE_SIZE;
 	addr_t shadow = (addr_t)g_hash_table_lookup(loop->gt_page_translation,
 	                                            GSIZE_TO_POINTER(frame));
 	if (0 == shadow) {
@@ -204,7 +210,7 @@ gt_paddr_record_from_pa(GTLoop *loop, addr_t pa) {
 	}
 
 	page_record = g_hash_table_lookup(loop->gt_page_record_collection,
-	                                          GSIZE_TO_POINTER(shadow));
+	                                  GSIZE_TO_POINTER(shadow));
 	if (NULL == page_record) {
 		goto done;
 	}
@@ -234,68 +240,77 @@ gt_paddr_record_from_va(GTLoop *loop, addr_t va) {
  */
 static event_response_t
 gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
-	status_t status = VMI_EVENT_RESPONSE_NONE;
+	event_response_t response = VMI_EVENT_RESPONSE_NONE;
 
 	GTLoop *loop = event->data;
 	event->interrupt_event.reinject = 0;
 
 	if (event->interrupt_event.gla != loop->trampoline_addr) {
-		/* Type-one breakpoint. */
-		struct gt_paddr_record *paddr_record
-			= gt_paddr_record_from_va(event->data, event->interrupt_event.gla);
+		/* Type-one breakpoint (system call). */
+		status_t status;
+		struct gt_paddr_record *record;
+		syscall_state *state;
 
-		/* If paddr_record is null, we assume we didn't emplace interrupt. */
-		if (NULL == paddr_record) {
+		/* Lookup record corresponding to breakpoint address. */
+		record = gt_paddr_record_from_va(event->data,
+		                                 event->interrupt_event.gla);
+		if (NULL == record) {
+			/* Assume we didn't emplace interrupt. */
 			event->interrupt_event.reinject = 1;
 			/* TODO: Ensure this does the right thing: */
 			goto done;
 		}
 
-		addr_t thread_id = event->x86_regs->rsp;
-		addr_t ret_loc = vmi_translate_kv2p(vmi, thread_id);
-
-		addr_t ret_addr = 0;
-		status_t ret_status = vmi_read_64_pa(vmi, ret_loc, &ret_addr);
-
-		/* only monitor breakpoints that return at the correct location */
-		if (ret_addr == loop->return_point_addr && 
-		    VMI_SUCCESS == ret_status)
-		{
-			vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
-
-			syscall_state *sys_state = g_new0(syscall_state, 1);
-			sys_state->syscall_trap  = paddr_record;
-			sys_state->data          = paddr_record->syscall_cb(vmi, event, pid, thread_id, paddr_record->data);
-			sys_state->thread_id     = thread_id;
-
-			g_hash_table_insert(loop->gt_ret_addr_mapping,
-		                        GSIZE_TO_POINTER(thread_id),
-		                        sys_state);
-
-			vmi_write_64_pa(vmi, ret_loc, &loop->trampoline_addr);
-		}
-
 		/* Set VCPUs SLAT to use original for one step. */
 		event->slat_id = 0;
 
-		/* Turn on single-step and switch slat_id. */
-		status = VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
-		       | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
+		/* Turn on single-step and switch slat_id after return. */
+		response = VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
+		         | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
+
+		addr_t thread_id  = event->x86_regs->rsp;
+		addr_t return_loc = vmi_translate_kv2p(vmi, thread_id);
+		if (0 == return_loc) {
+			goto done;
+		}
+
+		addr_t return_addr = 0;
+		status = vmi_read_64_pa(vmi, return_loc, &return_addr);
+		if (VMI_SUCCESS != status || return_addr != loop->return_addr) {
+			/* Return pointer not as expected. */
+			goto done;
+		}
+
+		vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
+
+		state                = g_new0(syscall_state, 1);
+		state->syscall_trap  = record;
+		state->thread_id     = thread_id;
+		state->data          = record->syscall_cb(vmi, event, pid,
+		                                          thread_id,
+		                                          record->data);
+
+		g_hash_table_insert(loop->gt_ret_addr_mapping,
+		                    GSIZE_TO_POINTER(thread_id),
+		                    state);
+
+		vmi_write_64_pa(vmi, return_loc, &loop->trampoline_addr);
 	} else {
-		/* Type-two breakpoint. */
-		addr_t thread_id = event->x86_regs->rsp - loop->return_address_width;
-		syscall_state *sys_state = g_hash_table_lookup(loop->gt_ret_addr_mapping,
-		                                                GSIZE_TO_POINTER(thread_id));
+		/* Type-two breakpoint (system return). */
+		addr_t thread_id = event->x86_regs->rsp - loop->return_addr_width;
+		syscall_state *state = g_hash_table_lookup(loop->gt_ret_addr_mapping,
+		                                           GSIZE_TO_POINTER(thread_id));
 
-		if (NULL != sys_state) {
+		if (NULL != state) {
 			vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
-			sys_state->syscall_trap->sysret_cb(vmi, event, pid, thread_id, sys_state->data);
 
-			vmi_set_vcpureg(vmi, loop->return_point_addr, RIP, event->vcpu_id);
+			state->syscall_trap->sysret_cb(vmi, event, pid, thread_id, state->data);
+
+			vmi_set_vcpureg(vmi, loop->return_addr, RIP, event->vcpu_id);
 
 			/*
 			 * This will free our syscall_state object, but sysret_cb must have
-			 * freed sys_state->data.
+			 * freed state->data.
 			 */
 			g_hash_table_remove(loop->gt_ret_addr_mapping,
 			                    GSIZE_TO_POINTER(thread_id));
@@ -303,12 +318,13 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	}
 
 done:
-	return status;
+	return response;
 }
 
 /*
- * Callback invoked on a R/W of a monitored page (likely kernel patch protection).
- * Switch the VCPUs SLAT to its original, step once, switch SLAT back
+ * Callback invoked on a R/W of a monitored page (likely Windows kernel patch
+ * protection). Switch the VCPUs SLAT to its original, step once, switch SLAT
+ * back.
  */
 static event_response_t
 gt_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
@@ -324,18 +340,18 @@ gt_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
  */
 static bool
 gt_set_up_generic_events (GTLoop *loop) {
-	bool status = false;
+	bool ok = false;
+	status_t status;
 
 	SETUP_INTERRUPT_EVENT(&loop->breakpoint_event, 0, gt_breakpoint_cb);
 	loop->breakpoint_event.data = loop;
 
-	status_t ret = vmi_register_event(loop->vmi, &loop->breakpoint_event);
-	if (VMI_SUCCESS != ret) {
+	status = vmi_register_event(loop->vmi, &loop->breakpoint_event);
+	if (VMI_SUCCESS != status) {
 		fprintf(stderr, "Failed to setup interrupt event\n");
 		goto done;
 	}
 
-	/* TODO: support write events? */
 	SETUP_MEM_EVENT(&loop->memory_event,
 	                ~0ULL,
 	                 VMI_MEMACCESS_RW,
@@ -344,29 +360,30 @@ gt_set_up_generic_events (GTLoop *loop) {
 
 	loop->memory_event.data = loop;
 
-	ret = vmi_register_event(loop->vmi, &loop->memory_event);
-	if (VMI_SUCCESS != ret) {
-		fprintf(stderr, "Failed to setup memory event\n");
+	status = vmi_register_event(loop->vmi, &loop->memory_event);
+	if (VMI_SUCCESS != status) {
+		fprintf(stderr, "failed to setup memory event\n");
 		goto done;
 	}
 
-	status = true;
+	ok = true;
 
 done:
-	return status;
+	return ok;
 }
 
-static bool
+/* Search the kernel code address space for an existing int 3 instruction. */
+addr_t
 gt_find_trampoline_addr (GTLoop *loop)
 {
-	bool status = false;
-	status_t vmi_status;
+	addr_t trampoline_addr = 0;
+	status_t status;
 	addr_t lstar = 0;
-	uint8_t code[GT_PAGE_SIZE] = {0}; /* Assume CALL is within first page. */
+	uint8_t code[GT_PAGE_SIZE] = { 0 }; /* Assume CALL is within first page. */
 
-	/* LSTAR should be the constant across all VCPUs */
-	vmi_status = vmi_get_vcpureg(loop->vmi, &lstar, MSR_LSTAR, 0);
-	if (VMI_SUCCESS != vmi_status) {
+	/* LSTAR should be constant across all VCPUs */
+	status = vmi_get_vcpureg(loop->vmi, &lstar, MSR_LSTAR, 0);
+	if (VMI_SUCCESS != status) {
 		fprintf(stderr, "failed to get MSR_LSTAR address\n");
 		goto done;
 	}
@@ -378,27 +395,23 @@ gt_find_trampoline_addr (GTLoop *loop)
 	}
 
 	/* Read kernel instructions into code. */
-	vmi_status = vmi_read_pa(loop->vmi, lstar_p,
-	                     code, sizeof(code));
-	if (vmi_status < GT_PAGE_SIZE) {
-		fprintf(stderr, "failed to read instructions from 0x%lx.\n", lstar_p);
+	status = vmi_read_pa(loop->vmi, lstar_p, code, sizeof(code));
+	if (status < GT_PAGE_SIZE) {
+		fprintf(stderr, "failed to read instructions from 0x%lx.\n",
+		                 lstar_p);
 		goto done;
 	}
 
+	/* Look for int 3. */
 	for (int curr_inst = 0; curr_inst < GT_PAGE_SIZE; curr_inst++) {
-		if (code[curr_inst] != GT_BREAKPOINT_INST) {
-			continue;
+		if (code[curr_inst] == GT_BREAKPOINT_INST) {
+			trampoline_addr = lstar + curr_inst;
+			break;
 		}
-
-		loop->trampoline_addr = lstar + curr_inst;
-		status = true;
-		goto done;
 	}
-
-	fprintf(stderr, "could not find address of existing int 3 instruction\n");
 
 done:
-	return status;
+	return trampoline_addr;
 }
 
 /**
@@ -454,7 +467,7 @@ GTLoop *gt_loop_new(const char *guest_name)
 		goto done;
 	}
 
-	loop->return_address_width = vmi_get_address_width(loop->vmi);
+	loop->return_addr_width = vmi_get_address_width(loop->vmi);
 
 	loop->xch = xc_interface_open(0, 0, 0);
 	if (NULL == loop->xch) {
@@ -557,12 +570,14 @@ void gt_loop_run(GTLoop *loop)
 	}
 
 
-	loop->return_point_addr = loop->os_functions->find_return_point_addr(loop);
-	if (0 == loop->return_point_addr) {
+	loop->return_addr = loop->os_functions->find_return_point_addr(loop);
+	if (0 == loop->return_addr) {
 		goto done;
 	}
 
-	if (!gt_find_trampoline_addr(loop)) {
+	loop->trampoline_addr = gt_find_trampoline_addr(loop);
+	if (0 == loop->trampoline_addr) {
+		fprintf(stderr, "could not find addr. of existing int 3 inst.\n");
 		goto done;
 	}
 
@@ -686,9 +701,7 @@ done:
 	return gfn;
 }
 
-/*
- * Remove the breakpoint associated with paddr_record.
- */
+/* Remove the breakpoint associated with paddr_record.  */
 static status_t
 gt_remove_breakpoint(struct gt_paddr_record *paddr_record) {
 	uint8_t curr_inst;
@@ -940,8 +953,8 @@ gt_loop_set_cbs(GTLoop *loop, const GTSyscallCallback callbacks[])
 
 /*
  * Disassemble a page of memory beginning at <start> until
- * finding the correct mnemonic and op_str, returning the next address
- * Note: op_str is optional
+ * finding the correct mnemonic and op_str, returning the next address.
+ * Note: op_str is optional.
  */
 addr_t
 _gt_find_addr_after_instruction (GTLoop *loop, addr_t start_v, char *mnemonic, char *ops)
