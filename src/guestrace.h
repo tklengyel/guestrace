@@ -20,10 +20,13 @@ typedef addr_t gt_tid_t;
 /**
  * GTSyscallFunc:
  * @vmi: the libvmi instance which abstracts the guest.
- * @event: the event which abstracts the system call which caused the guestrace event loop to invoke this function.
- * @pid: the process ID of the process running when the event occurred.
- * @tid: the unique ID of the thread running within the current process
- * @user_data: optional data set by the user during syscall initialization
+ * @event: the event which abstracts the system call which caused the guestrace
+ * event loop to invoke this function.
+ * @pid: the ID of the process running when the event occurred.
+ * @tid: the unique ID of the thread running within the current process.
+ * @user_data: optional data which might have been passed to the
+ * corresponding gt_loop_set_cb(); if set, the guestrace event loop will pass it
+ * here.
  * 
  * Specifies one of the two types of functions passed to gt_loop_set_cb().
  * The guestrace event loop invokes this callback each time a program running
@@ -41,8 +44,8 @@ typedef void *(*GTSyscallFunc) (vmi_instance_t vmi,
  * GTSysretFunc:
  * @vmi: the libvmi instance which abstracts the guest.
  * @event: the event which abstracts the system return which caused the guestrace event loop to invoke this function.
- * @pid: the process ID of the process running when the event occurred.
- * @tid: the unique ID of the thread running within the current process
+ * @pid: the ID of the process running when the event occurred.
+ * @tid: the unique ID of the thread running within the current process.
  * @user_data: the return value from #GTSyscallFunc which the guestrace event loop passes to #GTSysretFunc.
  * 
  * Specifies one of the two types of functions passed to gt_loop_set_cb().

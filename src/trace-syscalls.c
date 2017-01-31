@@ -864,7 +864,7 @@ done:
  * @syscall_cb: a #GTSyscallFunc which will handle the named system call.
  * @sysret_cb: a #GTSysretFunc which will handle returns from the named
  * system call.
- * @user_data: optional data that gets passed every time syscall_cb gets called
+ * @user_data: optional data which the guestrace event loop will pass to each call of @syscall_cb
  *
  * Sets the callback functions associated with @kernel_func. Each time
  * processing a system call in the guest kernel calls @kernel_func,
