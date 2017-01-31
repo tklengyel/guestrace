@@ -593,8 +593,8 @@ void gt_loop_quit(GTLoop *loop)
 	vmi_pause_vm(loop->vmi);
 
 	g_hash_table_remove_all(loop->gt_page_translation);
-	g_hash_table_remove_all(loop->gt_page_record_collection);
 	g_hash_table_remove_all(loop->gt_ret_addr_mapping);
+	g_hash_table_remove_all(loop->gt_page_record_collection);
 
 	status = xc_altp2m_switch_to_view(loop->xch, loop->domid, 0);
 	if (0 > status) {
@@ -622,9 +622,9 @@ void gt_loop_free(GTLoop *loop)
 
 	vmi_pause_vm(loop->vmi);
 
-	g_hash_table_destroy(loop->gt_page_record_collection);
 	g_hash_table_destroy(loop->gt_page_translation);
 	g_hash_table_destroy(loop->gt_ret_addr_mapping);
+	g_hash_table_destroy(loop->gt_page_record_collection);
 
 	xc_altp2m_destroy_view(loop->xch, loop->domid, loop->shadow_view);
 	xc_altp2m_set_domain_state(loop->xch, loop->domid, 0);
