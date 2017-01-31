@@ -266,10 +266,11 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 			sys_state->data          = paddr_record->syscall_cb(vmi, event, pid, thread_id, paddr_record->data);
 			sys_state->thread_id     = thread_id;
 
-			vmi_write_64_pa(vmi, ret_loc, &loop->trampoline_addr);
 			g_hash_table_insert(loop->gt_ret_addr_mapping,
 		                        GSIZE_TO_POINTER(thread_id),
 		                        sys_state);
+
+			vmi_write_64_pa(vmi, ret_loc, &loop->trampoline_addr);
 		}
 
 		/* Set VCPUs SLAT to use original for one step. */
