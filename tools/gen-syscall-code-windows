@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import re
 
 save_loc = open("generated-windows.c", "w");
