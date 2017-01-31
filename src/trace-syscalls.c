@@ -248,17 +248,19 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		if (NULL == paddr_record) {
 			event->interrupt_event.reinject = 1;
 			/* TODO: Ensure this does the right thing: */
-			status = VMI_EVENT_RESPONSE_EMULATE;
 			goto done;
 		}
 
 		addr_t thread_id = event->x86_regs->rsp;
 		addr_t ret_loc = vmi_translate_kv2p(vmi, thread_id);
 
-		addr_t ret_addr;
-		vmi_read_64_pa(vmi, ret_loc, &ret_addr);
+		addr_t ret_addr = 0;
+		status_t ret_status = vmi_read_64_pa(vmi, ret_loc, &ret_addr);
 
-		if (ret_addr == loop->return_point_addr) {
+		/* only monitor breakpoints that return at the correct location */
+		if (ret_addr == loop->return_point_addr && 
+		    VMI_SUCCESS == ret_status)
+		{
 			vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 
 			syscall_state *sys_state = g_new0(syscall_state, 1);
