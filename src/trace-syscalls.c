@@ -57,7 +57,7 @@ static gboolean gt_interrupted = FALSE;
 
 typedef struct gt_page_record {
 	addr_t      frame;
-	addr_t      shadow_page;
+	addr_t      shadow_frame;
 	GHashTable *children;
 	GTLoop     *loop;
 } gt_page_record;
@@ -105,7 +105,7 @@ gt_destroy_page_record (gpointer data) {
 
 	fprintf(stderr,
 	       "destroying page record on shadow page %lx\n",
-	        page_record->shadow_page);
+	        page_record->shadow_frame);
 
 	g_hash_table_destroy(page_record->children);
 
@@ -118,13 +118,13 @@ gt_destroy_page_record (gpointer data) {
 	xc_altp2m_change_gfn(page_record->loop->xch,
 	                     page_record->loop->domid,
 	                     page_record->loop->shadow_view,
-	                     page_record->shadow_page,
+	                     page_record->shadow_frame,
 	                    ~0);
 
 	xc_domain_decrease_reservation_exact(page_record->loop->xch,
 	                                     page_record->loop->domid,
 	                                     1, 0,
-	                                    &page_record->shadow_page);
+	                                    &page_record->shadow_frame);
 
 	g_free(page_record);
 }
@@ -647,7 +647,7 @@ done:
 
 /* Allocate a new page of memory in the guest's address space. */
 static addr_t
-gt_allocate_shadow_page (GTLoop *loop)
+gt_allocate_shadow_frame (GTLoop *loop)
 {
 	int status;
 	xen_pfn_t gfn = 0;
@@ -691,7 +691,7 @@ static status_t
 gt_remove_breakpoint(struct gt_paddr_record *paddr_record) {
 	uint8_t curr_inst;
 	status_t status    = VMI_FAILURE;
-	addr_t shadow_page = paddr_record->parent->shadow_page;
+	addr_t shadow_frame = paddr_record->parent->shadow_frame;
 	addr_t frame       = paddr_record->parent->frame;
 	addr_t offset      = paddr_record->offset;
 
@@ -703,7 +703,7 @@ gt_remove_breakpoint(struct gt_paddr_record *paddr_record) {
 	}
 
 	status = vmi_write_8_pa(paddr_record->parent->loop->vmi,
-	                       (shadow_page << VF_PAGE_OFFSET_BITS) + offset,
+	                       (shadow_frame << VF_PAGE_OFFSET_BITS) + offset,
 	                       &curr_inst);
 
 done:
@@ -716,7 +716,7 @@ gt_destroy_paddr_record (gpointer data) {
 
 	fprintf(stderr,
 	       "destroying paddr record at shadow physical address %lx\n",
-	       (paddr_record->parent->shadow_page << VF_PAGE_OFFSET_BITS)
+	       (paddr_record->parent->shadow_frame << VF_PAGE_OFFSET_BITS)
 	      + paddr_record->offset);
 
 	gt_remove_breakpoint(paddr_record);
@@ -755,7 +755,7 @@ gt_setup_mem_trap (GTLoop *loop,
 
 	if (0 == shadow) {
 		/* Record does not exist; allocate new page and create record. */
-		shadow = gt_allocate_shadow_page(loop);
+		shadow = gt_allocate_shadow_frame(loop);
 		if (0 == shadow) {
 			fprintf(stderr, "failed to allocate shadow page\n");
 			goto done;
@@ -806,7 +806,7 @@ gt_setup_mem_trap (GTLoop *loop,
 
 		/* Initialize record of this page. */
 		page_record              = g_new0(gt_page_record, 1);
-		page_record->shadow_page = shadow;
+		page_record->shadow_frame = shadow;
 		page_record->frame       = frame;
 		page_record->loop        = loop;
 		page_record->children    = g_hash_table_new_full(NULL,
