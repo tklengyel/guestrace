@@ -41,13 +41,13 @@
  */
 
 /* Number of bits available for page offset. */
-#define VF_PAGE_OFFSET_BITS 12
+#define GT_PAGE_OFFSET_BITS 12
 
 /* Default page size on our domain. */
-#define VF_PAGE_SIZE (1 << VF_PAGE_OFFSET_BITS)
+#define GT_PAGE_SIZE (1 << GT_PAGE_OFFSET_BITS)
 
 /* Intel breakpoint interrupt (INT 3) instruction. */
-static uint8_t VF_BREAKPOINT_INST = 0xCC;
+static uint8_t GT_BREAKPOINT_INST = 0xCC;
 
 /*
  * Handle terminating signals by setting interrupted flag. This allows
@@ -195,8 +195,8 @@ gt_paddr_record_from_pa(GTLoop *loop, addr_t pa) {
 	struct gt_paddr_record *paddr_record = NULL;
 	gt_page_record         *page_record  = NULL;
 
-	addr_t frame  = pa >> VF_PAGE_OFFSET_BITS;
-	addr_t offset = pa % VF_PAGE_SIZE;
+	addr_t frame  = pa >> GT_PAGE_OFFSET_BITS;
+	addr_t offset = pa % GT_PAGE_SIZE;
 	addr_t shadow = (addr_t)g_hash_table_lookup(loop->gt_page_translation,
 	                                            GSIZE_TO_POINTER(frame));
 	if (0 == shadow) {
@@ -362,7 +362,7 @@ gt_find_trampoline_addr (GTLoop *loop)
 	bool status = false;
 	status_t vmi_status;
 	addr_t lstar = 0;
-	uint8_t code[VF_PAGE_SIZE] = {0}; /* Assume CALL is within first page. */
+	uint8_t code[GT_PAGE_SIZE] = {0}; /* Assume CALL is within first page. */
 
 	/* LSTAR should be the constant across all VCPUs */
 	vmi_status = vmi_get_vcpureg(loop->vmi, &lstar, MSR_LSTAR, 0);
@@ -380,13 +380,13 @@ gt_find_trampoline_addr (GTLoop *loop)
 	/* Read kernel instructions into code. */
 	vmi_status = vmi_read_pa(loop->vmi, lstar_p,
 	                     code, sizeof(code));
-	if (vmi_status < VF_PAGE_SIZE) {
+	if (vmi_status < GT_PAGE_SIZE) {
 		fprintf(stderr, "failed to read instructions from 0x%lx.\n", lstar_p);
 		goto done;
 	}
 
-	for (int curr_inst = 0; curr_inst < VF_PAGE_SIZE; curr_inst++) {
-		if (code[curr_inst] != VF_BREAKPOINT_INST) {
+	for (int curr_inst = 0; curr_inst < GT_PAGE_SIZE; curr_inst++) {
+		if (code[curr_inst] != GT_BREAKPOINT_INST) {
 			continue;
 		}
 
@@ -653,7 +653,7 @@ gt_allocate_shadow_frame (GTLoop *loop)
 {
 	int status;
 	xen_pfn_t gfn = 0;
-	uint64_t proposed_mem_size = loop->curr_mem_size + VF_PAGE_SIZE;
+	uint64_t proposed_mem_size = loop->curr_mem_size + GT_PAGE_SIZE;
 
 	status = xc_domain_setmaxmem(loop->xch, loop->domid, proposed_mem_size);
 	if (0 == status) {
@@ -698,14 +698,14 @@ gt_remove_breakpoint(struct gt_paddr_record *paddr_record) {
 	addr_t offset      = paddr_record->offset;
 
 	status = vmi_read_8_pa(paddr_record->parent->loop->vmi,
-	                      (frame << VF_PAGE_OFFSET_BITS) + offset,
+	                      (frame << GT_PAGE_OFFSET_BITS) + offset,
 	                      &curr_inst);
 	if (VMI_SUCCESS != status) {
 		goto done;
 	}
 
 	status = vmi_write_8_pa(paddr_record->parent->loop->vmi,
-	                       (shadow_frame << VF_PAGE_OFFSET_BITS) + offset,
+	                       (shadow_frame << GT_PAGE_OFFSET_BITS) + offset,
 	                       &curr_inst);
 
 done:
@@ -718,7 +718,7 @@ gt_destroy_paddr_record (gpointer data) {
 
 	fprintf(stderr,
 	       "destroying paddr record at shadow physical address %lx\n",
-	       (paddr_record->parent->shadow_frame << VF_PAGE_OFFSET_BITS)
+	       (paddr_record->parent->shadow_frame << GT_PAGE_OFFSET_BITS)
 	      + paddr_record->offset);
 
 	gt_remove_breakpoint(paddr_record);
@@ -750,10 +750,10 @@ gt_setup_mem_trap (GTLoop *loop,
 		goto done;
 	}
 
-	addr_t frame = pa >> VF_PAGE_OFFSET_BITS;
+	addr_t frame = pa >> GT_PAGE_OFFSET_BITS;
 	addr_t shadow = (addr_t) g_hash_table_lookup(loop->gt_page_translation,
 		                                     GSIZE_TO_POINTER(frame));
-	addr_t shadow_offset = pa % VF_PAGE_SIZE;
+	addr_t shadow_offset = pa % GT_PAGE_SIZE;
 
 	if (0 == shadow) {
 		/* Record does not exist; allocate new page and create record. */
@@ -787,21 +787,21 @@ gt_setup_mem_trap (GTLoop *loop,
 		        shadow, frame);
 
 		/* Copy page to shadow. */
-		uint8_t buff[VF_PAGE_SIZE] = {0};
+		uint8_t buff[GT_PAGE_SIZE] = {0};
 		ret = vmi_read_pa(loop->vmi,
-		                  frame << VF_PAGE_OFFSET_BITS,
+		                  frame << GT_PAGE_OFFSET_BITS,
 		                  buff,
-		                  VF_PAGE_SIZE);
-		if (VF_PAGE_SIZE != ret) {
+		                  GT_PAGE_SIZE);
+		if (GT_PAGE_SIZE != ret) {
 			fprintf(stderr, "failed to read in syscall page\n");
 			goto done;
 		}
 
 		ret = vmi_write_pa(loop->vmi,
-		                   shadow << VF_PAGE_OFFSET_BITS,
+		                   shadow << GT_PAGE_OFFSET_BITS,
 		                   buff,
-		                   VF_PAGE_SIZE);
-		if (VF_PAGE_SIZE != ret) {
+		                   GT_PAGE_SIZE);
+		if (GT_PAGE_SIZE != ret) {
 			fprintf(stderr, "failed to write to shadow page\n");
 			goto done;
 		}
@@ -843,8 +843,8 @@ gt_setup_mem_trap (GTLoop *loop,
 
 	/* Write interrupt to our shadow page at the correct location. */
 	status = vmi_write_8_pa(loop->vmi,
-	                       (shadow << VF_PAGE_OFFSET_BITS) + shadow_offset,
-	                       &VF_BREAKPOINT_INST);
+	                       (shadow << GT_PAGE_OFFSET_BITS) + shadow_offset,
+	                       &GT_BREAKPOINT_INST);
 	if (VMI_SUCCESS != status) {
 		fprintf(stderr, "failed to write interrupt to shadow page\n");
 		goto done;
@@ -950,7 +950,7 @@ _gt_find_addr_after_instruction (GTLoop *loop, addr_t start_v, char *mnemonic, c
 	cs_insn *inst;
 	size_t count, offset = ~0;
 	addr_t ret = 0;
-	uint8_t code[VF_PAGE_SIZE];
+	uint8_t code[GT_PAGE_SIZE];
 
 	addr_t start_p = vmi_translate_kv2p(loop->vmi, start_v);
 	if (0 == start_p) {
