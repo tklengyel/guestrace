@@ -3,8 +3,15 @@ if FLYN
 include /etc/fctk/config.mk
 endif
 
-SUBDIRS = src
-DIST_SUBDIRS = src
+SUBDIRS = \
+	doc \
+	src \
+	tools
+
+DIST_SUBDIRS = \
+	doc \
+	src \
+	tools
 
 pcfiles = libguestrace-@API_VERSION@.pc
 

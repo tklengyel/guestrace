@@ -67,6 +67,7 @@ AM_CONDITIONAL(FLYN, test "$FLYN")
 AC_OUTPUT([
 doc/Makefile
 src/Makefile
+tools/Makefile
 Makefile
 libguestrace-${API_VERSION}.pc
 ])
