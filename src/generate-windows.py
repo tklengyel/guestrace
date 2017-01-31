@@ -366,9 +366,11 @@ save_loc.write('''
  * (i.e., kernel patch protection) will cause guestrace to restore the original
  * instruction.
  */
-void
+int
 _gt_windows_find_syscalls_and_setup_mem_traps(GTLoop *loop)
 {
+        int count = 0;
+
 	/*
 	 * Delete everything but the line below if you want to release
 	 * hell on your processor...
@@ -390,9 +392,13 @@ _gt_windows_find_syscalls_and_setup_mem_traps(GTLoop *loop)
 				continue;
 			}
 
-			gt_loop_set_cb(loop, SYSCALLS[j].name, SYSCALLS[j].syscall_cb, SYSCALLS[j].sysret_cb, SYSCALLS[j].user_data);
+			if (gt_loop_set_cb(loop, SYSCALLS[j].name, SYSCALLS[j].syscall_cb, SYSCALLS[j].sysret_cb, SYSCALLS[j].user_data)) {
+                            count++;
+                        }
 		}
 	}
+
+        return count;
 }
 ''')
 

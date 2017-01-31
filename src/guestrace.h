@@ -91,12 +91,12 @@ typedef enum GTOSType {
 
 GTLoop  *gt_loop_new(const char *guest_name);
 GTOSType gt_loop_get_ostype(GTLoop *loop);
-void     gt_loop_set_cb(GTLoop *loop,
+gboolean gt_loop_set_cb(GTLoop *loop,
                         const char *kernel_func,
                         GTSyscallFunc syscall_cb,
                         GTSysretFunc sysret_cb,
                         void *user_data);
-void     gt_loop_set_cbs(GTLoop *loop, const GTSyscallCallback callbacks[]);
+gboolean gt_loop_set_cbs(GTLoop *loop, const GTSyscallCallback callbacks[]);
 void     gt_loop_run(GTLoop *loop);
 void     gt_loop_quit(GTLoop *loop);
 void     gt_loop_free(GTLoop *loop);

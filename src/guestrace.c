@@ -75,10 +75,16 @@ main (int argc, char **argv) {
 	GTOSType os = gt_loop_get_ostype(loop);
 	switch (os) {
 	case GT_OS_LINUX:
-		_gt_linux_find_syscalls_and_setup_mem_traps(loop);
+		if (0 == _gt_linux_find_syscalls_and_setup_mem_traps(loop)) {
+			fprintf(stderr, "unable to instrument any system calls\n");
+			goto done;
+		}
 		break;
 	case GT_OS_WINDOWS:
-		_gt_windows_find_syscalls_and_setup_mem_traps(loop);
+		if (0 == _gt_windows_find_syscalls_and_setup_mem_traps(loop)) {
+			fprintf(stderr, "unable to instrument any system calls\n");
+			goto done;
+		}
 		break;
 	default:
 		fprintf(stderr, "unknown guest operating system\n");

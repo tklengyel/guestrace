@@ -356,7 +356,7 @@ def create_struct_h(syscall_map, syscall_order, kernel_info):
 #include "guestrace.h"
 #include "trace-syscalls.h"
 
-void _gt_linux_find_syscalls_and_setup_mem_traps(GTLoop *loop);
+int _gt_linux_find_syscalls_and_setup_mem_traps(GTLoop *loop);
 
 extern const GTSyscallCallback VM_LINUX_SYSCALLS[];
 
@@ -383,10 +383,10 @@ def create_struct_c(syscall_map, syscall_order, kernel_info):
 
 static const int RETURN_ADDR_WIDTH = sizeof(void *);
 
-void
+int
 _gt_linux_find_syscalls_and_setup_mem_traps(GTLoop *loop)
 {
-        gt_loop_set_cbs(loop, VM_LINUX_SYSCALLS);
+        return gt_loop_set_cbs(loop, VM_LINUX_SYSCALLS);
 }
 
 static char *
@@ -451,7 +451,7 @@ done:
         str += create_print_function(syscall_map[syscall])
 
     # generate the print_sysret_info function
-    str += """void gt_linux_print_sysret(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data) {
+    str += """void gt_linux_print_sysret(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data) {
 	reg_t syscall_return = event->x86_regs->rax;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) return: 0x%"PRIx64"\\n", pid, rsp - RETURN_ADDR_WIDTH, get_process_name(vmi, pid), syscall_return);
@@ -478,7 +478,7 @@ done:
 
 def create_print_function(syscall_data):
     """Generate a print function for a single syscall"""
-    func_str = """void *gt_linux_print_syscall_{0}(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid)
+    func_str = """void *gt_linux_print_syscall_{0}(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
 {{
 	char *proc = get_process_name(vmi, pid);
 """.format(syscall_data.get_syscall_name())

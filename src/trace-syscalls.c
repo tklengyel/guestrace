@@ -870,13 +870,17 @@ done:
  * processing a system call in the guest kernel calls @kernel_func,
  * The loop will invoke @syscall_cb with the parameters associated with the
  * call. When @kernel_func returns, the loop will invoke @sysret_cb.
+ *
+ * Returns: %TRUE on success, %FALSE on failure.
  **/
-void gt_loop_set_cb(GTLoop *loop,
+gboolean gt_loop_set_cb(GTLoop *loop,
                     const char *kernel_func,
                     GTSyscallFunc syscall_cb,
                     GTSysretFunc sysret_cb,
                     void *user_data)
 {
+	gboolean fnval = FALSE;
+
 	addr_t sysaddr;
 	struct gt_paddr_record *syscall_trap;
 
@@ -884,21 +888,22 @@ void gt_loop_set_cb(GTLoop *loop,
 
 	sysaddr = vmi_translate_ksym2v(loop->vmi, kernel_func);
 	if (0 == sysaddr) {
-		fprintf(stderr, "could not find symbol %s\n", kernel_func);
 		goto done;
 	}
 
 	syscall_trap = gt_setup_mem_trap(loop, sysaddr, syscall_cb, sysret_cb, user_data);
 	if (NULL == syscall_trap) {
-		fprintf(stderr, "failed to set trap on %s\n", kernel_func);
 		goto done;
 	}
+
+	fnval = TRUE;
 
 done:
 	vmi_resume_vm(loop->vmi);
 
-	return;
+	return fnval;
 }
+
 /**
  * gt_loop_set_cbs:
  * @loop: a #GTLoop.
@@ -908,29 +913,32 @@ done:
  * A convenience function which repeatedly invoke gt_loop_set_cb for each
  * callback defined in @syscalls. The @syscalls array must be terminated with
  * an #GTSyscallCallback with each field set to NULL.
+ *
+ * Returns: %TRUE on success, %FALSE on failure.
  **/
-
-void
+int
 gt_loop_set_cbs(GTLoop *loop, const GTSyscallCallback callbacks[])
 {
-	/* this might take a while */
-	fprintf(stderr, "Finding and creating syscall traps...\n");
+	int count = 0;
 
 	for (int i = 0; !gt_interrupted && callbacks[i].name; i++) {
-		gt_loop_set_cb(loop,
-			       callbacks[i].name,
-			       callbacks[i].syscall_cb,
-			       callbacks[i].sysret_cb,
-			       callbacks[i].user_data);
+		gboolean ok = gt_loop_set_cb(loop,
+		                             callbacks[i].name,
+		                             callbacks[i].syscall_cb,
+		                             callbacks[i].sysret_cb,
+		                             callbacks[i].user_data);
+		if (ok) {
+			count++;
+		}
 	}
 
-	fprintf(stderr, "Finished finding and creating syscall traps\n");
+	return count;
 }
 
 /*
  * Disassemble a page of memory beginning at <start> until
  * finding the correct mnemonic and op_str, returning the next address
- * Note: op_str is be optional
+ * Note: op_str is optional
  */
 addr_t
 _gt_find_addr_after_instruction (GTLoop *loop, addr_t start_v, char *mnemonic, char *ops)
