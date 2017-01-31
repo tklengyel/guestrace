@@ -1,4 +1,4 @@
-/* Generated on Linux_4.9.3-200.fc25.x86_64 on 30 Jan 2017 20:25:38*/
+/* Generated on Linux_4.9.3-200.fc25.x86_64 on 31 Jan 2017 17:27:28*/
 
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
@@ -9,11 +9,7 @@
 
 #include "generated-linux.h"
 
-int
-_gt_linux_find_syscalls_and_setup_mem_traps(GTLoop *loop)
-{
-        return gt_loop_set_cbs(loop, VM_LINUX_SYSCALLS);
-}
+static const int RETURN_ADDR_WIDTH = sizeof(void *);
 
 static char *
 get_process_name(vmi_instance_t vmi, vmi_pid_t pid) 
@@ -3521,10 +3517,11 @@ void *gt_linux_print_syscall_sys_copy_file_range(vmi_instance_t vmi, vmi_event_t
 
 void gt_linux_print_sysret(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data) {
 	reg_t syscall_return = event->x86_regs->rax;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) return: 0x%"PRIx64"\n", pid, tid, get_process_name(vmi, pid), syscall_return);
+	reg_t rsp = event->x86_regs->rsp;
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) return: 0x%"PRIx64"\n", pid, rsp - RETURN_ADDR_WIDTH, get_process_name(vmi, pid), syscall_return);
 }
 
-const GTSyscallCallback VM_LINUX_SYSCALLS[] = {
+const GTSyscallCallback GT_LINUX_SYSCALLS[] = {
 	{ "sys_read", gt_linux_print_syscall_sys_read, gt_linux_print_sysret },
 	{ "sys_write", gt_linux_print_syscall_sys_write, gt_linux_print_sysret },
 	{ "sys_open", gt_linux_print_syscall_sys_open, gt_linux_print_sysret },

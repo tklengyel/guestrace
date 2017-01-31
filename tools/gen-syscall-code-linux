@@ -356,9 +356,7 @@ def create_struct_h(syscall_map, syscall_order, kernel_info):
 #include "guestrace.h"
 #include "trace-syscalls.h"
 
-int _gt_linux_find_syscalls_and_setup_mem_traps(GTLoop *loop);
-
-extern const GTSyscallCallback VM_LINUX_SYSCALLS[];
+extern const GTSyscallCallback GT_LINUX_SYSCALLS[];
 
 #endif
 """
@@ -382,12 +380,6 @@ def create_struct_c(syscall_map, syscall_order, kernel_info):
 #include "generated-linux.h"
 
 static const int RETURN_ADDR_WIDTH = sizeof(void *);
-
-int
-_gt_linux_find_syscalls_and_setup_mem_traps(GTLoop *loop)
-{
-        return gt_loop_set_cbs(loop, VM_LINUX_SYSCALLS);
-}
 
 static char *
 get_process_name(vmi_instance_t vmi, vmi_pid_t pid) 
@@ -460,7 +452,7 @@ done:
 """
 
     # Generate SYSCALLS table.
-    str += """const GTSyscallCallback VM_LINUX_SYSCALLS[] = {
+    str += """const GTSyscallCallback GT_LINUX_SYSCALLS[] = {
 """
     
     # generate the actual struct list

@@ -8571,7 +8571,7 @@ void gt_windows_print_sysret_ntyieldexecution(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-const GTSyscallCallback SYSCALLS[] = {
+const GTSyscallCallback GT_WINDOWS_SYSCALLS[] = {
 	{ "NtAcceptConnectPort", gt_windows_print_syscall_ntacceptconnectport, gt_windows_print_sysret_ntacceptconnectport, NULL },
 	{ "NtAccessCheckAndAuditAlarm", gt_windows_print_syscall_ntaccesscheckandauditalarm, gt_windows_print_sysret_ntaccesscheckandauditalarm, NULL },
 	{ "NtAccessCheckByTypeAndAuditAlarm", gt_windows_print_syscall_ntaccesscheckbytypeandauditalarm, gt_windows_print_sysret_ntaccesscheckbytypeandauditalarm, NULL },
@@ -8975,44 +8975,3 @@ const GTSyscallCallback SYSCALLS[] = {
 	{ "NtYieldExecution", gt_windows_print_syscall_ntyieldexecution, gt_windows_print_sysret_ntyieldexecution, NULL },
 	{ NULL, NULL, NULL },
 };
-/*
- * For each of the system calls libvmi is interested in, establish a memory trap
- * on the page containing the system call handler's first instruction. An
- * execute trap will cause guestrace to emplace a breakpoint. A read/write trap
- * (i.e., kernel patch protection) will cause guestrace to restore the original
- * instruction.
- */
-int
-_gt_windows_find_syscalls_and_setup_mem_traps(GTLoop *loop)
-{
-	int count = 0;
-
-	/*
-	 * Delete everything but the line below if you want to release
-	 * hell on your processor...
-	 *     gt_loop_set_cbs(loop, SYSCALLS);
-	 */
-	char *TRACED_SYSCALLS[] = {
-		"NtOpenFile",
-		"NtOpenProcess",
-		"NtClose",
-		"NtReadFile",
-		"NtOpenFile",
-		"NtOpenProcess",
-		NULL,
-	};
-
-	for (int i = 0; TRACED_SYSCALLS[i]; i++) {
-		for (int j = 0; SYSCALLS[j].name; j++) {
-			if (strcmp(TRACED_SYSCALLS[i], SYSCALLS[j].name)) {
-				continue;
-			}
-
-			if (gt_loop_set_cb(loop, SYSCALLS[j].name, SYSCALLS[j].syscall_cb, SYSCALLS[j].sysret_cb, SYSCALLS[j].user_data)) {
-				count++;
-			}
-		}
-	}
-
-	return count;
-}
