@@ -2,7 +2,7 @@
 
 import re
 
-save_loc = open("generated-windows.c", "w");
+save_loc = open("../src/generated-windows.c", "w");
 
 save_loc.write('''#include <libvmi/libvmi.h>
 #include <libvmi/events.h>

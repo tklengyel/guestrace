@@ -11,34 +11,34 @@
 
 enum AccessMaskEnum
 {
-    FILE_READ_DATA        = 0x000001,
-    FILE_LIST_DIRECTORY   = 0x000001,
-    FILE_WRITE_DATA       = 0x000002,
-    FILE_ADD_FILE         = 0x000002,
-    FILE_APPEND_DATA      = 0x000004,
-    FILE_ADD_SUBDIRECTORY = 0x000004,
-    FILE_READ_EA          = 0x000008,
-    FILE_WRITE_EA         = 0x000010,
-    FILE_EXECUTE          = 0x000020,
-    FILE_TRAVERSE         = 0x000020,
-    FILE_DELETE_CHILD     = 0x000040,
-    FILE_READ_ATTRIBUTES  = 0x000080,
-    FILE_WRITE_ATTRIBUTES = 0x000100,
-    DELETE                = 0x010000,
-    READ_CONTROL          = 0x020000,
-    WRITE_DAC             = 0x040000,
-    WRITE_OWNER           = 0x080000,
-    SYNCHRONIZE           = 0x100000,
-    OWNER                 = FILE_READ_DATA | FILE_LIST_DIRECTORY | FILE_WRITE_DATA |
-                            FILE_ADD_FILE  | FILE_APPEND_DATA    | FILE_ADD_SUBDIRECTORY |
-                            FILE_READ_EA   | FILE_WRITE_EA       | FILE_EXECUTE |
-                            FILE_TRAVERSE  | FILE_DELETE_CHILD   | FILE_READ_ATTRIBUTES |
-                            FILE_WRITE_ATTRIBUTES | DELETE       | READ_CONTROL | 
-                            WRITE_DAC      | WRITE_OWNER         | SYNCHRONIZE,
-    READ_ONLY             = FILE_READ_DATA | FILE_LIST_DIRECTORY | FILE_READ_EA |
-                            FILE_EXECUTE   | FILE_TRAVERSE | FILE_READ_ATTRIBUTES |
-                            READ_CONTROL   | SYNCHRONIZE, 
-    CONTRIBUTOR           = OWNER & ~(FILE_DELETE_CHILD | WRITE_DAC | WRITE_OWNER)
+	FILE_READ_DATA        = 0x000001,
+	FILE_LIST_DIRECTORY   = 0x000001,
+	FILE_WRITE_DATA       = 0x000002,
+	FILE_ADD_FILE         = 0x000002,
+	FILE_APPEND_DATA      = 0x000004,
+	FILE_ADD_SUBDIRECTORY = 0x000004,
+	FILE_READ_EA          = 0x000008,
+	FILE_WRITE_EA         = 0x000010,
+	FILE_EXECUTE          = 0x000020,
+	FILE_TRAVERSE         = 0x000020,
+	FILE_DELETE_CHILD     = 0x000040,
+	FILE_READ_ATTRIBUTES  = 0x000080,
+	FILE_WRITE_ATTRIBUTES = 0x000100,
+	DELETE                = 0x010000,
+	READ_CONTROL          = 0x020000,
+	WRITE_DAC             = 0x040000,
+	WRITE_OWNER           = 0x080000,
+	SYNCHRONIZE           = 0x100000,
+	OWNER                 = FILE_READ_DATA | FILE_LIST_DIRECTORY | FILE_WRITE_DATA |
+	                        FILE_ADD_FILE  | FILE_APPEND_DATA    | FILE_ADD_SUBDIRECTORY |
+	                        FILE_READ_EA   | FILE_WRITE_EA       | FILE_EXECUTE |
+	                        FILE_TRAVERSE  | FILE_DELETE_CHILD   | FILE_READ_ATTRIBUTES |
+	                        FILE_WRITE_ATTRIBUTES | DELETE       | READ_CONTROL | 
+	                        WRITE_DAC      | WRITE_OWNER         | SYNCHRONIZE,
+	READ_ONLY             = FILE_READ_DATA | FILE_LIST_DIRECTORY | FILE_READ_EA |
+	                        FILE_EXECUTE   | FILE_TRAVERSE | FILE_READ_ATTRIBUTES |
+	                        READ_CONTROL   | SYNCHRONIZE, 
+	CONTRIBUTOR           = OWNER & ~(FILE_DELETE_CHILD | WRITE_DAC | WRITE_OWNER)
 };
 
 struct win64_obj_attr {
@@ -194,10 +194,10 @@ get_process_name(vmi_instance_t vmi, vmi_pid_t pid)
 	vmi_pid_t curr_pid = 0;		/* pid of the processes task struct we are examining */
 	char *proc = NULL;		/* process name of the current process we are examining */
 
-    if(VMI_FAILURE == vmi_read_addr_ksym(vmi, "PsActiveProcessHead", &list_head)) {
-        printf("Failed to find PsActiveProcessHead\n");
-        goto done;
-    }
+	if(VMI_FAILURE == vmi_read_addr_ksym(vmi, "PsActiveProcessHead", &list_head)) {
+		printf("Failed to find PsActiveProcessHead\n");
+		goto done;
+	}
 
 	list_curr = list_head;							/* set the current process to the head */
 
@@ -8985,7 +8985,7 @@ const GTSyscallCallback SYSCALLS[] = {
 int
 _gt_windows_find_syscalls_and_setup_mem_traps(GTLoop *loop)
 {
-        int count = 0;
+	int count = 0;
 
 	/*
 	 * Delete everything but the line below if you want to release
@@ -9009,10 +9009,10 @@ _gt_windows_find_syscalls_and_setup_mem_traps(GTLoop *loop)
 			}
 
 			if (gt_loop_set_cb(loop, SYSCALLS[j].name, SYSCALLS[j].syscall_cb, SYSCALLS[j].sysret_cb, SYSCALLS[j].user_data)) {
-                            count++;
-                        }
+				count++;
+			}
 		}
 	}
 
-        return count;
+	return count;
 }
