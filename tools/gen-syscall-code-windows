@@ -469,7 +469,7 @@ struct win64_client_id {
  * Get ObjectAttributes struct from virtual address
  */
 static struct win64_obj_attr *
-obj_attr_from_va(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid) {
+obj_attr_from_va(vmi_instance_t vmi, addr_t vaddr, gt_pid_t pid) {
 	struct win64_obj_attr * buff = NULL;
 
 	uint32_t struct_size = 0;
@@ -553,7 +553,7 @@ vf_get_simple_permissions(uint32_t permissions)
 }
 
 static uint8_t *
-unicode_str_from_va(vmi_instance_t vmi, addr_t va, vmi_pid_t pid) {
+unicode_str_from_va(vmi_instance_t vmi, addr_t va, gt_pid_t pid) {
 	uint8_t *res = NULL;
 	unicode_string_t * unicode_str = vmi_read_unicode_str_va(vmi, va, pid);
 
@@ -575,7 +575,7 @@ done:
 }
 
 static uint64_t *
-vf_get_args(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid) {
+vf_get_args(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid) {
 	uint64_t *args = calloc(NUM_SYSCALL_ARGS, sizeof(uint64_t));
 	args[0] = event->x86_regs->rcx;
 	args[1] = event->x86_regs->rdx;
@@ -588,7 +588,7 @@ vf_get_args(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid) {
 
 /* Gets the process name of the process with the PID that is input. */
 static char *
-get_process_name(vmi_instance_t vmi, vmi_pid_t pid) 
+get_process_name(vmi_instance_t vmi, gt_pid_t pid) 
 {
 	/* Gets the process name of the process with the input pid */
 	/* offsets from the LibVMI config file */	
@@ -601,7 +601,7 @@ get_process_name(vmi_instance_t vmi, vmi_pid_t pid)
 	addr_t list_curr = 0;
 	addr_t curr_proc = 0;
 	
-	vmi_pid_t curr_pid = 0;		/* pid of the processes task struct we are examining */
+	gt_pid_t curr_pid = 0;		/* pid of the processes task struct we are examining */
 	char *proc = NULL;		/* process name of the current process we are examining */
 
 	if(VMI_FAILURE == vmi_read_addr_ksym(vmi, "PsActiveProcessHead", &list_head)) {
@@ -711,7 +711,7 @@ for line in syscalls.split("\n"):
 	parsed.append(parse)
 
 def write_syscall(syscall):
-	save_loc.write("void *gt_windows_print_syscall_%s(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)\n{\n" % syscall['decl']['name'].lower())
+	save_loc.write("void *gt_windows_print_syscall_%s(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)\n{\n" % syscall['decl']['name'].lower())
 	save_loc.write("\tchar *proc = get_process_name(vmi, pid);\n")
 	save_loc.write("\tuint64_t *args = vf_get_args(vmi, event, pid);\n")
 	format_vars = []
@@ -734,7 +734,7 @@ def write_syscall(syscall):
 	save_loc.write("}\n\n")
 
 def write_sysret(syscall):
-	save_loc.write("void gt_windows_print_sysret_%s(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)\n{\n" % syscall['decl']['name'].lower())
+	save_loc.write("void gt_windows_print_sysret_%s(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)\n{\n" % syscall['decl']['name'].lower())
 	save_loc.write("\tuint64_t *args = (uint64_t*)data;\n")
 	save_loc.write("\tchar *proc = get_process_name(vmi, pid);\n")
 	format_vars = []

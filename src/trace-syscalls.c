@@ -332,7 +332,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 			goto done;
 		}
 
-		vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
+		gt_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 
 		state                       = g_new0(gt_syscall_state, 1);
 		state->syscall_paddr_record = record;
@@ -359,7 +359,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		                            GSIZE_TO_POINTER(thread_id));
 
 		if (NULL != state) {
-			vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
+			gt_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 
 			state->syscall_paddr_record->sysret_cb(vmi,
 			                                       event,

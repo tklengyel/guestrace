@@ -59,7 +59,7 @@ struct win64_client_id {
  * Get ObjectAttributes struct from virtual address
  */
 static struct win64_obj_attr *
-obj_attr_from_va(vmi_instance_t vmi, addr_t vaddr, vmi_pid_t pid) {
+obj_attr_from_va(vmi_instance_t vmi, addr_t vaddr, gt_pid_t pid) {
 	struct win64_obj_attr * buff = NULL;
 
 	uint32_t struct_size = 0;
@@ -143,7 +143,7 @@ vf_get_simple_permissions(uint32_t permissions)
 }
 
 static uint8_t *
-unicode_str_from_va(vmi_instance_t vmi, addr_t va, vmi_pid_t pid) {
+unicode_str_from_va(vmi_instance_t vmi, addr_t va, gt_pid_t pid) {
 	uint8_t *res = NULL;
 	unicode_string_t * unicode_str = vmi_read_unicode_str_va(vmi, va, pid);
 
@@ -165,7 +165,7 @@ done:
 }
 
 static uint64_t *
-vf_get_args(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid) {
+vf_get_args(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid) {
 	uint64_t *args = calloc(NUM_SYSCALL_ARGS, sizeof(uint64_t));
 	args[0] = event->x86_regs->rcx;
 	args[1] = event->x86_regs->rdx;
@@ -178,7 +178,7 @@ vf_get_args(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid) {
 
 /* Gets the process name of the process with the PID that is input. */
 static char *
-get_process_name(vmi_instance_t vmi, vmi_pid_t pid) 
+get_process_name(vmi_instance_t vmi, gt_pid_t pid) 
 {
 	/* Gets the process name of the process with the input pid */
 	/* offsets from the LibVMI config file */	
@@ -191,7 +191,7 @@ get_process_name(vmi_instance_t vmi, vmi_pid_t pid)
 	addr_t list_curr = 0;
 	addr_t curr_proc = 0;
 	
-	vmi_pid_t curr_pid = 0;		/* pid of the processes task struct we are examining */
+	gt_pid_t curr_pid = 0;		/* pid of the processes task struct we are examining */
 	char *proc = NULL;		/* process name of the current process we are examining */
 
 	if(VMI_FAILURE == vmi_read_addr_ksym(vmi, "PsActiveProcessHead", &list_head)) {
@@ -225,7 +225,7 @@ done:
 	return proc;
 
 }
-void *gt_windows_print_syscall_ntacceptconnectport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntacceptconnectport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -234,7 +234,7 @@ void *gt_windows_print_syscall_ntacceptconnectport(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntacceptconnectport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntacceptconnectport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -244,7 +244,7 @@ void gt_windows_print_sysret_ntacceptconnectport(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntaccesscheckandauditalarm(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntaccesscheckandauditalarm(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -260,7 +260,7 @@ void *gt_windows_print_syscall_ntaccesscheckandauditalarm(vmi_instance_t vmi, vm
 	free(permissions_5);	return args;
 }
 
-void gt_windows_print_sysret_ntaccesscheckandauditalarm(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntaccesscheckandauditalarm(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -269,7 +269,7 @@ void gt_windows_print_sysret_ntaccesscheckandauditalarm(vmi_instance_t vmi, vmi_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntaccesscheckbytypeandauditalarm(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntaccesscheckbytypeandauditalarm(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -285,7 +285,7 @@ void *gt_windows_print_syscall_ntaccesscheckbytypeandauditalarm(vmi_instance_t v
 	free(permissions_6);	return args;
 }
 
-void gt_windows_print_sysret_ntaccesscheckbytypeandauditalarm(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntaccesscheckbytypeandauditalarm(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -294,7 +294,7 @@ void gt_windows_print_sysret_ntaccesscheckbytypeandauditalarm(vmi_instance_t vmi
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntaccesscheckbytype(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntaccesscheckbytype(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -305,7 +305,7 @@ void *gt_windows_print_syscall_ntaccesscheckbytype(vmi_instance_t vmi, vmi_event
 	free(permissions_3);	return args;
 }
 
-void gt_windows_print_sysret_ntaccesscheckbytype(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntaccesscheckbytype(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -315,7 +315,7 @@ void gt_windows_print_sysret_ntaccesscheckbytype(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntaccesscheckbytyperesultlistandauditalarmbyhandle(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntaccesscheckbytyperesultlistandauditalarmbyhandle(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -331,7 +331,7 @@ void *gt_windows_print_syscall_ntaccesscheckbytyperesultlistandauditalarmbyhandl
 	free(permissions_7);	return args;
 }
 
-void gt_windows_print_sysret_ntaccesscheckbytyperesultlistandauditalarmbyhandle(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntaccesscheckbytyperesultlistandauditalarmbyhandle(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -340,7 +340,7 @@ void gt_windows_print_sysret_ntaccesscheckbytyperesultlistandauditalarmbyhandle(
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntaccesscheckbytyperesultlistandauditalarm(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntaccesscheckbytyperesultlistandauditalarm(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -356,7 +356,7 @@ void *gt_windows_print_syscall_ntaccesscheckbytyperesultlistandauditalarm(vmi_in
 	free(permissions_6);	return args;
 }
 
-void gt_windows_print_sysret_ntaccesscheckbytyperesultlistandauditalarm(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntaccesscheckbytyperesultlistandauditalarm(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -365,7 +365,7 @@ void gt_windows_print_sysret_ntaccesscheckbytyperesultlistandauditalarm(vmi_inst
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntaccesscheckbytyperesultlist(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntaccesscheckbytyperesultlist(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -376,7 +376,7 @@ void *gt_windows_print_syscall_ntaccesscheckbytyperesultlist(vmi_instance_t vmi,
 	free(permissions_3);	return args;
 }
 
-void gt_windows_print_sysret_ntaccesscheckbytyperesultlist(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntaccesscheckbytyperesultlist(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -386,7 +386,7 @@ void gt_windows_print_sysret_ntaccesscheckbytyperesultlist(vmi_instance_t vmi, v
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntaccesscheck(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntaccesscheck(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -397,7 +397,7 @@ void *gt_windows_print_syscall_ntaccesscheck(vmi_instance_t vmi, vmi_event_t *ev
 	free(permissions_2);	return args;
 }
 
-void gt_windows_print_sysret_ntaccesscheck(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntaccesscheck(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -407,7 +407,7 @@ void gt_windows_print_sysret_ntaccesscheck(vmi_instance_t vmi, vmi_event_t *even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntaddatom(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntaddatom(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -416,7 +416,7 @@ void *gt_windows_print_syscall_ntaddatom(vmi_instance_t vmi, vmi_event_t *event,
 	return args;
 }
 
-void gt_windows_print_sysret_ntaddatom(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntaddatom(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -425,7 +425,7 @@ void gt_windows_print_sysret_ntaddatom(vmi_instance_t vmi, vmi_event_t *event, v
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntaddbootentry(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntaddbootentry(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -434,7 +434,7 @@ void *gt_windows_print_syscall_ntaddbootentry(vmi_instance_t vmi, vmi_event_t *e
 	return args;
 }
 
-void gt_windows_print_sysret_ntaddbootentry(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntaddbootentry(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -444,7 +444,7 @@ void gt_windows_print_sysret_ntaddbootentry(vmi_instance_t vmi, vmi_event_t *eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntadddriverentry(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntadddriverentry(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -453,7 +453,7 @@ void *gt_windows_print_syscall_ntadddriverentry(vmi_instance_t vmi, vmi_event_t 
 	return args;
 }
 
-void gt_windows_print_sysret_ntadddriverentry(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntadddriverentry(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -463,7 +463,7 @@ void gt_windows_print_sysret_ntadddriverentry(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntadjustgroupstoken(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntadjustgroupstoken(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -472,7 +472,7 @@ void *gt_windows_print_syscall_ntadjustgroupstoken(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntadjustgroupstoken(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntadjustgroupstoken(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -482,7 +482,7 @@ void gt_windows_print_sysret_ntadjustgroupstoken(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntadjustprivilegestoken(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntadjustprivilegestoken(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -491,7 +491,7 @@ void *gt_windows_print_syscall_ntadjustprivilegestoken(vmi_instance_t vmi, vmi_e
 	return args;
 }
 
-void gt_windows_print_sysret_ntadjustprivilegestoken(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntadjustprivilegestoken(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -501,7 +501,7 @@ void gt_windows_print_sysret_ntadjustprivilegestoken(vmi_instance_t vmi, vmi_eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntalertresumethread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntalertresumethread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -510,7 +510,7 @@ void *gt_windows_print_syscall_ntalertresumethread(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntalertresumethread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntalertresumethread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -520,7 +520,7 @@ void gt_windows_print_sysret_ntalertresumethread(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntalertthread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntalertthread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -529,7 +529,7 @@ void *gt_windows_print_syscall_ntalertthread(vmi_instance_t vmi, vmi_event_t *ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntalertthread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntalertthread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -538,7 +538,7 @@ void gt_windows_print_sysret_ntalertthread(vmi_instance_t vmi, vmi_event_t *even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntallocatelocallyuniqueid(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntallocatelocallyuniqueid(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -547,7 +547,7 @@ void *gt_windows_print_syscall_ntallocatelocallyuniqueid(vmi_instance_t vmi, vmi
 	return args;
 }
 
-void gt_windows_print_sysret_ntallocatelocallyuniqueid(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntallocatelocallyuniqueid(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -556,7 +556,7 @@ void gt_windows_print_sysret_ntallocatelocallyuniqueid(vmi_instance_t vmi, vmi_e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntallocatereserveobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntallocatereserveobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -574,7 +574,7 @@ void *gt_windows_print_syscall_ntallocatereserveobject(vmi_instance_t vmi, vmi_e
 	free(obj_attr_1);	return args;
 }
 
-void gt_windows_print_sysret_ntallocatereserveobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntallocatereserveobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -584,7 +584,7 @@ void gt_windows_print_sysret_ntallocatereserveobject(vmi_instance_t vmi, vmi_eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntallocateuserphysicalpages(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntallocateuserphysicalpages(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -593,7 +593,7 @@ void *gt_windows_print_syscall_ntallocateuserphysicalpages(vmi_instance_t vmi, v
 	return args;
 }
 
-void gt_windows_print_sysret_ntallocateuserphysicalpages(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntallocateuserphysicalpages(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -602,7 +602,7 @@ void gt_windows_print_sysret_ntallocateuserphysicalpages(vmi_instance_t vmi, vmi
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntallocateuuids(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntallocateuuids(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -611,7 +611,7 @@ void *gt_windows_print_syscall_ntallocateuuids(vmi_instance_t vmi, vmi_event_t *
 	return args;
 }
 
-void gt_windows_print_sysret_ntallocateuuids(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntallocateuuids(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -623,7 +623,7 @@ void gt_windows_print_sysret_ntallocateuuids(vmi_instance_t vmi, vmi_event_t *ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntallocatevirtualmemory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntallocatevirtualmemory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -632,7 +632,7 @@ void *gt_windows_print_syscall_ntallocatevirtualmemory(vmi_instance_t vmi, vmi_e
 	return args;
 }
 
-void gt_windows_print_sysret_ntallocatevirtualmemory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntallocatevirtualmemory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -641,7 +641,7 @@ void gt_windows_print_sysret_ntallocatevirtualmemory(vmi_instance_t vmi, vmi_eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntalpcacceptconnectport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntalpcacceptconnectport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -660,7 +660,7 @@ void *gt_windows_print_syscall_ntalpcacceptconnectport(vmi_instance_t vmi, vmi_e
 	free(obj_attr_3);	return args;
 }
 
-void gt_windows_print_sysret_ntalpcacceptconnectport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntalpcacceptconnectport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -670,7 +670,7 @@ void gt_windows_print_sysret_ntalpcacceptconnectport(vmi_instance_t vmi, vmi_eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntalpccancelmessage(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntalpccancelmessage(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -679,7 +679,7 @@ void *gt_windows_print_syscall_ntalpccancelmessage(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntalpccancelmessage(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntalpccancelmessage(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -688,7 +688,7 @@ void gt_windows_print_sysret_ntalpccancelmessage(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntalpcconnectport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntalpcconnectport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -710,7 +710,7 @@ void *gt_windows_print_syscall_ntalpcconnectport(vmi_instance_t vmi, vmi_event_t
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntalpcconnectport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntalpcconnectport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -722,7 +722,7 @@ void gt_windows_print_sysret_ntalpcconnectport(vmi_instance_t vmi, vmi_event_t *
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntalpccreateport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntalpccreateport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -740,7 +740,7 @@ void *gt_windows_print_syscall_ntalpccreateport(vmi_instance_t vmi, vmi_event_t 
 	free(obj_attr_1);	return args;
 }
 
-void gt_windows_print_sysret_ntalpccreateport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntalpccreateport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -750,7 +750,7 @@ void gt_windows_print_sysret_ntalpccreateport(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntalpccreateportsection(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntalpccreateportsection(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -759,7 +759,7 @@ void *gt_windows_print_syscall_ntalpccreateportsection(vmi_instance_t vmi, vmi_e
 	return args;
 }
 
-void gt_windows_print_sysret_ntalpccreateportsection(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntalpccreateportsection(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -768,7 +768,7 @@ void gt_windows_print_sysret_ntalpccreateportsection(vmi_instance_t vmi, vmi_eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntalpccreateresourcereserve(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntalpccreateresourcereserve(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -777,7 +777,7 @@ void *gt_windows_print_syscall_ntalpccreateresourcereserve(vmi_instance_t vmi, v
 	return args;
 }
 
-void gt_windows_print_sysret_ntalpccreateresourcereserve(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntalpccreateresourcereserve(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -786,7 +786,7 @@ void gt_windows_print_sysret_ntalpccreateresourcereserve(vmi_instance_t vmi, vmi
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntalpccreatesectionview(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntalpccreatesectionview(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -795,7 +795,7 @@ void *gt_windows_print_syscall_ntalpccreatesectionview(vmi_instance_t vmi, vmi_e
 	return args;
 }
 
-void gt_windows_print_sysret_ntalpccreatesectionview(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntalpccreatesectionview(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -804,7 +804,7 @@ void gt_windows_print_sysret_ntalpccreatesectionview(vmi_instance_t vmi, vmi_eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntalpccreatesecuritycontext(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntalpccreatesecuritycontext(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -813,7 +813,7 @@ void *gt_windows_print_syscall_ntalpccreatesecuritycontext(vmi_instance_t vmi, v
 	return args;
 }
 
-void gt_windows_print_sysret_ntalpccreatesecuritycontext(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntalpccreatesecuritycontext(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -822,7 +822,7 @@ void gt_windows_print_sysret_ntalpccreatesecuritycontext(vmi_instance_t vmi, vmi
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntalpcdeleteportsection(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntalpcdeleteportsection(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -831,7 +831,7 @@ void *gt_windows_print_syscall_ntalpcdeleteportsection(vmi_instance_t vmi, vmi_e
 	return args;
 }
 
-void gt_windows_print_sysret_ntalpcdeleteportsection(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntalpcdeleteportsection(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -840,7 +840,7 @@ void gt_windows_print_sysret_ntalpcdeleteportsection(vmi_instance_t vmi, vmi_eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntalpcdeleteresourcereserve(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntalpcdeleteresourcereserve(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -849,7 +849,7 @@ void *gt_windows_print_syscall_ntalpcdeleteresourcereserve(vmi_instance_t vmi, v
 	return args;
 }
 
-void gt_windows_print_sysret_ntalpcdeleteresourcereserve(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntalpcdeleteresourcereserve(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -858,7 +858,7 @@ void gt_windows_print_sysret_ntalpcdeleteresourcereserve(vmi_instance_t vmi, vmi
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntalpcdeletesectionview(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntalpcdeletesectionview(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -867,7 +867,7 @@ void *gt_windows_print_syscall_ntalpcdeletesectionview(vmi_instance_t vmi, vmi_e
 	return args;
 }
 
-void gt_windows_print_sysret_ntalpcdeletesectionview(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntalpcdeletesectionview(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -876,7 +876,7 @@ void gt_windows_print_sysret_ntalpcdeletesectionview(vmi_instance_t vmi, vmi_eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntalpcdeletesecuritycontext(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntalpcdeletesecuritycontext(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -885,7 +885,7 @@ void *gt_windows_print_syscall_ntalpcdeletesecuritycontext(vmi_instance_t vmi, v
 	return args;
 }
 
-void gt_windows_print_sysret_ntalpcdeletesecuritycontext(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntalpcdeletesecuritycontext(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -894,7 +894,7 @@ void gt_windows_print_sysret_ntalpcdeletesecuritycontext(vmi_instance_t vmi, vmi
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntalpcdisconnectport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntalpcdisconnectport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -903,7 +903,7 @@ void *gt_windows_print_syscall_ntalpcdisconnectport(vmi_instance_t vmi, vmi_even
 	return args;
 }
 
-void gt_windows_print_sysret_ntalpcdisconnectport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntalpcdisconnectport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -912,7 +912,7 @@ void gt_windows_print_sysret_ntalpcdisconnectport(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntalpcimpersonateclientofport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntalpcimpersonateclientofport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -921,7 +921,7 @@ void *gt_windows_print_syscall_ntalpcimpersonateclientofport(vmi_instance_t vmi,
 	return args;
 }
 
-void gt_windows_print_sysret_ntalpcimpersonateclientofport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntalpcimpersonateclientofport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -930,7 +930,7 @@ void gt_windows_print_sysret_ntalpcimpersonateclientofport(vmi_instance_t vmi, v
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntalpcopensenderprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntalpcopensenderprocess(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -950,7 +950,7 @@ void *gt_windows_print_syscall_ntalpcopensenderprocess(vmi_instance_t vmi, vmi_e
 	free(obj_attr_5);	return args;
 }
 
-void gt_windows_print_sysret_ntalpcopensenderprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntalpcopensenderprocess(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -960,7 +960,7 @@ void gt_windows_print_sysret_ntalpcopensenderprocess(vmi_instance_t vmi, vmi_eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntalpcopensenderthread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntalpcopensenderthread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -980,7 +980,7 @@ void *gt_windows_print_syscall_ntalpcopensenderthread(vmi_instance_t vmi, vmi_ev
 	free(obj_attr_5);	return args;
 }
 
-void gt_windows_print_sysret_ntalpcopensenderthread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntalpcopensenderthread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -990,7 +990,7 @@ void gt_windows_print_sysret_ntalpcopensenderthread(vmi_instance_t vmi, vmi_even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntalpcqueryinformation(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntalpcqueryinformation(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -999,7 +999,7 @@ void *gt_windows_print_syscall_ntalpcqueryinformation(vmi_instance_t vmi, vmi_ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntalpcqueryinformation(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntalpcqueryinformation(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1009,7 +1009,7 @@ void gt_windows_print_sysret_ntalpcqueryinformation(vmi_instance_t vmi, vmi_even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntalpcqueryinformationmessage(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntalpcqueryinformationmessage(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1018,7 +1018,7 @@ void *gt_windows_print_syscall_ntalpcqueryinformationmessage(vmi_instance_t vmi,
 	return args;
 }
 
-void gt_windows_print_sysret_ntalpcqueryinformationmessage(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntalpcqueryinformationmessage(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1028,7 +1028,7 @@ void gt_windows_print_sysret_ntalpcqueryinformationmessage(vmi_instance_t vmi, v
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntalpcrevokesecuritycontext(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntalpcrevokesecuritycontext(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1037,7 +1037,7 @@ void *gt_windows_print_syscall_ntalpcrevokesecuritycontext(vmi_instance_t vmi, v
 	return args;
 }
 
-void gt_windows_print_sysret_ntalpcrevokesecuritycontext(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntalpcrevokesecuritycontext(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1046,7 +1046,7 @@ void gt_windows_print_sysret_ntalpcrevokesecuritycontext(vmi_instance_t vmi, vmi
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntalpcsendwaitreceiveport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntalpcsendwaitreceiveport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1056,7 +1056,7 @@ void *gt_windows_print_syscall_ntalpcsendwaitreceiveport(vmi_instance_t vmi, vmi
 	return args;
 }
 
-void gt_windows_print_sysret_ntalpcsendwaitreceiveport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntalpcsendwaitreceiveport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1066,7 +1066,7 @@ void gt_windows_print_sysret_ntalpcsendwaitreceiveport(vmi_instance_t vmi, vmi_e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntalpcsetinformation(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntalpcsetinformation(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1075,7 +1075,7 @@ void *gt_windows_print_syscall_ntalpcsetinformation(vmi_instance_t vmi, vmi_even
 	return args;
 }
 
-void gt_windows_print_sysret_ntalpcsetinformation(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntalpcsetinformation(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1084,7 +1084,7 @@ void gt_windows_print_sysret_ntalpcsetinformation(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntapphelpcachecontrol(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntapphelpcachecontrol(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1093,7 +1093,7 @@ void *gt_windows_print_syscall_ntapphelpcachecontrol(vmi_instance_t vmi, vmi_eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntapphelpcachecontrol(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntapphelpcachecontrol(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1102,7 +1102,7 @@ void gt_windows_print_sysret_ntapphelpcachecontrol(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntaremappedfilesthesame(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntaremappedfilesthesame(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1111,7 +1111,7 @@ void *gt_windows_print_syscall_ntaremappedfilesthesame(vmi_instance_t vmi, vmi_e
 	return args;
 }
 
-void gt_windows_print_sysret_ntaremappedfilesthesame(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntaremappedfilesthesame(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1120,7 +1120,7 @@ void gt_windows_print_sysret_ntaremappedfilesthesame(vmi_instance_t vmi, vmi_eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntassignprocesstojobobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntassignprocesstojobobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1129,7 +1129,7 @@ void *gt_windows_print_syscall_ntassignprocesstojobobject(vmi_instance_t vmi, vm
 	return args;
 }
 
-void gt_windows_print_sysret_ntassignprocesstojobobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntassignprocesstojobobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1138,7 +1138,7 @@ void gt_windows_print_sysret_ntassignprocesstojobobject(vmi_instance_t vmi, vmi_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcallbackreturn(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcallbackreturn(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1147,7 +1147,7 @@ void *gt_windows_print_syscall_ntcallbackreturn(vmi_instance_t vmi, vmi_event_t 
 	return args;
 }
 
-void gt_windows_print_sysret_ntcallbackreturn(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcallbackreturn(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1156,7 +1156,7 @@ void gt_windows_print_sysret_ntcallbackreturn(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcanceliofileex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcanceliofileex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1165,7 +1165,7 @@ void *gt_windows_print_syscall_ntcanceliofileex(vmi_instance_t vmi, vmi_event_t 
 	return args;
 }
 
-void gt_windows_print_sysret_ntcanceliofileex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcanceliofileex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1174,7 +1174,7 @@ void gt_windows_print_sysret_ntcanceliofileex(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcanceliofile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcanceliofile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1183,7 +1183,7 @@ void *gt_windows_print_syscall_ntcanceliofile(vmi_instance_t vmi, vmi_event_t *e
 	return args;
 }
 
-void gt_windows_print_sysret_ntcanceliofile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcanceliofile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1192,7 +1192,7 @@ void gt_windows_print_sysret_ntcanceliofile(vmi_instance_t vmi, vmi_event_t *eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcancelsynchronousiofile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcancelsynchronousiofile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1201,7 +1201,7 @@ void *gt_windows_print_syscall_ntcancelsynchronousiofile(vmi_instance_t vmi, vmi
 	return args;
 }
 
-void gt_windows_print_sysret_ntcancelsynchronousiofile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcancelsynchronousiofile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1210,7 +1210,7 @@ void gt_windows_print_sysret_ntcancelsynchronousiofile(vmi_instance_t vmi, vmi_e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcanceltimer(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcanceltimer(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1219,7 +1219,7 @@ void *gt_windows_print_syscall_ntcanceltimer(vmi_instance_t vmi, vmi_event_t *ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntcanceltimer(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcanceltimer(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1228,7 +1228,7 @@ void gt_windows_print_sysret_ntcanceltimer(vmi_instance_t vmi, vmi_event_t *even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntclearevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntclearevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1237,7 +1237,7 @@ void *gt_windows_print_syscall_ntclearevent(vmi_instance_t vmi, vmi_event_t *eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntclearevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntclearevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1246,7 +1246,7 @@ void gt_windows_print_sysret_ntclearevent(vmi_instance_t vmi, vmi_event_t *event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntclose(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntclose(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1255,7 +1255,7 @@ void *gt_windows_print_syscall_ntclose(vmi_instance_t vmi, vmi_event_t *event, v
 	return args;
 }
 
-void gt_windows_print_sysret_ntclose(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntclose(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1264,7 +1264,7 @@ void gt_windows_print_sysret_ntclose(vmi_instance_t vmi, vmi_event_t *event, vmi
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcloseobjectauditalarm(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcloseobjectauditalarm(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1274,7 +1274,7 @@ void *gt_windows_print_syscall_ntcloseobjectauditalarm(vmi_instance_t vmi, vmi_e
 	free(unicode_str_0);	return args;
 }
 
-void gt_windows_print_sysret_ntcloseobjectauditalarm(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcloseobjectauditalarm(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1283,7 +1283,7 @@ void gt_windows_print_sysret_ntcloseobjectauditalarm(vmi_instance_t vmi, vmi_eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcommitcomplete(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcommitcomplete(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1292,7 +1292,7 @@ void *gt_windows_print_syscall_ntcommitcomplete(vmi_instance_t vmi, vmi_event_t 
 	return args;
 }
 
-void gt_windows_print_sysret_ntcommitcomplete(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcommitcomplete(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1301,7 +1301,7 @@ void gt_windows_print_sysret_ntcommitcomplete(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcommitenlistment(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcommitenlistment(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1310,7 +1310,7 @@ void *gt_windows_print_syscall_ntcommitenlistment(vmi_instance_t vmi, vmi_event_
 	return args;
 }
 
-void gt_windows_print_sysret_ntcommitenlistment(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcommitenlistment(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1319,7 +1319,7 @@ void gt_windows_print_sysret_ntcommitenlistment(vmi_instance_t vmi, vmi_event_t 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcommittransaction(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcommittransaction(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1328,7 +1328,7 @@ void *gt_windows_print_syscall_ntcommittransaction(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntcommittransaction(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcommittransaction(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1337,7 +1337,7 @@ void gt_windows_print_sysret_ntcommittransaction(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcompactkeys(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcompactkeys(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1346,7 +1346,7 @@ void *gt_windows_print_syscall_ntcompactkeys(vmi_instance_t vmi, vmi_event_t *ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntcompactkeys(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcompactkeys(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1355,7 +1355,7 @@ void gt_windows_print_sysret_ntcompactkeys(vmi_instance_t vmi, vmi_event_t *even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcomparetokens(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcomparetokens(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1364,7 +1364,7 @@ void *gt_windows_print_syscall_ntcomparetokens(vmi_instance_t vmi, vmi_event_t *
 	return args;
 }
 
-void gt_windows_print_sysret_ntcomparetokens(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcomparetokens(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1373,7 +1373,7 @@ void gt_windows_print_sysret_ntcomparetokens(vmi_instance_t vmi, vmi_event_t *ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcompleteconnectport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcompleteconnectport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1382,7 +1382,7 @@ void *gt_windows_print_syscall_ntcompleteconnectport(vmi_instance_t vmi, vmi_eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntcompleteconnectport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcompleteconnectport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1391,7 +1391,7 @@ void gt_windows_print_sysret_ntcompleteconnectport(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcompresskey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcompresskey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1400,7 +1400,7 @@ void *gt_windows_print_syscall_ntcompresskey(vmi_instance_t vmi, vmi_event_t *ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntcompresskey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcompresskey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1409,7 +1409,7 @@ void gt_windows_print_sysret_ntcompresskey(vmi_instance_t vmi, vmi_event_t *even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntconnectport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntconnectport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1420,7 +1420,7 @@ void *gt_windows_print_syscall_ntconnectport(vmi_instance_t vmi, vmi_event_t *ev
 	free(unicode_str_1);	return args;
 }
 
-void gt_windows_print_sysret_ntconnectport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntconnectport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1434,7 +1434,7 @@ void gt_windows_print_sysret_ntconnectport(vmi_instance_t vmi, vmi_event_t *even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcontinue(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcontinue(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1443,7 +1443,7 @@ void *gt_windows_print_syscall_ntcontinue(vmi_instance_t vmi, vmi_event_t *event
 	return args;
 }
 
-void gt_windows_print_sysret_ntcontinue(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcontinue(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1452,7 +1452,7 @@ void gt_windows_print_sysret_ntcontinue(vmi_instance_t vmi, vmi_event_t *event, 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreatedebugobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreatedebugobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1461,7 +1461,7 @@ void *gt_windows_print_syscall_ntcreatedebugobject(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntcreatedebugobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreatedebugobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1483,7 +1483,7 @@ void gt_windows_print_sysret_ntcreatedebugobject(vmi_instance_t vmi, vmi_event_t
 	free(obj_attr_2);	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreatedirectoryobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreatedirectoryobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1503,7 +1503,7 @@ void *gt_windows_print_syscall_ntcreatedirectoryobject(vmi_instance_t vmi, vmi_e
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntcreatedirectoryobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreatedirectoryobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1513,7 +1513,7 @@ void gt_windows_print_sysret_ntcreatedirectoryobject(vmi_instance_t vmi, vmi_eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreateenlistment(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreateenlistment(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1533,7 +1533,7 @@ void *gt_windows_print_syscall_ntcreateenlistment(vmi_instance_t vmi, vmi_event_
 	free(obj_attr_4);	return args;
 }
 
-void gt_windows_print_sysret_ntcreateenlistment(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreateenlistment(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1543,7 +1543,7 @@ void gt_windows_print_sysret_ntcreateenlistment(vmi_instance_t vmi, vmi_event_t 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreateevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreateevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1564,7 +1564,7 @@ void *gt_windows_print_syscall_ntcreateevent(vmi_instance_t vmi, vmi_event_t *ev
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntcreateevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreateevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1574,7 +1574,7 @@ void gt_windows_print_sysret_ntcreateevent(vmi_instance_t vmi, vmi_event_t *even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreateeventpair(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreateeventpair(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1594,7 +1594,7 @@ void *gt_windows_print_syscall_ntcreateeventpair(vmi_instance_t vmi, vmi_event_t
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntcreateeventpair(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreateeventpair(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1604,7 +1604,7 @@ void gt_windows_print_sysret_ntcreateeventpair(vmi_instance_t vmi, vmi_event_t *
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreatefile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreatefile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1624,7 +1624,7 @@ void *gt_windows_print_syscall_ntcreatefile(vmi_instance_t vmi, vmi_event_t *eve
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntcreatefile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreatefile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1634,7 +1634,7 @@ void gt_windows_print_sysret_ntcreatefile(vmi_instance_t vmi, vmi_event_t *event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreateiocompletion(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreateiocompletion(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1654,7 +1654,7 @@ void *gt_windows_print_syscall_ntcreateiocompletion(vmi_instance_t vmi, vmi_even
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntcreateiocompletion(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreateiocompletion(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1664,7 +1664,7 @@ void gt_windows_print_sysret_ntcreateiocompletion(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreatejobobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreatejobobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1684,7 +1684,7 @@ void *gt_windows_print_syscall_ntcreatejobobject(vmi_instance_t vmi, vmi_event_t
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntcreatejobobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreatejobobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1694,7 +1694,7 @@ void gt_windows_print_sysret_ntcreatejobobject(vmi_instance_t vmi, vmi_event_t *
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreatejobset(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreatejobset(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1703,7 +1703,7 @@ void *gt_windows_print_syscall_ntcreatejobset(vmi_instance_t vmi, vmi_event_t *e
 	return args;
 }
 
-void gt_windows_print_sysret_ntcreatejobset(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreatejobset(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1712,7 +1712,7 @@ void gt_windows_print_sysret_ntcreatejobset(vmi_instance_t vmi, vmi_event_t *eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreatekeyedevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreatekeyedevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1732,7 +1732,7 @@ void *gt_windows_print_syscall_ntcreatekeyedevent(vmi_instance_t vmi, vmi_event_
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntcreatekeyedevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreatekeyedevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1742,7 +1742,7 @@ void gt_windows_print_sysret_ntcreatekeyedevent(vmi_instance_t vmi, vmi_event_t 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreatekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreatekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1764,7 +1764,7 @@ void *gt_windows_print_syscall_ntcreatekey(vmi_instance_t vmi, vmi_event_t *even
 	free(unicode_str_4);	return args;
 }
 
-void gt_windows_print_sysret_ntcreatekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreatekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1776,7 +1776,7 @@ void gt_windows_print_sysret_ntcreatekey(vmi_instance_t vmi, vmi_event_t *event,
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreatekeytransacted(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreatekeytransacted(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1798,7 +1798,7 @@ void *gt_windows_print_syscall_ntcreatekeytransacted(vmi_instance_t vmi, vmi_eve
 	free(unicode_str_4);	return args;
 }
 
-void gt_windows_print_sysret_ntcreatekeytransacted(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreatekeytransacted(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1810,7 +1810,7 @@ void gt_windows_print_sysret_ntcreatekeytransacted(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreatemailslotfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreatemailslotfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1828,7 +1828,7 @@ void *gt_windows_print_syscall_ntcreatemailslotfile(vmi_instance_t vmi, vmi_even
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntcreatemailslotfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreatemailslotfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1838,7 +1838,7 @@ void gt_windows_print_sysret_ntcreatemailslotfile(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreatemutant(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreatemutant(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1859,7 +1859,7 @@ void *gt_windows_print_syscall_ntcreatemutant(vmi_instance_t vmi, vmi_event_t *e
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntcreatemutant(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreatemutant(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1869,7 +1869,7 @@ void gt_windows_print_sysret_ntcreatemutant(vmi_instance_t vmi, vmi_event_t *eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreatenamedpipefile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreatenamedpipefile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1887,7 +1887,7 @@ void *gt_windows_print_syscall_ntcreatenamedpipefile(vmi_instance_t vmi, vmi_eve
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntcreatenamedpipefile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreatenamedpipefile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1897,7 +1897,7 @@ void gt_windows_print_sysret_ntcreatenamedpipefile(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreatepagingfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreatepagingfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1906,7 +1906,7 @@ void *gt_windows_print_syscall_ntcreatepagingfile(vmi_instance_t vmi, vmi_event_
 	free(unicode_str_0);	return args;
 }
 
-void gt_windows_print_sysret_ntcreatepagingfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreatepagingfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1915,7 +1915,7 @@ void gt_windows_print_sysret_ntcreatepagingfile(vmi_instance_t vmi, vmi_event_t 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreateport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreateport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1933,7 +1933,7 @@ void *gt_windows_print_syscall_ntcreateport(vmi_instance_t vmi, vmi_event_t *eve
 	free(obj_attr_1);	return args;
 }
 
-void gt_windows_print_sysret_ntcreateport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreateport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1943,7 +1943,7 @@ void gt_windows_print_sysret_ntcreateport(vmi_instance_t vmi, vmi_event_t *event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreateprivatenamespace(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreateprivatenamespace(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1963,7 +1963,7 @@ void *gt_windows_print_syscall_ntcreateprivatenamespace(vmi_instance_t vmi, vmi_
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntcreateprivatenamespace(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreateprivatenamespace(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -1973,7 +1973,7 @@ void gt_windows_print_sysret_ntcreateprivatenamespace(vmi_instance_t vmi, vmi_ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreateprocessex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreateprocessex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -1993,7 +1993,7 @@ void *gt_windows_print_syscall_ntcreateprocessex(vmi_instance_t vmi, vmi_event_t
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntcreateprocessex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreateprocessex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2003,7 +2003,7 @@ void gt_windows_print_sysret_ntcreateprocessex(vmi_instance_t vmi, vmi_event_t *
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreateprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreateprocess(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2024,7 +2024,7 @@ void *gt_windows_print_syscall_ntcreateprocess(vmi_instance_t vmi, vmi_event_t *
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntcreateprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreateprocess(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2034,7 +2034,7 @@ void gt_windows_print_sysret_ntcreateprocess(vmi_instance_t vmi, vmi_event_t *ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreateprofileex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreateprofileex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2044,7 +2044,7 @@ void *gt_windows_print_syscall_ntcreateprofileex(vmi_instance_t vmi, vmi_event_t
 	return args;
 }
 
-void gt_windows_print_sysret_ntcreateprofileex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreateprofileex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2054,7 +2054,7 @@ void gt_windows_print_sysret_ntcreateprofileex(vmi_instance_t vmi, vmi_event_t *
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreateprofile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreateprofile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2064,7 +2064,7 @@ void *gt_windows_print_syscall_ntcreateprofile(vmi_instance_t vmi, vmi_event_t *
 	return args;
 }
 
-void gt_windows_print_sysret_ntcreateprofile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreateprofile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2074,7 +2074,7 @@ void gt_windows_print_sysret_ntcreateprofile(vmi_instance_t vmi, vmi_event_t *ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreateresourcemanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreateresourcemanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2096,7 +2096,7 @@ void *gt_windows_print_syscall_ntcreateresourcemanager(vmi_instance_t vmi, vmi_e
 	free(unicode_str_6);	return args;
 }
 
-void gt_windows_print_sysret_ntcreateresourcemanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreateresourcemanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2106,7 +2106,7 @@ void gt_windows_print_sysret_ntcreateresourcemanager(vmi_instance_t vmi, vmi_eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreatesection(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreatesection(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2126,7 +2126,7 @@ void *gt_windows_print_syscall_ntcreatesection(vmi_instance_t vmi, vmi_event_t *
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntcreatesection(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreatesection(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2136,7 +2136,7 @@ void gt_windows_print_sysret_ntcreatesection(vmi_instance_t vmi, vmi_event_t *ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreatesemaphore(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreatesemaphore(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2156,7 +2156,7 @@ void *gt_windows_print_syscall_ntcreatesemaphore(vmi_instance_t vmi, vmi_event_t
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntcreatesemaphore(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreatesemaphore(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2166,7 +2166,7 @@ void gt_windows_print_sysret_ntcreatesemaphore(vmi_instance_t vmi, vmi_event_t *
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreatesymboliclinkobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreatesymboliclinkobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2188,7 +2188,7 @@ void *gt_windows_print_syscall_ntcreatesymboliclinkobject(vmi_instance_t vmi, vm
 	free(unicode_str_3);	return args;
 }
 
-void gt_windows_print_sysret_ntcreatesymboliclinkobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreatesymboliclinkobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2198,7 +2198,7 @@ void gt_windows_print_sysret_ntcreatesymboliclinkobject(vmi_instance_t vmi, vmi_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreatethreadex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreatethreadex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2218,7 +2218,7 @@ void *gt_windows_print_syscall_ntcreatethreadex(vmi_instance_t vmi, vmi_event_t 
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntcreatethreadex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreatethreadex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2228,7 +2228,7 @@ void gt_windows_print_sysret_ntcreatethreadex(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreatethread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreatethread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2249,7 +2249,7 @@ void *gt_windows_print_syscall_ntcreatethread(vmi_instance_t vmi, vmi_event_t *e
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntcreatethread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreatethread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2259,7 +2259,7 @@ void gt_windows_print_sysret_ntcreatethread(vmi_instance_t vmi, vmi_event_t *eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreatetimer(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreatetimer(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2279,7 +2279,7 @@ void *gt_windows_print_syscall_ntcreatetimer(vmi_instance_t vmi, vmi_event_t *ev
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntcreatetimer(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreatetimer(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2289,7 +2289,7 @@ void gt_windows_print_sysret_ntcreatetimer(vmi_instance_t vmi, vmi_event_t *even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreatetoken(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreatetoken(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2309,7 +2309,7 @@ void *gt_windows_print_syscall_ntcreatetoken(vmi_instance_t vmi, vmi_event_t *ev
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntcreatetoken(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreatetoken(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2319,7 +2319,7 @@ void gt_windows_print_sysret_ntcreatetoken(vmi_instance_t vmi, vmi_event_t *even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreatetransactionmanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreatetransactionmanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2341,7 +2341,7 @@ void *gt_windows_print_syscall_ntcreatetransactionmanager(vmi_instance_t vmi, vm
 	free(unicode_str_3);	return args;
 }
 
-void gt_windows_print_sysret_ntcreatetransactionmanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreatetransactionmanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2351,7 +2351,7 @@ void gt_windows_print_sysret_ntcreatetransactionmanager(vmi_instance_t vmi, vmi_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreatetransaction(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreatetransaction(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2373,7 +2373,7 @@ void *gt_windows_print_syscall_ntcreatetransaction(vmi_instance_t vmi, vmi_event
 	free(unicode_str_9);	return args;
 }
 
-void gt_windows_print_sysret_ntcreatetransaction(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreatetransaction(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2383,7 +2383,7 @@ void gt_windows_print_sysret_ntcreatetransaction(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreateuserprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreateuserprocess(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2416,7 +2416,7 @@ void *gt_windows_print_syscall_ntcreateuserprocess(vmi_instance_t vmi, vmi_event
 	free(obj_attr_5);	return args;
 }
 
-void gt_windows_print_sysret_ntcreateuserprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreateuserprocess(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2428,7 +2428,7 @@ void gt_windows_print_sysret_ntcreateuserprocess(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreatewaitableport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreatewaitableport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2446,7 +2446,7 @@ void *gt_windows_print_syscall_ntcreatewaitableport(vmi_instance_t vmi, vmi_even
 	free(obj_attr_1);	return args;
 }
 
-void gt_windows_print_sysret_ntcreatewaitableport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreatewaitableport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2456,7 +2456,7 @@ void gt_windows_print_sysret_ntcreatewaitableport(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntcreateworkerfactory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntcreateworkerfactory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2476,7 +2476,7 @@ void *gt_windows_print_syscall_ntcreateworkerfactory(vmi_instance_t vmi, vmi_eve
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntcreateworkerfactory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntcreateworkerfactory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2486,7 +2486,7 @@ void gt_windows_print_sysret_ntcreateworkerfactory(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntdebugactiveprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntdebugactiveprocess(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2495,7 +2495,7 @@ void *gt_windows_print_syscall_ntdebugactiveprocess(vmi_instance_t vmi, vmi_even
 	return args;
 }
 
-void gt_windows_print_sysret_ntdebugactiveprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntdebugactiveprocess(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2504,7 +2504,7 @@ void gt_windows_print_sysret_ntdebugactiveprocess(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntdebugcontinue(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntdebugcontinue(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2513,7 +2513,7 @@ void *gt_windows_print_syscall_ntdebugcontinue(vmi_instance_t vmi, vmi_event_t *
 	return args;
 }
 
-void gt_windows_print_sysret_ntdebugcontinue(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntdebugcontinue(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2522,7 +2522,7 @@ void gt_windows_print_sysret_ntdebugcontinue(vmi_instance_t vmi, vmi_event_t *ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntdelayexecution(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntdelayexecution(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2531,7 +2531,7 @@ void *gt_windows_print_syscall_ntdelayexecution(vmi_instance_t vmi, vmi_event_t 
 	return args;
 }
 
-void gt_windows_print_sysret_ntdelayexecution(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntdelayexecution(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2540,7 +2540,7 @@ void gt_windows_print_sysret_ntdelayexecution(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntdeleteatom(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntdeleteatom(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2549,7 +2549,7 @@ void *gt_windows_print_syscall_ntdeleteatom(vmi_instance_t vmi, vmi_event_t *eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntdeleteatom(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntdeleteatom(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2558,7 +2558,7 @@ void gt_windows_print_sysret_ntdeleteatom(vmi_instance_t vmi, vmi_event_t *event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntdeletebootentry(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntdeletebootentry(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2567,7 +2567,7 @@ void *gt_windows_print_syscall_ntdeletebootentry(vmi_instance_t vmi, vmi_event_t
 	return args;
 }
 
-void gt_windows_print_sysret_ntdeletebootentry(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntdeletebootentry(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2576,7 +2576,7 @@ void gt_windows_print_sysret_ntdeletebootentry(vmi_instance_t vmi, vmi_event_t *
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntdeletedriverentry(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntdeletedriverentry(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2585,7 +2585,7 @@ void *gt_windows_print_syscall_ntdeletedriverentry(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntdeletedriverentry(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntdeletedriverentry(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2594,7 +2594,7 @@ void gt_windows_print_sysret_ntdeletedriverentry(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntdeletefile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntdeletefile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2612,7 +2612,7 @@ void *gt_windows_print_syscall_ntdeletefile(vmi_instance_t vmi, vmi_event_t *eve
 	free(obj_attr_0);	return args;
 }
 
-void gt_windows_print_sysret_ntdeletefile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntdeletefile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2621,7 +2621,7 @@ void gt_windows_print_sysret_ntdeletefile(vmi_instance_t vmi, vmi_event_t *event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntdeletekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntdeletekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2630,7 +2630,7 @@ void *gt_windows_print_syscall_ntdeletekey(vmi_instance_t vmi, vmi_event_t *even
 	return args;
 }
 
-void gt_windows_print_sysret_ntdeletekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntdeletekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2639,7 +2639,7 @@ void gt_windows_print_sysret_ntdeletekey(vmi_instance_t vmi, vmi_event_t *event,
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntdeleteobjectauditalarm(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntdeleteobjectauditalarm(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2649,7 +2649,7 @@ void *gt_windows_print_syscall_ntdeleteobjectauditalarm(vmi_instance_t vmi, vmi_
 	free(unicode_str_0);	return args;
 }
 
-void gt_windows_print_sysret_ntdeleteobjectauditalarm(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntdeleteobjectauditalarm(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2658,7 +2658,7 @@ void gt_windows_print_sysret_ntdeleteobjectauditalarm(vmi_instance_t vmi, vmi_ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntdeleteprivatenamespace(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntdeleteprivatenamespace(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2667,7 +2667,7 @@ void *gt_windows_print_syscall_ntdeleteprivatenamespace(vmi_instance_t vmi, vmi_
 	return args;
 }
 
-void gt_windows_print_sysret_ntdeleteprivatenamespace(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntdeleteprivatenamespace(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2676,7 +2676,7 @@ void gt_windows_print_sysret_ntdeleteprivatenamespace(vmi_instance_t vmi, vmi_ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntdeletevaluekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntdeletevaluekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2685,7 +2685,7 @@ void *gt_windows_print_syscall_ntdeletevaluekey(vmi_instance_t vmi, vmi_event_t 
 	free(unicode_str_1);	return args;
 }
 
-void gt_windows_print_sysret_ntdeletevaluekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntdeletevaluekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2694,7 +2694,7 @@ void gt_windows_print_sysret_ntdeletevaluekey(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntdeviceiocontrolfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntdeviceiocontrolfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2703,7 +2703,7 @@ void *gt_windows_print_syscall_ntdeviceiocontrolfile(vmi_instance_t vmi, vmi_eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntdeviceiocontrolfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntdeviceiocontrolfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2712,7 +2712,7 @@ void gt_windows_print_sysret_ntdeviceiocontrolfile(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntdisablelastknowngood(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntdisablelastknowngood(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2721,7 +2721,7 @@ void *gt_windows_print_syscall_ntdisablelastknowngood(vmi_instance_t vmi, vmi_ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntdisablelastknowngood(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntdisablelastknowngood(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2730,7 +2730,7 @@ void gt_windows_print_sysret_ntdisablelastknowngood(vmi_instance_t vmi, vmi_even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntdisplaystring(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntdisplaystring(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2739,7 +2739,7 @@ void *gt_windows_print_syscall_ntdisplaystring(vmi_instance_t vmi, vmi_event_t *
 	free(unicode_str_0);	return args;
 }
 
-void gt_windows_print_sysret_ntdisplaystring(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntdisplaystring(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2748,7 +2748,7 @@ void gt_windows_print_sysret_ntdisplaystring(vmi_instance_t vmi, vmi_event_t *ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntdrawtext(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntdrawtext(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2757,7 +2757,7 @@ void *gt_windows_print_syscall_ntdrawtext(vmi_instance_t vmi, vmi_event_t *event
 	free(unicode_str_0);	return args;
 }
 
-void gt_windows_print_sysret_ntdrawtext(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntdrawtext(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2766,7 +2766,7 @@ void gt_windows_print_sysret_ntdrawtext(vmi_instance_t vmi, vmi_event_t *event, 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntduplicateobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntduplicateobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2775,7 +2775,7 @@ void *gt_windows_print_syscall_ntduplicateobject(vmi_instance_t vmi, vmi_event_t
 	free(permissions_4);	return args;
 }
 
-void gt_windows_print_sysret_ntduplicateobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntduplicateobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2785,7 +2785,7 @@ void gt_windows_print_sysret_ntduplicateobject(vmi_instance_t vmi, vmi_event_t *
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntduplicatetoken(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntduplicatetoken(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2806,7 +2806,7 @@ void *gt_windows_print_syscall_ntduplicatetoken(vmi_instance_t vmi, vmi_event_t 
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntduplicatetoken(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntduplicatetoken(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2816,7 +2816,7 @@ void gt_windows_print_sysret_ntduplicatetoken(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntenablelastknowngood(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntenablelastknowngood(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2825,7 +2825,7 @@ void *gt_windows_print_syscall_ntenablelastknowngood(vmi_instance_t vmi, vmi_eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntenablelastknowngood(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntenablelastknowngood(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2834,7 +2834,7 @@ void gt_windows_print_sysret_ntenablelastknowngood(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntenumeratebootentries(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntenumeratebootentries(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2844,7 +2844,7 @@ void *gt_windows_print_syscall_ntenumeratebootentries(vmi_instance_t vmi, vmi_ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntenumeratebootentries(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntenumeratebootentries(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2854,7 +2854,7 @@ void gt_windows_print_sysret_ntenumeratebootentries(vmi_instance_t vmi, vmi_even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntenumeratedriverentries(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntenumeratedriverentries(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2864,7 +2864,7 @@ void *gt_windows_print_syscall_ntenumeratedriverentries(vmi_instance_t vmi, vmi_
 	return args;
 }
 
-void gt_windows_print_sysret_ntenumeratedriverentries(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntenumeratedriverentries(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2874,7 +2874,7 @@ void gt_windows_print_sysret_ntenumeratedriverentries(vmi_instance_t vmi, vmi_ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntenumeratekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntenumeratekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2883,7 +2883,7 @@ void *gt_windows_print_syscall_ntenumeratekey(vmi_instance_t vmi, vmi_event_t *e
 	return args;
 }
 
-void gt_windows_print_sysret_ntenumeratekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntenumeratekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2893,7 +2893,7 @@ void gt_windows_print_sysret_ntenumeratekey(vmi_instance_t vmi, vmi_event_t *eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntenumeratesystemenvironmentvaluesex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntenumeratesystemenvironmentvaluesex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2903,7 +2903,7 @@ void *gt_windows_print_syscall_ntenumeratesystemenvironmentvaluesex(vmi_instance
 	return args;
 }
 
-void gt_windows_print_sysret_ntenumeratesystemenvironmentvaluesex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntenumeratesystemenvironmentvaluesex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2913,7 +2913,7 @@ void gt_windows_print_sysret_ntenumeratesystemenvironmentvaluesex(vmi_instance_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntenumeratetransactionobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntenumeratetransactionobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2922,7 +2922,7 @@ void *gt_windows_print_syscall_ntenumeratetransactionobject(vmi_instance_t vmi, 
 	return args;
 }
 
-void gt_windows_print_sysret_ntenumeratetransactionobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntenumeratetransactionobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2932,7 +2932,7 @@ void gt_windows_print_sysret_ntenumeratetransactionobject(vmi_instance_t vmi, vm
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntenumeratevaluekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntenumeratevaluekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2941,7 +2941,7 @@ void *gt_windows_print_syscall_ntenumeratevaluekey(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntenumeratevaluekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntenumeratevaluekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2951,7 +2951,7 @@ void gt_windows_print_sysret_ntenumeratevaluekey(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntextendsection(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntextendsection(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2960,7 +2960,7 @@ void *gt_windows_print_syscall_ntextendsection(vmi_instance_t vmi, vmi_event_t *
 	return args;
 }
 
-void gt_windows_print_sysret_ntextendsection(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntextendsection(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2969,7 +2969,7 @@ void gt_windows_print_sysret_ntextendsection(vmi_instance_t vmi, vmi_event_t *ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntfiltertoken(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntfiltertoken(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2978,7 +2978,7 @@ void *gt_windows_print_syscall_ntfiltertoken(vmi_instance_t vmi, vmi_event_t *ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntfiltertoken(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntfiltertoken(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -2988,7 +2988,7 @@ void gt_windows_print_sysret_ntfiltertoken(vmi_instance_t vmi, vmi_event_t *even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntfindatom(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntfindatom(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -2997,7 +2997,7 @@ void *gt_windows_print_syscall_ntfindatom(vmi_instance_t vmi, vmi_event_t *event
 	return args;
 }
 
-void gt_windows_print_sysret_ntfindatom(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntfindatom(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3006,7 +3006,7 @@ void gt_windows_print_sysret_ntfindatom(vmi_instance_t vmi, vmi_event_t *event, 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntflushbuffersfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntflushbuffersfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3015,7 +3015,7 @@ void *gt_windows_print_syscall_ntflushbuffersfile(vmi_instance_t vmi, vmi_event_
 	return args;
 }
 
-void gt_windows_print_sysret_ntflushbuffersfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntflushbuffersfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3024,7 +3024,7 @@ void gt_windows_print_sysret_ntflushbuffersfile(vmi_instance_t vmi, vmi_event_t 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntflushinstalluilanguage(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntflushinstalluilanguage(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3033,7 +3033,7 @@ void *gt_windows_print_syscall_ntflushinstalluilanguage(vmi_instance_t vmi, vmi_
 	return args;
 }
 
-void gt_windows_print_sysret_ntflushinstalluilanguage(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntflushinstalluilanguage(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3042,7 +3042,7 @@ void gt_windows_print_sysret_ntflushinstalluilanguage(vmi_instance_t vmi, vmi_ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntflushinstructioncache(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntflushinstructioncache(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3051,7 +3051,7 @@ void *gt_windows_print_syscall_ntflushinstructioncache(vmi_instance_t vmi, vmi_e
 	return args;
 }
 
-void gt_windows_print_sysret_ntflushinstructioncache(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntflushinstructioncache(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3060,7 +3060,7 @@ void gt_windows_print_sysret_ntflushinstructioncache(vmi_instance_t vmi, vmi_eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntflushkey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntflushkey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3069,7 +3069,7 @@ void *gt_windows_print_syscall_ntflushkey(vmi_instance_t vmi, vmi_event_t *event
 	return args;
 }
 
-void gt_windows_print_sysret_ntflushkey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntflushkey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3078,7 +3078,7 @@ void gt_windows_print_sysret_ntflushkey(vmi_instance_t vmi, vmi_event_t *event, 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntflushprocesswritebuffers(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntflushprocesswritebuffers(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3087,7 +3087,7 @@ void *gt_windows_print_syscall_ntflushprocesswritebuffers(vmi_instance_t vmi, vm
 	return args;
 }
 
-void gt_windows_print_sysret_ntflushprocesswritebuffers(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntflushprocesswritebuffers(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3096,7 +3096,7 @@ void gt_windows_print_sysret_ntflushprocesswritebuffers(vmi_instance_t vmi, vmi_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntflushvirtualmemory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntflushvirtualmemory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3105,7 +3105,7 @@ void *gt_windows_print_syscall_ntflushvirtualmemory(vmi_instance_t vmi, vmi_even
 	return args;
 }
 
-void gt_windows_print_sysret_ntflushvirtualmemory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntflushvirtualmemory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3114,7 +3114,7 @@ void gt_windows_print_sysret_ntflushvirtualmemory(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntflushwritebuffer(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntflushwritebuffer(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3123,7 +3123,7 @@ void *gt_windows_print_syscall_ntflushwritebuffer(vmi_instance_t vmi, vmi_event_
 	return args;
 }
 
-void gt_windows_print_sysret_ntflushwritebuffer(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntflushwritebuffer(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3132,7 +3132,7 @@ void gt_windows_print_sysret_ntflushwritebuffer(vmi_instance_t vmi, vmi_event_t 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntfreeuserphysicalpages(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntfreeuserphysicalpages(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3141,7 +3141,7 @@ void *gt_windows_print_syscall_ntfreeuserphysicalpages(vmi_instance_t vmi, vmi_e
 	return args;
 }
 
-void gt_windows_print_sysret_ntfreeuserphysicalpages(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntfreeuserphysicalpages(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3150,7 +3150,7 @@ void gt_windows_print_sysret_ntfreeuserphysicalpages(vmi_instance_t vmi, vmi_eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntfreevirtualmemory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntfreevirtualmemory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3159,7 +3159,7 @@ void *gt_windows_print_syscall_ntfreevirtualmemory(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntfreevirtualmemory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntfreevirtualmemory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3168,7 +3168,7 @@ void gt_windows_print_sysret_ntfreevirtualmemory(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntfreezeregistry(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntfreezeregistry(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3177,7 +3177,7 @@ void *gt_windows_print_syscall_ntfreezeregistry(vmi_instance_t vmi, vmi_event_t 
 	return args;
 }
 
-void gt_windows_print_sysret_ntfreezeregistry(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntfreezeregistry(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3186,7 +3186,7 @@ void gt_windows_print_sysret_ntfreezeregistry(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntfreezetransactions(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntfreezetransactions(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3195,7 +3195,7 @@ void *gt_windows_print_syscall_ntfreezetransactions(vmi_instance_t vmi, vmi_even
 	return args;
 }
 
-void gt_windows_print_sysret_ntfreezetransactions(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntfreezetransactions(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3204,7 +3204,7 @@ void gt_windows_print_sysret_ntfreezetransactions(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntfscontrolfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntfscontrolfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3213,7 +3213,7 @@ void *gt_windows_print_syscall_ntfscontrolfile(vmi_instance_t vmi, vmi_event_t *
 	return args;
 }
 
-void gt_windows_print_sysret_ntfscontrolfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntfscontrolfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3222,7 +3222,7 @@ void gt_windows_print_sysret_ntfscontrolfile(vmi_instance_t vmi, vmi_event_t *ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntgetcontextthread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntgetcontextthread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3231,7 +3231,7 @@ void *gt_windows_print_syscall_ntgetcontextthread(vmi_instance_t vmi, vmi_event_
 	return args;
 }
 
-void gt_windows_print_sysret_ntgetcontextthread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntgetcontextthread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3240,7 +3240,7 @@ void gt_windows_print_sysret_ntgetcontextthread(vmi_instance_t vmi, vmi_event_t 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntgetcurrentprocessornumber(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntgetcurrentprocessornumber(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3249,7 +3249,7 @@ void *gt_windows_print_syscall_ntgetcurrentprocessornumber(vmi_instance_t vmi, v
 	return args;
 }
 
-void gt_windows_print_sysret_ntgetcurrentprocessornumber(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntgetcurrentprocessornumber(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3258,7 +3258,7 @@ void gt_windows_print_sysret_ntgetcurrentprocessornumber(vmi_instance_t vmi, vmi
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntgetdevicepowerstate(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntgetdevicepowerstate(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3267,7 +3267,7 @@ void *gt_windows_print_syscall_ntgetdevicepowerstate(vmi_instance_t vmi, vmi_eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntgetdevicepowerstate(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntgetdevicepowerstate(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3276,7 +3276,7 @@ void gt_windows_print_sysret_ntgetdevicepowerstate(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntgetmuiregistryinfo(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntgetmuiregistryinfo(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3286,7 +3286,7 @@ void *gt_windows_print_syscall_ntgetmuiregistryinfo(vmi_instance_t vmi, vmi_even
 	return args;
 }
 
-void gt_windows_print_sysret_ntgetmuiregistryinfo(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntgetmuiregistryinfo(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3296,7 +3296,7 @@ void gt_windows_print_sysret_ntgetmuiregistryinfo(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntgetnextprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntgetnextprocess(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3305,7 +3305,7 @@ void *gt_windows_print_syscall_ntgetnextprocess(vmi_instance_t vmi, vmi_event_t 
 	free(permissions_1);	return args;
 }
 
-void gt_windows_print_sysret_ntgetnextprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntgetnextprocess(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3315,7 +3315,7 @@ void gt_windows_print_sysret_ntgetnextprocess(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntgetnextthread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntgetnextthread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3324,7 +3324,7 @@ void *gt_windows_print_syscall_ntgetnextthread(vmi_instance_t vmi, vmi_event_t *
 	free(permissions_2);	return args;
 }
 
-void gt_windows_print_sysret_ntgetnextthread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntgetnextthread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3334,7 +3334,7 @@ void gt_windows_print_sysret_ntgetnextthread(vmi_instance_t vmi, vmi_event_t *ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntgetnlssectionptr(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntgetnlssectionptr(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3343,7 +3343,7 @@ void *gt_windows_print_syscall_ntgetnlssectionptr(vmi_instance_t vmi, vmi_event_
 	return args;
 }
 
-void gt_windows_print_sysret_ntgetnlssectionptr(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntgetnlssectionptr(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3353,7 +3353,7 @@ void gt_windows_print_sysret_ntgetnlssectionptr(vmi_instance_t vmi, vmi_event_t 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntgetnotificationresourcemanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntgetnotificationresourcemanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3362,7 +3362,7 @@ void *gt_windows_print_syscall_ntgetnotificationresourcemanager(vmi_instance_t v
 	return args;
 }
 
-void gt_windows_print_sysret_ntgetnotificationresourcemanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntgetnotificationresourcemanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3372,7 +3372,7 @@ void gt_windows_print_sysret_ntgetnotificationresourcemanager(vmi_instance_t vmi
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntgetplugplayevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntgetplugplayevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3381,7 +3381,7 @@ void *gt_windows_print_syscall_ntgetplugplayevent(vmi_instance_t vmi, vmi_event_
 	return args;
 }
 
-void gt_windows_print_sysret_ntgetplugplayevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntgetplugplayevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3390,7 +3390,7 @@ void gt_windows_print_sysret_ntgetplugplayevent(vmi_instance_t vmi, vmi_event_t 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntgetwritewatch(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntgetwritewatch(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3399,7 +3399,7 @@ void *gt_windows_print_syscall_ntgetwritewatch(vmi_instance_t vmi, vmi_event_t *
 	return args;
 }
 
-void gt_windows_print_sysret_ntgetwritewatch(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntgetwritewatch(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3409,7 +3409,7 @@ void gt_windows_print_sysret_ntgetwritewatch(vmi_instance_t vmi, vmi_event_t *ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntimpersonateanonymoustoken(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntimpersonateanonymoustoken(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3418,7 +3418,7 @@ void *gt_windows_print_syscall_ntimpersonateanonymoustoken(vmi_instance_t vmi, v
 	return args;
 }
 
-void gt_windows_print_sysret_ntimpersonateanonymoustoken(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntimpersonateanonymoustoken(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3427,7 +3427,7 @@ void gt_windows_print_sysret_ntimpersonateanonymoustoken(vmi_instance_t vmi, vmi
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntimpersonateclientofport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntimpersonateclientofport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3436,7 +3436,7 @@ void *gt_windows_print_syscall_ntimpersonateclientofport(vmi_instance_t vmi, vmi
 	return args;
 }
 
-void gt_windows_print_sysret_ntimpersonateclientofport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntimpersonateclientofport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3445,7 +3445,7 @@ void gt_windows_print_sysret_ntimpersonateclientofport(vmi_instance_t vmi, vmi_e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntimpersonatethread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntimpersonatethread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3454,7 +3454,7 @@ void *gt_windows_print_syscall_ntimpersonatethread(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntimpersonatethread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntimpersonatethread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3463,7 +3463,7 @@ void gt_windows_print_sysret_ntimpersonatethread(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntinitializenlsfiles(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntinitializenlsfiles(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3472,7 +3472,7 @@ void *gt_windows_print_syscall_ntinitializenlsfiles(vmi_instance_t vmi, vmi_even
 	return args;
 }
 
-void gt_windows_print_sysret_ntinitializenlsfiles(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntinitializenlsfiles(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3481,7 +3481,7 @@ void gt_windows_print_sysret_ntinitializenlsfiles(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntinitializeregistry(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntinitializeregistry(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3490,7 +3490,7 @@ void *gt_windows_print_syscall_ntinitializeregistry(vmi_instance_t vmi, vmi_even
 	return args;
 }
 
-void gt_windows_print_sysret_ntinitializeregistry(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntinitializeregistry(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3499,7 +3499,7 @@ void gt_windows_print_sysret_ntinitializeregistry(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntinitiatepoweraction(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntinitiatepoweraction(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3508,7 +3508,7 @@ void *gt_windows_print_syscall_ntinitiatepoweraction(vmi_instance_t vmi, vmi_eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntinitiatepoweraction(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntinitiatepoweraction(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3517,7 +3517,7 @@ void gt_windows_print_sysret_ntinitiatepoweraction(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntisprocessinjob(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntisprocessinjob(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3526,7 +3526,7 @@ void *gt_windows_print_syscall_ntisprocessinjob(vmi_instance_t vmi, vmi_event_t 
 	return args;
 }
 
-void gt_windows_print_sysret_ntisprocessinjob(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntisprocessinjob(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3535,7 +3535,7 @@ void gt_windows_print_sysret_ntisprocessinjob(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntissystemresumeautomatic(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntissystemresumeautomatic(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3544,7 +3544,7 @@ void *gt_windows_print_syscall_ntissystemresumeautomatic(vmi_instance_t vmi, vmi
 	return args;
 }
 
-void gt_windows_print_sysret_ntissystemresumeautomatic(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntissystemresumeautomatic(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3553,7 +3553,7 @@ void gt_windows_print_sysret_ntissystemresumeautomatic(vmi_instance_t vmi, vmi_e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntisuilanguagecomitted(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntisuilanguagecomitted(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3562,7 +3562,7 @@ void *gt_windows_print_syscall_ntisuilanguagecomitted(vmi_instance_t vmi, vmi_ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntisuilanguagecomitted(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntisuilanguagecomitted(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3571,7 +3571,7 @@ void gt_windows_print_sysret_ntisuilanguagecomitted(vmi_instance_t vmi, vmi_even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntlistenport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntlistenport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3580,7 +3580,7 @@ void *gt_windows_print_syscall_ntlistenport(vmi_instance_t vmi, vmi_event_t *eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntlistenport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntlistenport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3589,7 +3589,7 @@ void gt_windows_print_sysret_ntlistenport(vmi_instance_t vmi, vmi_event_t *event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntloaddriver(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntloaddriver(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3598,7 +3598,7 @@ void *gt_windows_print_syscall_ntloaddriver(vmi_instance_t vmi, vmi_event_t *eve
 	free(unicode_str_0);	return args;
 }
 
-void gt_windows_print_sysret_ntloaddriver(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntloaddriver(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3607,7 +3607,7 @@ void gt_windows_print_sysret_ntloaddriver(vmi_instance_t vmi, vmi_event_t *event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntloadkey2(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntloadkey2(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3636,7 +3636,7 @@ void *gt_windows_print_syscall_ntloadkey2(vmi_instance_t vmi, vmi_event_t *event
 	free(obj_attr_1);	return args;
 }
 
-void gt_windows_print_sysret_ntloadkey2(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntloadkey2(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3645,7 +3645,7 @@ void gt_windows_print_sysret_ntloadkey2(vmi_instance_t vmi, vmi_event_t *event, 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntloadkeyex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntloadkeyex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3674,7 +3674,7 @@ void *gt_windows_print_syscall_ntloadkeyex(vmi_instance_t vmi, vmi_event_t *even
 	free(obj_attr_1);	return args;
 }
 
-void gt_windows_print_sysret_ntloadkeyex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntloadkeyex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3683,7 +3683,7 @@ void gt_windows_print_sysret_ntloadkeyex(vmi_instance_t vmi, vmi_event_t *event,
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntloadkey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntloadkey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3712,7 +3712,7 @@ void *gt_windows_print_syscall_ntloadkey(vmi_instance_t vmi, vmi_event_t *event,
 	free(obj_attr_1);	return args;
 }
 
-void gt_windows_print_sysret_ntloadkey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntloadkey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3721,7 +3721,7 @@ void gt_windows_print_sysret_ntloadkey(vmi_instance_t vmi, vmi_event_t *event, v
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntlockfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntlockfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3731,7 +3731,7 @@ void *gt_windows_print_syscall_ntlockfile(vmi_instance_t vmi, vmi_event_t *event
 	return args;
 }
 
-void gt_windows_print_sysret_ntlockfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntlockfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3740,7 +3740,7 @@ void gt_windows_print_sysret_ntlockfile(vmi_instance_t vmi, vmi_event_t *event, 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntlockproductactivationkeys(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntlockproductactivationkeys(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3749,7 +3749,7 @@ void *gt_windows_print_syscall_ntlockproductactivationkeys(vmi_instance_t vmi, v
 	return args;
 }
 
-void gt_windows_print_sysret_ntlockproductactivationkeys(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntlockproductactivationkeys(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3758,7 +3758,7 @@ void gt_windows_print_sysret_ntlockproductactivationkeys(vmi_instance_t vmi, vmi
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntlockregistrykey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntlockregistrykey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3767,7 +3767,7 @@ void *gt_windows_print_syscall_ntlockregistrykey(vmi_instance_t vmi, vmi_event_t
 	return args;
 }
 
-void gt_windows_print_sysret_ntlockregistrykey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntlockregistrykey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3776,7 +3776,7 @@ void gt_windows_print_sysret_ntlockregistrykey(vmi_instance_t vmi, vmi_event_t *
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntlockvirtualmemory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntlockvirtualmemory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3785,7 +3785,7 @@ void *gt_windows_print_syscall_ntlockvirtualmemory(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntlockvirtualmemory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntlockvirtualmemory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3794,7 +3794,7 @@ void gt_windows_print_sysret_ntlockvirtualmemory(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntmakepermanentobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntmakepermanentobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3803,7 +3803,7 @@ void *gt_windows_print_syscall_ntmakepermanentobject(vmi_instance_t vmi, vmi_eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntmakepermanentobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntmakepermanentobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3812,7 +3812,7 @@ void gt_windows_print_sysret_ntmakepermanentobject(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntmaketemporaryobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntmaketemporaryobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3821,7 +3821,7 @@ void *gt_windows_print_syscall_ntmaketemporaryobject(vmi_instance_t vmi, vmi_eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntmaketemporaryobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntmaketemporaryobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3830,7 +3830,7 @@ void gt_windows_print_sysret_ntmaketemporaryobject(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntmapcmfmodule(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntmapcmfmodule(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3839,7 +3839,7 @@ void *gt_windows_print_syscall_ntmapcmfmodule(vmi_instance_t vmi, vmi_event_t *e
 	return args;
 }
 
-void gt_windows_print_sysret_ntmapcmfmodule(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntmapcmfmodule(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3853,7 +3853,7 @@ void gt_windows_print_sysret_ntmapcmfmodule(vmi_instance_t vmi, vmi_event_t *eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntmapuserphysicalpages(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntmapuserphysicalpages(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3862,7 +3862,7 @@ void *gt_windows_print_syscall_ntmapuserphysicalpages(vmi_instance_t vmi, vmi_ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntmapuserphysicalpages(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntmapuserphysicalpages(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3871,7 +3871,7 @@ void gt_windows_print_sysret_ntmapuserphysicalpages(vmi_instance_t vmi, vmi_even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntmapuserphysicalpagesscatter(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntmapuserphysicalpagesscatter(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3880,7 +3880,7 @@ void *gt_windows_print_syscall_ntmapuserphysicalpagesscatter(vmi_instance_t vmi,
 	return args;
 }
 
-void gt_windows_print_sysret_ntmapuserphysicalpagesscatter(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntmapuserphysicalpagesscatter(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3889,7 +3889,7 @@ void gt_windows_print_sysret_ntmapuserphysicalpagesscatter(vmi_instance_t vmi, v
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntmapviewofsection(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntmapviewofsection(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3898,7 +3898,7 @@ void *gt_windows_print_syscall_ntmapviewofsection(vmi_instance_t vmi, vmi_event_
 	return args;
 }
 
-void gt_windows_print_sysret_ntmapviewofsection(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntmapviewofsection(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3907,7 +3907,7 @@ void gt_windows_print_sysret_ntmapviewofsection(vmi_instance_t vmi, vmi_event_t 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntmodifybootentry(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntmodifybootentry(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3916,7 +3916,7 @@ void *gt_windows_print_syscall_ntmodifybootentry(vmi_instance_t vmi, vmi_event_t
 	return args;
 }
 
-void gt_windows_print_sysret_ntmodifybootentry(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntmodifybootentry(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3925,7 +3925,7 @@ void gt_windows_print_sysret_ntmodifybootentry(vmi_instance_t vmi, vmi_event_t *
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntmodifydriverentry(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntmodifydriverentry(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3934,7 +3934,7 @@ void *gt_windows_print_syscall_ntmodifydriverentry(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntmodifydriverentry(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntmodifydriverentry(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3943,7 +3943,7 @@ void gt_windows_print_sysret_ntmodifydriverentry(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntnotifychangedirectoryfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntnotifychangedirectoryfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3952,7 +3952,7 @@ void *gt_windows_print_syscall_ntnotifychangedirectoryfile(vmi_instance_t vmi, v
 	return args;
 }
 
-void gt_windows_print_sysret_ntnotifychangedirectoryfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntnotifychangedirectoryfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3961,7 +3961,7 @@ void gt_windows_print_sysret_ntnotifychangedirectoryfile(vmi_instance_t vmi, vmi
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntnotifychangekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntnotifychangekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3971,7 +3971,7 @@ void *gt_windows_print_syscall_ntnotifychangekey(vmi_instance_t vmi, vmi_event_t
 	return args;
 }
 
-void gt_windows_print_sysret_ntnotifychangekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntnotifychangekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3980,7 +3980,7 @@ void gt_windows_print_sysret_ntnotifychangekey(vmi_instance_t vmi, vmi_event_t *
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntnotifychangemultiplekeys(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntnotifychangemultiplekeys(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -3990,7 +3990,7 @@ void *gt_windows_print_syscall_ntnotifychangemultiplekeys(vmi_instance_t vmi, vm
 	return args;
 }
 
-void gt_windows_print_sysret_ntnotifychangemultiplekeys(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntnotifychangemultiplekeys(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -3999,7 +3999,7 @@ void gt_windows_print_sysret_ntnotifychangemultiplekeys(vmi_instance_t vmi, vmi_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntnotifychangesession(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntnotifychangesession(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4008,7 +4008,7 @@ void *gt_windows_print_syscall_ntnotifychangesession(vmi_instance_t vmi, vmi_eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntnotifychangesession(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntnotifychangesession(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4017,7 +4017,7 @@ void gt_windows_print_sysret_ntnotifychangesession(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopendirectoryobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopendirectoryobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4037,7 +4037,7 @@ void *gt_windows_print_syscall_ntopendirectoryobject(vmi_instance_t vmi, vmi_eve
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntopendirectoryobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopendirectoryobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4047,7 +4047,7 @@ void gt_windows_print_sysret_ntopendirectoryobject(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopenenlistment(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopenenlistment(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4067,7 +4067,7 @@ void *gt_windows_print_syscall_ntopenenlistment(vmi_instance_t vmi, vmi_event_t 
 	free(obj_attr_4);	return args;
 }
 
-void gt_windows_print_sysret_ntopenenlistment(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopenenlistment(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4077,7 +4077,7 @@ void gt_windows_print_sysret_ntopenenlistment(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopenevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopenevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4097,7 +4097,7 @@ void *gt_windows_print_syscall_ntopenevent(vmi_instance_t vmi, vmi_event_t *even
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntopenevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopenevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4107,7 +4107,7 @@ void gt_windows_print_sysret_ntopenevent(vmi_instance_t vmi, vmi_event_t *event,
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopeneventpair(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopeneventpair(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4127,7 +4127,7 @@ void *gt_windows_print_syscall_ntopeneventpair(vmi_instance_t vmi, vmi_event_t *
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntopeneventpair(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopeneventpair(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4137,7 +4137,7 @@ void gt_windows_print_sysret_ntopeneventpair(vmi_instance_t vmi, vmi_event_t *ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopenfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopenfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4157,7 +4157,7 @@ void *gt_windows_print_syscall_ntopenfile(vmi_instance_t vmi, vmi_event_t *event
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntopenfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopenfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4167,7 +4167,7 @@ void gt_windows_print_sysret_ntopenfile(vmi_instance_t vmi, vmi_event_t *event, 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopeniocompletion(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopeniocompletion(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4187,7 +4187,7 @@ void *gt_windows_print_syscall_ntopeniocompletion(vmi_instance_t vmi, vmi_event_
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntopeniocompletion(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopeniocompletion(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4197,7 +4197,7 @@ void gt_windows_print_sysret_ntopeniocompletion(vmi_instance_t vmi, vmi_event_t 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopenjobobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopenjobobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4217,7 +4217,7 @@ void *gt_windows_print_syscall_ntopenjobobject(vmi_instance_t vmi, vmi_event_t *
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntopenjobobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopenjobobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4227,7 +4227,7 @@ void gt_windows_print_sysret_ntopenjobobject(vmi_instance_t vmi, vmi_event_t *ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopenkeyedevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopenkeyedevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4247,7 +4247,7 @@ void *gt_windows_print_syscall_ntopenkeyedevent(vmi_instance_t vmi, vmi_event_t 
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntopenkeyedevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopenkeyedevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4257,7 +4257,7 @@ void gt_windows_print_sysret_ntopenkeyedevent(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopenkeyex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopenkeyex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4277,7 +4277,7 @@ void *gt_windows_print_syscall_ntopenkeyex(vmi_instance_t vmi, vmi_event_t *even
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntopenkeyex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopenkeyex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4287,7 +4287,7 @@ void gt_windows_print_sysret_ntopenkeyex(vmi_instance_t vmi, vmi_event_t *event,
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopenkey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopenkey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4307,7 +4307,7 @@ void *gt_windows_print_syscall_ntopenkey(vmi_instance_t vmi, vmi_event_t *event,
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntopenkey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopenkey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4317,7 +4317,7 @@ void gt_windows_print_sysret_ntopenkey(vmi_instance_t vmi, vmi_event_t *event, v
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopenkeytransactedex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopenkeytransactedex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4337,7 +4337,7 @@ void *gt_windows_print_syscall_ntopenkeytransactedex(vmi_instance_t vmi, vmi_eve
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntopenkeytransactedex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopenkeytransactedex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4347,7 +4347,7 @@ void gt_windows_print_sysret_ntopenkeytransactedex(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopenkeytransacted(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopenkeytransacted(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4367,7 +4367,7 @@ void *gt_windows_print_syscall_ntopenkeytransacted(vmi_instance_t vmi, vmi_event
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntopenkeytransacted(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopenkeytransacted(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4377,7 +4377,7 @@ void gt_windows_print_sysret_ntopenkeytransacted(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopenmutant(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopenmutant(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4397,7 +4397,7 @@ void *gt_windows_print_syscall_ntopenmutant(vmi_instance_t vmi, vmi_event_t *eve
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntopenmutant(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopenmutant(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4407,7 +4407,7 @@ void gt_windows_print_sysret_ntopenmutant(vmi_instance_t vmi, vmi_event_t *event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopenobjectauditalarm(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopenobjectauditalarm(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4426,7 +4426,7 @@ void *gt_windows_print_syscall_ntopenobjectauditalarm(vmi_instance_t vmi, vmi_ev
 	free(permissions_7);	return args;
 }
 
-void gt_windows_print_sysret_ntopenobjectauditalarm(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopenobjectauditalarm(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4435,7 +4435,7 @@ void gt_windows_print_sysret_ntopenobjectauditalarm(vmi_instance_t vmi, vmi_even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopenprivatenamespace(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopenprivatenamespace(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4455,7 +4455,7 @@ void *gt_windows_print_syscall_ntopenprivatenamespace(vmi_instance_t vmi, vmi_ev
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntopenprivatenamespace(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopenprivatenamespace(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4465,7 +4465,7 @@ void gt_windows_print_sysret_ntopenprivatenamespace(vmi_instance_t vmi, vmi_even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopenprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopenprocess(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4485,7 +4485,7 @@ void *gt_windows_print_syscall_ntopenprocess(vmi_instance_t vmi, vmi_event_t *ev
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntopenprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopenprocess(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4495,7 +4495,7 @@ void gt_windows_print_sysret_ntopenprocess(vmi_instance_t vmi, vmi_event_t *even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopenprocesstokenex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopenprocesstokenex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4504,7 +4504,7 @@ void *gt_windows_print_syscall_ntopenprocesstokenex(vmi_instance_t vmi, vmi_even
 	free(permissions_1);	return args;
 }
 
-void gt_windows_print_sysret_ntopenprocesstokenex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopenprocesstokenex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4514,7 +4514,7 @@ void gt_windows_print_sysret_ntopenprocesstokenex(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopenprocesstoken(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopenprocesstoken(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4523,7 +4523,7 @@ void *gt_windows_print_syscall_ntopenprocesstoken(vmi_instance_t vmi, vmi_event_
 	free(permissions_1);	return args;
 }
 
-void gt_windows_print_sysret_ntopenprocesstoken(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopenprocesstoken(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4533,7 +4533,7 @@ void gt_windows_print_sysret_ntopenprocesstoken(vmi_instance_t vmi, vmi_event_t 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopenresourcemanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopenresourcemanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4553,7 +4553,7 @@ void *gt_windows_print_syscall_ntopenresourcemanager(vmi_instance_t vmi, vmi_eve
 	free(obj_attr_4);	return args;
 }
 
-void gt_windows_print_sysret_ntopenresourcemanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopenresourcemanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4563,7 +4563,7 @@ void gt_windows_print_sysret_ntopenresourcemanager(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopensection(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopensection(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4583,7 +4583,7 @@ void *gt_windows_print_syscall_ntopensection(vmi_instance_t vmi, vmi_event_t *ev
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntopensection(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopensection(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4593,7 +4593,7 @@ void gt_windows_print_sysret_ntopensection(vmi_instance_t vmi, vmi_event_t *even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopensemaphore(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopensemaphore(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4613,7 +4613,7 @@ void *gt_windows_print_syscall_ntopensemaphore(vmi_instance_t vmi, vmi_event_t *
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntopensemaphore(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopensemaphore(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4623,7 +4623,7 @@ void gt_windows_print_sysret_ntopensemaphore(vmi_instance_t vmi, vmi_event_t *ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopensession(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopensession(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4643,7 +4643,7 @@ void *gt_windows_print_syscall_ntopensession(vmi_instance_t vmi, vmi_event_t *ev
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntopensession(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopensession(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4653,7 +4653,7 @@ void gt_windows_print_sysret_ntopensession(vmi_instance_t vmi, vmi_event_t *even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopensymboliclinkobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopensymboliclinkobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4673,7 +4673,7 @@ void *gt_windows_print_syscall_ntopensymboliclinkobject(vmi_instance_t vmi, vmi_
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntopensymboliclinkobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopensymboliclinkobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4683,7 +4683,7 @@ void gt_windows_print_sysret_ntopensymboliclinkobject(vmi_instance_t vmi, vmi_ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopenthread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopenthread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4703,7 +4703,7 @@ void *gt_windows_print_syscall_ntopenthread(vmi_instance_t vmi, vmi_event_t *eve
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntopenthread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopenthread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4713,7 +4713,7 @@ void gt_windows_print_sysret_ntopenthread(vmi_instance_t vmi, vmi_event_t *event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopenthreadtokenex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopenthreadtokenex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4723,7 +4723,7 @@ void *gt_windows_print_syscall_ntopenthreadtokenex(vmi_instance_t vmi, vmi_event
 	free(permissions_1);	return args;
 }
 
-void gt_windows_print_sysret_ntopenthreadtokenex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopenthreadtokenex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4733,7 +4733,7 @@ void gt_windows_print_sysret_ntopenthreadtokenex(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopenthreadtoken(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopenthreadtoken(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4743,7 +4743,7 @@ void *gt_windows_print_syscall_ntopenthreadtoken(vmi_instance_t vmi, vmi_event_t
 	free(permissions_1);	return args;
 }
 
-void gt_windows_print_sysret_ntopenthreadtoken(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopenthreadtoken(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4753,7 +4753,7 @@ void gt_windows_print_sysret_ntopenthreadtoken(vmi_instance_t vmi, vmi_event_t *
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopentimer(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopentimer(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4773,7 +4773,7 @@ void *gt_windows_print_syscall_ntopentimer(vmi_instance_t vmi, vmi_event_t *even
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntopentimer(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopentimer(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4783,7 +4783,7 @@ void gt_windows_print_sysret_ntopentimer(vmi_instance_t vmi, vmi_event_t *event,
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopentransactionmanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopentransactionmanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4805,7 +4805,7 @@ void *gt_windows_print_syscall_ntopentransactionmanager(vmi_instance_t vmi, vmi_
 	free(unicode_str_3);	return args;
 }
 
-void gt_windows_print_sysret_ntopentransactionmanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopentransactionmanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4815,7 +4815,7 @@ void gt_windows_print_sysret_ntopentransactionmanager(vmi_instance_t vmi, vmi_ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntopentransaction(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntopentransaction(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4835,7 +4835,7 @@ void *gt_windows_print_syscall_ntopentransaction(vmi_instance_t vmi, vmi_event_t
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntopentransaction(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntopentransaction(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4845,7 +4845,7 @@ void gt_windows_print_sysret_ntopentransaction(vmi_instance_t vmi, vmi_event_t *
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntplugplaycontrol(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntplugplaycontrol(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4854,7 +4854,7 @@ void *gt_windows_print_syscall_ntplugplaycontrol(vmi_instance_t vmi, vmi_event_t
 	return args;
 }
 
-void gt_windows_print_sysret_ntplugplaycontrol(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntplugplaycontrol(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4863,7 +4863,7 @@ void gt_windows_print_sysret_ntplugplaycontrol(vmi_instance_t vmi, vmi_event_t *
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntpowerinformation(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntpowerinformation(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4872,7 +4872,7 @@ void *gt_windows_print_syscall_ntpowerinformation(vmi_instance_t vmi, vmi_event_
 	return args;
 }
 
-void gt_windows_print_sysret_ntpowerinformation(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntpowerinformation(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4881,7 +4881,7 @@ void gt_windows_print_sysret_ntpowerinformation(vmi_instance_t vmi, vmi_event_t 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntpreparecomplete(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntpreparecomplete(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4890,7 +4890,7 @@ void *gt_windows_print_syscall_ntpreparecomplete(vmi_instance_t vmi, vmi_event_t
 	return args;
 }
 
-void gt_windows_print_sysret_ntpreparecomplete(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntpreparecomplete(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4899,7 +4899,7 @@ void gt_windows_print_sysret_ntpreparecomplete(vmi_instance_t vmi, vmi_event_t *
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntprepareenlistment(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntprepareenlistment(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4908,7 +4908,7 @@ void *gt_windows_print_syscall_ntprepareenlistment(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntprepareenlistment(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntprepareenlistment(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4917,7 +4917,7 @@ void gt_windows_print_sysret_ntprepareenlistment(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntprepreparecomplete(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntprepreparecomplete(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4926,7 +4926,7 @@ void *gt_windows_print_syscall_ntprepreparecomplete(vmi_instance_t vmi, vmi_even
 	return args;
 }
 
-void gt_windows_print_sysret_ntprepreparecomplete(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntprepreparecomplete(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4935,7 +4935,7 @@ void gt_windows_print_sysret_ntprepreparecomplete(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntpreprepareenlistment(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntpreprepareenlistment(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4944,7 +4944,7 @@ void *gt_windows_print_syscall_ntpreprepareenlistment(vmi_instance_t vmi, vmi_ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntpreprepareenlistment(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntpreprepareenlistment(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4953,7 +4953,7 @@ void gt_windows_print_sysret_ntpreprepareenlistment(vmi_instance_t vmi, vmi_even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntprivilegecheck(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntprivilegecheck(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4962,7 +4962,7 @@ void *gt_windows_print_syscall_ntprivilegecheck(vmi_instance_t vmi, vmi_event_t 
 	return args;
 }
 
-void gt_windows_print_sysret_ntprivilegecheck(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntprivilegecheck(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4971,7 +4971,7 @@ void gt_windows_print_sysret_ntprivilegecheck(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntprivilegedserviceauditalarm(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntprivilegedserviceauditalarm(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -4983,7 +4983,7 @@ void *gt_windows_print_syscall_ntprivilegedserviceauditalarm(vmi_instance_t vmi,
 	free(unicode_str_1);	return args;
 }
 
-void gt_windows_print_sysret_ntprivilegedserviceauditalarm(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntprivilegedserviceauditalarm(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -4992,7 +4992,7 @@ void gt_windows_print_sysret_ntprivilegedserviceauditalarm(vmi_instance_t vmi, v
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntprivilegeobjectauditalarm(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntprivilegeobjectauditalarm(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5004,7 +5004,7 @@ void *gt_windows_print_syscall_ntprivilegeobjectauditalarm(vmi_instance_t vmi, v
 	free(permissions_3);	return args;
 }
 
-void gt_windows_print_sysret_ntprivilegeobjectauditalarm(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntprivilegeobjectauditalarm(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5013,7 +5013,7 @@ void gt_windows_print_sysret_ntprivilegeobjectauditalarm(vmi_instance_t vmi, vmi
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntpropagationcomplete(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntpropagationcomplete(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5022,7 +5022,7 @@ void *gt_windows_print_syscall_ntpropagationcomplete(vmi_instance_t vmi, vmi_eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntpropagationcomplete(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntpropagationcomplete(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5031,7 +5031,7 @@ void gt_windows_print_sysret_ntpropagationcomplete(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntpropagationfailed(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntpropagationfailed(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5040,7 +5040,7 @@ void *gt_windows_print_syscall_ntpropagationfailed(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntpropagationfailed(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntpropagationfailed(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5049,7 +5049,7 @@ void gt_windows_print_sysret_ntpropagationfailed(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntprotectvirtualmemory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntprotectvirtualmemory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5058,7 +5058,7 @@ void *gt_windows_print_syscall_ntprotectvirtualmemory(vmi_instance_t vmi, vmi_ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntprotectvirtualmemory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntprotectvirtualmemory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5068,7 +5068,7 @@ void gt_windows_print_sysret_ntprotectvirtualmemory(vmi_instance_t vmi, vmi_even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntpulseevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntpulseevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5077,7 +5077,7 @@ void *gt_windows_print_syscall_ntpulseevent(vmi_instance_t vmi, vmi_event_t *eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntpulseevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntpulseevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5086,7 +5086,7 @@ void gt_windows_print_sysret_ntpulseevent(vmi_instance_t vmi, vmi_event_t *event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryattributesfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryattributesfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5104,7 +5104,7 @@ void *gt_windows_print_syscall_ntqueryattributesfile(vmi_instance_t vmi, vmi_eve
 	free(obj_attr_0);	return args;
 }
 
-void gt_windows_print_sysret_ntqueryattributesfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryattributesfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5113,7 +5113,7 @@ void gt_windows_print_sysret_ntqueryattributesfile(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntquerybootentryorder(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntquerybootentryorder(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5123,7 +5123,7 @@ void *gt_windows_print_syscall_ntquerybootentryorder(vmi_instance_t vmi, vmi_eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntquerybootentryorder(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntquerybootentryorder(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5133,7 +5133,7 @@ void gt_windows_print_sysret_ntquerybootentryorder(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntquerybootoptions(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntquerybootoptions(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5143,7 +5143,7 @@ void *gt_windows_print_syscall_ntquerybootoptions(vmi_instance_t vmi, vmi_event_
 	return args;
 }
 
-void gt_windows_print_sysret_ntquerybootoptions(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntquerybootoptions(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5153,7 +5153,7 @@ void gt_windows_print_sysret_ntquerybootoptions(vmi_instance_t vmi, vmi_event_t 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntquerydebugfilterstate(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntquerydebugfilterstate(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5162,7 +5162,7 @@ void *gt_windows_print_syscall_ntquerydebugfilterstate(vmi_instance_t vmi, vmi_e
 	return args;
 }
 
-void gt_windows_print_sysret_ntquerydebugfilterstate(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntquerydebugfilterstate(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5171,7 +5171,7 @@ void gt_windows_print_sysret_ntquerydebugfilterstate(vmi_instance_t vmi, vmi_eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntquerydefaultlocale(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntquerydefaultlocale(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5180,7 +5180,7 @@ void *gt_windows_print_syscall_ntquerydefaultlocale(vmi_instance_t vmi, vmi_even
 	return args;
 }
 
-void gt_windows_print_sysret_ntquerydefaultlocale(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntquerydefaultlocale(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5189,7 +5189,7 @@ void gt_windows_print_sysret_ntquerydefaultlocale(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntquerydefaultuilanguage(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntquerydefaultuilanguage(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5198,7 +5198,7 @@ void *gt_windows_print_syscall_ntquerydefaultuilanguage(vmi_instance_t vmi, vmi_
 	return args;
 }
 
-void gt_windows_print_sysret_ntquerydefaultuilanguage(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntquerydefaultuilanguage(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5207,7 +5207,7 @@ void gt_windows_print_sysret_ntquerydefaultuilanguage(vmi_instance_t vmi, vmi_ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntquerydirectoryfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntquerydirectoryfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5218,7 +5218,7 @@ void *gt_windows_print_syscall_ntquerydirectoryfile(vmi_instance_t vmi, vmi_even
 	free(unicode_str_9);	return args;
 }
 
-void gt_windows_print_sysret_ntquerydirectoryfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntquerydirectoryfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5227,7 +5227,7 @@ void gt_windows_print_sysret_ntquerydirectoryfile(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntquerydirectoryobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntquerydirectoryobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5239,7 +5239,7 @@ void *gt_windows_print_syscall_ntquerydirectoryobject(vmi_instance_t vmi, vmi_ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntquerydirectoryobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntquerydirectoryobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5251,7 +5251,7 @@ void gt_windows_print_sysret_ntquerydirectoryobject(vmi_instance_t vmi, vmi_even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntquerydriverentryorder(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntquerydriverentryorder(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5261,7 +5261,7 @@ void *gt_windows_print_syscall_ntquerydriverentryorder(vmi_instance_t vmi, vmi_e
 	return args;
 }
 
-void gt_windows_print_sysret_ntquerydriverentryorder(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntquerydriverentryorder(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5271,7 +5271,7 @@ void gt_windows_print_sysret_ntquerydriverentryorder(vmi_instance_t vmi, vmi_eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryeafile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryeafile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5283,7 +5283,7 @@ void *gt_windows_print_syscall_ntqueryeafile(vmi_instance_t vmi, vmi_event_t *ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntqueryeafile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryeafile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5292,7 +5292,7 @@ void gt_windows_print_sysret_ntqueryeafile(vmi_instance_t vmi, vmi_event_t *even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5301,7 +5301,7 @@ void *gt_windows_print_syscall_ntqueryevent(vmi_instance_t vmi, vmi_event_t *eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntqueryevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5311,7 +5311,7 @@ void gt_windows_print_sysret_ntqueryevent(vmi_instance_t vmi, vmi_event_t *event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryfullattributesfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryfullattributesfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5329,7 +5329,7 @@ void *gt_windows_print_syscall_ntqueryfullattributesfile(vmi_instance_t vmi, vmi
 	free(obj_attr_0);	return args;
 }
 
-void gt_windows_print_sysret_ntqueryfullattributesfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryfullattributesfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5338,7 +5338,7 @@ void gt_windows_print_sysret_ntqueryfullattributesfile(vmi_instance_t vmi, vmi_e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryinformationatom(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryinformationatom(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5347,7 +5347,7 @@ void *gt_windows_print_syscall_ntqueryinformationatom(vmi_instance_t vmi, vmi_ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntqueryinformationatom(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryinformationatom(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5357,7 +5357,7 @@ void gt_windows_print_sysret_ntqueryinformationatom(vmi_instance_t vmi, vmi_even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryinformationenlistment(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryinformationenlistment(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5366,7 +5366,7 @@ void *gt_windows_print_syscall_ntqueryinformationenlistment(vmi_instance_t vmi, 
 	return args;
 }
 
-void gt_windows_print_sysret_ntqueryinformationenlistment(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryinformationenlistment(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5376,7 +5376,7 @@ void gt_windows_print_sysret_ntqueryinformationenlistment(vmi_instance_t vmi, vm
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryinformationfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryinformationfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5385,7 +5385,7 @@ void *gt_windows_print_syscall_ntqueryinformationfile(vmi_instance_t vmi, vmi_ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntqueryinformationfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryinformationfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5394,7 +5394,7 @@ void gt_windows_print_sysret_ntqueryinformationfile(vmi_instance_t vmi, vmi_even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryinformationjobobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryinformationjobobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5403,7 +5403,7 @@ void *gt_windows_print_syscall_ntqueryinformationjobobject(vmi_instance_t vmi, v
 	return args;
 }
 
-void gt_windows_print_sysret_ntqueryinformationjobobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryinformationjobobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5413,7 +5413,7 @@ void gt_windows_print_sysret_ntqueryinformationjobobject(vmi_instance_t vmi, vmi
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryinformationport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryinformationport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5422,7 +5422,7 @@ void *gt_windows_print_syscall_ntqueryinformationport(vmi_instance_t vmi, vmi_ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntqueryinformationport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryinformationport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5432,7 +5432,7 @@ void gt_windows_print_sysret_ntqueryinformationport(vmi_instance_t vmi, vmi_even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryinformationprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryinformationprocess(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5441,7 +5441,7 @@ void *gt_windows_print_syscall_ntqueryinformationprocess(vmi_instance_t vmi, vmi
 	return args;
 }
 
-void gt_windows_print_sysret_ntqueryinformationprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryinformationprocess(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5451,7 +5451,7 @@ void gt_windows_print_sysret_ntqueryinformationprocess(vmi_instance_t vmi, vmi_e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryinformationresourcemanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryinformationresourcemanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5460,7 +5460,7 @@ void *gt_windows_print_syscall_ntqueryinformationresourcemanager(vmi_instance_t 
 	return args;
 }
 
-void gt_windows_print_sysret_ntqueryinformationresourcemanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryinformationresourcemanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5470,7 +5470,7 @@ void gt_windows_print_sysret_ntqueryinformationresourcemanager(vmi_instance_t vm
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryinformationthread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryinformationthread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5479,7 +5479,7 @@ void *gt_windows_print_syscall_ntqueryinformationthread(vmi_instance_t vmi, vmi_
 	return args;
 }
 
-void gt_windows_print_sysret_ntqueryinformationthread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryinformationthread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5489,7 +5489,7 @@ void gt_windows_print_sysret_ntqueryinformationthread(vmi_instance_t vmi, vmi_ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryinformationtoken(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryinformationtoken(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5498,7 +5498,7 @@ void *gt_windows_print_syscall_ntqueryinformationtoken(vmi_instance_t vmi, vmi_e
 	return args;
 }
 
-void gt_windows_print_sysret_ntqueryinformationtoken(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryinformationtoken(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5508,7 +5508,7 @@ void gt_windows_print_sysret_ntqueryinformationtoken(vmi_instance_t vmi, vmi_eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryinformationtransaction(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryinformationtransaction(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5517,7 +5517,7 @@ void *gt_windows_print_syscall_ntqueryinformationtransaction(vmi_instance_t vmi,
 	return args;
 }
 
-void gt_windows_print_sysret_ntqueryinformationtransaction(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryinformationtransaction(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5527,7 +5527,7 @@ void gt_windows_print_sysret_ntqueryinformationtransaction(vmi_instance_t vmi, v
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryinformationtransactionmanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryinformationtransactionmanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5536,7 +5536,7 @@ void *gt_windows_print_syscall_ntqueryinformationtransactionmanager(vmi_instance
 	return args;
 }
 
-void gt_windows_print_sysret_ntqueryinformationtransactionmanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryinformationtransactionmanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5546,7 +5546,7 @@ void gt_windows_print_sysret_ntqueryinformationtransactionmanager(vmi_instance_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryinformationworkerfactory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryinformationworkerfactory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5555,7 +5555,7 @@ void *gt_windows_print_syscall_ntqueryinformationworkerfactory(vmi_instance_t vm
 	return args;
 }
 
-void gt_windows_print_sysret_ntqueryinformationworkerfactory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryinformationworkerfactory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5565,7 +5565,7 @@ void gt_windows_print_sysret_ntqueryinformationworkerfactory(vmi_instance_t vmi,
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryinstalluilanguage(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryinstalluilanguage(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5574,7 +5574,7 @@ void *gt_windows_print_syscall_ntqueryinstalluilanguage(vmi_instance_t vmi, vmi_
 	return args;
 }
 
-void gt_windows_print_sysret_ntqueryinstalluilanguage(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryinstalluilanguage(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5583,7 +5583,7 @@ void gt_windows_print_sysret_ntqueryinstalluilanguage(vmi_instance_t vmi, vmi_ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryintervalprofile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryintervalprofile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5592,7 +5592,7 @@ void *gt_windows_print_syscall_ntqueryintervalprofile(vmi_instance_t vmi, vmi_ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntqueryintervalprofile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryintervalprofile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5602,7 +5602,7 @@ void gt_windows_print_sysret_ntqueryintervalprofile(vmi_instance_t vmi, vmi_even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryiocompletion(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryiocompletion(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5611,7 +5611,7 @@ void *gt_windows_print_syscall_ntqueryiocompletion(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntqueryiocompletion(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryiocompletion(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5621,7 +5621,7 @@ void gt_windows_print_sysret_ntqueryiocompletion(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntquerykey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntquerykey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5630,7 +5630,7 @@ void *gt_windows_print_syscall_ntquerykey(vmi_instance_t vmi, vmi_event_t *event
 	return args;
 }
 
-void gt_windows_print_sysret_ntquerykey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntquerykey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5640,7 +5640,7 @@ void gt_windows_print_sysret_ntquerykey(vmi_instance_t vmi, vmi_event_t *event, 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntquerylicensevalue(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntquerylicensevalue(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5649,7 +5649,7 @@ void *gt_windows_print_syscall_ntquerylicensevalue(vmi_instance_t vmi, vmi_event
 	free(unicode_str_0);	return args;
 }
 
-void gt_windows_print_sysret_ntquerylicensevalue(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntquerylicensevalue(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5661,7 +5661,7 @@ void gt_windows_print_sysret_ntquerylicensevalue(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntquerymultiplevaluekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntquerymultiplevaluekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5671,7 +5671,7 @@ void *gt_windows_print_syscall_ntquerymultiplevaluekey(vmi_instance_t vmi, vmi_e
 	return args;
 }
 
-void gt_windows_print_sysret_ntquerymultiplevaluekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntquerymultiplevaluekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5683,7 +5683,7 @@ void gt_windows_print_sysret_ntquerymultiplevaluekey(vmi_instance_t vmi, vmi_eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntquerymutant(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntquerymutant(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5692,7 +5692,7 @@ void *gt_windows_print_syscall_ntquerymutant(vmi_instance_t vmi, vmi_event_t *ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntquerymutant(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntquerymutant(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5702,7 +5702,7 @@ void gt_windows_print_sysret_ntquerymutant(vmi_instance_t vmi, vmi_event_t *even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5711,7 +5711,7 @@ void *gt_windows_print_syscall_ntqueryobject(vmi_instance_t vmi, vmi_event_t *ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntqueryobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5721,7 +5721,7 @@ void gt_windows_print_sysret_ntqueryobject(vmi_instance_t vmi, vmi_event_t *even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryopensubkeysex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryopensubkeysex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5739,7 +5739,7 @@ void *gt_windows_print_syscall_ntqueryopensubkeysex(vmi_instance_t vmi, vmi_even
 	free(obj_attr_0);	return args;
 }
 
-void gt_windows_print_sysret_ntqueryopensubkeysex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryopensubkeysex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5749,7 +5749,7 @@ void gt_windows_print_sysret_ntqueryopensubkeysex(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryopensubkeys(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryopensubkeys(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5767,7 +5767,7 @@ void *gt_windows_print_syscall_ntqueryopensubkeys(vmi_instance_t vmi, vmi_event_
 	free(obj_attr_0);	return args;
 }
 
-void gt_windows_print_sysret_ntqueryopensubkeys(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryopensubkeys(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5777,7 +5777,7 @@ void gt_windows_print_sysret_ntqueryopensubkeys(vmi_instance_t vmi, vmi_event_t 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryperformancecounter(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryperformancecounter(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5786,7 +5786,7 @@ void *gt_windows_print_syscall_ntqueryperformancecounter(vmi_instance_t vmi, vmi
 	return args;
 }
 
-void gt_windows_print_sysret_ntqueryperformancecounter(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryperformancecounter(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5795,7 +5795,7 @@ void gt_windows_print_sysret_ntqueryperformancecounter(vmi_instance_t vmi, vmi_e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryportinformationprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryportinformationprocess(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5804,7 +5804,7 @@ void *gt_windows_print_syscall_ntqueryportinformationprocess(vmi_instance_t vmi,
 	return args;
 }
 
-void gt_windows_print_sysret_ntqueryportinformationprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryportinformationprocess(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5813,7 +5813,7 @@ void gt_windows_print_sysret_ntqueryportinformationprocess(vmi_instance_t vmi, v
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryquotainformationfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryquotainformationfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5825,7 +5825,7 @@ void *gt_windows_print_syscall_ntqueryquotainformationfile(vmi_instance_t vmi, v
 	return args;
 }
 
-void gt_windows_print_sysret_ntqueryquotainformationfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryquotainformationfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5834,7 +5834,7 @@ void gt_windows_print_sysret_ntqueryquotainformationfile(vmi_instance_t vmi, vmi
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntquerysection(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntquerysection(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5843,7 +5843,7 @@ void *gt_windows_print_syscall_ntquerysection(vmi_instance_t vmi, vmi_event_t *e
 	return args;
 }
 
-void gt_windows_print_sysret_ntquerysection(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntquerysection(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5852,7 +5852,7 @@ void gt_windows_print_sysret_ntquerysection(vmi_instance_t vmi, vmi_event_t *eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntquerysecurityattributestoken(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntquerysecurityattributestoken(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5861,7 +5861,7 @@ void *gt_windows_print_syscall_ntquerysecurityattributestoken(vmi_instance_t vmi
 	return args;
 }
 
-void gt_windows_print_sysret_ntquerysecurityattributestoken(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntquerysecurityattributestoken(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5871,7 +5871,7 @@ void gt_windows_print_sysret_ntquerysecurityattributestoken(vmi_instance_t vmi, 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntquerysecurityobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntquerysecurityobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5880,7 +5880,7 @@ void *gt_windows_print_syscall_ntquerysecurityobject(vmi_instance_t vmi, vmi_eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntquerysecurityobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntquerysecurityobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5890,7 +5890,7 @@ void gt_windows_print_sysret_ntquerysecurityobject(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntquerysemaphore(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntquerysemaphore(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5899,7 +5899,7 @@ void *gt_windows_print_syscall_ntquerysemaphore(vmi_instance_t vmi, vmi_event_t 
 	return args;
 }
 
-void gt_windows_print_sysret_ntquerysemaphore(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntquerysemaphore(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5909,7 +5909,7 @@ void gt_windows_print_sysret_ntquerysemaphore(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntquerysymboliclinkobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntquerysymboliclinkobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5918,7 +5918,7 @@ void *gt_windows_print_syscall_ntquerysymboliclinkobject(vmi_instance_t vmi, vmi
 	free(unicode_str_1);	return args;
 }
 
-void gt_windows_print_sysret_ntquerysymboliclinkobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntquerysymboliclinkobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5929,7 +5929,7 @@ void gt_windows_print_sysret_ntquerysymboliclinkobject(vmi_instance_t vmi, vmi_e
 	free(unicode_str_1);	free(args);
 }
 
-void *gt_windows_print_syscall_ntquerysystemenvironmentvalueex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntquerysystemenvironmentvalueex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5940,7 +5940,7 @@ void *gt_windows_print_syscall_ntquerysystemenvironmentvalueex(vmi_instance_t vm
 	free(unicode_str_0);	return args;
 }
 
-void gt_windows_print_sysret_ntquerysystemenvironmentvalueex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntquerysystemenvironmentvalueex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5952,7 +5952,7 @@ void gt_windows_print_sysret_ntquerysystemenvironmentvalueex(vmi_instance_t vmi,
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntquerysystemenvironmentvalue(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntquerysystemenvironmentvalue(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5961,7 +5961,7 @@ void *gt_windows_print_syscall_ntquerysystemenvironmentvalue(vmi_instance_t vmi,
 	free(unicode_str_0);	return args;
 }
 
-void gt_windows_print_sysret_ntquerysystemenvironmentvalue(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntquerysystemenvironmentvalue(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5970,7 +5970,7 @@ void gt_windows_print_sysret_ntquerysystemenvironmentvalue(vmi_instance_t vmi, v
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntquerysysteminformationex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntquerysysteminformationex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5979,7 +5979,7 @@ void *gt_windows_print_syscall_ntquerysysteminformationex(vmi_instance_t vmi, vm
 	return args;
 }
 
-void gt_windows_print_sysret_ntquerysysteminformationex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntquerysysteminformationex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -5989,7 +5989,7 @@ void gt_windows_print_sysret_ntquerysysteminformationex(vmi_instance_t vmi, vmi_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntquerysysteminformation(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntquerysysteminformation(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -5998,7 +5998,7 @@ void *gt_windows_print_syscall_ntquerysysteminformation(vmi_instance_t vmi, vmi_
 	return args;
 }
 
-void gt_windows_print_sysret_ntquerysysteminformation(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntquerysysteminformation(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6008,7 +6008,7 @@ void gt_windows_print_sysret_ntquerysysteminformation(vmi_instance_t vmi, vmi_ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntquerysystemtime(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntquerysystemtime(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6017,7 +6017,7 @@ void *gt_windows_print_syscall_ntquerysystemtime(vmi_instance_t vmi, vmi_event_t
 	return args;
 }
 
-void gt_windows_print_sysret_ntquerysystemtime(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntquerysystemtime(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6026,7 +6026,7 @@ void gt_windows_print_sysret_ntquerysystemtime(vmi_instance_t vmi, vmi_event_t *
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntquerytimer(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntquerytimer(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6035,7 +6035,7 @@ void *gt_windows_print_syscall_ntquerytimer(vmi_instance_t vmi, vmi_event_t *eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntquerytimer(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntquerytimer(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6045,7 +6045,7 @@ void gt_windows_print_sysret_ntquerytimer(vmi_instance_t vmi, vmi_event_t *event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntquerytimerresolution(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntquerytimerresolution(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6054,7 +6054,7 @@ void *gt_windows_print_syscall_ntquerytimerresolution(vmi_instance_t vmi, vmi_ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntquerytimerresolution(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntquerytimerresolution(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6068,7 +6068,7 @@ void gt_windows_print_sysret_ntquerytimerresolution(vmi_instance_t vmi, vmi_even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryvaluekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryvaluekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6077,7 +6077,7 @@ void *gt_windows_print_syscall_ntqueryvaluekey(vmi_instance_t vmi, vmi_event_t *
 	free(unicode_str_1);	return args;
 }
 
-void gt_windows_print_sysret_ntqueryvaluekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryvaluekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6087,7 +6087,7 @@ void gt_windows_print_sysret_ntqueryvaluekey(vmi_instance_t vmi, vmi_event_t *ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryvirtualmemory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryvirtualmemory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6096,7 +6096,7 @@ void *gt_windows_print_syscall_ntqueryvirtualmemory(vmi_instance_t vmi, vmi_even
 	return args;
 }
 
-void gt_windows_print_sysret_ntqueryvirtualmemory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryvirtualmemory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6105,7 +6105,7 @@ void gt_windows_print_sysret_ntqueryvirtualmemory(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueryvolumeinformationfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueryvolumeinformationfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6114,7 +6114,7 @@ void *gt_windows_print_syscall_ntqueryvolumeinformationfile(vmi_instance_t vmi, 
 	return args;
 }
 
-void gt_windows_print_sysret_ntqueryvolumeinformationfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueryvolumeinformationfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6123,7 +6123,7 @@ void gt_windows_print_sysret_ntqueryvolumeinformationfile(vmi_instance_t vmi, vm
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueueapcthreadex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueueapcthreadex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6132,7 +6132,7 @@ void *gt_windows_print_syscall_ntqueueapcthreadex(vmi_instance_t vmi, vmi_event_
 	return args;
 }
 
-void gt_windows_print_sysret_ntqueueapcthreadex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueueapcthreadex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6141,7 +6141,7 @@ void gt_windows_print_sysret_ntqueueapcthreadex(vmi_instance_t vmi, vmi_event_t 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntqueueapcthread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntqueueapcthread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6150,7 +6150,7 @@ void *gt_windows_print_syscall_ntqueueapcthread(vmi_instance_t vmi, vmi_event_t 
 	return args;
 }
 
-void gt_windows_print_sysret_ntqueueapcthread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntqueueapcthread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6159,7 +6159,7 @@ void gt_windows_print_sysret_ntqueueapcthread(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntraiseexception(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntraiseexception(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6168,7 +6168,7 @@ void *gt_windows_print_syscall_ntraiseexception(vmi_instance_t vmi, vmi_event_t 
 	return args;
 }
 
-void gt_windows_print_sysret_ntraiseexception(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntraiseexception(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6177,7 +6177,7 @@ void gt_windows_print_sysret_ntraiseexception(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntraiseharderror(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntraiseharderror(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6186,7 +6186,7 @@ void *gt_windows_print_syscall_ntraiseharderror(vmi_instance_t vmi, vmi_event_t 
 	return args;
 }
 
-void gt_windows_print_sysret_ntraiseharderror(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntraiseharderror(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6196,7 +6196,7 @@ void gt_windows_print_sysret_ntraiseharderror(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntreadfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntreadfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6206,7 +6206,7 @@ void *gt_windows_print_syscall_ntreadfile(vmi_instance_t vmi, vmi_event_t *event
 	return args;
 }
 
-void gt_windows_print_sysret_ntreadfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntreadfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6215,7 +6215,7 @@ void gt_windows_print_sysret_ntreadfile(vmi_instance_t vmi, vmi_event_t *event, 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntreadfilescatter(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntreadfilescatter(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6225,7 +6225,7 @@ void *gt_windows_print_syscall_ntreadfilescatter(vmi_instance_t vmi, vmi_event_t
 	return args;
 }
 
-void gt_windows_print_sysret_ntreadfilescatter(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntreadfilescatter(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6234,7 +6234,7 @@ void gt_windows_print_sysret_ntreadfilescatter(vmi_instance_t vmi, vmi_event_t *
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntreadonlyenlistment(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntreadonlyenlistment(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6243,7 +6243,7 @@ void *gt_windows_print_syscall_ntreadonlyenlistment(vmi_instance_t vmi, vmi_even
 	return args;
 }
 
-void gt_windows_print_sysret_ntreadonlyenlistment(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntreadonlyenlistment(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6252,7 +6252,7 @@ void gt_windows_print_sysret_ntreadonlyenlistment(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntreadrequestdata(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntreadrequestdata(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6261,7 +6261,7 @@ void *gt_windows_print_syscall_ntreadrequestdata(vmi_instance_t vmi, vmi_event_t
 	return args;
 }
 
-void gt_windows_print_sysret_ntreadrequestdata(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntreadrequestdata(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6270,7 +6270,7 @@ void gt_windows_print_sysret_ntreadrequestdata(vmi_instance_t vmi, vmi_event_t *
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntreadvirtualmemory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntreadvirtualmemory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6279,7 +6279,7 @@ void *gt_windows_print_syscall_ntreadvirtualmemory(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntreadvirtualmemory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntreadvirtualmemory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6288,7 +6288,7 @@ void gt_windows_print_sysret_ntreadvirtualmemory(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntrecoverenlistment(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntrecoverenlistment(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6297,7 +6297,7 @@ void *gt_windows_print_syscall_ntrecoverenlistment(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntrecoverenlistment(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntrecoverenlistment(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6306,7 +6306,7 @@ void gt_windows_print_sysret_ntrecoverenlistment(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntrecoverresourcemanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntrecoverresourcemanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6315,7 +6315,7 @@ void *gt_windows_print_syscall_ntrecoverresourcemanager(vmi_instance_t vmi, vmi_
 	return args;
 }
 
-void gt_windows_print_sysret_ntrecoverresourcemanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntrecoverresourcemanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6324,7 +6324,7 @@ void gt_windows_print_sysret_ntrecoverresourcemanager(vmi_instance_t vmi, vmi_ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntrecovertransactionmanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntrecovertransactionmanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6333,7 +6333,7 @@ void *gt_windows_print_syscall_ntrecovertransactionmanager(vmi_instance_t vmi, v
 	return args;
 }
 
-void gt_windows_print_sysret_ntrecovertransactionmanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntrecovertransactionmanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6342,7 +6342,7 @@ void gt_windows_print_sysret_ntrecovertransactionmanager(vmi_instance_t vmi, vmi
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntregisterprotocoladdressinformation(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntregisterprotocoladdressinformation(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6351,7 +6351,7 @@ void *gt_windows_print_syscall_ntregisterprotocoladdressinformation(vmi_instance
 	return args;
 }
 
-void gt_windows_print_sysret_ntregisterprotocoladdressinformation(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntregisterprotocoladdressinformation(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6360,7 +6360,7 @@ void gt_windows_print_sysret_ntregisterprotocoladdressinformation(vmi_instance_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntregisterthreadterminateport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntregisterthreadterminateport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6369,7 +6369,7 @@ void *gt_windows_print_syscall_ntregisterthreadterminateport(vmi_instance_t vmi,
 	return args;
 }
 
-void gt_windows_print_sysret_ntregisterthreadterminateport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntregisterthreadterminateport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6378,7 +6378,7 @@ void gt_windows_print_sysret_ntregisterthreadterminateport(vmi_instance_t vmi, v
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntreleasekeyedevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntreleasekeyedevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6387,7 +6387,7 @@ void *gt_windows_print_syscall_ntreleasekeyedevent(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntreleasekeyedevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntreleasekeyedevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6396,7 +6396,7 @@ void gt_windows_print_sysret_ntreleasekeyedevent(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntreleasemutant(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntreleasemutant(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6405,7 +6405,7 @@ void *gt_windows_print_syscall_ntreleasemutant(vmi_instance_t vmi, vmi_event_t *
 	return args;
 }
 
-void gt_windows_print_sysret_ntreleasemutant(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntreleasemutant(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6414,7 +6414,7 @@ void gt_windows_print_sysret_ntreleasemutant(vmi_instance_t vmi, vmi_event_t *ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntreleasesemaphore(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntreleasesemaphore(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6423,7 +6423,7 @@ void *gt_windows_print_syscall_ntreleasesemaphore(vmi_instance_t vmi, vmi_event_
 	return args;
 }
 
-void gt_windows_print_sysret_ntreleasesemaphore(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntreleasesemaphore(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6432,7 +6432,7 @@ void gt_windows_print_sysret_ntreleasesemaphore(vmi_instance_t vmi, vmi_event_t 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntreleaseworkerfactoryworker(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntreleaseworkerfactoryworker(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6441,7 +6441,7 @@ void *gt_windows_print_syscall_ntreleaseworkerfactoryworker(vmi_instance_t vmi, 
 	return args;
 }
 
-void gt_windows_print_sysret_ntreleaseworkerfactoryworker(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntreleaseworkerfactoryworker(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6450,7 +6450,7 @@ void gt_windows_print_sysret_ntreleaseworkerfactoryworker(vmi_instance_t vmi, vm
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntremoveiocompletionex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntremoveiocompletionex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6459,7 +6459,7 @@ void *gt_windows_print_syscall_ntremoveiocompletionex(vmi_instance_t vmi, vmi_ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntremoveiocompletionex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntremoveiocompletionex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6469,7 +6469,7 @@ void gt_windows_print_sysret_ntremoveiocompletionex(vmi_instance_t vmi, vmi_even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntremoveiocompletion(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntremoveiocompletion(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6478,7 +6478,7 @@ void *gt_windows_print_syscall_ntremoveiocompletion(vmi_instance_t vmi, vmi_even
 	return args;
 }
 
-void gt_windows_print_sysret_ntremoveiocompletion(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntremoveiocompletion(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6487,7 +6487,7 @@ void gt_windows_print_sysret_ntremoveiocompletion(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntremoveprocessdebug(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntremoveprocessdebug(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6496,7 +6496,7 @@ void *gt_windows_print_syscall_ntremoveprocessdebug(vmi_instance_t vmi, vmi_even
 	return args;
 }
 
-void gt_windows_print_sysret_ntremoveprocessdebug(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntremoveprocessdebug(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6505,7 +6505,7 @@ void gt_windows_print_sysret_ntremoveprocessdebug(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntrenamekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntrenamekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6514,7 +6514,7 @@ void *gt_windows_print_syscall_ntrenamekey(vmi_instance_t vmi, vmi_event_t *even
 	free(unicode_str_1);	return args;
 }
 
-void gt_windows_print_sysret_ntrenamekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntrenamekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6523,7 +6523,7 @@ void gt_windows_print_sysret_ntrenamekey(vmi_instance_t vmi, vmi_event_t *event,
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntrenametransactionmanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntrenametransactionmanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6532,7 +6532,7 @@ void *gt_windows_print_syscall_ntrenametransactionmanager(vmi_instance_t vmi, vm
 	free(unicode_str_0);	return args;
 }
 
-void gt_windows_print_sysret_ntrenametransactionmanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntrenametransactionmanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6541,7 +6541,7 @@ void gt_windows_print_sysret_ntrenametransactionmanager(vmi_instance_t vmi, vmi_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntreplacekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntreplacekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6570,7 +6570,7 @@ void *gt_windows_print_syscall_ntreplacekey(vmi_instance_t vmi, vmi_event_t *eve
 	free(obj_attr_2);	return args;
 }
 
-void gt_windows_print_sysret_ntreplacekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntreplacekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6579,7 +6579,7 @@ void gt_windows_print_sysret_ntreplacekey(vmi_instance_t vmi, vmi_event_t *event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntreplacepartitionunit(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntreplacepartitionunit(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6590,7 +6590,7 @@ void *gt_windows_print_syscall_ntreplacepartitionunit(vmi_instance_t vmi, vmi_ev
 	free(unicode_str_1);	return args;
 }
 
-void gt_windows_print_sysret_ntreplacepartitionunit(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntreplacepartitionunit(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6599,7 +6599,7 @@ void gt_windows_print_sysret_ntreplacepartitionunit(vmi_instance_t vmi, vmi_even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntreplyport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntreplyport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6608,7 +6608,7 @@ void *gt_windows_print_syscall_ntreplyport(vmi_instance_t vmi, vmi_event_t *even
 	return args;
 }
 
-void gt_windows_print_sysret_ntreplyport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntreplyport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6617,7 +6617,7 @@ void gt_windows_print_sysret_ntreplyport(vmi_instance_t vmi, vmi_event_t *event,
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntreplywaitreceiveportex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntreplywaitreceiveportex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6626,7 +6626,7 @@ void *gt_windows_print_syscall_ntreplywaitreceiveportex(vmi_instance_t vmi, vmi_
 	return args;
 }
 
-void gt_windows_print_sysret_ntreplywaitreceiveportex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntreplywaitreceiveportex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6635,7 +6635,7 @@ void gt_windows_print_sysret_ntreplywaitreceiveportex(vmi_instance_t vmi, vmi_ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntreplywaitreceiveport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntreplywaitreceiveport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6644,7 +6644,7 @@ void *gt_windows_print_syscall_ntreplywaitreceiveport(vmi_instance_t vmi, vmi_ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntreplywaitreceiveport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntreplywaitreceiveport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6653,7 +6653,7 @@ void gt_windows_print_sysret_ntreplywaitreceiveport(vmi_instance_t vmi, vmi_even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntreplywaitreplyport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntreplywaitreplyport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6662,7 +6662,7 @@ void *gt_windows_print_syscall_ntreplywaitreplyport(vmi_instance_t vmi, vmi_even
 	return args;
 }
 
-void gt_windows_print_sysret_ntreplywaitreplyport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntreplywaitreplyport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6671,7 +6671,7 @@ void gt_windows_print_sysret_ntreplywaitreplyport(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntrequestport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntrequestport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6680,7 +6680,7 @@ void *gt_windows_print_syscall_ntrequestport(vmi_instance_t vmi, vmi_event_t *ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntrequestport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntrequestport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6689,7 +6689,7 @@ void gt_windows_print_sysret_ntrequestport(vmi_instance_t vmi, vmi_event_t *even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntrequestwaitreplyport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntrequestwaitreplyport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6698,7 +6698,7 @@ void *gt_windows_print_syscall_ntrequestwaitreplyport(vmi_instance_t vmi, vmi_ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntrequestwaitreplyport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntrequestwaitreplyport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6707,7 +6707,7 @@ void gt_windows_print_sysret_ntrequestwaitreplyport(vmi_instance_t vmi, vmi_even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntresetevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntresetevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6716,7 +6716,7 @@ void *gt_windows_print_syscall_ntresetevent(vmi_instance_t vmi, vmi_event_t *eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntresetevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntresetevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6725,7 +6725,7 @@ void gt_windows_print_sysret_ntresetevent(vmi_instance_t vmi, vmi_event_t *event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntresetwritewatch(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntresetwritewatch(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6734,7 +6734,7 @@ void *gt_windows_print_syscall_ntresetwritewatch(vmi_instance_t vmi, vmi_event_t
 	return args;
 }
 
-void gt_windows_print_sysret_ntresetwritewatch(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntresetwritewatch(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6743,7 +6743,7 @@ void gt_windows_print_sysret_ntresetwritewatch(vmi_instance_t vmi, vmi_event_t *
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntrestorekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntrestorekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6752,7 +6752,7 @@ void *gt_windows_print_syscall_ntrestorekey(vmi_instance_t vmi, vmi_event_t *eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntrestorekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntrestorekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6761,7 +6761,7 @@ void gt_windows_print_sysret_ntrestorekey(vmi_instance_t vmi, vmi_event_t *event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntresumeprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntresumeprocess(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6770,7 +6770,7 @@ void *gt_windows_print_syscall_ntresumeprocess(vmi_instance_t vmi, vmi_event_t *
 	return args;
 }
 
-void gt_windows_print_sysret_ntresumeprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntresumeprocess(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6779,7 +6779,7 @@ void gt_windows_print_sysret_ntresumeprocess(vmi_instance_t vmi, vmi_event_t *ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntresumethread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntresumethread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6788,7 +6788,7 @@ void *gt_windows_print_syscall_ntresumethread(vmi_instance_t vmi, vmi_event_t *e
 	return args;
 }
 
-void gt_windows_print_sysret_ntresumethread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntresumethread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6798,7 +6798,7 @@ void gt_windows_print_sysret_ntresumethread(vmi_instance_t vmi, vmi_event_t *eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntrollbackcomplete(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntrollbackcomplete(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6807,7 +6807,7 @@ void *gt_windows_print_syscall_ntrollbackcomplete(vmi_instance_t vmi, vmi_event_
 	return args;
 }
 
-void gt_windows_print_sysret_ntrollbackcomplete(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntrollbackcomplete(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6816,7 +6816,7 @@ void gt_windows_print_sysret_ntrollbackcomplete(vmi_instance_t vmi, vmi_event_t 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntrollbackenlistment(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntrollbackenlistment(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6825,7 +6825,7 @@ void *gt_windows_print_syscall_ntrollbackenlistment(vmi_instance_t vmi, vmi_even
 	return args;
 }
 
-void gt_windows_print_sysret_ntrollbackenlistment(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntrollbackenlistment(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6834,7 +6834,7 @@ void gt_windows_print_sysret_ntrollbackenlistment(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntrollbacktransaction(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntrollbacktransaction(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6843,7 +6843,7 @@ void *gt_windows_print_syscall_ntrollbacktransaction(vmi_instance_t vmi, vmi_eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntrollbacktransaction(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntrollbacktransaction(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6852,7 +6852,7 @@ void gt_windows_print_sysret_ntrollbacktransaction(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntrollforwardtransactionmanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntrollforwardtransactionmanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6861,7 +6861,7 @@ void *gt_windows_print_syscall_ntrollforwardtransactionmanager(vmi_instance_t vm
 	return args;
 }
 
-void gt_windows_print_sysret_ntrollforwardtransactionmanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntrollforwardtransactionmanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6870,7 +6870,7 @@ void gt_windows_print_sysret_ntrollforwardtransactionmanager(vmi_instance_t vmi,
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsavekeyex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsavekeyex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6879,7 +6879,7 @@ void *gt_windows_print_syscall_ntsavekeyex(vmi_instance_t vmi, vmi_event_t *even
 	return args;
 }
 
-void gt_windows_print_sysret_ntsavekeyex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsavekeyex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6888,7 +6888,7 @@ void gt_windows_print_sysret_ntsavekeyex(vmi_instance_t vmi, vmi_event_t *event,
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsavekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsavekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6897,7 +6897,7 @@ void *gt_windows_print_syscall_ntsavekey(vmi_instance_t vmi, vmi_event_t *event,
 	return args;
 }
 
-void gt_windows_print_sysret_ntsavekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsavekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6906,7 +6906,7 @@ void gt_windows_print_sysret_ntsavekey(vmi_instance_t vmi, vmi_event_t *event, v
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsavemergedkeys(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsavemergedkeys(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6915,7 +6915,7 @@ void *gt_windows_print_syscall_ntsavemergedkeys(vmi_instance_t vmi, vmi_event_t 
 	return args;
 }
 
-void gt_windows_print_sysret_ntsavemergedkeys(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsavemergedkeys(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6924,7 +6924,7 @@ void gt_windows_print_sysret_ntsavemergedkeys(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsecureconnectport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsecureconnectport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6935,7 +6935,7 @@ void *gt_windows_print_syscall_ntsecureconnectport(vmi_instance_t vmi, vmi_event
 	free(unicode_str_1);	return args;
 }
 
-void gt_windows_print_sysret_ntsecureconnectport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsecureconnectport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6949,7 +6949,7 @@ void gt_windows_print_sysret_ntsecureconnectport(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntserializeboot(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntserializeboot(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6958,7 +6958,7 @@ void *gt_windows_print_syscall_ntserializeboot(vmi_instance_t vmi, vmi_event_t *
 	return args;
 }
 
-void gt_windows_print_sysret_ntserializeboot(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntserializeboot(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6967,7 +6967,7 @@ void gt_windows_print_sysret_ntserializeboot(vmi_instance_t vmi, vmi_event_t *ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetbootentryorder(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetbootentryorder(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6976,7 +6976,7 @@ void *gt_windows_print_syscall_ntsetbootentryorder(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetbootentryorder(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetbootentryorder(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -6985,7 +6985,7 @@ void gt_windows_print_sysret_ntsetbootentryorder(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetbootoptions(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetbootoptions(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -6994,7 +6994,7 @@ void *gt_windows_print_syscall_ntsetbootoptions(vmi_instance_t vmi, vmi_event_t 
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetbootoptions(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetbootoptions(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7003,7 +7003,7 @@ void gt_windows_print_sysret_ntsetbootoptions(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetcontextthread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetcontextthread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7012,7 +7012,7 @@ void *gt_windows_print_syscall_ntsetcontextthread(vmi_instance_t vmi, vmi_event_
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetcontextthread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetcontextthread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7021,7 +7021,7 @@ void gt_windows_print_sysret_ntsetcontextthread(vmi_instance_t vmi, vmi_event_t 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetdebugfilterstate(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetdebugfilterstate(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7030,7 +7030,7 @@ void *gt_windows_print_syscall_ntsetdebugfilterstate(vmi_instance_t vmi, vmi_eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetdebugfilterstate(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetdebugfilterstate(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7039,7 +7039,7 @@ void gt_windows_print_sysret_ntsetdebugfilterstate(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetdefaultharderrorport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetdefaultharderrorport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7048,7 +7048,7 @@ void *gt_windows_print_syscall_ntsetdefaultharderrorport(vmi_instance_t vmi, vmi
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetdefaultharderrorport(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetdefaultharderrorport(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7057,7 +7057,7 @@ void gt_windows_print_sysret_ntsetdefaultharderrorport(vmi_instance_t vmi, vmi_e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetdefaultlocale(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetdefaultlocale(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7066,7 +7066,7 @@ void *gt_windows_print_syscall_ntsetdefaultlocale(vmi_instance_t vmi, vmi_event_
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetdefaultlocale(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetdefaultlocale(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7075,7 +7075,7 @@ void gt_windows_print_sysret_ntsetdefaultlocale(vmi_instance_t vmi, vmi_event_t 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetdefaultuilanguage(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetdefaultuilanguage(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7084,7 +7084,7 @@ void *gt_windows_print_syscall_ntsetdefaultuilanguage(vmi_instance_t vmi, vmi_ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetdefaultuilanguage(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetdefaultuilanguage(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7093,7 +7093,7 @@ void gt_windows_print_sysret_ntsetdefaultuilanguage(vmi_instance_t vmi, vmi_even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetdriverentryorder(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetdriverentryorder(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7102,7 +7102,7 @@ void *gt_windows_print_syscall_ntsetdriverentryorder(vmi_instance_t vmi, vmi_eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetdriverentryorder(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetdriverentryorder(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7111,7 +7111,7 @@ void gt_windows_print_sysret_ntsetdriverentryorder(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntseteafile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntseteafile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7120,7 +7120,7 @@ void *gt_windows_print_syscall_ntseteafile(vmi_instance_t vmi, vmi_event_t *even
 	return args;
 }
 
-void gt_windows_print_sysret_ntseteafile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntseteafile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7129,7 +7129,7 @@ void gt_windows_print_sysret_ntseteafile(vmi_instance_t vmi, vmi_event_t *event,
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntseteventboostpriority(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntseteventboostpriority(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7138,7 +7138,7 @@ void *gt_windows_print_syscall_ntseteventboostpriority(vmi_instance_t vmi, vmi_e
 	return args;
 }
 
-void gt_windows_print_sysret_ntseteventboostpriority(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntseteventboostpriority(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7147,7 +7147,7 @@ void gt_windows_print_sysret_ntseteventboostpriority(vmi_instance_t vmi, vmi_eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7156,7 +7156,7 @@ void *gt_windows_print_syscall_ntsetevent(vmi_instance_t vmi, vmi_event_t *event
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7165,7 +7165,7 @@ void gt_windows_print_sysret_ntsetevent(vmi_instance_t vmi, vmi_event_t *event, 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsethigheventpair(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsethigheventpair(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7174,7 +7174,7 @@ void *gt_windows_print_syscall_ntsethigheventpair(vmi_instance_t vmi, vmi_event_
 	return args;
 }
 
-void gt_windows_print_sysret_ntsethigheventpair(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsethigheventpair(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7183,7 +7183,7 @@ void gt_windows_print_sysret_ntsethigheventpair(vmi_instance_t vmi, vmi_event_t 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsethighwaitloweventpair(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsethighwaitloweventpair(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7192,7 +7192,7 @@ void *gt_windows_print_syscall_ntsethighwaitloweventpair(vmi_instance_t vmi, vmi
 	return args;
 }
 
-void gt_windows_print_sysret_ntsethighwaitloweventpair(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsethighwaitloweventpair(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7201,7 +7201,7 @@ void gt_windows_print_sysret_ntsethighwaitloweventpair(vmi_instance_t vmi, vmi_e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetinformationdebugobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetinformationdebugobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7210,7 +7210,7 @@ void *gt_windows_print_syscall_ntsetinformationdebugobject(vmi_instance_t vmi, v
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetinformationdebugobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetinformationdebugobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7220,7 +7220,7 @@ void gt_windows_print_sysret_ntsetinformationdebugobject(vmi_instance_t vmi, vmi
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetinformationenlistment(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetinformationenlistment(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7229,7 +7229,7 @@ void *gt_windows_print_syscall_ntsetinformationenlistment(vmi_instance_t vmi, vm
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetinformationenlistment(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetinformationenlistment(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7238,7 +7238,7 @@ void gt_windows_print_sysret_ntsetinformationenlistment(vmi_instance_t vmi, vmi_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetinformationfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetinformationfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7247,7 +7247,7 @@ void *gt_windows_print_syscall_ntsetinformationfile(vmi_instance_t vmi, vmi_even
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetinformationfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetinformationfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7256,7 +7256,7 @@ void gt_windows_print_sysret_ntsetinformationfile(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetinformationjobobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetinformationjobobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7265,7 +7265,7 @@ void *gt_windows_print_syscall_ntsetinformationjobobject(vmi_instance_t vmi, vmi
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetinformationjobobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetinformationjobobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7274,7 +7274,7 @@ void gt_windows_print_sysret_ntsetinformationjobobject(vmi_instance_t vmi, vmi_e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetinformationkey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetinformationkey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7283,7 +7283,7 @@ void *gt_windows_print_syscall_ntsetinformationkey(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetinformationkey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetinformationkey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7292,7 +7292,7 @@ void gt_windows_print_sysret_ntsetinformationkey(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetinformationobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetinformationobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7301,7 +7301,7 @@ void *gt_windows_print_syscall_ntsetinformationobject(vmi_instance_t vmi, vmi_ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetinformationobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetinformationobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7310,7 +7310,7 @@ void gt_windows_print_sysret_ntsetinformationobject(vmi_instance_t vmi, vmi_even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetinformationprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetinformationprocess(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7319,7 +7319,7 @@ void *gt_windows_print_syscall_ntsetinformationprocess(vmi_instance_t vmi, vmi_e
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetinformationprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetinformationprocess(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7328,7 +7328,7 @@ void gt_windows_print_sysret_ntsetinformationprocess(vmi_instance_t vmi, vmi_eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetinformationresourcemanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetinformationresourcemanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7337,7 +7337,7 @@ void *gt_windows_print_syscall_ntsetinformationresourcemanager(vmi_instance_t vm
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetinformationresourcemanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetinformationresourcemanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7346,7 +7346,7 @@ void gt_windows_print_sysret_ntsetinformationresourcemanager(vmi_instance_t vmi,
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetinformationthread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetinformationthread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7355,7 +7355,7 @@ void *gt_windows_print_syscall_ntsetinformationthread(vmi_instance_t vmi, vmi_ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetinformationthread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetinformationthread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7364,7 +7364,7 @@ void gt_windows_print_sysret_ntsetinformationthread(vmi_instance_t vmi, vmi_even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetinformationtoken(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetinformationtoken(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7373,7 +7373,7 @@ void *gt_windows_print_syscall_ntsetinformationtoken(vmi_instance_t vmi, vmi_eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetinformationtoken(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetinformationtoken(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7382,7 +7382,7 @@ void gt_windows_print_sysret_ntsetinformationtoken(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetinformationtransaction(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetinformationtransaction(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7391,7 +7391,7 @@ void *gt_windows_print_syscall_ntsetinformationtransaction(vmi_instance_t vmi, v
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetinformationtransaction(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetinformationtransaction(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7400,7 +7400,7 @@ void gt_windows_print_sysret_ntsetinformationtransaction(vmi_instance_t vmi, vmi
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetinformationtransactionmanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetinformationtransactionmanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7409,7 +7409,7 @@ void *gt_windows_print_syscall_ntsetinformationtransactionmanager(vmi_instance_t
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetinformationtransactionmanager(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetinformationtransactionmanager(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7418,7 +7418,7 @@ void gt_windows_print_sysret_ntsetinformationtransactionmanager(vmi_instance_t v
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetinformationworkerfactory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetinformationworkerfactory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7427,7 +7427,7 @@ void *gt_windows_print_syscall_ntsetinformationworkerfactory(vmi_instance_t vmi,
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetinformationworkerfactory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetinformationworkerfactory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7436,7 +7436,7 @@ void gt_windows_print_sysret_ntsetinformationworkerfactory(vmi_instance_t vmi, v
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetintervalprofile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetintervalprofile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7445,7 +7445,7 @@ void *gt_windows_print_syscall_ntsetintervalprofile(vmi_instance_t vmi, vmi_even
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetintervalprofile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetintervalprofile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7454,7 +7454,7 @@ void gt_windows_print_sysret_ntsetintervalprofile(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetiocompletionex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetiocompletionex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7463,7 +7463,7 @@ void *gt_windows_print_syscall_ntsetiocompletionex(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetiocompletionex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetiocompletionex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7472,7 +7472,7 @@ void gt_windows_print_sysret_ntsetiocompletionex(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetiocompletion(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetiocompletion(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7481,7 +7481,7 @@ void *gt_windows_print_syscall_ntsetiocompletion(vmi_instance_t vmi, vmi_event_t
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetiocompletion(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetiocompletion(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7490,7 +7490,7 @@ void gt_windows_print_sysret_ntsetiocompletion(vmi_instance_t vmi, vmi_event_t *
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetldtentries(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetldtentries(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7499,7 +7499,7 @@ void *gt_windows_print_syscall_ntsetldtentries(vmi_instance_t vmi, vmi_event_t *
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetldtentries(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetldtentries(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7508,7 +7508,7 @@ void gt_windows_print_sysret_ntsetldtentries(vmi_instance_t vmi, vmi_event_t *ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetloweventpair(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetloweventpair(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7517,7 +7517,7 @@ void *gt_windows_print_syscall_ntsetloweventpair(vmi_instance_t vmi, vmi_event_t
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetloweventpair(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetloweventpair(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7526,7 +7526,7 @@ void gt_windows_print_sysret_ntsetloweventpair(vmi_instance_t vmi, vmi_event_t *
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetlowwaithigheventpair(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetlowwaithigheventpair(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7535,7 +7535,7 @@ void *gt_windows_print_syscall_ntsetlowwaithigheventpair(vmi_instance_t vmi, vmi
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetlowwaithigheventpair(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetlowwaithigheventpair(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7544,7 +7544,7 @@ void gt_windows_print_sysret_ntsetlowwaithigheventpair(vmi_instance_t vmi, vmi_e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetquotainformationfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetquotainformationfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7553,7 +7553,7 @@ void *gt_windows_print_syscall_ntsetquotainformationfile(vmi_instance_t vmi, vmi
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetquotainformationfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetquotainformationfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7562,7 +7562,7 @@ void gt_windows_print_sysret_ntsetquotainformationfile(vmi_instance_t vmi, vmi_e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetsecurityobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetsecurityobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7571,7 +7571,7 @@ void *gt_windows_print_syscall_ntsetsecurityobject(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetsecurityobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetsecurityobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7580,7 +7580,7 @@ void gt_windows_print_sysret_ntsetsecurityobject(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetsystemenvironmentvalueex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetsystemenvironmentvalueex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7589,7 +7589,7 @@ void *gt_windows_print_syscall_ntsetsystemenvironmentvalueex(vmi_instance_t vmi,
 	free(unicode_str_0);	return args;
 }
 
-void gt_windows_print_sysret_ntsetsystemenvironmentvalueex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetsystemenvironmentvalueex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7598,7 +7598,7 @@ void gt_windows_print_sysret_ntsetsystemenvironmentvalueex(vmi_instance_t vmi, v
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetsystemenvironmentvalue(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetsystemenvironmentvalue(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7609,7 +7609,7 @@ void *gt_windows_print_syscall_ntsetsystemenvironmentvalue(vmi_instance_t vmi, v
 	free(unicode_str_1);	return args;
 }
 
-void gt_windows_print_sysret_ntsetsystemenvironmentvalue(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetsystemenvironmentvalue(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7618,7 +7618,7 @@ void gt_windows_print_sysret_ntsetsystemenvironmentvalue(vmi_instance_t vmi, vmi
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetsysteminformation(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetsysteminformation(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7627,7 +7627,7 @@ void *gt_windows_print_syscall_ntsetsysteminformation(vmi_instance_t vmi, vmi_ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetsysteminformation(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetsysteminformation(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7636,7 +7636,7 @@ void gt_windows_print_sysret_ntsetsysteminformation(vmi_instance_t vmi, vmi_even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetsystempowerstate(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetsystempowerstate(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7645,7 +7645,7 @@ void *gt_windows_print_syscall_ntsetsystempowerstate(vmi_instance_t vmi, vmi_eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetsystempowerstate(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetsystempowerstate(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7654,7 +7654,7 @@ void gt_windows_print_sysret_ntsetsystempowerstate(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetsystemtime(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetsystemtime(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7663,7 +7663,7 @@ void *gt_windows_print_syscall_ntsetsystemtime(vmi_instance_t vmi, vmi_event_t *
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetsystemtime(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetsystemtime(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7672,7 +7672,7 @@ void gt_windows_print_sysret_ntsetsystemtime(vmi_instance_t vmi, vmi_event_t *ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetthreadexecutionstate(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetthreadexecutionstate(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7681,7 +7681,7 @@ void *gt_windows_print_syscall_ntsetthreadexecutionstate(vmi_instance_t vmi, vmi
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetthreadexecutionstate(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetthreadexecutionstate(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7690,7 +7690,7 @@ void gt_windows_print_sysret_ntsetthreadexecutionstate(vmi_instance_t vmi, vmi_e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsettimerex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsettimerex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7699,7 +7699,7 @@ void *gt_windows_print_syscall_ntsettimerex(vmi_instance_t vmi, vmi_event_t *eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntsettimerex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsettimerex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7708,7 +7708,7 @@ void gt_windows_print_sysret_ntsettimerex(vmi_instance_t vmi, vmi_event_t *event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsettimer(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsettimer(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7717,7 +7717,7 @@ void *gt_windows_print_syscall_ntsettimer(vmi_instance_t vmi, vmi_event_t *event
 	return args;
 }
 
-void gt_windows_print_sysret_ntsettimer(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsettimer(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7726,7 +7726,7 @@ void gt_windows_print_sysret_ntsettimer(vmi_instance_t vmi, vmi_event_t *event, 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsettimerresolution(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsettimerresolution(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7735,7 +7735,7 @@ void *gt_windows_print_syscall_ntsettimerresolution(vmi_instance_t vmi, vmi_even
 	return args;
 }
 
-void gt_windows_print_sysret_ntsettimerresolution(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsettimerresolution(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7745,7 +7745,7 @@ void gt_windows_print_sysret_ntsettimerresolution(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetuuidseed(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetuuidseed(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7754,7 +7754,7 @@ void *gt_windows_print_syscall_ntsetuuidseed(vmi_instance_t vmi, vmi_event_t *ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetuuidseed(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetuuidseed(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7763,7 +7763,7 @@ void gt_windows_print_sysret_ntsetuuidseed(vmi_instance_t vmi, vmi_event_t *even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetvaluekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetvaluekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7772,7 +7772,7 @@ void *gt_windows_print_syscall_ntsetvaluekey(vmi_instance_t vmi, vmi_event_t *ev
 	free(unicode_str_1);	return args;
 }
 
-void gt_windows_print_sysret_ntsetvaluekey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetvaluekey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7781,7 +7781,7 @@ void gt_windows_print_sysret_ntsetvaluekey(vmi_instance_t vmi, vmi_event_t *even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsetvolumeinformationfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsetvolumeinformationfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7790,7 +7790,7 @@ void *gt_windows_print_syscall_ntsetvolumeinformationfile(vmi_instance_t vmi, vm
 	return args;
 }
 
-void gt_windows_print_sysret_ntsetvolumeinformationfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsetvolumeinformationfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7799,7 +7799,7 @@ void gt_windows_print_sysret_ntsetvolumeinformationfile(vmi_instance_t vmi, vmi_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntshutdownsystem(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntshutdownsystem(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7808,7 +7808,7 @@ void *gt_windows_print_syscall_ntshutdownsystem(vmi_instance_t vmi, vmi_event_t 
 	return args;
 }
 
-void gt_windows_print_sysret_ntshutdownsystem(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntshutdownsystem(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7817,7 +7817,7 @@ void gt_windows_print_sysret_ntshutdownsystem(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntshutdownworkerfactory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntshutdownworkerfactory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7826,7 +7826,7 @@ void *gt_windows_print_syscall_ntshutdownworkerfactory(vmi_instance_t vmi, vmi_e
 	return args;
 }
 
-void gt_windows_print_sysret_ntshutdownworkerfactory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntshutdownworkerfactory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7835,7 +7835,7 @@ void gt_windows_print_sysret_ntshutdownworkerfactory(vmi_instance_t vmi, vmi_eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsignalandwaitforsingleobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsignalandwaitforsingleobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7844,7 +7844,7 @@ void *gt_windows_print_syscall_ntsignalandwaitforsingleobject(vmi_instance_t vmi
 	return args;
 }
 
-void gt_windows_print_sysret_ntsignalandwaitforsingleobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsignalandwaitforsingleobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7853,7 +7853,7 @@ void gt_windows_print_sysret_ntsignalandwaitforsingleobject(vmi_instance_t vmi, 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsinglephasereject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsinglephasereject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7862,7 +7862,7 @@ void *gt_windows_print_syscall_ntsinglephasereject(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntsinglephasereject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsinglephasereject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7871,7 +7871,7 @@ void gt_windows_print_sysret_ntsinglephasereject(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntstartprofile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntstartprofile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7880,7 +7880,7 @@ void *gt_windows_print_syscall_ntstartprofile(vmi_instance_t vmi, vmi_event_t *e
 	return args;
 }
 
-void gt_windows_print_sysret_ntstartprofile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntstartprofile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7889,7 +7889,7 @@ void gt_windows_print_sysret_ntstartprofile(vmi_instance_t vmi, vmi_event_t *eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntstopprofile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntstopprofile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7898,7 +7898,7 @@ void *gt_windows_print_syscall_ntstopprofile(vmi_instance_t vmi, vmi_event_t *ev
 	return args;
 }
 
-void gt_windows_print_sysret_ntstopprofile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntstopprofile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7907,7 +7907,7 @@ void gt_windows_print_sysret_ntstopprofile(vmi_instance_t vmi, vmi_event_t *even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsuspendprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsuspendprocess(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7916,7 +7916,7 @@ void *gt_windows_print_syscall_ntsuspendprocess(vmi_instance_t vmi, vmi_event_t 
 	return args;
 }
 
-void gt_windows_print_sysret_ntsuspendprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsuspendprocess(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7925,7 +7925,7 @@ void gt_windows_print_sysret_ntsuspendprocess(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsuspendthread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsuspendthread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7934,7 +7934,7 @@ void *gt_windows_print_syscall_ntsuspendthread(vmi_instance_t vmi, vmi_event_t *
 	return args;
 }
 
-void gt_windows_print_sysret_ntsuspendthread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsuspendthread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7944,7 +7944,7 @@ void gt_windows_print_sysret_ntsuspendthread(vmi_instance_t vmi, vmi_event_t *ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntsystemdebugcontrol(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntsystemdebugcontrol(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7953,7 +7953,7 @@ void *gt_windows_print_syscall_ntsystemdebugcontrol(vmi_instance_t vmi, vmi_even
 	return args;
 }
 
-void gt_windows_print_sysret_ntsystemdebugcontrol(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntsystemdebugcontrol(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7963,7 +7963,7 @@ void gt_windows_print_sysret_ntsystemdebugcontrol(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntterminatejobobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntterminatejobobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7972,7 +7972,7 @@ void *gt_windows_print_syscall_ntterminatejobobject(vmi_instance_t vmi, vmi_even
 	return args;
 }
 
-void gt_windows_print_sysret_ntterminatejobobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntterminatejobobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7981,7 +7981,7 @@ void gt_windows_print_sysret_ntterminatejobobject(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntterminateprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntterminateprocess(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -7990,7 +7990,7 @@ void *gt_windows_print_syscall_ntterminateprocess(vmi_instance_t vmi, vmi_event_
 	return args;
 }
 
-void gt_windows_print_sysret_ntterminateprocess(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntterminateprocess(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -7999,7 +7999,7 @@ void gt_windows_print_sysret_ntterminateprocess(vmi_instance_t vmi, vmi_event_t 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntterminatethread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntterminatethread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8008,7 +8008,7 @@ void *gt_windows_print_syscall_ntterminatethread(vmi_instance_t vmi, vmi_event_t
 	return args;
 }
 
-void gt_windows_print_sysret_ntterminatethread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntterminatethread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8017,7 +8017,7 @@ void gt_windows_print_sysret_ntterminatethread(vmi_instance_t vmi, vmi_event_t *
 	free(args);
 }
 
-void *gt_windows_print_syscall_nttestalert(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_nttestalert(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8026,7 +8026,7 @@ void *gt_windows_print_syscall_nttestalert(vmi_instance_t vmi, vmi_event_t *even
 	return args;
 }
 
-void gt_windows_print_sysret_nttestalert(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_nttestalert(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8035,7 +8035,7 @@ void gt_windows_print_sysret_nttestalert(vmi_instance_t vmi, vmi_event_t *event,
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntthawregistry(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntthawregistry(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8044,7 +8044,7 @@ void *gt_windows_print_syscall_ntthawregistry(vmi_instance_t vmi, vmi_event_t *e
 	return args;
 }
 
-void gt_windows_print_sysret_ntthawregistry(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntthawregistry(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8053,7 +8053,7 @@ void gt_windows_print_sysret_ntthawregistry(vmi_instance_t vmi, vmi_event_t *eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntthawtransactions(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntthawtransactions(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8062,7 +8062,7 @@ void *gt_windows_print_syscall_ntthawtransactions(vmi_instance_t vmi, vmi_event_
 	return args;
 }
 
-void gt_windows_print_sysret_ntthawtransactions(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntthawtransactions(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8071,7 +8071,7 @@ void gt_windows_print_sysret_ntthawtransactions(vmi_instance_t vmi, vmi_event_t 
 	free(args);
 }
 
-void *gt_windows_print_syscall_nttracecontrol(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_nttracecontrol(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8080,7 +8080,7 @@ void *gt_windows_print_syscall_nttracecontrol(vmi_instance_t vmi, vmi_event_t *e
 	return args;
 }
 
-void gt_windows_print_sysret_nttracecontrol(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_nttracecontrol(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8090,7 +8090,7 @@ void gt_windows_print_sysret_nttracecontrol(vmi_instance_t vmi, vmi_event_t *eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_nttraceevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_nttraceevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8099,7 +8099,7 @@ void *gt_windows_print_syscall_nttraceevent(vmi_instance_t vmi, vmi_event_t *eve
 	return args;
 }
 
-void gt_windows_print_sysret_nttraceevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_nttraceevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8108,7 +8108,7 @@ void gt_windows_print_sysret_nttraceevent(vmi_instance_t vmi, vmi_event_t *event
 	free(args);
 }
 
-void *gt_windows_print_syscall_nttranslatefilepath(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_nttranslatefilepath(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8118,7 +8118,7 @@ void *gt_windows_print_syscall_nttranslatefilepath(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_nttranslatefilepath(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_nttranslatefilepath(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8128,7 +8128,7 @@ void gt_windows_print_sysret_nttranslatefilepath(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntumsthreadyield(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntumsthreadyield(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8137,7 +8137,7 @@ void *gt_windows_print_syscall_ntumsthreadyield(vmi_instance_t vmi, vmi_event_t 
 	return args;
 }
 
-void gt_windows_print_sysret_ntumsthreadyield(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntumsthreadyield(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8146,7 +8146,7 @@ void gt_windows_print_sysret_ntumsthreadyield(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntunloaddriver(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntunloaddriver(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8155,7 +8155,7 @@ void *gt_windows_print_syscall_ntunloaddriver(vmi_instance_t vmi, vmi_event_t *e
 	free(unicode_str_0);	return args;
 }
 
-void gt_windows_print_sysret_ntunloaddriver(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntunloaddriver(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8164,7 +8164,7 @@ void gt_windows_print_sysret_ntunloaddriver(vmi_instance_t vmi, vmi_event_t *eve
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntunloadkey2(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntunloadkey2(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8182,7 +8182,7 @@ void *gt_windows_print_syscall_ntunloadkey2(vmi_instance_t vmi, vmi_event_t *eve
 	free(obj_attr_0);	return args;
 }
 
-void gt_windows_print_sysret_ntunloadkey2(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntunloadkey2(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8191,7 +8191,7 @@ void gt_windows_print_sysret_ntunloadkey2(vmi_instance_t vmi, vmi_event_t *event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntunloadkeyex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntunloadkeyex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8209,7 +8209,7 @@ void *gt_windows_print_syscall_ntunloadkeyex(vmi_instance_t vmi, vmi_event_t *ev
 	free(obj_attr_0);	return args;
 }
 
-void gt_windows_print_sysret_ntunloadkeyex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntunloadkeyex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8218,7 +8218,7 @@ void gt_windows_print_sysret_ntunloadkeyex(vmi_instance_t vmi, vmi_event_t *even
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntunloadkey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntunloadkey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8236,7 +8236,7 @@ void *gt_windows_print_syscall_ntunloadkey(vmi_instance_t vmi, vmi_event_t *even
 	free(obj_attr_0);	return args;
 }
 
-void gt_windows_print_sysret_ntunloadkey(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntunloadkey(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8245,7 +8245,7 @@ void gt_windows_print_sysret_ntunloadkey(vmi_instance_t vmi, vmi_event_t *event,
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntunlockfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntunlockfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8254,7 +8254,7 @@ void *gt_windows_print_syscall_ntunlockfile(vmi_instance_t vmi, vmi_event_t *eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntunlockfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntunlockfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8263,7 +8263,7 @@ void gt_windows_print_sysret_ntunlockfile(vmi_instance_t vmi, vmi_event_t *event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntunlockvirtualmemory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntunlockvirtualmemory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8272,7 +8272,7 @@ void *gt_windows_print_syscall_ntunlockvirtualmemory(vmi_instance_t vmi, vmi_eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntunlockvirtualmemory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntunlockvirtualmemory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8281,7 +8281,7 @@ void gt_windows_print_sysret_ntunlockvirtualmemory(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntunmapviewofsection(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntunmapviewofsection(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8290,7 +8290,7 @@ void *gt_windows_print_syscall_ntunmapviewofsection(vmi_instance_t vmi, vmi_even
 	return args;
 }
 
-void gt_windows_print_sysret_ntunmapviewofsection(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntunmapviewofsection(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8299,7 +8299,7 @@ void gt_windows_print_sysret_ntunmapviewofsection(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntvdmcontrol(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntvdmcontrol(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8308,7 +8308,7 @@ void *gt_windows_print_syscall_ntvdmcontrol(vmi_instance_t vmi, vmi_event_t *eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntvdmcontrol(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntvdmcontrol(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8317,7 +8317,7 @@ void gt_windows_print_sysret_ntvdmcontrol(vmi_instance_t vmi, vmi_event_t *event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntwaitfordebugevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntwaitfordebugevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8326,7 +8326,7 @@ void *gt_windows_print_syscall_ntwaitfordebugevent(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntwaitfordebugevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntwaitfordebugevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8335,7 +8335,7 @@ void gt_windows_print_sysret_ntwaitfordebugevent(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntwaitforkeyedevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntwaitforkeyedevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8344,7 +8344,7 @@ void *gt_windows_print_syscall_ntwaitforkeyedevent(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntwaitforkeyedevent(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntwaitforkeyedevent(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8353,7 +8353,7 @@ void gt_windows_print_sysret_ntwaitforkeyedevent(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntwaitformultipleobjects32(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntwaitformultipleobjects32(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8362,7 +8362,7 @@ void *gt_windows_print_syscall_ntwaitformultipleobjects32(vmi_instance_t vmi, vm
 	return args;
 }
 
-void gt_windows_print_sysret_ntwaitformultipleobjects32(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntwaitformultipleobjects32(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8371,7 +8371,7 @@ void gt_windows_print_sysret_ntwaitformultipleobjects32(vmi_instance_t vmi, vmi_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntwaitformultipleobjects(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntwaitformultipleobjects(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8380,7 +8380,7 @@ void *gt_windows_print_syscall_ntwaitformultipleobjects(vmi_instance_t vmi, vmi_
 	return args;
 }
 
-void gt_windows_print_sysret_ntwaitformultipleobjects(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntwaitformultipleobjects(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8389,7 +8389,7 @@ void gt_windows_print_sysret_ntwaitformultipleobjects(vmi_instance_t vmi, vmi_ev
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntwaitforsingleobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntwaitforsingleobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8398,7 +8398,7 @@ void *gt_windows_print_syscall_ntwaitforsingleobject(vmi_instance_t vmi, vmi_eve
 	return args;
 }
 
-void gt_windows_print_sysret_ntwaitforsingleobject(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntwaitforsingleobject(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8407,7 +8407,7 @@ void gt_windows_print_sysret_ntwaitforsingleobject(vmi_instance_t vmi, vmi_event
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntwaitforworkviaworkerfactory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntwaitforworkviaworkerfactory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8416,7 +8416,7 @@ void *gt_windows_print_syscall_ntwaitforworkviaworkerfactory(vmi_instance_t vmi,
 	return args;
 }
 
-void gt_windows_print_sysret_ntwaitforworkviaworkerfactory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntwaitforworkviaworkerfactory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8425,7 +8425,7 @@ void gt_windows_print_sysret_ntwaitforworkviaworkerfactory(vmi_instance_t vmi, v
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntwaithigheventpair(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntwaithigheventpair(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8434,7 +8434,7 @@ void *gt_windows_print_syscall_ntwaithigheventpair(vmi_instance_t vmi, vmi_event
 	return args;
 }
 
-void gt_windows_print_sysret_ntwaithigheventpair(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntwaithigheventpair(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8443,7 +8443,7 @@ void gt_windows_print_sysret_ntwaithigheventpair(vmi_instance_t vmi, vmi_event_t
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntwaitloweventpair(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntwaitloweventpair(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8452,7 +8452,7 @@ void *gt_windows_print_syscall_ntwaitloweventpair(vmi_instance_t vmi, vmi_event_
 	return args;
 }
 
-void gt_windows_print_sysret_ntwaitloweventpair(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntwaitloweventpair(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8461,7 +8461,7 @@ void gt_windows_print_sysret_ntwaitloweventpair(vmi_instance_t vmi, vmi_event_t 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntworkerfactoryworkerready(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntworkerfactoryworkerready(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8470,7 +8470,7 @@ void *gt_windows_print_syscall_ntworkerfactoryworkerready(vmi_instance_t vmi, vm
 	return args;
 }
 
-void gt_windows_print_sysret_ntworkerfactoryworkerready(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntworkerfactoryworkerready(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8479,7 +8479,7 @@ void gt_windows_print_sysret_ntworkerfactoryworkerready(vmi_instance_t vmi, vmi_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntwritefilegather(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntwritefilegather(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8489,7 +8489,7 @@ void *gt_windows_print_syscall_ntwritefilegather(vmi_instance_t vmi, vmi_event_t
 	return args;
 }
 
-void gt_windows_print_sysret_ntwritefilegather(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntwritefilegather(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8498,7 +8498,7 @@ void gt_windows_print_sysret_ntwritefilegather(vmi_instance_t vmi, vmi_event_t *
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntwritefile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntwritefile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8508,7 +8508,7 @@ void *gt_windows_print_syscall_ntwritefile(vmi_instance_t vmi, vmi_event_t *even
 	return args;
 }
 
-void gt_windows_print_sysret_ntwritefile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntwritefile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8517,7 +8517,7 @@ void gt_windows_print_sysret_ntwritefile(vmi_instance_t vmi, vmi_event_t *event,
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntwriterequestdata(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntwriterequestdata(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8526,7 +8526,7 @@ void *gt_windows_print_syscall_ntwriterequestdata(vmi_instance_t vmi, vmi_event_
 	return args;
 }
 
-void gt_windows_print_sysret_ntwriterequestdata(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntwriterequestdata(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8535,7 +8535,7 @@ void gt_windows_print_sysret_ntwriterequestdata(vmi_instance_t vmi, vmi_event_t 
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntwritevirtualmemory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntwritevirtualmemory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8544,7 +8544,7 @@ void *gt_windows_print_syscall_ntwritevirtualmemory(vmi_instance_t vmi, vmi_even
 	return args;
 }
 
-void gt_windows_print_sysret_ntwritevirtualmemory(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntwritevirtualmemory(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);
@@ -8553,7 +8553,7 @@ void gt_windows_print_sysret_ntwritevirtualmemory(vmi_instance_t vmi, vmi_event_
 	free(args);
 }
 
-void *gt_windows_print_syscall_ntyieldexecution(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void *gt_windows_print_syscall_ntyieldexecution(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = get_process_name(vmi, pid);
 	uint64_t *args = vf_get_args(vmi, event, pid);
@@ -8562,7 +8562,7 @@ void *gt_windows_print_syscall_ntyieldexecution(vmi_instance_t vmi, vmi_event_t 
 	return args;
 }
 
-void gt_windows_print_sysret_ntyieldexecution(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *data)
+void gt_windows_print_sysret_ntyieldexecution(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(vmi, pid);

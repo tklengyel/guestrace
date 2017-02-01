@@ -15,7 +15,8 @@
  */
 typedef struct _GtLoop GtLoop;
 
-typedef addr_t gt_tid_t;
+typedef addr_t    gt_tid_t;
+typedef vmi_pid_t gt_pid_t;
 
 /**
  * GtSyscallFunc:
@@ -36,7 +37,7 @@ typedef addr_t gt_tid_t;
  */
 typedef void *(*GtSyscallFunc) (vmi_instance_t vmi,
                                 vmi_event_t *event,
-                                vmi_pid_t pid,
+                                gt_pid_t pid,
                                 gt_tid_t tid,
                                 void *user_data);
 
@@ -56,7 +57,7 @@ typedef void *(*GtSyscallFunc) (vmi_instance_t vmi,
  */
 typedef void (*GtSysretFunc) (vmi_instance_t vmi,
                               vmi_event_t *event,
-                              vmi_pid_t pid,
+                              gt_pid_t pid,
                               gt_tid_t tid,
                               void *user_data);
 

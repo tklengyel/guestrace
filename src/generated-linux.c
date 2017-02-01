@@ -1,4 +1,4 @@
-/* Generated on Linux_4.9.3-200.fc25.x86_64 on 01 Feb 2017 10:07:43*/
+/* Generated on Linux_4.9.3-200.fc25.x86_64 on 01 Feb 2017 10:12:36*/
 
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
@@ -12,7 +12,7 @@
 static const int RETURN_ADDR_WIDTH = sizeof(void *);
 
 static char *
-get_process_name(vmi_instance_t vmi, vmi_pid_t pid) 
+get_process_name(vmi_instance_t vmi, gt_pid_t pid) 
 {
 	/* Gets the process name of the process with the input pid */
 	/* offsets from the LibVMI config file */	
@@ -25,7 +25,7 @@ get_process_name(vmi_instance_t vmi, vmi_pid_t pid)
 	addr_t list_curr = 0;
 	addr_t curr_proc = 0;
 	
-	vmi_pid_t curr_pid = 0;		/* pid of the processes task struct we are examining */
+	gt_pid_t curr_pid = 0;		/* pid of the processes task struct we are examining */
 	char *proc = NULL;		/* process name of the current process we are examining */
 
 	list_head = vmi_translate_ksym2v(vmi, "init_task") + task_offset; 	/* get the address to the head of the process list */
@@ -66,7 +66,7 @@ done:
 
 }
 
-void *gt_linux_print_syscall_sys_read(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_read(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -77,7 +77,7 @@ void *gt_linux_print_syscall_sys_read(vmi_instance_t vmi, vmi_event_t *event, vm
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_write(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_write(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -88,7 +88,7 @@ void *gt_linux_print_syscall_sys_write(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_open(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_open(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	char *arg0 = vmi_read_str_va(vmi, event->x86_regs->rdi, pid);
@@ -99,7 +99,7 @@ void *gt_linux_print_syscall_sys_open(vmi_instance_t vmi, vmi_event_t *event, vm
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_close(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_close(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -108,7 +108,7 @@ void *gt_linux_print_syscall_sys_close(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_stat(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_stat(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -118,7 +118,7 @@ void *gt_linux_print_syscall_sys_stat(vmi_instance_t vmi, vmi_event_t *event, vm
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_fstat(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_fstat(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -128,7 +128,7 @@ void *gt_linux_print_syscall_sys_fstat(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_lstat(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_lstat(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -138,7 +138,7 @@ void *gt_linux_print_syscall_sys_lstat(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_poll(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_poll(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -149,7 +149,7 @@ void *gt_linux_print_syscall_sys_poll(vmi_instance_t vmi, vmi_event_t *event, vm
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_lseek(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_lseek(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -160,7 +160,7 @@ void *gt_linux_print_syscall_sys_lseek(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_mmap(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_mmap(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -168,7 +168,7 @@ void *gt_linux_print_syscall_sys_mmap(vmi_instance_t vmi, vmi_event_t *event, vm
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_mprotect(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_mprotect(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -179,7 +179,7 @@ void *gt_linux_print_syscall_sys_mprotect(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_munmap(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_munmap(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -189,7 +189,7 @@ void *gt_linux_print_syscall_sys_munmap(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_brk(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_brk(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -198,7 +198,7 @@ void *gt_linux_print_syscall_sys_brk(vmi_instance_t vmi, vmi_event_t *event, vmi
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_rt_sigaction(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_rt_sigaction(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -210,7 +210,7 @@ void *gt_linux_print_syscall_sys_rt_sigaction(vmi_instance_t vmi, vmi_event_t *e
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_rt_sigprocmask(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_rt_sigprocmask(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -222,7 +222,7 @@ void *gt_linux_print_syscall_sys_rt_sigprocmask(vmi_instance_t vmi, vmi_event_t 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_rt_sigreturn(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_rt_sigreturn(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -230,7 +230,7 @@ void *gt_linux_print_syscall_sys_rt_sigreturn(vmi_instance_t vmi, vmi_event_t *e
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_ioctl(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_ioctl(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -241,7 +241,7 @@ void *gt_linux_print_syscall_sys_ioctl(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_pread(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_pread(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -253,7 +253,7 @@ void *gt_linux_print_syscall_sys_pread(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_pwrite(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_pwrite(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -265,7 +265,7 @@ void *gt_linux_print_syscall_sys_pwrite(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_readv(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_readv(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -276,7 +276,7 @@ void *gt_linux_print_syscall_sys_readv(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_writev(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_writev(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -287,7 +287,7 @@ void *gt_linux_print_syscall_sys_writev(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_access(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_access(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -297,7 +297,7 @@ void *gt_linux_print_syscall_sys_access(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_pipe(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_pipe(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -306,7 +306,7 @@ void *gt_linux_print_syscall_sys_pipe(vmi_instance_t vmi, vmi_event_t *event, vm
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_select(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_select(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -319,7 +319,7 @@ void *gt_linux_print_syscall_sys_select(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_sched_yield(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_sched_yield(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -327,7 +327,7 @@ void *gt_linux_print_syscall_sys_sched_yield(vmi_instance_t vmi, vmi_event_t *ev
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_mremap(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_mremap(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -340,7 +340,7 @@ void *gt_linux_print_syscall_sys_mremap(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_msync(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_msync(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -351,7 +351,7 @@ void *gt_linux_print_syscall_sys_msync(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_mincore(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_mincore(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -362,7 +362,7 @@ void *gt_linux_print_syscall_sys_mincore(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_madvise(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_madvise(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -373,7 +373,7 @@ void *gt_linux_print_syscall_sys_madvise(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_shmget(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_shmget(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -384,7 +384,7 @@ void *gt_linux_print_syscall_sys_shmget(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_shmat(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_shmat(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -395,7 +395,7 @@ void *gt_linux_print_syscall_sys_shmat(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_shmctl(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_shmctl(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -406,7 +406,7 @@ void *gt_linux_print_syscall_sys_shmctl(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_dup(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_dup(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -415,7 +415,7 @@ void *gt_linux_print_syscall_sys_dup(vmi_instance_t vmi, vmi_event_t *event, vmi
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_dup2(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_dup2(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -425,7 +425,7 @@ void *gt_linux_print_syscall_sys_dup2(vmi_instance_t vmi, vmi_event_t *event, vm
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_pause(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_pause(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -433,7 +433,7 @@ void *gt_linux_print_syscall_sys_pause(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_nanosleep(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_nanosleep(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -443,7 +443,7 @@ void *gt_linux_print_syscall_sys_nanosleep(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_getitimer(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_getitimer(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -453,7 +453,7 @@ void *gt_linux_print_syscall_sys_getitimer(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_alarm(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_alarm(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -462,7 +462,7 @@ void *gt_linux_print_syscall_sys_alarm(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_setitimer(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_setitimer(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -473,7 +473,7 @@ void *gt_linux_print_syscall_sys_setitimer(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_getpid(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_getpid(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -481,7 +481,7 @@ void *gt_linux_print_syscall_sys_getpid(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_sendfile(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_sendfile(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -493,7 +493,7 @@ void *gt_linux_print_syscall_sys_sendfile(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_socket(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_socket(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -504,7 +504,7 @@ void *gt_linux_print_syscall_sys_socket(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_connect(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_connect(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -515,7 +515,7 @@ void *gt_linux_print_syscall_sys_connect(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_accept(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_accept(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -526,7 +526,7 @@ void *gt_linux_print_syscall_sys_accept(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_sendto(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_sendto(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -540,7 +540,7 @@ void *gt_linux_print_syscall_sys_sendto(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_recvfrom(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_recvfrom(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -554,7 +554,7 @@ void *gt_linux_print_syscall_sys_recvfrom(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_sendmsg(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_sendmsg(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -565,7 +565,7 @@ void *gt_linux_print_syscall_sys_sendmsg(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_recvmsg(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_recvmsg(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -576,7 +576,7 @@ void *gt_linux_print_syscall_sys_recvmsg(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_shutdown(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_shutdown(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -586,7 +586,7 @@ void *gt_linux_print_syscall_sys_shutdown(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_bind(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_bind(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -597,7 +597,7 @@ void *gt_linux_print_syscall_sys_bind(vmi_instance_t vmi, vmi_event_t *event, vm
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_listen(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_listen(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -607,7 +607,7 @@ void *gt_linux_print_syscall_sys_listen(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_getsockname(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_getsockname(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -618,7 +618,7 @@ void *gt_linux_print_syscall_sys_getsockname(vmi_instance_t vmi, vmi_event_t *ev
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_getpeername(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_getpeername(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -629,7 +629,7 @@ void *gt_linux_print_syscall_sys_getpeername(vmi_instance_t vmi, vmi_event_t *ev
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_socketpair(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_socketpair(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -641,7 +641,7 @@ void *gt_linux_print_syscall_sys_socketpair(vmi_instance_t vmi, vmi_event_t *eve
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_setsockopt(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_setsockopt(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -654,7 +654,7 @@ void *gt_linux_print_syscall_sys_setsockopt(vmi_instance_t vmi, vmi_event_t *eve
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_getsockopt(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_getsockopt(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -667,7 +667,7 @@ void *gt_linux_print_syscall_sys_getsockopt(vmi_instance_t vmi, vmi_event_t *eve
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_clone(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_clone(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -680,7 +680,7 @@ void *gt_linux_print_syscall_sys_clone(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_fork(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_fork(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -688,7 +688,7 @@ void *gt_linux_print_syscall_sys_fork(vmi_instance_t vmi, vmi_event_t *event, vm
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_vfork(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_vfork(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -696,7 +696,7 @@ void *gt_linux_print_syscall_sys_vfork(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_execve(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_execve(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -707,7 +707,7 @@ void *gt_linux_print_syscall_sys_execve(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_exit(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_exit(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -716,7 +716,7 @@ void *gt_linux_print_syscall_sys_exit(vmi_instance_t vmi, vmi_event_t *event, vm
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_wait4(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_wait4(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -728,7 +728,7 @@ void *gt_linux_print_syscall_sys_wait4(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_kill(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_kill(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -738,7 +738,7 @@ void *gt_linux_print_syscall_sys_kill(vmi_instance_t vmi, vmi_event_t *event, vm
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_uname(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_uname(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -747,7 +747,7 @@ void *gt_linux_print_syscall_sys_uname(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_semget(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_semget(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -758,7 +758,7 @@ void *gt_linux_print_syscall_sys_semget(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_semop(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_semop(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -769,7 +769,7 @@ void *gt_linux_print_syscall_sys_semop(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_semctl(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_semctl(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -781,7 +781,7 @@ void *gt_linux_print_syscall_sys_semctl(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_shmdt(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_shmdt(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -790,7 +790,7 @@ void *gt_linux_print_syscall_sys_shmdt(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_msgget(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_msgget(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -800,7 +800,7 @@ void *gt_linux_print_syscall_sys_msgget(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_msgsnd(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_msgsnd(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -812,7 +812,7 @@ void *gt_linux_print_syscall_sys_msgsnd(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_msgrcv(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_msgrcv(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -825,7 +825,7 @@ void *gt_linux_print_syscall_sys_msgrcv(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_msgctl(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_msgctl(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -836,7 +836,7 @@ void *gt_linux_print_syscall_sys_msgctl(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_fcntl(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_fcntl(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -847,7 +847,7 @@ void *gt_linux_print_syscall_sys_fcntl(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_flock(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_flock(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -857,7 +857,7 @@ void *gt_linux_print_syscall_sys_flock(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_fsync(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_fsync(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -866,7 +866,7 @@ void *gt_linux_print_syscall_sys_fsync(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_fdatasync(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_fdatasync(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -875,7 +875,7 @@ void *gt_linux_print_syscall_sys_fdatasync(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_truncate(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_truncate(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -885,7 +885,7 @@ void *gt_linux_print_syscall_sys_truncate(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_ftruncate(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_ftruncate(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -895,7 +895,7 @@ void *gt_linux_print_syscall_sys_ftruncate(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_getdents(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_getdents(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -906,7 +906,7 @@ void *gt_linux_print_syscall_sys_getdents(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_getcwd(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_getcwd(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -916,7 +916,7 @@ void *gt_linux_print_syscall_sys_getcwd(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_chdir(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_chdir(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -925,7 +925,7 @@ void *gt_linux_print_syscall_sys_chdir(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_fchdir(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_fchdir(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -934,7 +934,7 @@ void *gt_linux_print_syscall_sys_fchdir(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_rename(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_rename(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -944,7 +944,7 @@ void *gt_linux_print_syscall_sys_rename(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_mkdir(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_mkdir(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -954,7 +954,7 @@ void *gt_linux_print_syscall_sys_mkdir(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_rmdir(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_rmdir(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -963,7 +963,7 @@ void *gt_linux_print_syscall_sys_rmdir(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_creat(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_creat(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -973,7 +973,7 @@ void *gt_linux_print_syscall_sys_creat(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_link(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_link(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -983,7 +983,7 @@ void *gt_linux_print_syscall_sys_link(vmi_instance_t vmi, vmi_event_t *event, vm
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_unlink(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_unlink(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -992,7 +992,7 @@ void *gt_linux_print_syscall_sys_unlink(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_symlink(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_symlink(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1002,7 +1002,7 @@ void *gt_linux_print_syscall_sys_symlink(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_readlink(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_readlink(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1013,7 +1013,7 @@ void *gt_linux_print_syscall_sys_readlink(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_chmod(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_chmod(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1023,7 +1023,7 @@ void *gt_linux_print_syscall_sys_chmod(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_fchmod(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_fchmod(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1033,7 +1033,7 @@ void *gt_linux_print_syscall_sys_fchmod(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_chown(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_chown(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1044,7 +1044,7 @@ void *gt_linux_print_syscall_sys_chown(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_fchown(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_fchown(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1055,7 +1055,7 @@ void *gt_linux_print_syscall_sys_fchown(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_lchown(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_lchown(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1066,7 +1066,7 @@ void *gt_linux_print_syscall_sys_lchown(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_umask(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_umask(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1075,7 +1075,7 @@ void *gt_linux_print_syscall_sys_umask(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_gettimeofday(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_gettimeofday(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1085,7 +1085,7 @@ void *gt_linux_print_syscall_sys_gettimeofday(vmi_instance_t vmi, vmi_event_t *e
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_getrlimit(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_getrlimit(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1095,7 +1095,7 @@ void *gt_linux_print_syscall_sys_getrlimit(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_getrusage(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_getrusage(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1105,7 +1105,7 @@ void *gt_linux_print_syscall_sys_getrusage(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_sysinfo(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_sysinfo(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1114,7 +1114,7 @@ void *gt_linux_print_syscall_sys_sysinfo(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_times(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_times(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1123,7 +1123,7 @@ void *gt_linux_print_syscall_sys_times(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_ptrace(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_ptrace(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1135,7 +1135,7 @@ void *gt_linux_print_syscall_sys_ptrace(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_getuid(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_getuid(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -1143,7 +1143,7 @@ void *gt_linux_print_syscall_sys_getuid(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_syslog(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_syslog(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1154,7 +1154,7 @@ void *gt_linux_print_syscall_sys_syslog(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_getgid(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_getgid(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -1162,7 +1162,7 @@ void *gt_linux_print_syscall_sys_getgid(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_setuid(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_setuid(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1171,7 +1171,7 @@ void *gt_linux_print_syscall_sys_setuid(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_setgid(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_setgid(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1180,7 +1180,7 @@ void *gt_linux_print_syscall_sys_setgid(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_geteuid(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_geteuid(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -1188,7 +1188,7 @@ void *gt_linux_print_syscall_sys_geteuid(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_getegid(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_getegid(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -1196,7 +1196,7 @@ void *gt_linux_print_syscall_sys_getegid(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_setpgid(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_setpgid(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1206,7 +1206,7 @@ void *gt_linux_print_syscall_sys_setpgid(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_getppid(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_getppid(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -1214,7 +1214,7 @@ void *gt_linux_print_syscall_sys_getppid(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_getpgrp(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_getpgrp(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -1222,7 +1222,7 @@ void *gt_linux_print_syscall_sys_getpgrp(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_setsid(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_setsid(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -1230,7 +1230,7 @@ void *gt_linux_print_syscall_sys_setsid(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_setreuid(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_setreuid(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1240,7 +1240,7 @@ void *gt_linux_print_syscall_sys_setreuid(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_setregid(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_setregid(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1250,7 +1250,7 @@ void *gt_linux_print_syscall_sys_setregid(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_getgroups(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_getgroups(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1260,7 +1260,7 @@ void *gt_linux_print_syscall_sys_getgroups(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_setgroups(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_setgroups(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1270,7 +1270,7 @@ void *gt_linux_print_syscall_sys_setgroups(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_setresuid(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_setresuid(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1281,7 +1281,7 @@ void *gt_linux_print_syscall_sys_setresuid(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_getresuid(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_getresuid(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1292,7 +1292,7 @@ void *gt_linux_print_syscall_sys_getresuid(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_setresgid(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_setresgid(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1303,7 +1303,7 @@ void *gt_linux_print_syscall_sys_setresgid(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_getresgid(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_getresgid(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1314,7 +1314,7 @@ void *gt_linux_print_syscall_sys_getresgid(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_getpgid(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_getpgid(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1323,7 +1323,7 @@ void *gt_linux_print_syscall_sys_getpgid(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_setfsuid(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_setfsuid(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1332,7 +1332,7 @@ void *gt_linux_print_syscall_sys_setfsuid(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_setfsgid(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_setfsgid(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1341,7 +1341,7 @@ void *gt_linux_print_syscall_sys_setfsgid(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_getsid(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_getsid(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1350,7 +1350,7 @@ void *gt_linux_print_syscall_sys_getsid(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_capget(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_capget(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1360,7 +1360,7 @@ void *gt_linux_print_syscall_sys_capget(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_capset(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_capset(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1370,7 +1370,7 @@ void *gt_linux_print_syscall_sys_capset(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_rt_sigpending(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_rt_sigpending(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1380,7 +1380,7 @@ void *gt_linux_print_syscall_sys_rt_sigpending(vmi_instance_t vmi, vmi_event_t *
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_rt_sigtimedwait(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_rt_sigtimedwait(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1392,7 +1392,7 @@ void *gt_linux_print_syscall_sys_rt_sigtimedwait(vmi_instance_t vmi, vmi_event_t
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_rt_sigqueueinfo(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_rt_sigqueueinfo(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1403,7 +1403,7 @@ void *gt_linux_print_syscall_sys_rt_sigqueueinfo(vmi_instance_t vmi, vmi_event_t
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_rt_sigsuspend(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_rt_sigsuspend(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1413,7 +1413,7 @@ void *gt_linux_print_syscall_sys_rt_sigsuspend(vmi_instance_t vmi, vmi_event_t *
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_sigaltstack(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_sigaltstack(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1423,7 +1423,7 @@ void *gt_linux_print_syscall_sys_sigaltstack(vmi_instance_t vmi, vmi_event_t *ev
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_utime(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_utime(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1433,7 +1433,7 @@ void *gt_linux_print_syscall_sys_utime(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_mknod(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_mknod(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1444,7 +1444,7 @@ void *gt_linux_print_syscall_sys_mknod(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_uselib(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_uselib(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1453,7 +1453,7 @@ void *gt_linux_print_syscall_sys_uselib(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_personality(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_personality(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1462,7 +1462,7 @@ void *gt_linux_print_syscall_sys_personality(vmi_instance_t vmi, vmi_event_t *ev
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_ustat(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_ustat(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1472,7 +1472,7 @@ void *gt_linux_print_syscall_sys_ustat(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_statfs(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_statfs(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1482,7 +1482,7 @@ void *gt_linux_print_syscall_sys_statfs(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_fstatfs(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_fstatfs(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1492,7 +1492,7 @@ void *gt_linux_print_syscall_sys_fstatfs(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_sysfs(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_sysfs(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1503,7 +1503,7 @@ void *gt_linux_print_syscall_sys_sysfs(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_getpriority(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_getpriority(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1513,7 +1513,7 @@ void *gt_linux_print_syscall_sys_getpriority(vmi_instance_t vmi, vmi_event_t *ev
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_setpriority(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_setpriority(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1524,7 +1524,7 @@ void *gt_linux_print_syscall_sys_setpriority(vmi_instance_t vmi, vmi_event_t *ev
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_sched_setparam(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_sched_setparam(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1534,7 +1534,7 @@ void *gt_linux_print_syscall_sys_sched_setparam(vmi_instance_t vmi, vmi_event_t 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_sched_getparam(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_sched_getparam(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1544,7 +1544,7 @@ void *gt_linux_print_syscall_sys_sched_getparam(vmi_instance_t vmi, vmi_event_t 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_sched_setscheduler(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_sched_setscheduler(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1555,7 +1555,7 @@ void *gt_linux_print_syscall_sys_sched_setscheduler(vmi_instance_t vmi, vmi_even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_sched_getscheduler(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_sched_getscheduler(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1564,7 +1564,7 @@ void *gt_linux_print_syscall_sys_sched_getscheduler(vmi_instance_t vmi, vmi_even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_sched_get_priority_max(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_sched_get_priority_max(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1573,7 +1573,7 @@ void *gt_linux_print_syscall_sys_sched_get_priority_max(vmi_instance_t vmi, vmi_
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_sched_get_priority_min(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_sched_get_priority_min(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1582,7 +1582,7 @@ void *gt_linux_print_syscall_sys_sched_get_priority_min(vmi_instance_t vmi, vmi_
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_sched_rr_get_interval(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_sched_rr_get_interval(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1592,7 +1592,7 @@ void *gt_linux_print_syscall_sys_sched_rr_get_interval(vmi_instance_t vmi, vmi_e
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_mlock(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_mlock(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1602,7 +1602,7 @@ void *gt_linux_print_syscall_sys_mlock(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_munlock(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_munlock(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1612,7 +1612,7 @@ void *gt_linux_print_syscall_sys_munlock(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_mlockall(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_mlockall(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1621,7 +1621,7 @@ void *gt_linux_print_syscall_sys_mlockall(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_munlockall(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_munlockall(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -1629,7 +1629,7 @@ void *gt_linux_print_syscall_sys_munlockall(vmi_instance_t vmi, vmi_event_t *eve
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_vhangup(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_vhangup(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -1637,7 +1637,7 @@ void *gt_linux_print_syscall_sys_vhangup(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_modify_ldt(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_modify_ldt(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -1645,7 +1645,7 @@ void *gt_linux_print_syscall_sys_modify_ldt(vmi_instance_t vmi, vmi_event_t *eve
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_pivot_root(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_pivot_root(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1655,7 +1655,7 @@ void *gt_linux_print_syscall_sys_pivot_root(vmi_instance_t vmi, vmi_event_t *eve
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_sysctl(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_sysctl(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1664,7 +1664,7 @@ void *gt_linux_print_syscall_sys_sysctl(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_prctl(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_prctl(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1677,7 +1677,7 @@ void *gt_linux_print_syscall_sys_prctl(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_arch_prctl(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_arch_prctl(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -1685,7 +1685,7 @@ void *gt_linux_print_syscall_sys_arch_prctl(vmi_instance_t vmi, vmi_event_t *eve
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_adjtimex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_adjtimex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1694,7 +1694,7 @@ void *gt_linux_print_syscall_sys_adjtimex(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_setrlimit(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_setrlimit(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1704,7 +1704,7 @@ void *gt_linux_print_syscall_sys_setrlimit(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_chroot(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_chroot(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1713,7 +1713,7 @@ void *gt_linux_print_syscall_sys_chroot(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_sync(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_sync(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -1721,7 +1721,7 @@ void *gt_linux_print_syscall_sys_sync(vmi_instance_t vmi, vmi_event_t *event, vm
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_acct(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_acct(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1730,7 +1730,7 @@ void *gt_linux_print_syscall_sys_acct(vmi_instance_t vmi, vmi_event_t *event, vm
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_settimeofday(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_settimeofday(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1740,7 +1740,7 @@ void *gt_linux_print_syscall_sys_settimeofday(vmi_instance_t vmi, vmi_event_t *e
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_mount(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_mount(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1753,7 +1753,7 @@ void *gt_linux_print_syscall_sys_mount(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_umount2(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_umount2(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -1761,7 +1761,7 @@ void *gt_linux_print_syscall_sys_umount2(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_swapon(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_swapon(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1771,7 +1771,7 @@ void *gt_linux_print_syscall_sys_swapon(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_swapoff(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_swapoff(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1780,7 +1780,7 @@ void *gt_linux_print_syscall_sys_swapoff(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_reboot(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_reboot(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1792,7 +1792,7 @@ void *gt_linux_print_syscall_sys_reboot(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_sethostname(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_sethostname(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1802,7 +1802,7 @@ void *gt_linux_print_syscall_sys_sethostname(vmi_instance_t vmi, vmi_event_t *ev
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_setdomainname(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_setdomainname(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1812,7 +1812,7 @@ void *gt_linux_print_syscall_sys_setdomainname(vmi_instance_t vmi, vmi_event_t *
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_iopl(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_iopl(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -1820,7 +1820,7 @@ void *gt_linux_print_syscall_sys_iopl(vmi_instance_t vmi, vmi_event_t *event, vm
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_ioperm(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_ioperm(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1831,7 +1831,7 @@ void *gt_linux_print_syscall_sys_ioperm(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_create_module(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_create_module(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -1839,7 +1839,7 @@ void *gt_linux_print_syscall_sys_create_module(vmi_instance_t vmi, vmi_event_t *
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_init_module(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_init_module(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1850,7 +1850,7 @@ void *gt_linux_print_syscall_sys_init_module(vmi_instance_t vmi, vmi_event_t *ev
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_delete_module(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_delete_module(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1860,7 +1860,7 @@ void *gt_linux_print_syscall_sys_delete_module(vmi_instance_t vmi, vmi_event_t *
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_get_kernel_syms(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_get_kernel_syms(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -1868,7 +1868,7 @@ void *gt_linux_print_syscall_sys_get_kernel_syms(vmi_instance_t vmi, vmi_event_t
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_query_module(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_query_module(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -1876,7 +1876,7 @@ void *gt_linux_print_syscall_sys_query_module(vmi_instance_t vmi, vmi_event_t *e
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_quotactl(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_quotactl(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1888,7 +1888,7 @@ void *gt_linux_print_syscall_sys_quotactl(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_nfsservctl(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_nfsservctl(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -1896,7 +1896,7 @@ void *gt_linux_print_syscall_sys_nfsservctl(vmi_instance_t vmi, vmi_event_t *eve
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_getpmsg(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_getpmsg(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -1904,7 +1904,7 @@ void *gt_linux_print_syscall_sys_getpmsg(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_putpmsg(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_putpmsg(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -1912,7 +1912,7 @@ void *gt_linux_print_syscall_sys_putpmsg(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_afs_syscall(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_afs_syscall(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -1920,7 +1920,7 @@ void *gt_linux_print_syscall_sys_afs_syscall(vmi_instance_t vmi, vmi_event_t *ev
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_tuxcall(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_tuxcall(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -1928,7 +1928,7 @@ void *gt_linux_print_syscall_sys_tuxcall(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_security(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_security(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -1936,7 +1936,7 @@ void *gt_linux_print_syscall_sys_security(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_gettid(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_gettid(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -1944,7 +1944,7 @@ void *gt_linux_print_syscall_sys_gettid(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_readahead(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_readahead(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1955,7 +1955,7 @@ void *gt_linux_print_syscall_sys_readahead(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_setxattr(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_setxattr(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1968,7 +1968,7 @@ void *gt_linux_print_syscall_sys_setxattr(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_lsetxattr(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_lsetxattr(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1981,7 +1981,7 @@ void *gt_linux_print_syscall_sys_lsetxattr(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_fsetxattr(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_fsetxattr(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -1994,7 +1994,7 @@ void *gt_linux_print_syscall_sys_fsetxattr(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_getxattr(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_getxattr(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2006,7 +2006,7 @@ void *gt_linux_print_syscall_sys_getxattr(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_lgetxattr(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_lgetxattr(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2018,7 +2018,7 @@ void *gt_linux_print_syscall_sys_lgetxattr(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_fgetxattr(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_fgetxattr(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2030,7 +2030,7 @@ void *gt_linux_print_syscall_sys_fgetxattr(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_listxattr(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_listxattr(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2041,7 +2041,7 @@ void *gt_linux_print_syscall_sys_listxattr(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_llistxattr(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_llistxattr(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2052,7 +2052,7 @@ void *gt_linux_print_syscall_sys_llistxattr(vmi_instance_t vmi, vmi_event_t *eve
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_flistxattr(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_flistxattr(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2063,7 +2063,7 @@ void *gt_linux_print_syscall_sys_flistxattr(vmi_instance_t vmi, vmi_event_t *eve
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_removexattr(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_removexattr(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2073,7 +2073,7 @@ void *gt_linux_print_syscall_sys_removexattr(vmi_instance_t vmi, vmi_event_t *ev
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_lremovexattr(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_lremovexattr(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2083,7 +2083,7 @@ void *gt_linux_print_syscall_sys_lremovexattr(vmi_instance_t vmi, vmi_event_t *e
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_fremovexattr(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_fremovexattr(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2093,7 +2093,7 @@ void *gt_linux_print_syscall_sys_fremovexattr(vmi_instance_t vmi, vmi_event_t *e
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_tkill(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_tkill(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2103,7 +2103,7 @@ void *gt_linux_print_syscall_sys_tkill(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_time(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_time(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2112,7 +2112,7 @@ void *gt_linux_print_syscall_sys_time(vmi_instance_t vmi, vmi_event_t *event, vm
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_futex(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_futex(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2126,7 +2126,7 @@ void *gt_linux_print_syscall_sys_futex(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_sched_setaffinity(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_sched_setaffinity(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2137,7 +2137,7 @@ void *gt_linux_print_syscall_sys_sched_setaffinity(vmi_instance_t vmi, vmi_event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_sched_getaffinity(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_sched_getaffinity(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2148,7 +2148,7 @@ void *gt_linux_print_syscall_sys_sched_getaffinity(vmi_instance_t vmi, vmi_event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_set_thread_area(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_set_thread_area(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -2156,7 +2156,7 @@ void *gt_linux_print_syscall_sys_set_thread_area(vmi_instance_t vmi, vmi_event_t
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_io_setup(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_io_setup(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2166,7 +2166,7 @@ void *gt_linux_print_syscall_sys_io_setup(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_io_destroy(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_io_destroy(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2175,7 +2175,7 @@ void *gt_linux_print_syscall_sys_io_destroy(vmi_instance_t vmi, vmi_event_t *eve
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_io_getevents(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_io_getevents(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2188,7 +2188,7 @@ void *gt_linux_print_syscall_sys_io_getevents(vmi_instance_t vmi, vmi_event_t *e
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_io_submit(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_io_submit(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2199,7 +2199,7 @@ void *gt_linux_print_syscall_sys_io_submit(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_io_cancel(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_io_cancel(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2210,7 +2210,7 @@ void *gt_linux_print_syscall_sys_io_cancel(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_get_thread_area(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_get_thread_area(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -2218,7 +2218,7 @@ void *gt_linux_print_syscall_sys_get_thread_area(vmi_instance_t vmi, vmi_event_t
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_lookup_dcookie(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_lookup_dcookie(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2229,7 +2229,7 @@ void *gt_linux_print_syscall_sys_lookup_dcookie(vmi_instance_t vmi, vmi_event_t 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_epoll_create(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_epoll_create(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2238,7 +2238,7 @@ void *gt_linux_print_syscall_sys_epoll_create(vmi_instance_t vmi, vmi_event_t *e
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_epoll_ctl_old(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_epoll_ctl_old(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -2246,7 +2246,7 @@ void *gt_linux_print_syscall_sys_epoll_ctl_old(vmi_instance_t vmi, vmi_event_t *
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_epoll_wait_old(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_epoll_wait_old(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -2254,7 +2254,7 @@ void *gt_linux_print_syscall_sys_epoll_wait_old(vmi_instance_t vmi, vmi_event_t 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_remap_file_pages(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_remap_file_pages(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2267,7 +2267,7 @@ void *gt_linux_print_syscall_sys_remap_file_pages(vmi_instance_t vmi, vmi_event_
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_getdents64(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_getdents64(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2278,7 +2278,7 @@ void *gt_linux_print_syscall_sys_getdents64(vmi_instance_t vmi, vmi_event_t *eve
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_set_tid_address(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_set_tid_address(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2287,7 +2287,7 @@ void *gt_linux_print_syscall_sys_set_tid_address(vmi_instance_t vmi, vmi_event_t
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_restart_syscall(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_restart_syscall(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -2295,7 +2295,7 @@ void *gt_linux_print_syscall_sys_restart_syscall(vmi_instance_t vmi, vmi_event_t
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_semtimedop(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_semtimedop(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2307,7 +2307,7 @@ void *gt_linux_print_syscall_sys_semtimedop(vmi_instance_t vmi, vmi_event_t *eve
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_fadvise64(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_fadvise64(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2319,7 +2319,7 @@ void *gt_linux_print_syscall_sys_fadvise64(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_timer_create(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_timer_create(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2330,7 +2330,7 @@ void *gt_linux_print_syscall_sys_timer_create(vmi_instance_t vmi, vmi_event_t *e
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_timer_settime(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_timer_settime(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2342,7 +2342,7 @@ void *gt_linux_print_syscall_sys_timer_settime(vmi_instance_t vmi, vmi_event_t *
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_timer_gettime(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_timer_gettime(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2352,7 +2352,7 @@ void *gt_linux_print_syscall_sys_timer_gettime(vmi_instance_t vmi, vmi_event_t *
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_timer_getoverrun(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_timer_getoverrun(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2361,7 +2361,7 @@ void *gt_linux_print_syscall_sys_timer_getoverrun(vmi_instance_t vmi, vmi_event_
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_timer_delete(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_timer_delete(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2370,7 +2370,7 @@ void *gt_linux_print_syscall_sys_timer_delete(vmi_instance_t vmi, vmi_event_t *e
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_clock_settime(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_clock_settime(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2380,7 +2380,7 @@ void *gt_linux_print_syscall_sys_clock_settime(vmi_instance_t vmi, vmi_event_t *
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_clock_gettime(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_clock_gettime(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2390,7 +2390,7 @@ void *gt_linux_print_syscall_sys_clock_gettime(vmi_instance_t vmi, vmi_event_t *
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_clock_getres(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_clock_getres(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2400,7 +2400,7 @@ void *gt_linux_print_syscall_sys_clock_getres(vmi_instance_t vmi, vmi_event_t *e
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_clock_nanosleep(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_clock_nanosleep(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2412,7 +2412,7 @@ void *gt_linux_print_syscall_sys_clock_nanosleep(vmi_instance_t vmi, vmi_event_t
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_exit_group(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_exit_group(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2421,7 +2421,7 @@ void *gt_linux_print_syscall_sys_exit_group(vmi_instance_t vmi, vmi_event_t *eve
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_epoll_wait(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_epoll_wait(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2433,7 +2433,7 @@ void *gt_linux_print_syscall_sys_epoll_wait(vmi_instance_t vmi, vmi_event_t *eve
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_epoll_ctl(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_epoll_ctl(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2445,7 +2445,7 @@ void *gt_linux_print_syscall_sys_epoll_ctl(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_tgkill(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_tgkill(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2456,7 +2456,7 @@ void *gt_linux_print_syscall_sys_tgkill(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_utimes(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_utimes(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2466,7 +2466,7 @@ void *gt_linux_print_syscall_sys_utimes(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_vserver(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_vserver(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -2474,7 +2474,7 @@ void *gt_linux_print_syscall_sys_vserver(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_mbind(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_mbind(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2488,7 +2488,7 @@ void *gt_linux_print_syscall_sys_mbind(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_set_mempolicy(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_set_mempolicy(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2499,7 +2499,7 @@ void *gt_linux_print_syscall_sys_set_mempolicy(vmi_instance_t vmi, vmi_event_t *
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_get_mempolicy(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_get_mempolicy(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2512,7 +2512,7 @@ void *gt_linux_print_syscall_sys_get_mempolicy(vmi_instance_t vmi, vmi_event_t *
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_mq_open(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_mq_open(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2524,7 +2524,7 @@ void *gt_linux_print_syscall_sys_mq_open(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_mq_unlink(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_mq_unlink(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2533,7 +2533,7 @@ void *gt_linux_print_syscall_sys_mq_unlink(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_mq_timedsend(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_mq_timedsend(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2546,7 +2546,7 @@ void *gt_linux_print_syscall_sys_mq_timedsend(vmi_instance_t vmi, vmi_event_t *e
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_mq_timedreceive(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_mq_timedreceive(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2559,7 +2559,7 @@ void *gt_linux_print_syscall_sys_mq_timedreceive(vmi_instance_t vmi, vmi_event_t
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_mq_notify(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_mq_notify(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2569,7 +2569,7 @@ void *gt_linux_print_syscall_sys_mq_notify(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_mq_getsetattr(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_mq_getsetattr(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2580,7 +2580,7 @@ void *gt_linux_print_syscall_sys_mq_getsetattr(vmi_instance_t vmi, vmi_event_t *
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_kexec_load(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_kexec_load(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2592,7 +2592,7 @@ void *gt_linux_print_syscall_sys_kexec_load(vmi_instance_t vmi, vmi_event_t *eve
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_waitid(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_waitid(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2605,7 +2605,7 @@ void *gt_linux_print_syscall_sys_waitid(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_add_key(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_add_key(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2618,7 +2618,7 @@ void *gt_linux_print_syscall_sys_add_key(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_request_key(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_request_key(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2630,7 +2630,7 @@ void *gt_linux_print_syscall_sys_request_key(vmi_instance_t vmi, vmi_event_t *ev
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_keyctl(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_keyctl(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2643,7 +2643,7 @@ void *gt_linux_print_syscall_sys_keyctl(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_ioprio_set(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_ioprio_set(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2654,7 +2654,7 @@ void *gt_linux_print_syscall_sys_ioprio_set(vmi_instance_t vmi, vmi_event_t *eve
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_ioprio_get(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_ioprio_get(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2664,7 +2664,7 @@ void *gt_linux_print_syscall_sys_ioprio_get(vmi_instance_t vmi, vmi_event_t *eve
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_inotify_init(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_inotify_init(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -2672,7 +2672,7 @@ void *gt_linux_print_syscall_sys_inotify_init(vmi_instance_t vmi, vmi_event_t *e
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_inotify_add_watch(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_inotify_add_watch(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2683,7 +2683,7 @@ void *gt_linux_print_syscall_sys_inotify_add_watch(vmi_instance_t vmi, vmi_event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_inotify_rm_watch(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_inotify_rm_watch(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2693,7 +2693,7 @@ void *gt_linux_print_syscall_sys_inotify_rm_watch(vmi_instance_t vmi, vmi_event_
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_migrate_pages(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_migrate_pages(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2705,7 +2705,7 @@ void *gt_linux_print_syscall_sys_migrate_pages(vmi_instance_t vmi, vmi_event_t *
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_openat(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_openat(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2717,7 +2717,7 @@ void *gt_linux_print_syscall_sys_openat(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_mkdirat(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_mkdirat(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2728,7 +2728,7 @@ void *gt_linux_print_syscall_sys_mkdirat(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_mknodat(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_mknodat(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2740,7 +2740,7 @@ void *gt_linux_print_syscall_sys_mknodat(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_fchownat(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_fchownat(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2753,7 +2753,7 @@ void *gt_linux_print_syscall_sys_fchownat(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_futimesat(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_futimesat(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2764,7 +2764,7 @@ void *gt_linux_print_syscall_sys_futimesat(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_newfstatat(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_newfstatat(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2776,7 +2776,7 @@ void *gt_linux_print_syscall_sys_newfstatat(vmi_instance_t vmi, vmi_event_t *eve
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_unlinkat(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_unlinkat(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2787,7 +2787,7 @@ void *gt_linux_print_syscall_sys_unlinkat(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_renameat(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_renameat(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2799,7 +2799,7 @@ void *gt_linux_print_syscall_sys_renameat(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_linkat(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_linkat(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2812,7 +2812,7 @@ void *gt_linux_print_syscall_sys_linkat(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_symlinkat(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_symlinkat(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2823,7 +2823,7 @@ void *gt_linux_print_syscall_sys_symlinkat(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_readlinkat(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_readlinkat(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2835,7 +2835,7 @@ void *gt_linux_print_syscall_sys_readlinkat(vmi_instance_t vmi, vmi_event_t *eve
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_fchmodat(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_fchmodat(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2846,7 +2846,7 @@ void *gt_linux_print_syscall_sys_fchmodat(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_faccessat(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_faccessat(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2857,7 +2857,7 @@ void *gt_linux_print_syscall_sys_faccessat(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_pselect6(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_pselect6(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2871,7 +2871,7 @@ void *gt_linux_print_syscall_sys_pselect6(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_ppoll(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_ppoll(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2884,7 +2884,7 @@ void *gt_linux_print_syscall_sys_ppoll(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_unshare(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_unshare(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2893,7 +2893,7 @@ void *gt_linux_print_syscall_sys_unshare(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_set_robust_list(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_set_robust_list(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2903,7 +2903,7 @@ void *gt_linux_print_syscall_sys_set_robust_list(vmi_instance_t vmi, vmi_event_t
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_get_robust_list(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_get_robust_list(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2914,7 +2914,7 @@ void *gt_linux_print_syscall_sys_get_robust_list(vmi_instance_t vmi, vmi_event_t
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_splice(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_splice(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2928,7 +2928,7 @@ void *gt_linux_print_syscall_sys_splice(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_tee(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_tee(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2940,7 +2940,7 @@ void *gt_linux_print_syscall_sys_tee(vmi_instance_t vmi, vmi_event_t *event, vmi
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_sync_file_range(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_sync_file_range(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2952,7 +2952,7 @@ void *gt_linux_print_syscall_sys_sync_file_range(vmi_instance_t vmi, vmi_event_t
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_vmsplice(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_vmsplice(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2964,7 +2964,7 @@ void *gt_linux_print_syscall_sys_vmsplice(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_move_pages(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_move_pages(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2978,7 +2978,7 @@ void *gt_linux_print_syscall_sys_move_pages(vmi_instance_t vmi, vmi_event_t *eve
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_utimensat(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_utimensat(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -2990,7 +2990,7 @@ void *gt_linux_print_syscall_sys_utimensat(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_epoll_pwait(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_epoll_pwait(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3004,7 +3004,7 @@ void *gt_linux_print_syscall_sys_epoll_pwait(vmi_instance_t vmi, vmi_event_t *ev
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_signalfd(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_signalfd(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3015,7 +3015,7 @@ void *gt_linux_print_syscall_sys_signalfd(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_timerfd(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_timerfd(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t rsp = event->x86_regs->rsp;
@@ -3023,7 +3023,7 @@ void *gt_linux_print_syscall_sys_timerfd(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_eventfd(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_eventfd(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3032,7 +3032,7 @@ void *gt_linux_print_syscall_sys_eventfd(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_fallocate(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_fallocate(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3044,7 +3044,7 @@ void *gt_linux_print_syscall_sys_fallocate(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_timerfd_settime(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_timerfd_settime(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3056,7 +3056,7 @@ void *gt_linux_print_syscall_sys_timerfd_settime(vmi_instance_t vmi, vmi_event_t
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_timerfd_gettime(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_timerfd_gettime(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3066,7 +3066,7 @@ void *gt_linux_print_syscall_sys_timerfd_gettime(vmi_instance_t vmi, vmi_event_t
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_accept4(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_accept4(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3078,7 +3078,7 @@ void *gt_linux_print_syscall_sys_accept4(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_signalfd4(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_signalfd4(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3090,7 +3090,7 @@ void *gt_linux_print_syscall_sys_signalfd4(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_eventfd2(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_eventfd2(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3100,7 +3100,7 @@ void *gt_linux_print_syscall_sys_eventfd2(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_epoll_create1(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_epoll_create1(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3109,7 +3109,7 @@ void *gt_linux_print_syscall_sys_epoll_create1(vmi_instance_t vmi, vmi_event_t *
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_dup3(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_dup3(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3120,7 +3120,7 @@ void *gt_linux_print_syscall_sys_dup3(vmi_instance_t vmi, vmi_event_t *event, vm
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_pipe2(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_pipe2(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3130,7 +3130,7 @@ void *gt_linux_print_syscall_sys_pipe2(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_inotify_init1(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_inotify_init1(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3139,7 +3139,7 @@ void *gt_linux_print_syscall_sys_inotify_init1(vmi_instance_t vmi, vmi_event_t *
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_preadv(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_preadv(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3152,7 +3152,7 @@ void *gt_linux_print_syscall_sys_preadv(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_pwritev(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_pwritev(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3165,7 +3165,7 @@ void *gt_linux_print_syscall_sys_pwritev(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_rt_tgsigqueueinfo(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_rt_tgsigqueueinfo(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3177,7 +3177,7 @@ void *gt_linux_print_syscall_sys_rt_tgsigqueueinfo(vmi_instance_t vmi, vmi_event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_perf_event_open(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_perf_event_open(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3190,7 +3190,7 @@ void *gt_linux_print_syscall_sys_perf_event_open(vmi_instance_t vmi, vmi_event_t
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_recvmmsg(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_recvmmsg(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3203,7 +3203,7 @@ void *gt_linux_print_syscall_sys_recvmmsg(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_fanotify_init(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_fanotify_init(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3213,7 +3213,7 @@ void *gt_linux_print_syscall_sys_fanotify_init(vmi_instance_t vmi, vmi_event_t *
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_fanotify_mark(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_fanotify_mark(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3226,7 +3226,7 @@ void *gt_linux_print_syscall_sys_fanotify_mark(vmi_instance_t vmi, vmi_event_t *
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_prlimit64(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_prlimit64(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3238,7 +3238,7 @@ void *gt_linux_print_syscall_sys_prlimit64(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_name_to_handle_at(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_name_to_handle_at(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3251,7 +3251,7 @@ void *gt_linux_print_syscall_sys_name_to_handle_at(vmi_instance_t vmi, vmi_event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_open_by_handle_at(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_open_by_handle_at(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3262,7 +3262,7 @@ void *gt_linux_print_syscall_sys_open_by_handle_at(vmi_instance_t vmi, vmi_event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_clock_adjtime(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_clock_adjtime(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3272,7 +3272,7 @@ void *gt_linux_print_syscall_sys_clock_adjtime(vmi_instance_t vmi, vmi_event_t *
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_syncfs(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_syncfs(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3281,7 +3281,7 @@ void *gt_linux_print_syscall_sys_syncfs(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_sendmmsg(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_sendmmsg(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3293,7 +3293,7 @@ void *gt_linux_print_syscall_sys_sendmmsg(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_setns(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_setns(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3303,7 +3303,7 @@ void *gt_linux_print_syscall_sys_setns(vmi_instance_t vmi, vmi_event_t *event, v
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_getcpu(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_getcpu(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3314,7 +3314,7 @@ void *gt_linux_print_syscall_sys_getcpu(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_process_vm_readv(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_process_vm_readv(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3328,7 +3328,7 @@ void *gt_linux_print_syscall_sys_process_vm_readv(vmi_instance_t vmi, vmi_event_
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_process_vm_writev(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_process_vm_writev(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3342,7 +3342,7 @@ void *gt_linux_print_syscall_sys_process_vm_writev(vmi_instance_t vmi, vmi_event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_kcmp(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_kcmp(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3355,7 +3355,7 @@ void *gt_linux_print_syscall_sys_kcmp(vmi_instance_t vmi, vmi_event_t *event, vm
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_finit_module(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_finit_module(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3366,7 +3366,7 @@ void *gt_linux_print_syscall_sys_finit_module(vmi_instance_t vmi, vmi_event_t *e
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_sched_setattr(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_sched_setattr(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3377,7 +3377,7 @@ void *gt_linux_print_syscall_sys_sched_setattr(vmi_instance_t vmi, vmi_event_t *
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_sched_getattr(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_sched_getattr(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3389,7 +3389,7 @@ void *gt_linux_print_syscall_sys_sched_getattr(vmi_instance_t vmi, vmi_event_t *
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_renameat2(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_renameat2(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3402,7 +3402,7 @@ void *gt_linux_print_syscall_sys_renameat2(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_seccomp(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_seccomp(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3413,7 +3413,7 @@ void *gt_linux_print_syscall_sys_seccomp(vmi_instance_t vmi, vmi_event_t *event,
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_getrandom(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_getrandom(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3424,7 +3424,7 @@ void *gt_linux_print_syscall_sys_getrandom(vmi_instance_t vmi, vmi_event_t *even
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_memfd_create(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_memfd_create(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3434,7 +3434,7 @@ void *gt_linux_print_syscall_sys_memfd_create(vmi_instance_t vmi, vmi_event_t *e
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_kexec_file_load(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_kexec_file_load(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3447,7 +3447,7 @@ void *gt_linux_print_syscall_sys_kexec_file_load(vmi_instance_t vmi, vmi_event_t
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_bpf(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_bpf(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3458,7 +3458,7 @@ void *gt_linux_print_syscall_sys_bpf(vmi_instance_t vmi, vmi_event_t *event, vmi
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_execveat(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_execveat(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3471,7 +3471,7 @@ void *gt_linux_print_syscall_sys_execveat(vmi_instance_t vmi, vmi_event_t *event
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_userfaultfd(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_userfaultfd(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3480,7 +3480,7 @@ void *gt_linux_print_syscall_sys_userfaultfd(vmi_instance_t vmi, vmi_event_t *ev
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_membarrier(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_membarrier(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3490,7 +3490,7 @@ void *gt_linux_print_syscall_sys_membarrier(vmi_instance_t vmi, vmi_event_t *eve
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_mlock2(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_mlock2(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3501,7 +3501,7 @@ void *gt_linux_print_syscall_sys_mlock2(vmi_instance_t vmi, vmi_event_t *event, 
 	return NULL;
 }
 
-void *gt_linux_print_syscall_sys_copy_file_range(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data)
+void *gt_linux_print_syscall_sys_copy_file_range(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(vmi, pid);
 	reg_t arg0 = event->x86_regs->rdi;
@@ -3515,7 +3515,7 @@ void *gt_linux_print_syscall_sys_copy_file_range(vmi_instance_t vmi, vmi_event_t
 	return NULL;
 }
 
-void gt_linux_print_sysret(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, gt_tid_t tid, void *user_data) {
+void gt_linux_print_sysret(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid, gt_tid_t tid, void *user_data) {
 	reg_t syscall_return = event->x86_regs->rax;
 	reg_t rsp = event->x86_regs->rsp;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) return: 0x%"PRIx64"\n", pid, rsp - RETURN_ADDR_WIDTH, get_process_name(vmi, pid), syscall_return);
