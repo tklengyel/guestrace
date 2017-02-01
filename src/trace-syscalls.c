@@ -1006,19 +1006,19 @@ done:
 /**
  * gt_loop_set_cbs:
  * @loop: a #GtLoop.
- * @syscalls: an array of #GtSyscallCallback values, where each contains a
+ * @syscalls: an array of #GtCallbackRegistry values, where each contains a
  * function name and corresponding #GtSyscallFunc and #GtSysretFunc.
  *
  * A convenience function which repeatedly invoke gt_loop_set_cb for each
  * callback defined in @syscalls. The @syscalls array must be terminated with
- * an #GtSyscallCallback with each field set to NULL.
+ * an #GtCallbackRegistry with each field set to NULL.
  *
  * Returns: an integer which represents the number of callbacks
  * successfully set; an invalid function name in @syscalls will
  * cause the corresponding callback registration to fail.
  **/
 int
-gt_loop_set_cbs(GtLoop *loop, const GtSyscallCallback callbacks[])
+gt_loop_set_cbs(GtLoop *loop, const GtCallbackRegistry callbacks[])
 {
 	int count = 0;
 

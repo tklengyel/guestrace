@@ -8571,7 +8571,7 @@ void gt_windows_print_sysret_ntyieldexecution(GtGuestState *state, gt_pid_t pid,
 	free(args);
 }
 
-const GtSyscallCallback GT_WINDOWS_SYSCALLS[] = {
+const GtCallbackRegistry GT_WINDOWS_SYSCALLS[] = {
 	{ "NtAcceptConnectPort", gt_windows_print_syscall_ntacceptconnectport, gt_windows_print_sysret_ntacceptconnectport, NULL },
 	{ "NtAccessCheckAndAuditAlarm", gt_windows_print_syscall_ntaccesscheckandauditalarm, gt_windows_print_sysret_ntaccesscheckandauditalarm, NULL },
 	{ "NtAccessCheckByTypeAndAuditAlarm", gt_windows_print_syscall_ntaccesscheckbytypeandauditalarm, gt_windows_print_sysret_ntaccesscheckbytypeandauditalarm, NULL },

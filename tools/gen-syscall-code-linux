@@ -432,7 +432,7 @@ done:
 """
 
     # Generate SYSCALLS table.
-    str += """const GtSyscallCallback GT_LINUX_SYSCALLS[] = {
+    str += """const GtCallbackRegistry GT_LINUX_SYSCALLS[] = {
 """
     
     # generate the actual struct list

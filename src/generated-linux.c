@@ -1,4 +1,4 @@
-/* Generated on Linux_4.9.3-200.fc25.x86_64 on 01 Feb 2017 10:34:54*/
+/* Generated on Linux_4.9.3-200.fc25.x86_64 on 01 Feb 2017 10:54:58*/
 
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
@@ -3521,7 +3521,7 @@ void gt_linux_print_sysret(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) return: 0x%"PRIx64"\n", pid, rsp - RETURN_ADDR_WIDTH, get_process_name(gt_loop_get_vmi_instance(state), pid), syscall_return);
 }
 
-const GtSyscallCallback GT_LINUX_SYSCALLS[] = {
+const GtCallbackRegistry GT_LINUX_SYSCALLS[] = {
 	{ "sys_read", gt_linux_print_syscall_sys_read, gt_linux_print_sysret },
 	{ "sys_write", gt_linux_print_syscall_sys_write, gt_linux_print_sysret },
 	{ "sys_open", gt_linux_print_syscall_sys_open, gt_linux_print_sysret },
