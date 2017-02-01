@@ -1,4 +1,4 @@
-/* Generated on Linux_4.9.3-200.fc25.x86_64 on 01 Feb 2017 16:21:50*/
+/* Generated on Linux_4.9.3-200.fc25.x86_64 on 01 Feb 2017 16:49:01*/
 
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
@@ -8,8 +8,6 @@
 #include <inttypes.h>
 
 #include "generated-linux.h"
-
-static const int RETURN_ADDR_WIDTH = sizeof(void *);
 
 static char *
 get_process_name(vmi_instance_t vmi, gt_pid_t pid) 
@@ -72,8 +70,7 @@ void *gt_linux_print_syscall_sys_read(GtGuestState *state, gt_pid_t pid, gt_tid_
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_read", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_read", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -83,8 +80,7 @@ void *gt_linux_print_syscall_sys_write(GtGuestState *state, gt_pid_t pid, gt_tid
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_write", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_write", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -94,8 +90,7 @@ void *gt_linux_print_syscall_sys_open(GtGuestState *state, gt_pid_t pid, gt_tid_
 	char *arg0 = gt_guest_get_string(state, gt_guest_get_vmi_event(state)->x86_regs->rdi, pid);
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(\"%s\", %i, %lu)\n", pid, rsp, proc, "sys_open", (char *) arg0, (int) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(\"%s\", %i, %lu)\n", pid, tid, proc, "sys_open", (char *) arg0, (int) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -103,8 +98,7 @@ void *gt_linux_print_syscall_sys_close(GtGuestState *state, gt_pid_t pid, gt_tid
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, "sys_close", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, tid, proc, "sys_close", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -113,8 +107,7 @@ void *gt_linux_print_syscall_sys_stat(GtGuestState *state, gt_pid_t pid, gt_tid_
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_stat", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_stat", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -123,8 +116,7 @@ void *gt_linux_print_syscall_sys_fstat(GtGuestState *state, gt_pid_t pid, gt_tid
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, rsp, proc, "sys_fstat", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, tid, proc, "sys_fstat", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -133,8 +125,7 @@ void *gt_linux_print_syscall_sys_lstat(GtGuestState *state, gt_pid_t pid, gt_tid
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_lstat", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_lstat", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -144,8 +135,7 @@ void *gt_linux_print_syscall_sys_poll(GtGuestState *state, gt_pid_t pid, gt_tid_
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu, %i)\n", pid, rsp, proc, "sys_poll", (unsigned long) arg0, (unsigned long) arg1, (int) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu, %i)\n", pid, tid, proc, "sys_poll", (unsigned long) arg0, (unsigned long) arg1, (int) arg2);
 	return NULL;
 }
 
@@ -155,16 +145,14 @@ void *gt_linux_print_syscall_sys_lseek(GtGuestState *state, gt_pid_t pid, gt_tid
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_lseek", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_lseek", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_mmap(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_mmap");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_mmap");
 	return NULL;
 }
 
@@ -174,8 +162,7 @@ void *gt_linux_print_syscall_sys_mprotect(GtGuestState *state, gt_pid_t pid, gt_
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu)\n", pid, rsp, proc, "sys_mprotect", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu)\n", pid, tid, proc, "sys_mprotect", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -184,8 +171,7 @@ void *gt_linux_print_syscall_sys_munmap(GtGuestState *state, gt_pid_t pid, gt_ti
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, rsp, proc, "sys_munmap", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, tid, proc, "sys_munmap", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -193,8 +179,7 @@ void *gt_linux_print_syscall_sys_brk(GtGuestState *state, gt_pid_t pid, gt_tid_t
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, "sys_brk", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, tid, proc, "sys_brk", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -205,8 +190,7 @@ void *gt_linux_print_syscall_sys_rt_sigaction(GtGuestState *state, gt_pid_t pid,
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_rt_sigaction", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_rt_sigaction", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -217,16 +201,14 @@ void *gt_linux_print_syscall_sys_rt_sigprocmask(GtGuestState *state, gt_pid_t pi
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_rt_sigprocmask", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_rt_sigprocmask", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_rt_sigreturn(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_rt_sigreturn");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_rt_sigreturn");
 	return NULL;
 }
 
@@ -236,8 +218,7 @@ void *gt_linux_print_syscall_sys_ioctl(GtGuestState *state, gt_pid_t pid, gt_tid
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu)\n", pid, rsp, proc, "sys_ioctl", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu)\n", pid, tid, proc, "sys_ioctl", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -248,8 +229,7 @@ void *gt_linux_print_syscall_sys_pread(GtGuestState *state, gt_pid_t pid, gt_tid
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu, %li)\n", pid, rsp, proc, "sys_pread", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (long int) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu, %li)\n", pid, tid, proc, "sys_pread", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (long int) arg3);
 	return NULL;
 }
 
@@ -260,8 +240,7 @@ void *gt_linux_print_syscall_sys_pwrite(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu, %li)\n", pid, rsp, proc, "sys_pwrite", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (long int) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu, %li)\n", pid, tid, proc, "sys_pwrite", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (long int) arg3);
 	return NULL;
 }
 
@@ -271,8 +250,7 @@ void *gt_linux_print_syscall_sys_readv(GtGuestState *state, gt_pid_t pid, gt_tid
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_readv", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_readv", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -282,8 +260,7 @@ void *gt_linux_print_syscall_sys_writev(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_writev", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_writev", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -292,8 +269,7 @@ void *gt_linux_print_syscall_sys_access(GtGuestState *state, gt_pid_t pid, gt_ti
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i)\n", pid, rsp, proc, "sys_access", (unsigned long) arg0, (int) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i)\n", pid, tid, proc, "sys_access", (unsigned long) arg0, (int) arg1);
 	return NULL;
 }
 
@@ -301,8 +277,7 @@ void *gt_linux_print_syscall_sys_pipe(GtGuestState *state, gt_pid_t pid, gt_tid_
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, "sys_pipe", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, tid, proc, "sys_pipe", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -314,16 +289,14 @@ void *gt_linux_print_syscall_sys_select(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_select", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_select", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_sched_yield(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_sched_yield");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_sched_yield");
 	return NULL;
 }
 
@@ -335,8 +308,7 @@ void *gt_linux_print_syscall_sys_mremap(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu, %lu, %lu)\n", pid, rsp, proc, "sys_mremap", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu, %lu, %lu)\n", pid, tid, proc, "sys_mremap", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 	return NULL;
 }
 
@@ -346,8 +318,7 @@ void *gt_linux_print_syscall_sys_msync(GtGuestState *state, gt_pid_t pid, gt_tid
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %i)\n", pid, rsp, proc, "sys_msync", (unsigned long) arg0, (unsigned long) arg1, (int) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %i)\n", pid, tid, proc, "sys_msync", (unsigned long) arg0, (unsigned long) arg1, (int) arg2);
 	return NULL;
 }
 
@@ -357,8 +328,7 @@ void *gt_linux_print_syscall_sys_mincore(GtGuestState *state, gt_pid_t pid, gt_t
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, 0x%"PRIx64")\n", pid, rsp, proc, "sys_mincore", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, 0x%"PRIx64")\n", pid, tid, proc, "sys_mincore", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -368,8 +338,7 @@ void *gt_linux_print_syscall_sys_madvise(GtGuestState *state, gt_pid_t pid, gt_t
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %i)\n", pid, rsp, proc, "sys_madvise", (unsigned long) arg0, (unsigned long) arg1, (int) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %i)\n", pid, tid, proc, "sys_madvise", (unsigned long) arg0, (unsigned long) arg1, (int) arg2);
 	return NULL;
 }
 
@@ -379,8 +348,7 @@ void *gt_linux_print_syscall_sys_shmget(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, %i)\n", pid, rsp, proc, "sys_shmget", (int) arg0, (unsigned long) arg1, (int) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, %i)\n", pid, tid, proc, "sys_shmget", (int) arg0, (unsigned long) arg1, (int) arg2);
 	return NULL;
 }
 
@@ -390,8 +358,7 @@ void *gt_linux_print_syscall_sys_shmat(GtGuestState *state, gt_pid_t pid, gt_tid
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i)\n", pid, rsp, proc, "sys_shmat", (int) arg0, (unsigned long) arg1, (int) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i)\n", pid, tid, proc, "sys_shmat", (int) arg0, (unsigned long) arg1, (int) arg2);
 	return NULL;
 }
 
@@ -401,8 +368,7 @@ void *gt_linux_print_syscall_sys_shmctl(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, 0x%"PRIx64")\n", pid, rsp, proc, "sys_shmctl", (int) arg0, (int) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, 0x%"PRIx64")\n", pid, tid, proc, "sys_shmctl", (int) arg0, (int) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -410,8 +376,7 @@ void *gt_linux_print_syscall_sys_dup(GtGuestState *state, gt_pid_t pid, gt_tid_t
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, "sys_dup", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, tid, proc, "sys_dup", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -420,16 +385,14 @@ void *gt_linux_print_syscall_sys_dup2(GtGuestState *state, gt_pid_t pid, gt_tid_
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, rsp, proc, "sys_dup2", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, tid, proc, "sys_dup2", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_pause(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_pause");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_pause");
 	return NULL;
 }
 
@@ -438,8 +401,7 @@ void *gt_linux_print_syscall_sys_nanosleep(GtGuestState *state, gt_pid_t pid, gt
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_nanosleep", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_nanosleep", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -448,8 +410,7 @@ void *gt_linux_print_syscall_sys_getitimer(GtGuestState *state, gt_pid_t pid, gt
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, rsp, proc, "sys_getitimer", (int) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, tid, proc, "sys_getitimer", (int) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -457,8 +418,7 @@ void *gt_linux_print_syscall_sys_alarm(GtGuestState *state, gt_pid_t pid, gt_tid
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, "sys_alarm", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, tid, proc, "sys_alarm", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -468,16 +428,14 @@ void *gt_linux_print_syscall_sys_setitimer(GtGuestState *state, gt_pid_t pid, gt
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_setitimer", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_setitimer", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_getpid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_getpid");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_getpid");
 	return NULL;
 }
 
@@ -488,8 +446,7 @@ void *gt_linux_print_syscall_sys_sendfile(GtGuestState *state, gt_pid_t pid, gt_
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_sendfile", (int) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_sendfile", (int) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -499,8 +456,7 @@ void *gt_linux_print_syscall_sys_socket(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i)\n", pid, rsp, proc, "sys_socket", (int) arg0, (int) arg1, (int) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i)\n", pid, tid, proc, "sys_socket", (int) arg0, (int) arg1, (int) arg2);
 	return NULL;
 }
 
@@ -510,8 +466,7 @@ void *gt_linux_print_syscall_sys_connect(GtGuestState *state, gt_pid_t pid, gt_t
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i)\n", pid, rsp, proc, "sys_connect", (int) arg0, (unsigned long) arg1, (int) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i)\n", pid, tid, proc, "sys_connect", (int) arg0, (unsigned long) arg1, (int) arg2);
 	return NULL;
 }
 
@@ -521,8 +476,7 @@ void *gt_linux_print_syscall_sys_accept(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_accept", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_accept", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -535,8 +489,7 @@ void *gt_linux_print_syscall_sys_sendto(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
 	reg_t arg5 = gt_guest_get_vmi_event(state)->x86_regs->r9;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, rsp, proc, "sys_sendto", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4, (int) arg5);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, tid, proc, "sys_sendto", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4, (int) arg5);
 	return NULL;
 }
 
@@ -549,8 +502,7 @@ void *gt_linux_print_syscall_sys_recvfrom(GtGuestState *state, gt_pid_t pid, gt_
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
 	reg_t arg5 = gt_guest_get_vmi_event(state)->x86_regs->r9;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_recvfrom", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_recvfrom", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5);
 	return NULL;
 }
 
@@ -560,8 +512,7 @@ void *gt_linux_print_syscall_sys_sendmsg(GtGuestState *state, gt_pid_t pid, gt_t
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_sendmsg", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_sendmsg", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -571,8 +522,7 @@ void *gt_linux_print_syscall_sys_recvmsg(GtGuestState *state, gt_pid_t pid, gt_t
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_recvmsg", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_recvmsg", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -581,8 +531,7 @@ void *gt_linux_print_syscall_sys_shutdown(GtGuestState *state, gt_pid_t pid, gt_
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, rsp, proc, "sys_shutdown", (int) arg0, (int) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, tid, proc, "sys_shutdown", (int) arg0, (int) arg1);
 	return NULL;
 }
 
@@ -592,8 +541,7 @@ void *gt_linux_print_syscall_sys_bind(GtGuestState *state, gt_pid_t pid, gt_tid_
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i)\n", pid, rsp, proc, "sys_bind", (int) arg0, (unsigned long) arg1, (int) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i)\n", pid, tid, proc, "sys_bind", (int) arg0, (unsigned long) arg1, (int) arg2);
 	return NULL;
 }
 
@@ -602,8 +550,7 @@ void *gt_linux_print_syscall_sys_listen(GtGuestState *state, gt_pid_t pid, gt_ti
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, rsp, proc, "sys_listen", (int) arg0, (int) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, tid, proc, "sys_listen", (int) arg0, (int) arg1);
 	return NULL;
 }
 
@@ -613,8 +560,7 @@ void *gt_linux_print_syscall_sys_getsockname(GtGuestState *state, gt_pid_t pid, 
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_getsockname", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_getsockname", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -624,8 +570,7 @@ void *gt_linux_print_syscall_sys_getpeername(GtGuestState *state, gt_pid_t pid, 
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_getpeername", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_getpeername", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -636,8 +581,7 @@ void *gt_linux_print_syscall_sys_socketpair(GtGuestState *state, gt_pid_t pid, g
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i, 0x%"PRIx64")\n", pid, rsp, proc, "sys_socketpair", (int) arg0, (int) arg1, (int) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i, 0x%"PRIx64")\n", pid, tid, proc, "sys_socketpair", (int) arg0, (int) arg1, (int) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -649,8 +593,7 @@ void *gt_linux_print_syscall_sys_setsockopt(GtGuestState *state, gt_pid_t pid, g
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i, 0x%"PRIx64", %i)\n", pid, rsp, proc, "sys_setsockopt", (int) arg0, (int) arg1, (int) arg2, (unsigned long) arg3, (int) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i, 0x%"PRIx64", %i)\n", pid, tid, proc, "sys_setsockopt", (int) arg0, (int) arg1, (int) arg2, (unsigned long) arg3, (int) arg4);
 	return NULL;
 }
 
@@ -662,8 +605,7 @@ void *gt_linux_print_syscall_sys_getsockopt(GtGuestState *state, gt_pid_t pid, g
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_getsockopt", (int) arg0, (int) arg1, (int) arg2, (unsigned long) arg3, (unsigned long) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_getsockopt", (int) arg0, (int) arg1, (int) arg2, (unsigned long) arg3, (unsigned long) arg4);
 	return NULL;
 }
 
@@ -675,24 +617,21 @@ void *gt_linux_print_syscall_sys_clone(GtGuestState *state, gt_pid_t pid, gt_tid
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, 0x%"PRIx64", %lu, 0x%"PRIx64")\n", pid, rsp, proc, "sys_clone", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, 0x%"PRIx64", %lu, 0x%"PRIx64")\n", pid, tid, proc, "sys_clone", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_fork(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_fork");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_fork");
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_vfork(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_vfork");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_vfork");
 	return NULL;
 }
 
@@ -702,8 +641,7 @@ void *gt_linux_print_syscall_sys_execve(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_execve", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_execve", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -711,8 +649,7 @@ void *gt_linux_print_syscall_sys_exit(GtGuestState *state, gt_pid_t pid, gt_tid_
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, "sys_exit", (int) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, tid, proc, "sys_exit", (int) arg0);
 	return NULL;
 }
 
@@ -723,8 +660,7 @@ void *gt_linux_print_syscall_sys_wait4(GtGuestState *state, gt_pid_t pid, gt_tid
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, 0x%"PRIx64")\n", pid, rsp, proc, "sys_wait4", (int) arg0, (unsigned long) arg1, (int) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, 0x%"PRIx64")\n", pid, tid, proc, "sys_wait4", (int) arg0, (unsigned long) arg1, (int) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -733,8 +669,7 @@ void *gt_linux_print_syscall_sys_kill(GtGuestState *state, gt_pid_t pid, gt_tid_
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, rsp, proc, "sys_kill", (int) arg0, (int) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, tid, proc, "sys_kill", (int) arg0, (int) arg1);
 	return NULL;
 }
 
@@ -742,8 +677,7 @@ void *gt_linux_print_syscall_sys_uname(GtGuestState *state, gt_pid_t pid, gt_tid
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, "sys_uname", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, tid, proc, "sys_uname", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -753,8 +687,7 @@ void *gt_linux_print_syscall_sys_semget(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i)\n", pid, rsp, proc, "sys_semget", (int) arg0, (int) arg1, (int) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i)\n", pid, tid, proc, "sys_semget", (int) arg0, (int) arg1, (int) arg2);
 	return NULL;
 }
 
@@ -764,8 +697,7 @@ void *gt_linux_print_syscall_sys_semop(GtGuestState *state, gt_pid_t pid, gt_tid
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_semop", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_semop", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -776,8 +708,7 @@ void *gt_linux_print_syscall_sys_semctl(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i, %lu)\n", pid, rsp, proc, "sys_semctl", (int) arg0, (int) arg1, (int) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i, %lu)\n", pid, tid, proc, "sys_semctl", (int) arg0, (int) arg1, (int) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -785,8 +716,7 @@ void *gt_linux_print_syscall_sys_shmdt(GtGuestState *state, gt_pid_t pid, gt_tid
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, "sys_shmdt", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, tid, proc, "sys_shmdt", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -795,8 +725,7 @@ void *gt_linux_print_syscall_sys_msgget(GtGuestState *state, gt_pid_t pid, gt_ti
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, rsp, proc, "sys_msgget", (int) arg0, (int) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, tid, proc, "sys_msgget", (int) arg0, (int) arg1);
 	return NULL;
 }
 
@@ -807,8 +736,7 @@ void *gt_linux_print_syscall_sys_msgsnd(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %i)\n", pid, rsp, proc, "sys_msgsnd", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (int) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %i)\n", pid, tid, proc, "sys_msgsnd", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (int) arg3);
 	return NULL;
 }
 
@@ -820,8 +748,7 @@ void *gt_linux_print_syscall_sys_msgrcv(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %li, %i)\n", pid, rsp, proc, "sys_msgrcv", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (long int) arg3, (int) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %li, %i)\n", pid, tid, proc, "sys_msgrcv", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (long int) arg3, (int) arg4);
 	return NULL;
 }
 
@@ -831,8 +758,7 @@ void *gt_linux_print_syscall_sys_msgctl(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, 0x%"PRIx64")\n", pid, rsp, proc, "sys_msgctl", (int) arg0, (int) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, 0x%"PRIx64")\n", pid, tid, proc, "sys_msgctl", (int) arg0, (int) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -842,8 +768,7 @@ void *gt_linux_print_syscall_sys_fcntl(GtGuestState *state, gt_pid_t pid, gt_tid
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu)\n", pid, rsp, proc, "sys_fcntl", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu)\n", pid, tid, proc, "sys_fcntl", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -852,8 +777,7 @@ void *gt_linux_print_syscall_sys_flock(GtGuestState *state, gt_pid_t pid, gt_tid
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, rsp, proc, "sys_flock", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, tid, proc, "sys_flock", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -861,8 +785,7 @@ void *gt_linux_print_syscall_sys_fsync(GtGuestState *state, gt_pid_t pid, gt_tid
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, "sys_fsync", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, tid, proc, "sys_fsync", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -870,8 +793,7 @@ void *gt_linux_print_syscall_sys_fdatasync(GtGuestState *state, gt_pid_t pid, gt
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, "sys_fdatasync", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, tid, proc, "sys_fdatasync", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -880,8 +802,7 @@ void *gt_linux_print_syscall_sys_truncate(GtGuestState *state, gt_pid_t pid, gt_
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %li)\n", pid, rsp, proc, "sys_truncate", (unsigned long) arg0, (long int) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %li)\n", pid, tid, proc, "sys_truncate", (unsigned long) arg0, (long int) arg1);
 	return NULL;
 }
 
@@ -890,8 +811,7 @@ void *gt_linux_print_syscall_sys_ftruncate(GtGuestState *state, gt_pid_t pid, gt
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, rsp, proc, "sys_ftruncate", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, tid, proc, "sys_ftruncate", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -901,8 +821,7 @@ void *gt_linux_print_syscall_sys_getdents(GtGuestState *state, gt_pid_t pid, gt_
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_getdents", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_getdents", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -911,8 +830,7 @@ void *gt_linux_print_syscall_sys_getcwd(GtGuestState *state, gt_pid_t pid, gt_ti
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_getcwd", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_getcwd", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -920,8 +838,7 @@ void *gt_linux_print_syscall_sys_chdir(GtGuestState *state, gt_pid_t pid, gt_tid
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, "sys_chdir", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, tid, proc, "sys_chdir", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -929,8 +846,7 @@ void *gt_linux_print_syscall_sys_fchdir(GtGuestState *state, gt_pid_t pid, gt_ti
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, "sys_fchdir", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, tid, proc, "sys_fchdir", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -939,8 +855,7 @@ void *gt_linux_print_syscall_sys_rename(GtGuestState *state, gt_pid_t pid, gt_ti
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_rename", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_rename", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -949,8 +864,7 @@ void *gt_linux_print_syscall_sys_mkdir(GtGuestState *state, gt_pid_t pid, gt_tid
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_mkdir", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_mkdir", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -958,8 +872,7 @@ void *gt_linux_print_syscall_sys_rmdir(GtGuestState *state, gt_pid_t pid, gt_tid
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, "sys_rmdir", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, tid, proc, "sys_rmdir", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -968,8 +881,7 @@ void *gt_linux_print_syscall_sys_creat(GtGuestState *state, gt_pid_t pid, gt_tid
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_creat", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_creat", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -978,8 +890,7 @@ void *gt_linux_print_syscall_sys_link(GtGuestState *state, gt_pid_t pid, gt_tid_
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_link", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_link", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -987,8 +898,7 @@ void *gt_linux_print_syscall_sys_unlink(GtGuestState *state, gt_pid_t pid, gt_ti
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, "sys_unlink", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, tid, proc, "sys_unlink", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -997,8 +907,7 @@ void *gt_linux_print_syscall_sys_symlink(GtGuestState *state, gt_pid_t pid, gt_t
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_symlink", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_symlink", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1008,8 +917,7 @@ void *gt_linux_print_syscall_sys_readlink(GtGuestState *state, gt_pid_t pid, gt_
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, rsp, proc, "sys_readlink", (unsigned long) arg0, (unsigned long) arg1, (int) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, tid, proc, "sys_readlink", (unsigned long) arg0, (unsigned long) arg1, (int) arg2);
 	return NULL;
 }
 
@@ -1018,8 +926,7 @@ void *gt_linux_print_syscall_sys_chmod(GtGuestState *state, gt_pid_t pid, gt_tid
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_chmod", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_chmod", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1028,8 +935,7 @@ void *gt_linux_print_syscall_sys_fchmod(GtGuestState *state, gt_pid_t pid, gt_ti
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, rsp, proc, "sys_fchmod", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, tid, proc, "sys_fchmod", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1039,8 +945,7 @@ void *gt_linux_print_syscall_sys_chown(GtGuestState *state, gt_pid_t pid, gt_tid
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, "sys_chown", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu, %lu)\n", pid, tid, proc, "sys_chown", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -1050,8 +955,7 @@ void *gt_linux_print_syscall_sys_fchown(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu)\n", pid, rsp, proc, "sys_fchown", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu)\n", pid, tid, proc, "sys_fchown", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -1061,8 +965,7 @@ void *gt_linux_print_syscall_sys_lchown(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, "sys_lchown", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu, %lu)\n", pid, tid, proc, "sys_lchown", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -1070,8 +973,7 @@ void *gt_linux_print_syscall_sys_umask(GtGuestState *state, gt_pid_t pid, gt_tid
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, "sys_umask", (int) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, tid, proc, "sys_umask", (int) arg0);
 	return NULL;
 }
 
@@ -1080,8 +982,7 @@ void *gt_linux_print_syscall_sys_gettimeofday(GtGuestState *state, gt_pid_t pid,
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_gettimeofday", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_gettimeofday", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1090,8 +991,7 @@ void *gt_linux_print_syscall_sys_getrlimit(GtGuestState *state, gt_pid_t pid, gt
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, rsp, proc, "sys_getrlimit", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, tid, proc, "sys_getrlimit", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1100,8 +1000,7 @@ void *gt_linux_print_syscall_sys_getrusage(GtGuestState *state, gt_pid_t pid, gt
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, rsp, proc, "sys_getrusage", (int) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, tid, proc, "sys_getrusage", (int) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1109,8 +1008,7 @@ void *gt_linux_print_syscall_sys_sysinfo(GtGuestState *state, gt_pid_t pid, gt_t
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, "sys_sysinfo", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, tid, proc, "sys_sysinfo", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -1118,8 +1016,7 @@ void *gt_linux_print_syscall_sys_times(GtGuestState *state, gt_pid_t pid, gt_tid
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, "sys_times", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, tid, proc, "sys_times", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -1130,16 +1027,14 @@ void *gt_linux_print_syscall_sys_ptrace(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%li, %li, %lu, %lu)\n", pid, rsp, proc, "sys_ptrace", (long int) arg0, (long int) arg1, (unsigned long) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%li, %li, %lu, %lu)\n", pid, tid, proc, "sys_ptrace", (long int) arg0, (long int) arg1, (unsigned long) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_getuid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_getuid");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_getuid");
 	return NULL;
 }
 
@@ -1149,16 +1044,14 @@ void *gt_linux_print_syscall_sys_syslog(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i)\n", pid, rsp, proc, "sys_syslog", (int) arg0, (unsigned long) arg1, (int) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i)\n", pid, tid, proc, "sys_syslog", (int) arg0, (unsigned long) arg1, (int) arg2);
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_getgid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_getgid");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_getgid");
 	return NULL;
 }
 
@@ -1166,8 +1059,7 @@ void *gt_linux_print_syscall_sys_setuid(GtGuestState *state, gt_pid_t pid, gt_ti
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, "sys_setuid", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, tid, proc, "sys_setuid", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -1175,24 +1067,21 @@ void *gt_linux_print_syscall_sys_setgid(GtGuestState *state, gt_pid_t pid, gt_ti
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, "sys_setgid", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, tid, proc, "sys_setgid", (unsigned long) arg0);
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_geteuid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_geteuid");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_geteuid");
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_getegid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_getegid");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_getegid");
 	return NULL;
 }
 
@@ -1201,32 +1090,28 @@ void *gt_linux_print_syscall_sys_setpgid(GtGuestState *state, gt_pid_t pid, gt_t
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, rsp, proc, "sys_setpgid", (int) arg0, (int) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, tid, proc, "sys_setpgid", (int) arg0, (int) arg1);
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_getppid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_getppid");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_getppid");
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_getpgrp(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_getpgrp");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_getpgrp");
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_setsid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_setsid");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_setsid");
 	return NULL;
 }
 
@@ -1235,8 +1120,7 @@ void *gt_linux_print_syscall_sys_setreuid(GtGuestState *state, gt_pid_t pid, gt_
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, rsp, proc, "sys_setreuid", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, tid, proc, "sys_setreuid", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1245,8 +1129,7 @@ void *gt_linux_print_syscall_sys_setregid(GtGuestState *state, gt_pid_t pid, gt_
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, rsp, proc, "sys_setregid", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, tid, proc, "sys_setregid", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1255,8 +1138,7 @@ void *gt_linux_print_syscall_sys_getgroups(GtGuestState *state, gt_pid_t pid, gt
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, rsp, proc, "sys_getgroups", (int) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, tid, proc, "sys_getgroups", (int) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1265,8 +1147,7 @@ void *gt_linux_print_syscall_sys_setgroups(GtGuestState *state, gt_pid_t pid, gt
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, rsp, proc, "sys_setgroups", (int) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, tid, proc, "sys_setgroups", (int) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1276,8 +1157,7 @@ void *gt_linux_print_syscall_sys_setresuid(GtGuestState *state, gt_pid_t pid, gt
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu)\n", pid, rsp, proc, "sys_setresuid", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu)\n", pid, tid, proc, "sys_setresuid", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -1287,8 +1167,7 @@ void *gt_linux_print_syscall_sys_getresuid(GtGuestState *state, gt_pid_t pid, gt
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_getresuid", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_getresuid", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -1298,8 +1177,7 @@ void *gt_linux_print_syscall_sys_setresgid(GtGuestState *state, gt_pid_t pid, gt
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu)\n", pid, rsp, proc, "sys_setresgid", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu)\n", pid, tid, proc, "sys_setresgid", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -1309,8 +1187,7 @@ void *gt_linux_print_syscall_sys_getresgid(GtGuestState *state, gt_pid_t pid, gt
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_getresgid", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_getresgid", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -1318,8 +1195,7 @@ void *gt_linux_print_syscall_sys_getpgid(GtGuestState *state, gt_pid_t pid, gt_t
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, "sys_getpgid", (int) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, tid, proc, "sys_getpgid", (int) arg0);
 	return NULL;
 }
 
@@ -1327,8 +1203,7 @@ void *gt_linux_print_syscall_sys_setfsuid(GtGuestState *state, gt_pid_t pid, gt_
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, "sys_setfsuid", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, tid, proc, "sys_setfsuid", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -1336,8 +1211,7 @@ void *gt_linux_print_syscall_sys_setfsgid(GtGuestState *state, gt_pid_t pid, gt_
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, "sys_setfsgid", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, tid, proc, "sys_setfsgid", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -1345,8 +1219,7 @@ void *gt_linux_print_syscall_sys_getsid(GtGuestState *state, gt_pid_t pid, gt_ti
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, "sys_getsid", (int) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, tid, proc, "sys_getsid", (int) arg0);
 	return NULL;
 }
 
@@ -1355,8 +1228,7 @@ void *gt_linux_print_syscall_sys_capget(GtGuestState *state, gt_pid_t pid, gt_ti
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_capget", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_capget", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1365,8 +1237,7 @@ void *gt_linux_print_syscall_sys_capset(GtGuestState *state, gt_pid_t pid, gt_ti
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_capset", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_capset", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1375,8 +1246,7 @@ void *gt_linux_print_syscall_sys_rt_sigpending(GtGuestState *state, gt_pid_t pid
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_rt_sigpending", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_rt_sigpending", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1387,8 +1257,7 @@ void *gt_linux_print_syscall_sys_rt_sigtimedwait(GtGuestState *state, gt_pid_t p
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_rt_sigtimedwait", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_rt_sigtimedwait", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -1398,8 +1267,7 @@ void *gt_linux_print_syscall_sys_rt_sigqueueinfo(GtGuestState *state, gt_pid_t p
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, 0x%"PRIx64")\n", pid, rsp, proc, "sys_rt_sigqueueinfo", (int) arg0, (int) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, 0x%"PRIx64")\n", pid, tid, proc, "sys_rt_sigqueueinfo", (int) arg0, (int) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -1408,8 +1276,7 @@ void *gt_linux_print_syscall_sys_rt_sigsuspend(GtGuestState *state, gt_pid_t pid
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_rt_sigsuspend", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_rt_sigsuspend", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1418,8 +1285,7 @@ void *gt_linux_print_syscall_sys_sigaltstack(GtGuestState *state, gt_pid_t pid, 
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_sigaltstack", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_sigaltstack", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1428,8 +1294,7 @@ void *gt_linux_print_syscall_sys_utime(GtGuestState *state, gt_pid_t pid, gt_tid
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_utime", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_utime", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1439,8 +1304,7 @@ void *gt_linux_print_syscall_sys_mknod(GtGuestState *state, gt_pid_t pid, gt_tid
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, "sys_mknod", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu, %lu)\n", pid, tid, proc, "sys_mknod", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -1448,8 +1312,7 @@ void *gt_linux_print_syscall_sys_uselib(GtGuestState *state, gt_pid_t pid, gt_ti
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, "sys_uselib", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, tid, proc, "sys_uselib", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -1457,8 +1320,7 @@ void *gt_linux_print_syscall_sys_personality(GtGuestState *state, gt_pid_t pid, 
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, "sys_personality", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, tid, proc, "sys_personality", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -1467,8 +1329,7 @@ void *gt_linux_print_syscall_sys_ustat(GtGuestState *state, gt_pid_t pid, gt_tid
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, rsp, proc, "sys_ustat", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, tid, proc, "sys_ustat", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1477,8 +1338,7 @@ void *gt_linux_print_syscall_sys_statfs(GtGuestState *state, gt_pid_t pid, gt_ti
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_statfs", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_statfs", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1487,8 +1347,7 @@ void *gt_linux_print_syscall_sys_fstatfs(GtGuestState *state, gt_pid_t pid, gt_t
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, rsp, proc, "sys_fstatfs", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, tid, proc, "sys_fstatfs", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1498,8 +1357,7 @@ void *gt_linux_print_syscall_sys_sysfs(GtGuestState *state, gt_pid_t pid, gt_tid
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, %lu)\n", pid, rsp, proc, "sys_sysfs", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, %lu)\n", pid, tid, proc, "sys_sysfs", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -1508,8 +1366,7 @@ void *gt_linux_print_syscall_sys_getpriority(GtGuestState *state, gt_pid_t pid, 
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, rsp, proc, "sys_getpriority", (int) arg0, (int) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, tid, proc, "sys_getpriority", (int) arg0, (int) arg1);
 	return NULL;
 }
 
@@ -1519,8 +1376,7 @@ void *gt_linux_print_syscall_sys_setpriority(GtGuestState *state, gt_pid_t pid, 
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i)\n", pid, rsp, proc, "sys_setpriority", (int) arg0, (int) arg1, (int) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i)\n", pid, tid, proc, "sys_setpriority", (int) arg0, (int) arg1, (int) arg2);
 	return NULL;
 }
 
@@ -1529,8 +1385,7 @@ void *gt_linux_print_syscall_sys_sched_setparam(GtGuestState *state, gt_pid_t pi
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, rsp, proc, "sys_sched_setparam", (int) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, tid, proc, "sys_sched_setparam", (int) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1539,8 +1394,7 @@ void *gt_linux_print_syscall_sys_sched_getparam(GtGuestState *state, gt_pid_t pi
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, rsp, proc, "sys_sched_getparam", (int) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, tid, proc, "sys_sched_getparam", (int) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1550,8 +1404,7 @@ void *gt_linux_print_syscall_sys_sched_setscheduler(GtGuestState *state, gt_pid_
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, 0x%"PRIx64")\n", pid, rsp, proc, "sys_sched_setscheduler", (int) arg0, (int) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, 0x%"PRIx64")\n", pid, tid, proc, "sys_sched_setscheduler", (int) arg0, (int) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -1559,8 +1412,7 @@ void *gt_linux_print_syscall_sys_sched_getscheduler(GtGuestState *state, gt_pid_
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, "sys_sched_getscheduler", (int) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, tid, proc, "sys_sched_getscheduler", (int) arg0);
 	return NULL;
 }
 
@@ -1568,8 +1420,7 @@ void *gt_linux_print_syscall_sys_sched_get_priority_max(GtGuestState *state, gt_
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, "sys_sched_get_priority_max", (int) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, tid, proc, "sys_sched_get_priority_max", (int) arg0);
 	return NULL;
 }
 
@@ -1577,8 +1428,7 @@ void *gt_linux_print_syscall_sys_sched_get_priority_min(GtGuestState *state, gt_
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, "sys_sched_get_priority_min", (int) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, tid, proc, "sys_sched_get_priority_min", (int) arg0);
 	return NULL;
 }
 
@@ -1587,8 +1437,7 @@ void *gt_linux_print_syscall_sys_sched_rr_get_interval(GtGuestState *state, gt_p
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, rsp, proc, "sys_sched_rr_get_interval", (int) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, tid, proc, "sys_sched_rr_get_interval", (int) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1597,8 +1446,7 @@ void *gt_linux_print_syscall_sys_mlock(GtGuestState *state, gt_pid_t pid, gt_tid
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, rsp, proc, "sys_mlock", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, tid, proc, "sys_mlock", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1607,8 +1455,7 @@ void *gt_linux_print_syscall_sys_munlock(GtGuestState *state, gt_pid_t pid, gt_t
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, rsp, proc, "sys_munlock", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, tid, proc, "sys_munlock", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1616,32 +1463,28 @@ void *gt_linux_print_syscall_sys_mlockall(GtGuestState *state, gt_pid_t pid, gt_
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, "sys_mlockall", (int) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, tid, proc, "sys_mlockall", (int) arg0);
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_munlockall(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_munlockall");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_munlockall");
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_vhangup(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_vhangup");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_vhangup");
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_modify_ldt(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_modify_ldt");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_modify_ldt");
 	return NULL;
 }
 
@@ -1650,8 +1493,7 @@ void *gt_linux_print_syscall_sys_pivot_root(GtGuestState *state, gt_pid_t pid, g
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_pivot_root", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_pivot_root", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1659,8 +1501,7 @@ void *gt_linux_print_syscall_sys_sysctl(GtGuestState *state, gt_pid_t pid, gt_ti
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, "sys_sysctl", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, tid, proc, "sys_sysctl", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -1672,16 +1513,14 @@ void *gt_linux_print_syscall_sys_prctl(GtGuestState *state, gt_pid_t pid, gt_tid
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, %lu, %lu, %lu)\n", pid, rsp, proc, "sys_prctl", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, %lu, %lu, %lu)\n", pid, tid, proc, "sys_prctl", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_arch_prctl(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_arch_prctl");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_arch_prctl");
 	return NULL;
 }
 
@@ -1689,8 +1528,7 @@ void *gt_linux_print_syscall_sys_adjtimex(GtGuestState *state, gt_pid_t pid, gt_
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, "sys_adjtimex", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, tid, proc, "sys_adjtimex", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -1699,8 +1537,7 @@ void *gt_linux_print_syscall_sys_setrlimit(GtGuestState *state, gt_pid_t pid, gt
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, rsp, proc, "sys_setrlimit", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, tid, proc, "sys_setrlimit", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1708,16 +1545,14 @@ void *gt_linux_print_syscall_sys_chroot(GtGuestState *state, gt_pid_t pid, gt_ti
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, "sys_chroot", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, tid, proc, "sys_chroot", (unsigned long) arg0);
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_sync(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_sync");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_sync");
 	return NULL;
 }
 
@@ -1725,8 +1560,7 @@ void *gt_linux_print_syscall_sys_acct(GtGuestState *state, gt_pid_t pid, gt_tid_
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, "sys_acct", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, tid, proc, "sys_acct", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -1735,8 +1569,7 @@ void *gt_linux_print_syscall_sys_settimeofday(GtGuestState *state, gt_pid_t pid,
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_settimeofday", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_settimeofday", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1748,16 +1581,14 @@ void *gt_linux_print_syscall_sys_mount(GtGuestState *state, gt_pid_t pid, gt_tid
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %lu, 0x%"PRIx64")\n", pid, rsp, proc, "sys_mount", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %lu, 0x%"PRIx64")\n", pid, tid, proc, "sys_mount", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_umount2(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_umount2");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_umount2");
 	return NULL;
 }
 
@@ -1766,8 +1597,7 @@ void *gt_linux_print_syscall_sys_swapon(GtGuestState *state, gt_pid_t pid, gt_ti
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i)\n", pid, rsp, proc, "sys_swapon", (unsigned long) arg0, (int) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i)\n", pid, tid, proc, "sys_swapon", (unsigned long) arg0, (int) arg1);
 	return NULL;
 }
 
@@ -1775,8 +1605,7 @@ void *gt_linux_print_syscall_sys_swapoff(GtGuestState *state, gt_pid_t pid, gt_t
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, "sys_swapoff", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, tid, proc, "sys_swapoff", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -1787,8 +1616,7 @@ void *gt_linux_print_syscall_sys_reboot(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %lu, 0x%"PRIx64")\n", pid, rsp, proc, "sys_reboot", (int) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %lu, 0x%"PRIx64")\n", pid, tid, proc, "sys_reboot", (int) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -1797,8 +1625,7 @@ void *gt_linux_print_syscall_sys_sethostname(GtGuestState *state, gt_pid_t pid, 
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i)\n", pid, rsp, proc, "sys_sethostname", (unsigned long) arg0, (int) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i)\n", pid, tid, proc, "sys_sethostname", (unsigned long) arg0, (int) arg1);
 	return NULL;
 }
 
@@ -1807,16 +1634,14 @@ void *gt_linux_print_syscall_sys_setdomainname(GtGuestState *state, gt_pid_t pid
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i)\n", pid, rsp, proc, "sys_setdomainname", (unsigned long) arg0, (int) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i)\n", pid, tid, proc, "sys_setdomainname", (unsigned long) arg0, (int) arg1);
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_iopl(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_iopl");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_iopl");
 	return NULL;
 }
 
@@ -1826,16 +1651,14 @@ void *gt_linux_print_syscall_sys_ioperm(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %i)\n", pid, rsp, proc, "sys_ioperm", (unsigned long) arg0, (unsigned long) arg1, (int) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %i)\n", pid, tid, proc, "sys_ioperm", (unsigned long) arg0, (unsigned long) arg1, (int) arg2);
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_create_module(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_create_module");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_create_module");
 	return NULL;
 }
 
@@ -1845,8 +1668,7 @@ void *gt_linux_print_syscall_sys_init_module(GtGuestState *state, gt_pid_t pid, 
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu, 0x%"PRIx64")\n", pid, rsp, proc, "sys_init_module", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu, 0x%"PRIx64")\n", pid, tid, proc, "sys_init_module", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -1855,24 +1677,21 @@ void *gt_linux_print_syscall_sys_delete_module(GtGuestState *state, gt_pid_t pid
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_delete_module", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_delete_module", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_get_kernel_syms(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_get_kernel_syms");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_get_kernel_syms");
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_query_module(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_query_module");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_query_module");
 	return NULL;
 }
 
@@ -1883,64 +1702,56 @@ void *gt_linux_print_syscall_sys_quotactl(GtGuestState *state, gt_pid_t pid, gt_
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu, 0x%"PRIx64")\n", pid, rsp, proc, "sys_quotactl", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu, 0x%"PRIx64")\n", pid, tid, proc, "sys_quotactl", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_nfsservctl(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_nfsservctl");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_nfsservctl");
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_getpmsg(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_getpmsg");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_getpmsg");
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_putpmsg(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_putpmsg");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_putpmsg");
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_afs_syscall(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_afs_syscall");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_afs_syscall");
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_tuxcall(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_tuxcall");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_tuxcall");
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_security(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_security");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_security");
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_gettid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_gettid");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_gettid");
 	return NULL;
 }
 
@@ -1950,8 +1761,7 @@ void *gt_linux_print_syscall_sys_readahead(GtGuestState *state, gt_pid_t pid, gt
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %li, %lu)\n", pid, rsp, proc, "sys_readahead", (int) arg0, (long int) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %li, %lu)\n", pid, tid, proc, "sys_readahead", (int) arg0, (long int) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -1963,8 +1773,7 @@ void *gt_linux_print_syscall_sys_setxattr(GtGuestState *state, gt_pid_t pid, gt_
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %lu, %i)\n", pid, rsp, proc, "sys_setxattr", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (int) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %lu, %i)\n", pid, tid, proc, "sys_setxattr", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (int) arg4);
 	return NULL;
 }
 
@@ -1976,8 +1785,7 @@ void *gt_linux_print_syscall_sys_lsetxattr(GtGuestState *state, gt_pid_t pid, gt
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %lu, %i)\n", pid, rsp, proc, "sys_lsetxattr", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (int) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %lu, %i)\n", pid, tid, proc, "sys_lsetxattr", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (int) arg4);
 	return NULL;
 }
 
@@ -1989,8 +1797,7 @@ void *gt_linux_print_syscall_sys_fsetxattr(GtGuestState *state, gt_pid_t pid, gt
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", %lu, %i)\n", pid, rsp, proc, "sys_fsetxattr", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (int) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", %lu, %i)\n", pid, tid, proc, "sys_fsetxattr", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (int) arg4);
 	return NULL;
 }
 
@@ -2001,8 +1808,7 @@ void *gt_linux_print_syscall_sys_getxattr(GtGuestState *state, gt_pid_t pid, gt_
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_getxattr", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_getxattr", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -2013,8 +1819,7 @@ void *gt_linux_print_syscall_sys_lgetxattr(GtGuestState *state, gt_pid_t pid, gt
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_lgetxattr", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_lgetxattr", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -2025,8 +1830,7 @@ void *gt_linux_print_syscall_sys_fgetxattr(GtGuestState *state, gt_pid_t pid, gt
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_fgetxattr", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_fgetxattr", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -2036,8 +1840,7 @@ void *gt_linux_print_syscall_sys_listxattr(GtGuestState *state, gt_pid_t pid, gt
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_listxattr", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_listxattr", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -2047,8 +1850,7 @@ void *gt_linux_print_syscall_sys_llistxattr(GtGuestState *state, gt_pid_t pid, g
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_llistxattr", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_llistxattr", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -2058,8 +1860,7 @@ void *gt_linux_print_syscall_sys_flistxattr(GtGuestState *state, gt_pid_t pid, g
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_flistxattr", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_flistxattr", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -2068,8 +1869,7 @@ void *gt_linux_print_syscall_sys_removexattr(GtGuestState *state, gt_pid_t pid, 
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_removexattr", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_removexattr", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -2078,8 +1878,7 @@ void *gt_linux_print_syscall_sys_lremovexattr(GtGuestState *state, gt_pid_t pid,
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_lremovexattr", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_lremovexattr", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -2088,8 +1887,7 @@ void *gt_linux_print_syscall_sys_fremovexattr(GtGuestState *state, gt_pid_t pid,
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, rsp, proc, "sys_fremovexattr", (int) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, tid, proc, "sys_fremovexattr", (int) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -2098,8 +1896,7 @@ void *gt_linux_print_syscall_sys_tkill(GtGuestState *state, gt_pid_t pid, gt_tid
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, rsp, proc, "sys_tkill", (int) arg0, (int) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, tid, proc, "sys_tkill", (int) arg0, (int) arg1);
 	return NULL;
 }
 
@@ -2107,8 +1904,7 @@ void *gt_linux_print_syscall_sys_time(GtGuestState *state, gt_pid_t pid, gt_tid_
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, "sys_time", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, tid, proc, "sys_time", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -2121,8 +1917,7 @@ void *gt_linux_print_syscall_sys_futex(GtGuestState *state, gt_pid_t pid, gt_tid
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
 	reg_t arg5 = gt_guest_get_vmi_event(state)->x86_regs->r9;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_futex", (unsigned long) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_futex", (unsigned long) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5);
 	return NULL;
 }
 
@@ -2132,8 +1927,7 @@ void *gt_linux_print_syscall_sys_sched_setaffinity(GtGuestState *state, gt_pid_t
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, 0x%"PRIx64")\n", pid, rsp, proc, "sys_sched_setaffinity", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, 0x%"PRIx64")\n", pid, tid, proc, "sys_sched_setaffinity", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -2143,16 +1937,14 @@ void *gt_linux_print_syscall_sys_sched_getaffinity(GtGuestState *state, gt_pid_t
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, 0x%"PRIx64")\n", pid, rsp, proc, "sys_sched_getaffinity", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, 0x%"PRIx64")\n", pid, tid, proc, "sys_sched_getaffinity", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_set_thread_area(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_set_thread_area");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_set_thread_area");
 	return NULL;
 }
 
@@ -2161,8 +1953,7 @@ void *gt_linux_print_syscall_sys_io_setup(GtGuestState *state, gt_pid_t pid, gt_
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, rsp, proc, "sys_io_setup", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, tid, proc, "sys_io_setup", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -2170,8 +1961,7 @@ void *gt_linux_print_syscall_sys_io_destroy(GtGuestState *state, gt_pid_t pid, g
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, "sys_io_destroy", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, tid, proc, "sys_io_destroy", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -2183,8 +1973,7 @@ void *gt_linux_print_syscall_sys_io_getevents(GtGuestState *state, gt_pid_t pid,
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %li, %li, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_io_getevents", (unsigned long) arg0, (long int) arg1, (long int) arg2, (unsigned long) arg3, (unsigned long) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %li, %li, 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_io_getevents", (unsigned long) arg0, (long int) arg1, (long int) arg2, (unsigned long) arg3, (unsigned long) arg4);
 	return NULL;
 }
 
@@ -2194,8 +1983,7 @@ void *gt_linux_print_syscall_sys_io_submit(GtGuestState *state, gt_pid_t pid, gt
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %li, 0x%"PRIx64")\n", pid, rsp, proc, "sys_io_submit", (unsigned long) arg0, (long int) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %li, 0x%"PRIx64")\n", pid, tid, proc, "sys_io_submit", (unsigned long) arg0, (long int) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -2205,16 +1993,14 @@ void *gt_linux_print_syscall_sys_io_cancel(GtGuestState *state, gt_pid_t pid, gt
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_io_cancel", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_io_cancel", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_get_thread_area(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_get_thread_area");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_get_thread_area");
 	return NULL;
 }
 
@@ -2224,8 +2010,7 @@ void *gt_linux_print_syscall_sys_lookup_dcookie(GtGuestState *state, gt_pid_t pi
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_lookup_dcookie", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_lookup_dcookie", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -2233,24 +2018,21 @@ void *gt_linux_print_syscall_sys_epoll_create(GtGuestState *state, gt_pid_t pid,
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, "sys_epoll_create", (int) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, tid, proc, "sys_epoll_create", (int) arg0);
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_epoll_ctl_old(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_epoll_ctl_old");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_epoll_ctl_old");
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_epoll_wait_old(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_epoll_wait_old");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_epoll_wait_old");
 	return NULL;
 }
 
@@ -2262,8 +2044,7 @@ void *gt_linux_print_syscall_sys_remap_file_pages(GtGuestState *state, gt_pid_t 
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu, %lu, %lu)\n", pid, rsp, proc, "sys_remap_file_pages", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu, %lu, %lu)\n", pid, tid, proc, "sys_remap_file_pages", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 	return NULL;
 }
 
@@ -2273,8 +2054,7 @@ void *gt_linux_print_syscall_sys_getdents64(GtGuestState *state, gt_pid_t pid, g
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_getdents64", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_getdents64", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -2282,16 +2062,14 @@ void *gt_linux_print_syscall_sys_set_tid_address(GtGuestState *state, gt_pid_t p
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, "sys_set_tid_address", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, tid, proc, "sys_set_tid_address", (unsigned long) arg0);
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_restart_syscall(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_restart_syscall");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_restart_syscall");
 	return NULL;
 }
 
@@ -2302,8 +2080,7 @@ void *gt_linux_print_syscall_sys_semtimedop(GtGuestState *state, gt_pid_t pid, g
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, 0x%"PRIx64")\n", pid, rsp, proc, "sys_semtimedop", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, 0x%"PRIx64")\n", pid, tid, proc, "sys_semtimedop", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -2314,8 +2091,7 @@ void *gt_linux_print_syscall_sys_fadvise64(GtGuestState *state, gt_pid_t pid, gt
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %li, %lu, %i)\n", pid, rsp, proc, "sys_fadvise64", (int) arg0, (long int) arg1, (unsigned long) arg2, (int) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %li, %lu, %i)\n", pid, tid, proc, "sys_fadvise64", (int) arg0, (long int) arg1, (unsigned long) arg2, (int) arg3);
 	return NULL;
 }
 
@@ -2325,8 +2101,7 @@ void *gt_linux_print_syscall_sys_timer_create(GtGuestState *state, gt_pid_t pid,
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_timer_create", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_timer_create", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -2337,8 +2112,7 @@ void *gt_linux_print_syscall_sys_timer_settime(GtGuestState *state, gt_pid_t pid
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_timer_settime", (unsigned long) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_timer_settime", (unsigned long) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -2347,8 +2121,7 @@ void *gt_linux_print_syscall_sys_timer_gettime(GtGuestState *state, gt_pid_t pid
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, rsp, proc, "sys_timer_gettime", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, tid, proc, "sys_timer_gettime", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -2356,8 +2129,7 @@ void *gt_linux_print_syscall_sys_timer_getoverrun(GtGuestState *state, gt_pid_t 
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, "sys_timer_getoverrun", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, tid, proc, "sys_timer_getoverrun", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -2365,8 +2137,7 @@ void *gt_linux_print_syscall_sys_timer_delete(GtGuestState *state, gt_pid_t pid,
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, "sys_timer_delete", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, tid, proc, "sys_timer_delete", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -2375,8 +2146,7 @@ void *gt_linux_print_syscall_sys_clock_settime(GtGuestState *state, gt_pid_t pid
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, rsp, proc, "sys_clock_settime", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, tid, proc, "sys_clock_settime", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -2385,8 +2155,7 @@ void *gt_linux_print_syscall_sys_clock_gettime(GtGuestState *state, gt_pid_t pid
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, rsp, proc, "sys_clock_gettime", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, tid, proc, "sys_clock_gettime", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -2395,8 +2164,7 @@ void *gt_linux_print_syscall_sys_clock_getres(GtGuestState *state, gt_pid_t pid,
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, rsp, proc, "sys_clock_getres", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, tid, proc, "sys_clock_getres", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -2407,8 +2175,7 @@ void *gt_linux_print_syscall_sys_clock_nanosleep(GtGuestState *state, gt_pid_t p
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_clock_nanosleep", (unsigned long) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_clock_nanosleep", (unsigned long) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -2416,8 +2183,7 @@ void *gt_linux_print_syscall_sys_exit_group(GtGuestState *state, gt_pid_t pid, g
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, "sys_exit_group", (int) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, tid, proc, "sys_exit_group", (int) arg0);
 	return NULL;
 }
 
@@ -2428,8 +2194,7 @@ void *gt_linux_print_syscall_sys_epoll_wait(GtGuestState *state, gt_pid_t pid, g
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, %i)\n", pid, rsp, proc, "sys_epoll_wait", (int) arg0, (unsigned long) arg1, (int) arg2, (int) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, %i)\n", pid, tid, proc, "sys_epoll_wait", (int) arg0, (unsigned long) arg1, (int) arg2, (int) arg3);
 	return NULL;
 }
 
@@ -2440,8 +2205,7 @@ void *gt_linux_print_syscall_sys_epoll_ctl(GtGuestState *state, gt_pid_t pid, gt
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i, 0x%"PRIx64")\n", pid, rsp, proc, "sys_epoll_ctl", (int) arg0, (int) arg1, (int) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i, 0x%"PRIx64")\n", pid, tid, proc, "sys_epoll_ctl", (int) arg0, (int) arg1, (int) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -2451,8 +2215,7 @@ void *gt_linux_print_syscall_sys_tgkill(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i)\n", pid, rsp, proc, "sys_tgkill", (int) arg0, (int) arg1, (int) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i)\n", pid, tid, proc, "sys_tgkill", (int) arg0, (int) arg1, (int) arg2);
 	return NULL;
 }
 
@@ -2461,16 +2224,14 @@ void *gt_linux_print_syscall_sys_utimes(GtGuestState *state, gt_pid_t pid, gt_ti
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_utimes", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_utimes", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_vserver(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_vserver");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_vserver");
 	return NULL;
 }
 
@@ -2483,8 +2244,7 @@ void *gt_linux_print_syscall_sys_mbind(GtGuestState *state, gt_pid_t pid, gt_tid
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
 	reg_t arg5 = gt_guest_get_vmi_event(state)->x86_regs->r9;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu, 0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, "sys_mbind", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu, 0x%"PRIx64", %lu, %lu)\n", pid, tid, proc, "sys_mbind", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5);
 	return NULL;
 }
 
@@ -2494,8 +2254,7 @@ void *gt_linux_print_syscall_sys_set_mempolicy(GtGuestState *state, gt_pid_t pid
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_set_mempolicy", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_set_mempolicy", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -2507,8 +2266,7 @@ void *gt_linux_print_syscall_sys_get_mempolicy(GtGuestState *state, gt_pid_t pid
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", %lu, %lu, %lu)\n", pid, rsp, proc, "sys_get_mempolicy", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", %lu, %lu, %lu)\n", pid, tid, proc, "sys_get_mempolicy", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 	return NULL;
 }
 
@@ -2519,8 +2277,7 @@ void *gt_linux_print_syscall_sys_mq_open(GtGuestState *state, gt_pid_t pid, gt_t
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i, %lu, 0x%"PRIx64")\n", pid, rsp, proc, "sys_mq_open", (unsigned long) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i, %lu, 0x%"PRIx64")\n", pid, tid, proc, "sys_mq_open", (unsigned long) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -2528,8 +2285,7 @@ void *gt_linux_print_syscall_sys_mq_unlink(GtGuestState *state, gt_pid_t pid, gt
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, rsp, proc, "sys_mq_unlink", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, tid, proc, "sys_mq_unlink", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -2541,8 +2297,7 @@ void *gt_linux_print_syscall_sys_mq_timedsend(GtGuestState *state, gt_pid_t pid,
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %lu, 0x%"PRIx64")\n", pid, rsp, proc, "sys_mq_timedsend", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %lu, 0x%"PRIx64")\n", pid, tid, proc, "sys_mq_timedsend", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 	return NULL;
 }
 
@@ -2554,8 +2309,7 @@ void *gt_linux_print_syscall_sys_mq_timedreceive(GtGuestState *state, gt_pid_t p
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_mq_timedreceive", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_mq_timedreceive", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 	return NULL;
 }
 
@@ -2564,8 +2318,7 @@ void *gt_linux_print_syscall_sys_mq_notify(GtGuestState *state, gt_pid_t pid, gt
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, rsp, proc, "sys_mq_notify", (int) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, tid, proc, "sys_mq_notify", (int) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -2575,8 +2328,7 @@ void *gt_linux_print_syscall_sys_mq_getsetattr(GtGuestState *state, gt_pid_t pid
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_mq_getsetattr", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_mq_getsetattr", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -2587,8 +2339,7 @@ void *gt_linux_print_syscall_sys_kexec_load(GtGuestState *state, gt_pid_t pid, g
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_kexec_load", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_kexec_load", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -2600,8 +2351,7 @@ void *gt_linux_print_syscall_sys_waitid(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, 0x%"PRIx64", %i, 0x%"PRIx64")\n", pid, rsp, proc, "sys_waitid", (int) arg0, (int) arg1, (unsigned long) arg2, (int) arg3, (unsigned long) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, 0x%"PRIx64", %i, 0x%"PRIx64")\n", pid, tid, proc, "sys_waitid", (int) arg0, (int) arg1, (unsigned long) arg2, (int) arg3, (unsigned long) arg4);
 	return NULL;
 }
 
@@ -2613,8 +2363,7 @@ void *gt_linux_print_syscall_sys_add_key(GtGuestState *state, gt_pid_t pid, gt_t
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %lu, %i)\n", pid, rsp, proc, "sys_add_key", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (int) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %lu, %i)\n", pid, tid, proc, "sys_add_key", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (int) arg4);
 	return NULL;
 }
 
@@ -2625,8 +2374,7 @@ void *gt_linux_print_syscall_sys_request_key(GtGuestState *state, gt_pid_t pid, 
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, rsp, proc, "sys_request_key", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (int) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, tid, proc, "sys_request_key", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (int) arg3);
 	return NULL;
 }
 
@@ -2638,8 +2386,7 @@ void *gt_linux_print_syscall_sys_keyctl(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, %lu, %lu, %lu)\n", pid, rsp, proc, "sys_keyctl", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, %lu, %lu, %lu)\n", pid, tid, proc, "sys_keyctl", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 	return NULL;
 }
 
@@ -2649,8 +2396,7 @@ void *gt_linux_print_syscall_sys_ioprio_set(GtGuestState *state, gt_pid_t pid, g
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i)\n", pid, rsp, proc, "sys_ioprio_set", (int) arg0, (int) arg1, (int) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i)\n", pid, tid, proc, "sys_ioprio_set", (int) arg0, (int) arg1, (int) arg2);
 	return NULL;
 }
 
@@ -2659,16 +2405,14 @@ void *gt_linux_print_syscall_sys_ioprio_get(GtGuestState *state, gt_pid_t pid, g
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, rsp, proc, "sys_ioprio_get", (int) arg0, (int) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, tid, proc, "sys_ioprio_get", (int) arg0, (int) arg1);
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_inotify_init(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_inotify_init");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_inotify_init");
 	return NULL;
 }
 
@@ -2678,8 +2422,7 @@ void *gt_linux_print_syscall_sys_inotify_add_watch(GtGuestState *state, gt_pid_t
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_inotify_add_watch", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_inotify_add_watch", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -2688,8 +2431,7 @@ void *gt_linux_print_syscall_sys_inotify_rm_watch(GtGuestState *state, gt_pid_t 
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, rsp, proc, "sys_inotify_rm_watch", (int) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, tid, proc, "sys_inotify_rm_watch", (int) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -2700,8 +2442,7 @@ void *gt_linux_print_syscall_sys_migrate_pages(GtGuestState *state, gt_pid_t pid
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_migrate_pages", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_migrate_pages", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -2712,8 +2453,7 @@ void *gt_linux_print_syscall_sys_openat(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, %lu)\n", pid, rsp, proc, "sys_openat", (int) arg0, (unsigned long) arg1, (int) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, %lu)\n", pid, tid, proc, "sys_openat", (int) arg0, (unsigned long) arg1, (int) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -2723,8 +2463,7 @@ void *gt_linux_print_syscall_sys_mkdirat(GtGuestState *state, gt_pid_t pid, gt_t
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_mkdirat", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_mkdirat", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -2735,8 +2474,7 @@ void *gt_linux_print_syscall_sys_mknodat(GtGuestState *state, gt_pid_t pid, gt_t
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, "sys_mknodat", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %lu)\n", pid, tid, proc, "sys_mknodat", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -2748,8 +2486,7 @@ void *gt_linux_print_syscall_sys_fchownat(GtGuestState *state, gt_pid_t pid, gt_
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %lu, %i)\n", pid, rsp, proc, "sys_fchownat", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (int) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %lu, %i)\n", pid, tid, proc, "sys_fchownat", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (int) arg4);
 	return NULL;
 }
 
@@ -2759,8 +2496,7 @@ void *gt_linux_print_syscall_sys_futimesat(GtGuestState *state, gt_pid_t pid, gt
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_futimesat", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_futimesat", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -2771,8 +2507,7 @@ void *gt_linux_print_syscall_sys_newfstatat(GtGuestState *state, gt_pid_t pid, g
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, rsp, proc, "sys_newfstatat", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (int) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, tid, proc, "sys_newfstatat", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (int) arg3);
 	return NULL;
 }
 
@@ -2782,8 +2517,7 @@ void *gt_linux_print_syscall_sys_unlinkat(GtGuestState *state, gt_pid_t pid, gt_
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i)\n", pid, rsp, proc, "sys_unlinkat", (int) arg0, (unsigned long) arg1, (int) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i)\n", pid, tid, proc, "sys_unlinkat", (int) arg0, (unsigned long) arg1, (int) arg2);
 	return NULL;
 }
 
@@ -2794,8 +2528,7 @@ void *gt_linux_print_syscall_sys_renameat(GtGuestState *state, gt_pid_t pid, gt_
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, 0x%"PRIx64")\n", pid, rsp, proc, "sys_renameat", (int) arg0, (unsigned long) arg1, (int) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, 0x%"PRIx64")\n", pid, tid, proc, "sys_renameat", (int) arg0, (unsigned long) arg1, (int) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -2807,8 +2540,7 @@ void *gt_linux_print_syscall_sys_linkat(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, 0x%"PRIx64", %i)\n", pid, rsp, proc, "sys_linkat", (int) arg0, (unsigned long) arg1, (int) arg2, (unsigned long) arg3, (int) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, 0x%"PRIx64", %i)\n", pid, tid, proc, "sys_linkat", (int) arg0, (unsigned long) arg1, (int) arg2, (unsigned long) arg3, (int) arg4);
 	return NULL;
 }
 
@@ -2818,8 +2550,7 @@ void *gt_linux_print_syscall_sys_symlinkat(GtGuestState *state, gt_pid_t pid, gt
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i, 0x%"PRIx64")\n", pid, rsp, proc, "sys_symlinkat", (unsigned long) arg0, (int) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i, 0x%"PRIx64")\n", pid, tid, proc, "sys_symlinkat", (unsigned long) arg0, (int) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -2830,8 +2561,7 @@ void *gt_linux_print_syscall_sys_readlinkat(GtGuestState *state, gt_pid_t pid, g
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, rsp, proc, "sys_readlinkat", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (int) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, tid, proc, "sys_readlinkat", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (int) arg3);
 	return NULL;
 }
 
@@ -2841,8 +2571,7 @@ void *gt_linux_print_syscall_sys_fchmodat(GtGuestState *state, gt_pid_t pid, gt_
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_fchmodat", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_fchmodat", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -2852,8 +2581,7 @@ void *gt_linux_print_syscall_sys_faccessat(GtGuestState *state, gt_pid_t pid, gt
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i)\n", pid, rsp, proc, "sys_faccessat", (int) arg0, (unsigned long) arg1, (int) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i)\n", pid, tid, proc, "sys_faccessat", (int) arg0, (unsigned long) arg1, (int) arg2);
 	return NULL;
 }
 
@@ -2866,8 +2594,7 @@ void *gt_linux_print_syscall_sys_pselect6(GtGuestState *state, gt_pid_t pid, gt_
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
 	reg_t arg5 = gt_guest_get_vmi_event(state)->x86_regs->r9;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_pselect6", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_pselect6", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5);
 	return NULL;
 }
 
@@ -2879,8 +2606,7 @@ void *gt_linux_print_syscall_sys_ppoll(GtGuestState *state, gt_pid_t pid, gt_tid
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_ppoll", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_ppoll", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 	return NULL;
 }
 
@@ -2888,8 +2614,7 @@ void *gt_linux_print_syscall_sys_unshare(GtGuestState *state, gt_pid_t pid, gt_t
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, "sys_unshare", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, tid, proc, "sys_unshare", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -2898,8 +2623,7 @@ void *gt_linux_print_syscall_sys_set_robust_list(GtGuestState *state, gt_pid_t p
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_set_robust_list", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_set_robust_list", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -2909,8 +2633,7 @@ void *gt_linux_print_syscall_sys_get_robust_list(GtGuestState *state, gt_pid_t p
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_get_robust_list", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_get_robust_list", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -2923,8 +2646,7 @@ void *gt_linux_print_syscall_sys_splice(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
 	reg_t arg5 = gt_guest_get_vmi_event(state)->x86_regs->r9;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, 0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, "sys_splice", (int) arg0, (unsigned long) arg1, (int) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, 0x%"PRIx64", %lu, %lu)\n", pid, tid, proc, "sys_splice", (int) arg0, (unsigned long) arg1, (int) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5);
 	return NULL;
 }
 
@@ -2935,8 +2657,7 @@ void *gt_linux_print_syscall_sys_tee(GtGuestState *state, gt_pid_t pid, gt_tid_t
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %lu, %lu)\n", pid, rsp, proc, "sys_tee", (int) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %lu, %lu)\n", pid, tid, proc, "sys_tee", (int) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -2947,8 +2668,7 @@ void *gt_linux_print_syscall_sys_sync_file_range(GtGuestState *state, gt_pid_t p
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %li, %li, %lu)\n", pid, rsp, proc, "sys_sync_file_range", (int) arg0, (long int) arg1, (long int) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %li, %li, %lu)\n", pid, tid, proc, "sys_sync_file_range", (int) arg0, (long int) arg1, (long int) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -2959,8 +2679,7 @@ void *gt_linux_print_syscall_sys_vmsplice(GtGuestState *state, gt_pid_t pid, gt_
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, "sys_vmsplice", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %lu)\n", pid, tid, proc, "sys_vmsplice", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -2973,8 +2692,7 @@ void *gt_linux_print_syscall_sys_move_pages(GtGuestState *state, gt_pid_t pid, g
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
 	reg_t arg5 = gt_guest_get_vmi_event(state)->x86_regs->r9;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, rsp, proc, "sys_move_pages", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4, (int) arg5);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, tid, proc, "sys_move_pages", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4, (int) arg5);
 	return NULL;
 }
 
@@ -2985,8 +2703,7 @@ void *gt_linux_print_syscall_sys_utimensat(GtGuestState *state, gt_pid_t pid, gt
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, rsp, proc, "sys_utimensat", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (int) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, tid, proc, "sys_utimensat", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (int) arg3);
 	return NULL;
 }
 
@@ -2999,8 +2716,7 @@ void *gt_linux_print_syscall_sys_epoll_pwait(GtGuestState *state, gt_pid_t pid, 
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
 	reg_t arg5 = gt_guest_get_vmi_event(state)->x86_regs->r9;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, %i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_epoll_pwait", (int) arg0, (unsigned long) arg1, (int) arg2, (int) arg3, (unsigned long) arg4, (unsigned long) arg5);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, %i, 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_epoll_pwait", (int) arg0, (unsigned long) arg1, (int) arg2, (int) arg3, (unsigned long) arg4, (unsigned long) arg5);
 	return NULL;
 }
 
@@ -3010,16 +2726,14 @@ void *gt_linux_print_syscall_sys_signalfd(GtGuestState *state, gt_pid_t pid, gt_
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_signalfd", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_signalfd", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
 void *gt_linux_print_syscall_sys_timerfd(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, rsp, proc, "sys_timerfd");
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_timerfd");
 	return NULL;
 }
 
@@ -3027,8 +2741,7 @@ void *gt_linux_print_syscall_sys_eventfd(GtGuestState *state, gt_pid_t pid, gt_t
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, rsp, proc, "sys_eventfd", (unsigned long) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, tid, proc, "sys_eventfd", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -3039,8 +2752,7 @@ void *gt_linux_print_syscall_sys_fallocate(GtGuestState *state, gt_pid_t pid, gt
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %li, %li)\n", pid, rsp, proc, "sys_fallocate", (int) arg0, (int) arg1, (long int) arg2, (long int) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %li, %li)\n", pid, tid, proc, "sys_fallocate", (int) arg0, (int) arg1, (long int) arg2, (long int) arg3);
 	return NULL;
 }
 
@@ -3051,8 +2763,7 @@ void *gt_linux_print_syscall_sys_timerfd_settime(GtGuestState *state, gt_pid_t p
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_timerfd_settime", (int) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_timerfd_settime", (int) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -3061,8 +2772,7 @@ void *gt_linux_print_syscall_sys_timerfd_gettime(GtGuestState *state, gt_pid_t p
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, rsp, proc, "sys_timerfd_gettime", (int) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64")\n", pid, tid, proc, "sys_timerfd_gettime", (int) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -3073,8 +2783,7 @@ void *gt_linux_print_syscall_sys_accept4(GtGuestState *state, gt_pid_t pid, gt_t
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, rsp, proc, "sys_accept4", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (int) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, tid, proc, "sys_accept4", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (int) arg3);
 	return NULL;
 }
 
@@ -3085,8 +2794,7 @@ void *gt_linux_print_syscall_sys_signalfd4(GtGuestState *state, gt_pid_t pid, gt
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %i)\n", pid, rsp, proc, "sys_signalfd4", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (int) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %i)\n", pid, tid, proc, "sys_signalfd4", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (int) arg3);
 	return NULL;
 }
 
@@ -3095,8 +2803,7 @@ void *gt_linux_print_syscall_sys_eventfd2(GtGuestState *state, gt_pid_t pid, gt_
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %i)\n", pid, rsp, proc, "sys_eventfd2", (unsigned long) arg0, (int) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %i)\n", pid, tid, proc, "sys_eventfd2", (unsigned long) arg0, (int) arg1);
 	return NULL;
 }
 
@@ -3104,8 +2811,7 @@ void *gt_linux_print_syscall_sys_epoll_create1(GtGuestState *state, gt_pid_t pid
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, "sys_epoll_create1", (int) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, tid, proc, "sys_epoll_create1", (int) arg0);
 	return NULL;
 }
 
@@ -3115,8 +2821,7 @@ void *gt_linux_print_syscall_sys_dup3(GtGuestState *state, gt_pid_t pid, gt_tid_
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %i)\n", pid, rsp, proc, "sys_dup3", (unsigned long) arg0, (unsigned long) arg1, (int) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %i)\n", pid, tid, proc, "sys_dup3", (unsigned long) arg0, (unsigned long) arg1, (int) arg2);
 	return NULL;
 }
 
@@ -3125,8 +2830,7 @@ void *gt_linux_print_syscall_sys_pipe2(GtGuestState *state, gt_pid_t pid, gt_tid
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i)\n", pid, rsp, proc, "sys_pipe2", (unsigned long) arg0, (int) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i)\n", pid, tid, proc, "sys_pipe2", (unsigned long) arg0, (int) arg1);
 	return NULL;
 }
 
@@ -3134,8 +2838,7 @@ void *gt_linux_print_syscall_sys_inotify_init1(GtGuestState *state, gt_pid_t pid
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, "sys_inotify_init1", (int) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, tid, proc, "sys_inotify_init1", (int) arg0);
 	return NULL;
 }
 
@@ -3147,8 +2850,7 @@ void *gt_linux_print_syscall_sys_preadv(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu, %lu, %lu)\n", pid, rsp, proc, "sys_preadv", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu, %lu, %lu)\n", pid, tid, proc, "sys_preadv", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 	return NULL;
 }
 
@@ -3160,8 +2862,7 @@ void *gt_linux_print_syscall_sys_pwritev(GtGuestState *state, gt_pid_t pid, gt_t
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu, %lu, %lu)\n", pid, rsp, proc, "sys_pwritev", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64", %lu, %lu, %lu)\n", pid, tid, proc, "sys_pwritev", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 	return NULL;
 }
 
@@ -3172,8 +2873,7 @@ void *gt_linux_print_syscall_sys_rt_tgsigqueueinfo(GtGuestState *state, gt_pid_t
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i, 0x%"PRIx64")\n", pid, rsp, proc, "sys_rt_tgsigqueueinfo", (int) arg0, (int) arg1, (int) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i, 0x%"PRIx64")\n", pid, tid, proc, "sys_rt_tgsigqueueinfo", (int) arg0, (int) arg1, (int) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -3185,8 +2885,7 @@ void *gt_linux_print_syscall_sys_perf_event_open(GtGuestState *state, gt_pid_t p
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i, %i, %i, %lu)\n", pid, rsp, proc, "sys_perf_event_open", (unsigned long) arg0, (int) arg1, (int) arg2, (int) arg3, (unsigned long) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %i, %i, %i, %lu)\n", pid, tid, proc, "sys_perf_event_open", (unsigned long) arg0, (int) arg1, (int) arg2, (int) arg3, (unsigned long) arg4);
 	return NULL;
 }
 
@@ -3198,8 +2897,7 @@ void *gt_linux_print_syscall_sys_recvmmsg(GtGuestState *state, gt_pid_t pid, gt_
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %lu, 0x%"PRIx64")\n", pid, rsp, proc, "sys_recvmmsg", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %lu, 0x%"PRIx64")\n", pid, tid, proc, "sys_recvmmsg", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 	return NULL;
 }
 
@@ -3208,8 +2906,7 @@ void *gt_linux_print_syscall_sys_fanotify_init(GtGuestState *state, gt_pid_t pid
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, rsp, proc, "sys_fanotify_init", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu)\n", pid, tid, proc, "sys_fanotify_init", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -3221,8 +2918,7 @@ void *gt_linux_print_syscall_sys_fanotify_mark(GtGuestState *state, gt_pid_t pid
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, %lu, %i, 0x%"PRIx64")\n", pid, rsp, proc, "sys_fanotify_mark", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (int) arg3, (unsigned long) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, %lu, %i, 0x%"PRIx64")\n", pid, tid, proc, "sys_fanotify_mark", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (int) arg3, (unsigned long) arg4);
 	return NULL;
 }
 
@@ -3233,8 +2929,7 @@ void *gt_linux_print_syscall_sys_prlimit64(GtGuestState *state, gt_pid_t pid, gt
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_prlimit64", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu, 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_prlimit64", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -3246,8 +2941,7 @@ void *gt_linux_print_syscall_sys_name_to_handle_at(GtGuestState *state, gt_pid_t
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, rsp, proc, "sys_name_to_handle_at", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (int) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, tid, proc, "sys_name_to_handle_at", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (int) arg4);
 	return NULL;
 }
 
@@ -3257,8 +2951,7 @@ void *gt_linux_print_syscall_sys_open_by_handle_at(GtGuestState *state, gt_pid_t
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i)\n", pid, rsp, proc, "sys_open_by_handle_at", (int) arg0, (unsigned long) arg1, (int) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i)\n", pid, tid, proc, "sys_open_by_handle_at", (int) arg0, (unsigned long) arg1, (int) arg2);
 	return NULL;
 }
 
@@ -3267,8 +2960,7 @@ void *gt_linux_print_syscall_sys_clock_adjtime(GtGuestState *state, gt_pid_t pid
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, rsp, proc, "sys_clock_adjtime", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, 0x%"PRIx64")\n", pid, tid, proc, "sys_clock_adjtime", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -3276,8 +2968,7 @@ void *gt_linux_print_syscall_sys_syncfs(GtGuestState *state, gt_pid_t pid, gt_ti
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, "sys_syncfs", (int) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, tid, proc, "sys_syncfs", (int) arg0);
 	return NULL;
 }
 
@@ -3288,8 +2979,7 @@ void *gt_linux_print_syscall_sys_sendmmsg(GtGuestState *state, gt_pid_t pid, gt_
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, "sys_sendmmsg", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %lu)\n", pid, tid, proc, "sys_sendmmsg", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -3298,8 +2988,7 @@ void *gt_linux_print_syscall_sys_setns(GtGuestState *state, gt_pid_t pid, gt_tid
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, rsp, proc, "sys_setns", (int) arg0, (int) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, tid, proc, "sys_setns", (int) arg0, (int) arg1);
 	return NULL;
 }
 
@@ -3309,8 +2998,7 @@ void *gt_linux_print_syscall_sys_getcpu(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, rsp, proc, "sys_getcpu", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_getcpu", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -3323,8 +3011,7 @@ void *gt_linux_print_syscall_sys_process_vm_readv(GtGuestState *state, gt_pid_t 
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
 	reg_t arg5 = gt_guest_get_vmi_event(state)->x86_regs->r9;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, 0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, "sys_process_vm_readv", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, 0x%"PRIx64", %lu, %lu)\n", pid, tid, proc, "sys_process_vm_readv", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5);
 	return NULL;
 }
 
@@ -3337,8 +3024,7 @@ void *gt_linux_print_syscall_sys_process_vm_writev(GtGuestState *state, gt_pid_t
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
 	reg_t arg5 = gt_guest_get_vmi_event(state)->x86_regs->r9;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, 0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, "sys_process_vm_writev", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, 0x%"PRIx64", %lu, %lu)\n", pid, tid, proc, "sys_process_vm_writev", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5);
 	return NULL;
 }
 
@@ -3350,8 +3036,7 @@ void *gt_linux_print_syscall_sys_kcmp(GtGuestState *state, gt_pid_t pid, gt_tid_
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i, %lu, %lu)\n", pid, rsp, proc, "sys_kcmp", (int) arg0, (int) arg1, (int) arg2, (unsigned long) arg3, (unsigned long) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %i, %lu, %lu)\n", pid, tid, proc, "sys_kcmp", (int) arg0, (int) arg1, (int) arg2, (unsigned long) arg3, (unsigned long) arg4);
 	return NULL;
 }
 
@@ -3361,8 +3046,7 @@ void *gt_linux_print_syscall_sys_finit_module(GtGuestState *state, gt_pid_t pid,
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i)\n", pid, rsp, proc, "sys_finit_module", (int) arg0, (unsigned long) arg1, (int) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i)\n", pid, tid, proc, "sys_finit_module", (int) arg0, (unsigned long) arg1, (int) arg2);
 	return NULL;
 }
 
@@ -3372,8 +3056,7 @@ void *gt_linux_print_syscall_sys_sched_setattr(GtGuestState *state, gt_pid_t pid
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_sched_setattr", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_sched_setattr", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -3384,8 +3067,7 @@ void *gt_linux_print_syscall_sys_sched_getattr(GtGuestState *state, gt_pid_t pid
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, "sys_sched_getattr", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu, %lu)\n", pid, tid, proc, "sys_sched_getattr", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3);
 	return NULL;
 }
 
@@ -3397,8 +3079,7 @@ void *gt_linux_print_syscall_sys_renameat2(GtGuestState *state, gt_pid_t pid, gt
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_renameat2", (int) arg0, (unsigned long) arg1, (int) arg2, (unsigned long) arg3, (unsigned long) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_renameat2", (int) arg0, (unsigned long) arg1, (int) arg2, (unsigned long) arg3, (unsigned long) arg4);
 	return NULL;
 }
 
@@ -3408,8 +3089,7 @@ void *gt_linux_print_syscall_sys_seccomp(GtGuestState *state, gt_pid_t pid, gt_t
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, 0x%"PRIx64")\n", pid, rsp, proc, "sys_seccomp", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, 0x%"PRIx64")\n", pid, tid, proc, "sys_seccomp", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -3419,8 +3099,7 @@ void *gt_linux_print_syscall_sys_getrandom(GtGuestState *state, gt_pid_t pid, gt
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, "sys_getrandom", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu, %lu)\n", pid, tid, proc, "sys_getrandom", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -3429,8 +3108,7 @@ void *gt_linux_print_syscall_sys_memfd_create(GtGuestState *state, gt_pid_t pid,
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_memfd_create", (unsigned long) arg0, (unsigned long) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_memfd_create", (unsigned long) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -3442,8 +3120,7 @@ void *gt_linux_print_syscall_sys_kexec_file_load(GtGuestState *state, gt_pid_t p
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %lu, 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_kexec_file_load", (int) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i, %lu, 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_kexec_file_load", (int) arg0, (int) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4);
 	return NULL;
 }
 
@@ -3453,8 +3130,7 @@ void *gt_linux_print_syscall_sys_bpf(GtGuestState *state, gt_pid_t pid, gt_tid_t
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, rsp, proc, "sys_bpf", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_bpf", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -3466,8 +3142,7 @@ void *gt_linux_print_syscall_sys_execveat(GtGuestState *state, gt_pid_t pid, gt_
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, rsp, proc, "sys_execveat", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (int) arg4);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64", %i)\n", pid, tid, proc, "sys_execveat", (int) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (int) arg4);
 	return NULL;
 }
 
@@ -3475,8 +3150,7 @@ void *gt_linux_print_syscall_sys_userfaultfd(GtGuestState *state, gt_pid_t pid, 
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, rsp, proc, "sys_userfaultfd", (int) arg0);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i)\n", pid, tid, proc, "sys_userfaultfd", (int) arg0);
 	return NULL;
 }
 
@@ -3485,8 +3159,7 @@ void *gt_linux_print_syscall_sys_membarrier(GtGuestState *state, gt_pid_t pid, g
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, rsp, proc, "sys_membarrier", (int) arg0, (int) arg1);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %i)\n", pid, tid, proc, "sys_membarrier", (int) arg0, (int) arg1);
 	return NULL;
 }
 
@@ -3496,8 +3169,7 @@ void *gt_linux_print_syscall_sys_mlock2(GtGuestState *state, gt_pid_t pid, gt_ti
 	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %i)\n", pid, rsp, proc, "sys_mlock2", (unsigned long) arg0, (unsigned long) arg1, (int) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %i)\n", pid, tid, proc, "sys_mlock2", (unsigned long) arg0, (unsigned long) arg1, (int) arg2);
 	return NULL;
 }
 
@@ -3510,8 +3182,7 @@ void *gt_linux_print_syscall_sys_copy_file_range(GtGuestState *state, gt_pid_t p
 	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
 	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
 	reg_t arg5 = gt_guest_get_vmi_event(state)->x86_regs->r9;
-	reg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, 0x%"PRIx64", %lu, %lu)\n", pid, rsp, proc, "sys_copy_file_range", (int) arg0, (unsigned long) arg1, (int) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, 0x%"PRIx64", %lu, %lu)\n", pid, tid, proc, "sys_copy_file_range", (int) arg0, (unsigned long) arg1, (int) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5);
 	return NULL;
 }
 
@@ -5152,8 +4823,7 @@ void *gt_linux_silent_syscall_sys_copy_file_range(GtGuestState *state, gt_pid_t 
 
 void gt_linux_print_sysret(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
 	reg_t syscall_return = gt_guest_get_register(state, RAX);
-	reg_t rsp = gt_guest_get_register(state, RSP);
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) return: 0x%"PRIx64"\n", pid, rsp - RETURN_ADDR_WIDTH, get_process_name(gt_guest_get_vmi_instance(state), pid), syscall_return);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) return: 0x%"PRIx64"\n", pid, tid, get_process_name(gt_guest_get_vmi_instance(state), pid), syscall_return);
 }
 
 void gt_linux_silent_sysret(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {

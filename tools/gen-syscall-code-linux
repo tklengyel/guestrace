@@ -359,8 +359,6 @@ def create_struct_c(syscall_map, syscall_order, kernel_info):
 
 #include "generated-linux.h"
 
-static const int RETURN_ADDR_WIDTH = sizeof(void *);
-
 static char *
 get_process_name(vmi_instance_t vmi, gt_pid_t pid) 
 {
@@ -429,8 +427,7 @@ done:
     # generate the print_sysret_info function
     str += """void gt_linux_print_sysret(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
 	reg_t syscall_return = gt_guest_get_register(state, RAX);
-	reg_t rsp = gt_guest_get_register(state, RSP);
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) return: 0x%"PRIx64"\\n", pid, rsp - RETURN_ADDR_WIDTH, get_process_name(gt_guest_get_vmi_instance(state), pid), syscall_return);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) return: 0x%"PRIx64"\\n", pid, tid, get_process_name(gt_guest_get_vmi_instance(state), pid), syscall_return);
 }
 
 """
@@ -502,7 +499,6 @@ def create_printf_statement(count, syscall_data):
             func_str += "\tchar *arg{0} = gt_guest_get_string(state, gt_guest_get_vmi_event(state)->x86_regs->{1}, pid);\n".format(i, REG[i])
         else:
             func_str += "\treg_t arg{0} = gt_guest_get_vmi_event(state)->x86_regs->{1};\n".format(i, REG[i])
-    func_str += '\treg_t rsp = gt_guest_get_vmi_event(state)->x86_regs->rsp;\n'
     func_str += '\tfprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s('
 
     if count != 0:
@@ -516,7 +512,7 @@ def create_printf_statement(count, syscall_data):
             else:
                 func_str += ', {0}'.format(syscall_data.get_arg_format(i))
 
-    func_str += ')\\n", pid, rsp, proc, "' + syscall_data.get_syscall_name() + '"'
+    func_str += ')\\n", pid, tid, proc, "' + syscall_data.get_syscall_name() + '"'
 
     if count != 0:
         for i in range(0, count):
