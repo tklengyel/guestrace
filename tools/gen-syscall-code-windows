@@ -575,14 +575,14 @@ done:
 }
 
 static uint64_t *
-vf_get_args(vmi_instance_t vmi, vmi_event_t *event, gt_pid_t pid) {
+vf_get_args(GtGuestState *state, gt_pid_t pid) {
 	uint64_t *args = calloc(NUM_SYSCALL_ARGS, sizeof(uint64_t));
-	args[0] = event->x86_regs->rcx;
-	args[1] = event->x86_regs->rdx;
-	args[2] = event->x86_regs->r8;
-	args[3] = event->x86_regs->r9;
+	args[0] = gt_loop_get_register(state, RCX);
+	args[1] = gt_loop_get_register(state, RDX);
+	args[2] = gt_loop_get_register(state, R8);
+	args[3] = gt_loop_get_register(state, R9);
 	
-	vmi_read_va(vmi, event->x86_regs->rsp + vmi_get_address_width(vmi) * 5, pid, &args[4], sizeof(uint64_t) * (NUM_SYSCALL_ARGS - 4));
+	vmi_read_va(gt_loop_get_vmi_instance(state), gt_loop_get_register(state, RSP) + vmi_get_address_width(gt_loop_get_vmi_instance(state)) * 5, pid, &args[4], sizeof(uint64_t) * (NUM_SYSCALL_ARGS - 4));
 	return args;
 }
 
@@ -713,7 +713,7 @@ for line in syscalls.split("\n"):
 def write_syscall(syscall):
 	save_loc.write("void *gt_windows_print_syscall_%s(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)\n{\n" % syscall['decl']['name'].lower())
 	save_loc.write("\tchar *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);\n")
-	save_loc.write("\tuint64_t *args = vf_get_args(gt_loop_get_vmi_instance(state), gt_loop_get_vmi_event(state), pid);\n")
+	save_loc.write("\tuint64_t *args = vf_get_args(state, pid);\n")
 	format_vars = []
 	format_strings = []
 	format_args = [""]
@@ -751,7 +751,7 @@ def write_sysret(syscall):
 			format_cleanup.append(res[3])
 		count += 1
 	save_loc.write("\n".join(x for x in format_vars if x != ""))
-	save_loc.write('\n\tfprintf(stderr, "pid: %%u/0x%%lx (%%s) sysret: Status(0x%%lx) OUT(%s)\\n", pid, tid, proc, gt_loop_get_vmi_event(state)->x86_regs->rax%s);\n' % (", ".join(format_strings), ", ".join(format_args)))
+	save_loc.write('\n\tfprintf(stderr, "pid: %%u/0x%%lx (%%s) sysret: Status(0x%%lx) OUT(%s)\\n", pid, tid, proc, gt_loop_get_register(state, RAX)%s);\n' % (", ".join(format_strings), ", ".join(format_args)))
 	save_loc.write("\n".join(x for x in format_cleanup if x != ""))
 	save_loc.write("\tfree(args);\n")
 	save_loc.write("}\n\n")

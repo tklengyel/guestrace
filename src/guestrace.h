@@ -17,6 +17,8 @@ typedef struct _GtLoop GtLoop;
 
 typedef addr_t    gt_tid_t;
 typedef vmi_pid_t gt_pid_t;
+typedef reg_t     gt_reg_t;
+typedef registers_t gt_reg_name_t;
 
 /**
  * GtGuestState
@@ -108,6 +110,7 @@ gboolean       gt_loop_set_cb(GtLoop *loop,
                               void *user_data);
 int            gt_loop_set_cbs(GtLoop *loop,
                                const GtCallbackRegistry callbacks[]);
+gt_reg_t       gt_loop_get_register(GtGuestState *state, gt_reg_name_t name);
 vmi_instance_t gt_loop_get_vmi_instance(GtGuestState *state);
 vmi_event_t   *gt_loop_get_vmi_event(GtGuestState *state);
 void           gt_loop_run(GtLoop *loop);

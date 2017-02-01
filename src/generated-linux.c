@@ -1,4 +1,4 @@
-/* Generated on Linux_4.9.3-200.fc25.x86_64 on 01 Feb 2017 10:54:58*/
+/* Generated on Linux_4.9.3-200.fc25.x86_64 on 01 Feb 2017 11:16:52*/
 
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
@@ -3516,8 +3516,8 @@ void *gt_linux_print_syscall_sys_copy_file_range(GtGuestState *state, gt_pid_t p
 }
 
 void gt_linux_print_sysret(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
-	reg_t syscall_return = gt_loop_get_vmi_event(state)->x86_regs->rax;
-	reg_t rsp = gt_loop_get_vmi_event(state)->x86_regs->rsp;
+	reg_t syscall_return = gt_loop_get_register(state, RAX);
+	reg_t rsp = gt_loop_get_register(state, RSP);
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) return: 0x%"PRIx64"\n", pid, rsp - RETURN_ADDR_WIDTH, get_process_name(gt_loop_get_vmi_instance(state), pid), syscall_return);
 }
 

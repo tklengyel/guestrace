@@ -603,6 +603,54 @@ gt_loop_get_ostype(GtLoop *loop)
 }
 
 /**
+ * gt_loop_get_register:
+ * @state: a pointer to a #GtGuestState.
+ * @name: name of register to get.
+ *
+ * Returns the value of the named register from the guest state.
+ */
+gt_reg_t
+gt_loop_get_register(GtGuestState *state, gt_reg_name_t name)
+{
+	gt_reg_t reg = 0;
+
+	switch (name) {
+	case RAX:
+		reg = state->event->x86_regs->rax;
+		goto done;
+	case RSP:
+		reg = state->event->x86_regs->rsp;
+		goto done;
+	case RDI:
+		reg = state->event->x86_regs->rdi;
+		goto done;
+	case RSI:
+		reg = state->event->x86_regs->rsi;
+		goto done;
+	case RCX:
+		reg = state->event->x86_regs->rcx;
+		goto done;
+	case RDX:
+		reg = state->event->x86_regs->rdx;
+		goto done;
+	case R8:
+		reg = state->event->x86_regs->r8;
+		goto done;
+	case R9:
+		reg = state->event->x86_regs->r9;
+		goto done;
+	case R10:
+		reg = state->event->x86_regs->r10;
+		goto done;
+	}
+
+	g_assert_not_reached();
+
+done:
+	return reg;
+}
+
+/**
  * gt_loop_get_vmi_instance:
  * @state: a pointer to a #GtGuestState.
  *

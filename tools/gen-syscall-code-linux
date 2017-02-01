@@ -424,8 +424,8 @@ done:
 
     # generate the print_sysret_info function
     str += """void gt_linux_print_sysret(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
-	reg_t syscall_return = gt_loop_get_vmi_event(state)->x86_regs->rax;
-	reg_t rsp = gt_loop_get_vmi_event(state)->x86_regs->rsp;
+	reg_t syscall_return = gt_loop_get_register(state, RAX);
+	reg_t rsp = gt_loop_get_register(state, RSP);
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) return: 0x%"PRIx64"\\n", pid, rsp - RETURN_ADDR_WIDTH, get_process_name(gt_loop_get_vmi_instance(state), pid), syscall_return);
 }
 
