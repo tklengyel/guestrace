@@ -406,7 +406,7 @@ TRACED_SYSCALLS = (
 	"NtYieldExecution",
 )
 
-save_loc = open("../src/generated-windows.c", "w");
+save_loc = open("generated-windows.c", "w");
 
 save_loc.write('''#include <libvmi/libvmi.h>
 #include <libvmi/events.h>
@@ -683,7 +683,7 @@ def print_arg(arg, arg_num):
 
 	return "", "%s: 0x%%lx" % arg['name'], "args[%d]" % arg_num, ""
 
-fi = open("syscalls.txt", 'r')
+fi = open("../tools/syscalls.txt", 'r')
 syscalls = fi.read()
 fi.close()
 parsed = []

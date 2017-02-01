@@ -28,6 +28,12 @@ libguestraceincludedir = \
 libguestraceinclude_HEADERS = \
 	guestrace.h
 
+generated-linux.c: ../tools/gen-syscall-code-linux
+	../tools/gen-syscall-code-linux
+
+generated-windows.c: ../tools/gen-syscall-code-windows
+	../tools/gen-syscall-code-windows
+
 guestrace_SOURCES = \
 	guestrace.c \
 	generated-linux.c \
@@ -39,4 +45,7 @@ guestrace_LDADD = \
 noinst_HEADERS = \
 	functions-linux.h \
 	functions-windows.h \
-	guestrace-private.h
+	generated-windows.h \
+	generated-linux.h \
+	guestrace-private.h \
+	trace-syscalls.h
