@@ -8571,7 +8571,7 @@ void gt_windows_print_sysret_ntyieldexecution(vmi_instance_t vmi, vmi_event_t *e
 	free(args);
 }
 
-const GTSyscallCallback GT_WINDOWS_SYSCALLS[] = {
+const GtSyscallCallback GT_WINDOWS_SYSCALLS[] = {
 	{ "NtAcceptConnectPort", gt_windows_print_syscall_ntacceptconnectport, gt_windows_print_sysret_ntacceptconnectport, NULL },
 	{ "NtAccessCheckAndAuditAlarm", gt_windows_print_syscall_ntaccesscheckandauditalarm, gt_windows_print_sysret_ntaccesscheckandauditalarm, NULL },
 	{ "NtAccessCheckByTypeAndAuditAlarm", gt_windows_print_syscall_ntaccesscheckbytypeandauditalarm, gt_windows_print_sysret_ntaccesscheckbytypeandauditalarm, NULL },

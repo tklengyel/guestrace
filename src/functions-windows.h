@@ -3,6 +3,6 @@
 
 extern struct os_functions os_functions_windows;
 
-addr_t _gt_windows_find_return_point_addr(GTLoop *loop);
+addr_t _gt_windows_find_return_point_addr(GtLoop *loop);
 
 #endif

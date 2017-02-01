@@ -32,7 +32,7 @@
  * This serves as a record for each breakpoint that guestrace sets within a
  * page.
  */
-struct _GTLoop {
+struct _GtLoop {
 	/* <private> */
 	vmi_instance_t vmi;
 

@@ -95,7 +95,7 @@ typedef struct gt_page_record {
 	addr_t      frame;
 	addr_t      shadow_frame;
 	GHashTable *children;
-	GTLoop     *loop;
+	GtLoop     *loop;
 } gt_page_record;
 
 /*
@@ -108,8 +108,8 @@ typedef struct gt_page_record {
  */
 typedef struct gt_paddr_record {
 	addr_t          offset;
-	GTSyscallFunc   syscall_cb;
-	GTSysretFunc    sysret_cb;
+	GtSyscallFunc   syscall_cb;
+	GtSysretFunc    sysret_cb;
 	gt_page_record *parent;
 	void           *data; /* Optional; passed to syscall_cb. */
 } gt_paddr_record;
@@ -140,7 +140,7 @@ gt_restore_return_addr (gpointer data)
 {
 	status_t status;
 	gt_syscall_state *sys_state = data;
-	GTLoop *loop = sys_state->syscall_paddr_record->parent->loop;
+	GtLoop *loop = sys_state->syscall_paddr_record->parent->loop;
 
 	addr_t pa = vmi_translate_kv2p(loop->vmi, sys_state->thread_id);
 	if (0 == pa) {
@@ -190,7 +190,7 @@ gt_destroy_page_record (gpointer data) {
 static event_response_t
 gt_singlestep_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	/* Resume use of shadow SLAT. */
-	GTLoop *loop = event->data;
+	GtLoop *loop = event->data;
 	event->slat_id = loop->shadow_view;
 
 	/* Turn off single-step and switch slat_id. */
@@ -203,7 +203,7 @@ gt_singlestep_cb(vmi_instance_t vmi, vmi_event_t *event) {
  * create a new event each time we want to single-step.
  */
 static bool
-gt_set_up_step_events (GTLoop *loop)
+gt_set_up_step_events (GtLoop *loop)
 {
 	bool ok = false;
 
@@ -249,7 +249,7 @@ done:
  * multiple breakpoints.
  */
 static gt_paddr_record *
-gt_paddr_record_from_pa(GTLoop *loop, addr_t pa) {
+gt_paddr_record_from_pa(GtLoop *loop, addr_t pa) {
 	gt_paddr_record *paddr_record = NULL;
 	gt_page_record  *page_record  = NULL;
 
@@ -276,7 +276,7 @@ done:
 
 /* Return the paddr_record associated with the given virtual address. */
 static gt_paddr_record *
-gt_paddr_record_from_va(GTLoop *loop, addr_t va) {
+gt_paddr_record_from_va(GtLoop *loop, addr_t va) {
 	return gt_paddr_record_from_pa(loop, vmi_translate_kv2p(loop->vmi, va));
 }
 
@@ -293,7 +293,7 @@ static event_response_t
 gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	event_response_t response = VMI_EVENT_RESPONSE_NONE;
 
-	GTLoop *loop = event->data;
+	GtLoop *loop = event->data;
 	event->interrupt_event.reinject = 0;
 
 	if (event->interrupt_event.gla != loop->trampoline_addr) {
@@ -400,7 +400,7 @@ gt_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
  * Setup our global interrupt to catch any interrupts on any pages.
  */
 static bool
-gt_set_up_generic_events (GTLoop *loop) {
+gt_set_up_generic_events (GtLoop *loop) {
 	bool ok = false;
 	status_t status;
 
@@ -435,7 +435,7 @@ done:
 
 /* Search the kernel code address space for an existing int 3 instruction. */
 addr_t
-gt_find_trampoline_addr (GTLoop *loop)
+gt_find_trampoline_addr (GtLoop *loop)
 {
 	addr_t trampoline_addr = 0;
 	status_t status;
@@ -479,17 +479,17 @@ done:
  * gt_loop_new:
  * @guest_name: the name of a running guest virtual machine.
  *
- * Creates a new #GTLoop structure.
+ * Creates a new #GtLoop structure.
  *
- * Returns: a new #GTLoop.
+ * Returns: a new #GtLoop.
  **/
-GTLoop *gt_loop_new(const char *guest_name)
+GtLoop *gt_loop_new(const char *guest_name)
 {
-	GTLoop *loop;
+	GtLoop *loop;
 	int rc;
 	status_t status = VMI_FAILURE;
 
-	loop = g_new0(GTLoop, 1);
+	loop = g_new0(GtLoop, 1);
 
 	/* Initialize the libvmi library. */
 	status = vmi_init(&loop->vmi,
@@ -586,12 +586,12 @@ done:
 
 /**
  * gt_loop_get_ostype:
- * @loop: a #GTLoop.
+ * @loop: a #GtLoop.
  *
- * Returns: the OS type of #GTLoop.
+ * Returns: the OS type of #GtLoop.
  **/
-GTOSType
-gt_loop_get_ostype(GTLoop *loop)
+GtOSType
+gt_loop_get_ostype(GtLoop *loop)
 {
 	switch (loop->os) {
 	case VMI_OS_LINUX:
@@ -605,12 +605,12 @@ gt_loop_get_ostype(GTLoop *loop)
 
 /**
  * gt_loop_run:
- * @loop: a #GTLoop.
+ * @loop: a #GtLoop.
  *
  * Uses libvmi to complete the preparations necessary to trace a guest's system
  * calls. Runs @loop until gt_loop_quit() is called on @loop.
  */
-void gt_loop_run(GTLoop *loop)
+void gt_loop_run(GtLoop *loop)
 {
 	int rc;
 
@@ -659,13 +659,13 @@ done:
 
 /**
  * gt_loop_quit:
- * @loop: a #GTLoop.
+ * @loop: a #GtLoop.
  *
  * Stops @loop from running. Any calls to gt_loop_run() for the loop will return.
  * This removes any modifications to the guest's memory and allows the guest
  * to run without instrumentation.
  */
-void gt_loop_quit(GTLoop *loop)
+void gt_loop_quit(GtLoop *loop)
 {
 	int status;
 
@@ -687,13 +687,13 @@ void gt_loop_quit(GTLoop *loop)
 
 /**
  * gt_loop_free:
- * @loop: a #GTLoop.
+ * @loop: a #GtLoop.
  *
  * Free @loop and its associated memory. If the loop is currently running, then
  * gt_loop_quit() must first terminate the loop and remove the guest
  * instrumentation.
  */
-void gt_loop_free(GTLoop *loop)
+void gt_loop_free(GtLoop *loop)
 {
 	if (NULL == loop) {
 		goto done;
@@ -725,7 +725,7 @@ done:
 
 /* Allocate a new page of memory in the guest's address space. */
 static addr_t
-gt_allocate_shadow_frame (GTLoop *loop)
+gt_allocate_shadow_frame (GtLoop *loop)
 {
 	int rc;
 	xen_pfn_t gfn = 0;
@@ -805,10 +805,10 @@ gt_destroy_paddr_record (gpointer data) {
  * of children.
  */
 static gt_paddr_record *
-gt_setup_mem_trap (GTLoop *loop,
+gt_setup_mem_trap (GtLoop *loop,
                    addr_t va,
-                   GTSyscallFunc syscall_cb,
-                   GTSysretFunc sysret_cb,
+                   GtSyscallFunc syscall_cb,
+                   GtSysretFunc sysret_cb,
                    void *user_data)
 {
 	size_t ret;
@@ -933,11 +933,11 @@ done:
 
 /**
  * gt_loop_set_cb:
- * @loop: a #GTLoop.
+ * @loop: a #GtLoop.
  * @kernel_func: the name of a function in the traced kernel which implements
  * a system call.
- * @syscall_cb: a #GTSyscallFunc which will handle the named system call.
- * @sysret_cb: a #GTSysretFunc which will handle returns from the named
+ * @syscall_cb: a #GtSyscallFunc which will handle the named system call.
+ * @sysret_cb: a #GtSysretFunc which will handle returns from the named
  * system call.
  * @user_data: optional data which the guestrace event loop will pass to each call of @syscall_cb
  *
@@ -949,10 +949,10 @@ done:
  * Returns: %TRUE on success, %FALSE on failure; an invalid @kernel_func
  * will cause the callback registration to fail.
  **/
-gboolean gt_loop_set_cb(GTLoop *loop,
+gboolean gt_loop_set_cb(GtLoop *loop,
                         const char *kernel_func,
-                        GTSyscallFunc syscall_cb,
-                        GTSysretFunc sysret_cb,
+                        GtSyscallFunc syscall_cb,
+                        GtSysretFunc sysret_cb,
                         void *user_data)
 {
 	gboolean fnval = FALSE;
@@ -982,20 +982,20 @@ done:
 
 /**
  * gt_loop_set_cbs:
- * @loop: a #GTLoop.
- * @syscalls: an array of #GTSyscallCallback values, where each contains a
- * function name and corresponding #GTSyscallFunc and #GTSysretFunc.
+ * @loop: a #GtLoop.
+ * @syscalls: an array of #GtSyscallCallback values, where each contains a
+ * function name and corresponding #GtSyscallFunc and #GtSysretFunc.
  *
  * A convenience function which repeatedly invoke gt_loop_set_cb for each
  * callback defined in @syscalls. The @syscalls array must be terminated with
- * an #GTSyscallCallback with each field set to NULL.
+ * an #GtSyscallCallback with each field set to NULL.
  *
  * Returns: an integer which represents the number of callbacks
  * successfully set; an invalid function name in @syscalls will
  * cause the corresponding callback registration to fail.
  **/
 int
-gt_loop_set_cbs(GTLoop *loop, const GTSyscallCallback callbacks[])
+gt_loop_set_cbs(GtLoop *loop, const GtSyscallCallback callbacks[])
 {
 	int count = 0;
 
@@ -1019,7 +1019,7 @@ gt_loop_set_cbs(GTLoop *loop, const GTSyscallCallback callbacks[])
  * Note: op_str is optional.
  */
 addr_t
-_gt_find_addr_after_instruction (GTLoop *loop, addr_t start_v, char *mnemonic, char *ops)
+_gt_find_addr_after_instruction (GtLoop *loop, addr_t start_v, char *mnemonic, char *ops)
 {
 	csh handle;
 	cs_insn *inst;

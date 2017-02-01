@@ -14,7 +14,7 @@
  * those that have been called in a nested manner.
  */
 addr_t
-_gt_windows_find_return_point_addr(GTLoop *loop)
+_gt_windows_find_return_point_addr(GtLoop *loop)
 {
 	addr_t lstar, return_point_addr = 0;
 

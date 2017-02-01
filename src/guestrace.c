@@ -6,7 +6,7 @@
 #include "generated-windows.h"
 #include "generated-linux.h"
 
-GTLoop *loop = NULL;
+GtLoop *loop = NULL;
 
 static void
 gt_close_handler (int sig)
@@ -72,7 +72,7 @@ main (int argc, char **argv) {
 		goto done;
 	}
 
-	GTOSType os = gt_loop_get_ostype(loop);
+	GtOSType os = gt_loop_get_ostype(loop);
 	switch (os) {
 	case GT_OS_LINUX:
 		if (0 == gt_loop_set_cbs(loop, GT_LINUX_SYSCALLS)) {
