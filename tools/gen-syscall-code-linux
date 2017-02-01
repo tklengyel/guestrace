@@ -422,11 +422,21 @@ done:
     for syscall in syscall_order:
         str += create_print_function(syscall_map[syscall])
 
+    # generate the silent function for each syscall
+    for syscall in syscall_order:
+        str += create_silent_function(syscall_map[syscall])
+
     # generate the print_sysret_info function
     str += """void gt_linux_print_sysret(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
 	reg_t syscall_return = gt_guest_get_register(state, RAX);
 	reg_t rsp = gt_guest_get_register(state, RSP);
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) return: 0x%"PRIx64"\\n", pid, rsp - RETURN_ADDR_WIDTH, get_process_name(gt_guest_get_vmi_instance(state), pid), syscall_return);
+}
+
+"""
+
+    # generate the print_silent_sysret_info function
+    str += """void gt_linux_silent_sysret(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
 }
 
 """
@@ -438,6 +448,19 @@ done:
     # generate the actual struct list
     for syscall_id in range(len(syscall_order)):
         str += "\t{{ \"{0}\", gt_linux_print_syscall_{1}, gt_linux_print_sysret }},\n".format(syscall_order[syscall_id], syscall_order[syscall_id])
+
+    str += """\t{ NULL, NULL, NULL }
+};
+
+"""
+
+    # Generate SILENT_SYSCALLS table.
+    str += """const GtCallbackRegistry GT_LINUX_SILENT_SYSCALLS[] = {
+"""
+
+    # generate the actual struct list
+    for syscall_id in range(len(syscall_order)):
+        str += "\t{{ \"{0}\", gt_linux_silent_syscall_{1}, gt_linux_silent_sysret }},\n".format(syscall_order[syscall_id], syscall_order[syscall_id])
 
     str += """\t{ NULL, NULL, NULL }
 };
@@ -457,6 +480,15 @@ def create_print_function(syscall_data):
     func_str += create_printf_statement(syscall_data.get_args_count(), syscall_data)
     func_str += """	return NULL;
 }\n\n"""
+
+    return func_str
+
+def create_silent_function(syscall_data):
+    """Generate a print function for a single syscall"""
+    func_str = """void *gt_linux_silent_syscall_{0}(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
+{{
+    return NULL;
+}}\n\n""".format(syscall_data.get_syscall_name())
 
     return func_str
 

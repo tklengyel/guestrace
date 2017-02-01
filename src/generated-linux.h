@@ -7,5 +7,6 @@
 #include "trace-syscalls.h"
 
 extern const GtCallbackRegistry GT_LINUX_SYSCALLS[];
+extern const GtCallbackRegistry GT_LINUX_SILENT_SYSCALLS[];
 
 #endif
