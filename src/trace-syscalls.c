@@ -14,7 +14,10 @@
 #include "functions-windows.h"
 #include "trace-syscalls.h"
 
-/* This code relies on Xen's interface to Second Level Address Translation,
+/*
+ * High-level design:
+ *
+ * This code relies on Xen's interface to Second Level Address Translation,
  * or SLAT. See:
  *
  * 	https://blog.xenproject.org/2016/04/13/stealthy-monitoring-with-xen-altp2m/
@@ -38,6 +41,29 @@
  *
  * Guestrace activates PT_n following a single-step execution. This restores
  * guestrace's breakpoints after condition (1) or (2) above.
+ *
+ *
+ *
+ * Guestrace makes use of two types of breakpoints:
+ *
+ * Guestrace places a type-one breakpoint as the first instruction in each
+ * per-system-call implementation routine. For example, Linux's sys_open,
+ * which is called by the handler pointed to by LSTAR. Each type-one
+ * breakpoint exists as a modification of some shadow page. Guestrace can easily
+ * identify the addresses which require type-one breakpoints; it merely looks
+ * up the function name using libvmi. (We do not break on the function pointed
+ * to by LSTAR because a program might want to break only on select system
+ * calls for performance reasons.
+ *
+ * Guestrace places a type-two breakpoints on the return path between each
+ * per-system-call implementation routine and its caller. To avoid disassembly,
+ * guestrace uses a trampoline. To avoid allocating new page in the guest
+ * operating system's memory space, guestrace makes use of an existing break-
+ * point instruction byte in the guest operating system's memory space. At
+ * start-up time, guestrace finds the instruction. While servicing each
+ * type-one breakpoint, guestrace overwrites the stack so that the return
+ * executes the breakpoint instruction. After servicing a type-two breakpoing,
+ * guestrace sets RIP to the original return point.
  */
 
 /* Number of bits available for page offset. */
@@ -55,6 +81,16 @@ static uint8_t GT_BREAKPOINT_INST = 0xCC;
  */
 static gboolean gt_interrupted = FALSE;
 
+/*
+ * A record which describes a frame. The children of these records (themselves
+ * of type gt_paddr_record) describe the physical addresses contained in the
+ * frame which themselves contain a breakpoint. This is needed when the guest
+ * operating system triggers such a breakpoint.
+ *
+ * Stored in gt_page_record_collection.
+ * 	Key:   addr_t (shadow frame)
+ * 	Value: gt_page_record
+ */
 typedef struct gt_page_record {
 	addr_t      frame;
 	addr_t      shadow_frame;
@@ -62,19 +98,36 @@ typedef struct gt_page_record {
 	GTLoop     *loop;
 } gt_page_record;
 
-struct gt_paddr_record {
+/*
+ * A record which describes the information associated with a physical address
+ * which contains a breakpoint.
+ *
+ * Stored in children field of gt_page_record.
+ * 	Key:   addr_t (shadow offset)
+ * 	Value: gt_paddr_record
+ */
+typedef struct gt_paddr_record {
 	addr_t          offset;
 	GTSyscallFunc   syscall_cb;
 	GTSysretFunc    sysret_cb;
 	gt_page_record *parent;
-	void           *data; /* Optional user data set at initialization.  Passed to syscall_cb. */
-};
+	void           *data; /* Optional; passed to syscall_cb. */
+} gt_paddr_record;
 
-typedef struct syscall_state {
-	struct gt_paddr_record *syscall_trap;
-	void                   *data;
-	addr_t                  thread_id; /* needed for teardown */
-} syscall_state;
+/*
+ * Describes the state associated with a system call. This information is
+ * stored and later made available while servicing the corresponding
+ * system return.
+ *
+ * Stored in gt_ret_addr_mapping.
+ * 	Key:   addr_t (thread_id AKA thread's stack pointer)
+ * 	Value: gt_syscall_state
+ */
+typedef struct gt_syscall_state {
+	gt_paddr_record *syscall_paddr_record;
+	void            *data;
+	addr_t           thread_id; /* needed for teardown */
+} gt_syscall_state;
 
 /*
  * Restore a stack return pointer; useful to ensure the kernel continues to
@@ -86,8 +139,8 @@ static void
 gt_restore_return_addr (gpointer data)
 {
 	status_t status;
-	syscall_state *sys_state = data;
-	GTLoop *loop = sys_state->syscall_trap->parent->loop;
+	gt_syscall_state *sys_state = data;
+	GTLoop *loop = sys_state->syscall_paddr_record->parent->loop;
 
 	addr_t pa = vmi_translate_kv2p(loop->vmi, sys_state->thread_id);
 	if (0 == pa) {
@@ -133,7 +186,6 @@ gt_destroy_page_record (gpointer data) {
 
 /*
  * Callback after a step event on any VCPU.
- * Here we must reset any single-step changes we made.
  */
 static event_response_t
 gt_singlestep_cb(vmi_instance_t vmi, vmi_event_t *event) {
@@ -196,10 +248,10 @@ done:
  * with the physical address. Recall that a given page might contain
  * multiple breakpoints.
  */
-static struct gt_paddr_record *
+static gt_paddr_record *
 gt_paddr_record_from_pa(GTLoop *loop, addr_t pa) {
-	struct gt_paddr_record *paddr_record = NULL;
-	gt_page_record         *page_record  = NULL;
+	gt_paddr_record *paddr_record = NULL;
+	gt_page_record  *page_record  = NULL;
 
 	addr_t frame  = pa >> GT_PAGE_OFFSET_BITS;
 	addr_t offset = pa  % GT_PAGE_SIZE;
@@ -223,15 +275,14 @@ done:
 }
 
 /* Return the paddr_record associated with the given virtual address. */
-static struct gt_paddr_record *
+static gt_paddr_record *
 gt_paddr_record_from_va(GTLoop *loop, addr_t va) {
 	return gt_paddr_record_from_pa(loop, vmi_translate_kv2p(loop->vmi, va));
 }
 
 /*
  * Service a triggered breakpoint. Restore the original page table for one
- * single-step iteration and possibly print the system call parameters
- * or return value.
+ * single-step iteration and invoke the system call or return callback.
  *
  * In the case of a system call, enable the syscall return breakpoint.
  *
@@ -248,11 +299,11 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	if (event->interrupt_event.gla != loop->trampoline_addr) {
 		/* Type-one breakpoint (system call). */
 		status_t status;
-		struct gt_paddr_record *record;
-		syscall_state *state;
+		gt_paddr_record *record;
+		gt_syscall_state *state;
 
 		/* Lookup record corresponding to breakpoint address. */
-		record = gt_paddr_record_from_va(event->data,
+		record = gt_paddr_record_from_va(loop,
 		                                 event->interrupt_event.gla);
 		if (NULL == record) {
 			/* Assume we didn't emplace interrupt. */
@@ -283,34 +334,44 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 
 		vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 
-		state                = g_new0(syscall_state, 1);
-		state->syscall_trap  = record;
-		state->thread_id     = thread_id;
+		state                       = g_new0(gt_syscall_state, 1);
+		state->syscall_paddr_record = record;
+		state->thread_id            = thread_id;
+
+		/* Invoke system-call callback in record. */
 		state->data          = record->syscall_cb(vmi, event, pid,
 		                                          thread_id,
 		                                          record->data);
 
+		/* Record system-call state. */
 		g_hash_table_insert(loop->gt_ret_addr_mapping,
 		                    GSIZE_TO_POINTER(thread_id),
 		                    state);
 
+		/* Overwrite stack to return to trampoline. */
 		vmi_write_64_pa(vmi, return_loc, &loop->trampoline_addr);
 	} else {
 		/* Type-two breakpoint (system return). */
+		gt_syscall_state *state;
 		addr_t thread_id = event->x86_regs->rsp - loop->return_addr_width;
-		syscall_state *state = g_hash_table_lookup(loop->gt_ret_addr_mapping,
-		                                           GSIZE_TO_POINTER(thread_id));
+
+		state = g_hash_table_lookup(loop->gt_ret_addr_mapping,
+		                            GSIZE_TO_POINTER(thread_id));
 
 		if (NULL != state) {
 			vmi_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 
-			state->syscall_trap->sysret_cb(vmi, event, pid, thread_id, state->data);
+			state->syscall_paddr_record->sysret_cb(vmi,
+			                                       event,
+			                                       pid,
+			                                       thread_id,
+			                                       state->data);
 
 			vmi_set_vcpureg(vmi, loop->return_addr, RIP, event->vcpu_id);
 
 			/*
-			 * This will free our syscall_state object, but sysret_cb must have
-			 * freed state->data.
+			 * This will free our gt_syscall_state object, but
+			 * sysret_cb must have freed state->data.
 			 */
 			g_hash_table_remove(loop->gt_ret_addr_mapping,
 			                    GSIZE_TO_POINTER(thread_id));
@@ -323,7 +384,7 @@ done:
 
 /*
  * Callback invoked on a R/W of a monitored page (likely Windows kernel patch
- * protection). Switch the VCPUs SLAT to its original, step once, switch SLAT
+ * protection). Switch the VCPU's SLAT to its original, step once, switch SLAT
  * back.
  */
 static event_response_t
@@ -666,32 +727,30 @@ done:
 static addr_t
 gt_allocate_shadow_frame (GTLoop *loop)
 {
-	int status;
+	int rc;
 	xen_pfn_t gfn = 0;
 	uint64_t proposed_mem_size = loop->curr_mem_size + GT_PAGE_SIZE;
 
-	status = xc_domain_setmaxmem(loop->xch, loop->domid, proposed_mem_size);
-	if (0 == status) {
-		loop->curr_mem_size = proposed_mem_size;
-	} else {
+	rc = xc_domain_setmaxmem(loop->xch, loop->domid, proposed_mem_size);
+	if (rc < 0) {
 		fprintf(stderr,
 		       "failed to increase memory size on guest to %lx\n",
 		        proposed_mem_size);
 		goto done;
 	}
 
-	status = xc_domain_increase_reservation_exact(loop->xch, loop->domid,
-	                                              1, 0, 0, &gfn);
+	loop->curr_mem_size = proposed_mem_size;
 
-	if (status) {
+	rc = xc_domain_increase_reservation_exact(loop->xch, loop->domid,
+	                                              1, 0, 0, &gfn);
+	if (rc < 0) {
 		fprintf(stderr, "failed to increase reservation on guest");
 		goto done;
 	}
 
-	status = xc_domain_populate_physmap_exact(loop->xch, loop->domid, 1, 0,
+	rc = xc_domain_populate_physmap_exact(loop->xch, loop->domid, 1, 0,
 	                                          0, &gfn);
-
-	if (status) {
+	if (rc < 0) {
 		fprintf(stderr, "failed to populate GFN at 0x%lx\n", gfn);
 		gfn = 0;
 		goto done;
@@ -703,12 +762,12 @@ done:
 
 /* Remove the breakpoint associated with paddr_record.  */
 static status_t
-gt_remove_breakpoint(struct gt_paddr_record *paddr_record) {
+gt_remove_breakpoint(gt_paddr_record *paddr_record) {
 	uint8_t curr_inst;
-	status_t status    = VMI_FAILURE;
+	status_t status     = VMI_FAILURE;
+	addr_t frame        = paddr_record->parent->frame;
 	addr_t shadow_frame = paddr_record->parent->shadow_frame;
-	addr_t frame       = paddr_record->parent->frame;
-	addr_t offset      = paddr_record->offset;
+	addr_t offset       = paddr_record->offset;
 
 	status = vmi_read_8_pa(paddr_record->parent->loop->vmi,
 	                      (frame << GT_PAGE_OFFSET_BITS) + offset,
@@ -727,7 +786,7 @@ done:
 
 static void
 gt_destroy_paddr_record (gpointer data) {
-	struct gt_paddr_record *paddr_record = data;
+	gt_paddr_record *paddr_record = data;
 
 	fprintf(stderr,
 	       "destroying paddr record at shadow physical address %lx\n",
@@ -745,7 +804,7 @@ gt_destroy_paddr_record (gpointer data) {
  * physical-address record corresponding to va to the page record's collection
  * of children.
  */
-static struct gt_paddr_record *
+static gt_paddr_record *
 gt_setup_mem_trap (GTLoop *loop,
                    addr_t va,
                    GTSyscallFunc syscall_cb,
@@ -755,7 +814,7 @@ gt_setup_mem_trap (GTLoop *loop,
 	size_t ret;
 	status_t status;
 	gt_page_record  *page_record  = NULL;
-	struct gt_paddr_record *paddr_record = NULL;
+	gt_paddr_record *paddr_record = NULL;
 
 	addr_t pa = vmi_translate_kv2p(loop->vmi, va);
 	if (0 == pa) {
@@ -847,7 +906,7 @@ gt_setup_mem_trap (GTLoop *loop,
 	}
 
 	/* Create physical-address record and add to page record. */
-	paddr_record             = g_new0(struct gt_paddr_record, 1);
+	paddr_record             = g_new0(gt_paddr_record, 1);
 	paddr_record->offset     = shadow_offset;
 	paddr_record->parent     = page_record;
 	paddr_record->syscall_cb = syscall_cb;
@@ -890,15 +949,15 @@ done:
  * Returns: %TRUE on success, %FALSE on failure.
  **/
 gboolean gt_loop_set_cb(GTLoop *loop,
-                    const char *kernel_func,
-                    GTSyscallFunc syscall_cb,
-                    GTSysretFunc sysret_cb,
-                    void *user_data)
+                        const char *kernel_func,
+                        GTSyscallFunc syscall_cb,
+                        GTSysretFunc sysret_cb,
+                        void *user_data)
 {
 	gboolean fnval = FALSE;
 
 	addr_t sysaddr;
-	struct gt_paddr_record *syscall_trap;
+	gt_paddr_record *syscall_trap;
 
 	vmi_pause_vm(loop->vmi);
 
