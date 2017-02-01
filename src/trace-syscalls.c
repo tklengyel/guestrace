@@ -603,14 +603,14 @@ gt_loop_get_ostype(GtLoop *loop)
 }
 
 /**
- * gt_loop_get_register:
+ * gt_loop_get_guest_register:
  * @state: a pointer to a #GtGuestState.
  * @name: name of register to get.
  *
  * Returns the value of the named register from the guest state.
  */
 gt_reg_t
-gt_loop_get_register(GtGuestState *state, gt_reg_name_t name)
+gt_loop_get_guest_register(GtGuestState *state, gt_reg_name_t name)
 {
 	gt_reg_t reg = 0;
 
@@ -651,7 +651,7 @@ done:
 }
 
 /**
- * gt_loop_get_string:
+ * gt_loop_get_guest_string:
  * @state: a pointer to a #GtGuestState.
  * @vaddr: a virtual address from the guest's address space.
  * @pid: PID of the virtual address space (0 for kernel).
@@ -660,7 +660,7 @@ done:
  * The returned string must be freed by the caller.
  */
 char *
-gt_loop_get_string(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid)
+gt_loop_get_guest_string(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid)
 {
 	return vmi_read_str_va(gt_loop_get_vmi_instance(state), vaddr, pid);
 }

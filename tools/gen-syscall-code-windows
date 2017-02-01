@@ -577,12 +577,12 @@ done:
 static uint64_t *
 vf_get_args(GtGuestState *state, gt_pid_t pid) {
 	uint64_t *args = calloc(NUM_SYSCALL_ARGS, sizeof(uint64_t));
-	args[0] = gt_loop_get_register(state, RCX);
-	args[1] = gt_loop_get_register(state, RDX);
-	args[2] = gt_loop_get_register(state, R8);
-	args[3] = gt_loop_get_register(state, R9);
+	args[0] = gt_loop_get_guest_register(state, RCX);
+	args[1] = gt_loop_get_guest_register(state, RDX);
+	args[2] = gt_loop_get_guest_register(state, R8);
+	args[3] = gt_loop_get_guest_register(state, R9);
 	
-	vmi_read_va(gt_loop_get_vmi_instance(state), gt_loop_get_register(state, RSP) + vmi_get_address_width(gt_loop_get_vmi_instance(state)) * 5, pid, &args[4], sizeof(uint64_t) * (NUM_SYSCALL_ARGS - 4));
+	vmi_read_va(gt_loop_get_vmi_instance(state), gt_loop_get_guest_register(state, RSP) + vmi_get_address_width(gt_loop_get_vmi_instance(state)) * 5, pid, &args[4], sizeof(uint64_t) * (NUM_SYSCALL_ARGS - 4));
 	return args;
 }
 
@@ -751,7 +751,7 @@ def write_sysret(syscall):
 			format_cleanup.append(res[3])
 		count += 1
 	save_loc.write("\n".join(x for x in format_vars if x != ""))
-	save_loc.write('\n\tfprintf(stderr, "pid: %%u/0x%%lx (%%s) sysret: Status(0x%%lx) OUT(%s)\\n", pid, tid, proc, gt_loop_get_register(state, RAX)%s);\n' % (", ".join(format_strings), ", ".join(format_args)))
+	save_loc.write('\n\tfprintf(stderr, "pid: %%u/0x%%lx (%%s) sysret: Status(0x%%lx) OUT(%s)\\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX)%s);\n' % (", ".join(format_strings), ", ".join(format_args)))
 	save_loc.write("\n".join(x for x in format_cleanup if x != ""))
 	save_loc.write("\tfree(args);\n")
 	save_loc.write("}\n\n")

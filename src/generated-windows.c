@@ -167,12 +167,12 @@ done:
 static uint64_t *
 vf_get_args(GtGuestState *state, gt_pid_t pid) {
 	uint64_t *args = calloc(NUM_SYSCALL_ARGS, sizeof(uint64_t));
-	args[0] = gt_loop_get_register(state, RCX);
-	args[1] = gt_loop_get_register(state, RDX);
-	args[2] = gt_loop_get_register(state, R8);
-	args[3] = gt_loop_get_register(state, R9);
+	args[0] = gt_loop_get_guest_register(state, RCX);
+	args[1] = gt_loop_get_guest_register(state, RDX);
+	args[2] = gt_loop_get_guest_register(state, R8);
+	args[3] = gt_loop_get_guest_register(state, R9);
 	
-	vmi_read_va(gt_loop_get_vmi_instance(state), gt_loop_get_register(state, RSP) + vmi_get_address_width(gt_loop_get_vmi_instance(state)) * 5, pid, &args[4], sizeof(uint64_t) * (NUM_SYSCALL_ARGS - 4));
+	vmi_read_va(gt_loop_get_vmi_instance(state), gt_loop_get_guest_register(state, RSP) + vmi_get_address_width(gt_loop_get_vmi_instance(state)) * 5, pid, &args[4], sizeof(uint64_t) * (NUM_SYSCALL_ARGS - 4));
 	return args;
 }
 
@@ -240,7 +240,7 @@ void gt_windows_print_sysret_ntacceptconnectport(GtGuestState *state, gt_pid_t p
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PortHandle: 0x%lx, ServerView: 0x%lx, ClientView: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0, args[4], args[5]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PortHandle: 0x%lx, ServerView: 0x%lx, ClientView: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0, args[4], args[5]);
 	free(args);
 }
 
@@ -265,7 +265,7 @@ void gt_windows_print_sysret_ntaccesscheckandauditalarm(GtGuestState *state, gt_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(GrantedAccess: 0x%lx, AccessStatus: 0x%lx, GenerateOnClose: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[8], args[9], args[10]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(GrantedAccess: 0x%lx, AccessStatus: 0x%lx, GenerateOnClose: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[8], args[9], args[10]);
 	free(args);
 }
 
@@ -290,7 +290,7 @@ void gt_windows_print_sysret_ntaccesscheckbytypeandauditalarm(GtGuestState *stat
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(GrantedAccess: 0x%lx, AccessStatus: 0x%lx, GenerateOnClose: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[13], args[14], args[15]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(GrantedAccess: 0x%lx, AccessStatus: 0x%lx, GenerateOnClose: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[13], args[14], args[15]);
 	free(args);
 }
 
@@ -311,7 +311,7 @@ void gt_windows_print_sysret_ntaccesscheckbytype(GtGuestState *state, gt_pid_t p
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_8 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[8], pid, &pulong_8);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PrivilegeSetLength: 0x%lx, GrantedAccess: 0x%lx, AccessStatus: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_8, args[9], args[10]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PrivilegeSetLength: 0x%lx, GrantedAccess: 0x%lx, AccessStatus: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_8, args[9], args[10]);
 	free(args);
 }
 
@@ -336,7 +336,7 @@ void gt_windows_print_sysret_ntaccesscheckbytyperesultlistandauditalarmbyhandle(
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(GenerateOnClose: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[16]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(GenerateOnClose: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[16]);
 	free(args);
 }
 
@@ -361,7 +361,7 @@ void gt_windows_print_sysret_ntaccesscheckbytyperesultlistandauditalarm(GtGuestS
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(GenerateOnClose: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[15]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(GenerateOnClose: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[15]);
 	free(args);
 }
 
@@ -382,7 +382,7 @@ void gt_windows_print_sysret_ntaccesscheckbytyperesultlist(GtGuestState *state, 
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_8 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[8], pid, &pulong_8);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PrivilegeSetLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_8);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PrivilegeSetLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_8);
 	free(args);
 }
 
@@ -403,7 +403,7 @@ void gt_windows_print_sysret_ntaccesscheck(GtGuestState *state, gt_pid_t pid, gt
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_5 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[5], pid, &pulong_5);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PrivilegeSetLength: 0x%lx, GrantedAccess: 0x%lx, AccessStatus: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_5, args[6], args[7]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PrivilegeSetLength: 0x%lx, GrantedAccess: 0x%lx, AccessStatus: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_5, args[6], args[7]);
 	free(args);
 }
 
@@ -421,7 +421,7 @@ void gt_windows_print_sysret_ntaddatom(GtGuestState *state, gt_pid_t pid, gt_tid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Atom: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[2]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Atom: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[2]);
 	free(args);
 }
 
@@ -440,7 +440,7 @@ void gt_windows_print_sysret_ntaddbootentry(GtGuestState *state, gt_pid_t pid, g
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_1 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[1], pid, &pulong_1);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Id: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_1);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Id: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_1);
 	free(args);
 }
 
@@ -459,7 +459,7 @@ void gt_windows_print_sysret_ntadddriverentry(GtGuestState *state, gt_pid_t pid,
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_1 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[1], pid, &pulong_1);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Id: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_1);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Id: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_1);
 	free(args);
 }
 
@@ -478,7 +478,7 @@ void gt_windows_print_sysret_ntadjustgroupstoken(GtGuestState *state, gt_pid_t p
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_5 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[5], pid, &pulong_5);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_5);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_5);
 	free(args);
 }
 
@@ -497,7 +497,7 @@ void gt_windows_print_sysret_ntadjustprivilegestoken(GtGuestState *state, gt_pid
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_5 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[5], pid, &pulong_5);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_5);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_5);
 	free(args);
 }
 
@@ -516,7 +516,7 @@ void gt_windows_print_sysret_ntalertresumethread(GtGuestState *state, gt_pid_t p
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_1 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[1], pid, &pulong_1);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PreviousSuspendCount: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_1);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PreviousSuspendCount: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_1);
 	free(args);
 }
 
@@ -534,7 +534,7 @@ void gt_windows_print_sysret_ntalertthread(GtGuestState *state, gt_pid_t pid, gt
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -552,7 +552,7 @@ void gt_windows_print_sysret_ntallocatelocallyuniqueid(GtGuestState *state, gt_p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Luid: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[0]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Luid: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[0]);
 	free(args);
 }
 
@@ -580,7 +580,7 @@ void gt_windows_print_sysret_ntallocatereserveobject(GtGuestState *state, gt_pid
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(MemoryReserveHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(MemoryReserveHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -598,7 +598,7 @@ void gt_windows_print_sysret_ntallocateuserphysicalpages(GtGuestState *state, gt
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NumberOfPages: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NumberOfPages: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -619,7 +619,7 @@ void gt_windows_print_sysret_ntallocateuuids(GtGuestState *state, gt_pid_t pid, 
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[1], pid, &pulong_1);
 	uint64_t pulong_2 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[2], pid, &pulong_2);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Time: 0x%lx, Range: 0x%lx, Sequence: 0x%lx, Seed: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[0], pulong_1, pulong_2, args[3]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Time: 0x%lx, Range: 0x%lx, Sequence: 0x%lx, Seed: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[0], pulong_1, pulong_2, args[3]);
 	free(args);
 }
 
@@ -637,7 +637,7 @@ void gt_windows_print_sysret_ntallocatevirtualmemory(GtGuestState *state, gt_pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*BaseAddress: 0x%lx, RegionSize: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1], args[3]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*BaseAddress: 0x%lx, RegionSize: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1], args[3]);
 	free(args);
 }
 
@@ -666,7 +666,7 @@ void gt_windows_print_sysret_ntalpcacceptconnectport(GtGuestState *state, gt_pid
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PortHandle: 0x%lx, ConnectionMessageAttributes: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0, args[7]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PortHandle: 0x%lx, ConnectionMessageAttributes: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0, args[7]);
 	free(args);
 }
 
@@ -684,7 +684,7 @@ void gt_windows_print_sysret_ntalpccancelmessage(GtGuestState *state, gt_pid_t p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -718,7 +718,7 @@ void gt_windows_print_sysret_ntalpcconnectport(GtGuestState *state, gt_pid_t pid
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
 	uint64_t pulong_7 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[7], pid, &pulong_7);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PortHandle: 0x%lx, ConnectionMessage: 0x%lx, BufferLength: 0x%lx, OutMessageAttributes: 0x%lx, InMessageAttributes: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0, args[6], pulong_7, args[8], args[9]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PortHandle: 0x%lx, ConnectionMessage: 0x%lx, BufferLength: 0x%lx, OutMessageAttributes: 0x%lx, InMessageAttributes: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0, args[6], pulong_7, args[8], args[9]);
 	free(args);
 }
 
@@ -746,7 +746,7 @@ void gt_windows_print_sysret_ntalpccreateport(GtGuestState *state, gt_pid_t pid,
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PortHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PortHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -764,7 +764,7 @@ void gt_windows_print_sysret_ntalpccreateportsection(GtGuestState *state, gt_pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(AlpcSectionHandle: 0x%lx, ActualSectionSize: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[4], args[5]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(AlpcSectionHandle: 0x%lx, ActualSectionSize: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[4], args[5]);
 	free(args);
 }
 
@@ -782,7 +782,7 @@ void gt_windows_print_sysret_ntalpccreateresourcereserve(GtGuestState *state, gt
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ResourceId: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[3]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ResourceId: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[3]);
 	free(args);
 }
 
@@ -800,7 +800,7 @@ void gt_windows_print_sysret_ntalpccreatesectionview(GtGuestState *state, gt_pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ViewAttributes: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[2]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ViewAttributes: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[2]);
 	free(args);
 }
 
@@ -818,7 +818,7 @@ void gt_windows_print_sysret_ntalpccreatesecuritycontext(GtGuestState *state, gt
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(SecurityAttribute: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[2]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(SecurityAttribute: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[2]);
 	free(args);
 }
 
@@ -836,7 +836,7 @@ void gt_windows_print_sysret_ntalpcdeleteportsection(GtGuestState *state, gt_pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -854,7 +854,7 @@ void gt_windows_print_sysret_ntalpcdeleteresourcereserve(GtGuestState *state, gt
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -872,7 +872,7 @@ void gt_windows_print_sysret_ntalpcdeletesectionview(GtGuestState *state, gt_pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -890,7 +890,7 @@ void gt_windows_print_sysret_ntalpcdeletesecuritycontext(GtGuestState *state, gt
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -908,7 +908,7 @@ void gt_windows_print_sysret_ntalpcdisconnectport(GtGuestState *state, gt_pid_t 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -926,7 +926,7 @@ void gt_windows_print_sysret_ntalpcimpersonateclientofport(GtGuestState *state, 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -956,7 +956,7 @@ void gt_windows_print_sysret_ntalpcopensenderprocess(GtGuestState *state, gt_pid
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ProcessHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ProcessHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -986,7 +986,7 @@ void gt_windows_print_sysret_ntalpcopensenderthread(GtGuestState *state, gt_pid_
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ThreadHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ThreadHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -1005,7 +1005,7 @@ void gt_windows_print_sysret_ntalpcqueryinformation(GtGuestState *state, gt_pid_
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_4);
 	free(args);
 }
 
@@ -1024,7 +1024,7 @@ void gt_windows_print_sysret_ntalpcqueryinformationmessage(GtGuestState *state, 
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_5 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[5], pid, &pulong_5);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_5);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_5);
 	free(args);
 }
 
@@ -1042,7 +1042,7 @@ void gt_windows_print_sysret_ntalpcrevokesecuritycontext(GtGuestState *state, gt
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -1062,7 +1062,7 @@ void gt_windows_print_sysret_ntalpcsendwaitreceiveport(GtGuestState *state, gt_p
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_5 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[5], pid, &pulong_5);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReceiveMessage: 0x%lx, BufferLength: 0x%lx, ReceiveMessageAttributes: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[4], pulong_5, args[6]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReceiveMessage: 0x%lx, BufferLength: 0x%lx, ReceiveMessageAttributes: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[4], pulong_5, args[6]);
 	free(args);
 }
 
@@ -1080,7 +1080,7 @@ void gt_windows_print_sysret_ntalpcsetinformation(GtGuestState *state, gt_pid_t 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -1098,7 +1098,7 @@ void gt_windows_print_sysret_ntapphelpcachecontrol(GtGuestState *state, gt_pid_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -1116,7 +1116,7 @@ void gt_windows_print_sysret_ntaremappedfilesthesame(GtGuestState *state, gt_pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -1134,7 +1134,7 @@ void gt_windows_print_sysret_ntassignprocesstojobobject(GtGuestState *state, gt_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -1152,7 +1152,7 @@ void gt_windows_print_sysret_ntcallbackreturn(GtGuestState *state, gt_pid_t pid,
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -1170,7 +1170,7 @@ void gt_windows_print_sysret_ntcanceliofileex(GtGuestState *state, gt_pid_t pid,
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[2]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[2]);
 	free(args);
 }
 
@@ -1188,7 +1188,7 @@ void gt_windows_print_sysret_ntcanceliofile(GtGuestState *state, gt_pid_t pid, g
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -1206,7 +1206,7 @@ void gt_windows_print_sysret_ntcancelsynchronousiofile(GtGuestState *state, gt_p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[2]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[2]);
 	free(args);
 }
 
@@ -1224,7 +1224,7 @@ void gt_windows_print_sysret_ntcanceltimer(GtGuestState *state, gt_pid_t pid, gt
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(CurrentState: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(CurrentState: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -1242,7 +1242,7 @@ void gt_windows_print_sysret_ntclearevent(GtGuestState *state, gt_pid_t pid, gt_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -1260,7 +1260,7 @@ void gt_windows_print_sysret_ntclose(GtGuestState *state, gt_pid_t pid, gt_tid_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -1279,7 +1279,7 @@ void gt_windows_print_sysret_ntcloseobjectauditalarm(GtGuestState *state, gt_pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -1297,7 +1297,7 @@ void gt_windows_print_sysret_ntcommitcomplete(GtGuestState *state, gt_pid_t pid,
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -1315,7 +1315,7 @@ void gt_windows_print_sysret_ntcommitenlistment(GtGuestState *state, gt_pid_t pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -1333,7 +1333,7 @@ void gt_windows_print_sysret_ntcommittransaction(GtGuestState *state, gt_pid_t p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -1351,7 +1351,7 @@ void gt_windows_print_sysret_ntcompactkeys(GtGuestState *state, gt_pid_t pid, gt
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -1369,7 +1369,7 @@ void gt_windows_print_sysret_ntcomparetokens(GtGuestState *state, gt_pid_t pid, 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Equal: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[2]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Equal: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[2]);
 	free(args);
 }
 
@@ -1387,7 +1387,7 @@ void gt_windows_print_sysret_ntcompleteconnectport(GtGuestState *state, gt_pid_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -1405,7 +1405,7 @@ void gt_windows_print_sysret_ntcompresskey(GtGuestState *state, gt_pid_t pid, gt
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -1430,7 +1430,7 @@ void gt_windows_print_sysret_ntconnectport(GtGuestState *state, gt_pid_t pid, gt
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[5], pid, &pulong_5);
 	uint64_t pulong_7 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[7], pid, &pulong_7);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PortHandle: 0x%lx, ClientView: 0x%lx, ServerView: 0x%lx, MaxMessageLength: 0x%lx, ConnectionInformation: 0x%lx, ConnectionInformationLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0, args[3], args[4], pulong_5, args[6], pulong_7);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PortHandle: 0x%lx, ClientView: 0x%lx, ServerView: 0x%lx, MaxMessageLength: 0x%lx, ConnectionInformation: 0x%lx, ConnectionInformationLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0, args[3], args[4], pulong_5, args[6], pulong_7);
 	free(args);
 }
 
@@ -1448,7 +1448,7 @@ void gt_windows_print_sysret_ntcontinue(GtGuestState *state, gt_pid_t pid, gt_ti
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	char *bool_1 = args[1] ? "TRUE" : "FALSE";
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ContextRecord: 0x%lx, TestAlert: %s)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[0], bool_1);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ContextRecord: 0x%lx, TestAlert: %s)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[0], bool_1);
 	free(args);
 }
 
@@ -1477,7 +1477,7 @@ void gt_windows_print_sysret_ntcreatedebugobject(GtGuestState *state, gt_pid_t p
 		root_dir_2 = obj_attr_2->root_directory;
 		attributes_2 = obj_attr_2->attributes;
 	}
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(DebugObjectHandle: 0x%lx, DesiredAccess: %s [0x%lx], ObjectAttributes: RootDirectory = 0x%lx | ObjectName = %s | Attributes = 0x%lx, Flags: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0, permissions_1, args[1], root_dir_2, unicode_str_2, attributes_2, args[3]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(DebugObjectHandle: 0x%lx, DesiredAccess: %s [0x%lx], ObjectAttributes: RootDirectory = 0x%lx | ObjectName = %s | Attributes = 0x%lx, Flags: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0, permissions_1, args[1], root_dir_2, unicode_str_2, attributes_2, args[3]);
 	free(permissions_1);
 	free(unicode_str_2);
 	free(obj_attr_2);	free(args);
@@ -1509,7 +1509,7 @@ void gt_windows_print_sysret_ntcreatedirectoryobject(GtGuestState *state, gt_pid
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(DirectoryHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(DirectoryHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -1539,7 +1539,7 @@ void gt_windows_print_sysret_ntcreateenlistment(GtGuestState *state, gt_pid_t pi
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(EnlistmentHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(EnlistmentHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -1570,7 +1570,7 @@ void gt_windows_print_sysret_ntcreateevent(GtGuestState *state, gt_pid_t pid, gt
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(EventHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(EventHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -1600,7 +1600,7 @@ void gt_windows_print_sysret_ntcreateeventpair(GtGuestState *state, gt_pid_t pid
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(EventPairHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(EventPairHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -1630,7 +1630,7 @@ void gt_windows_print_sysret_ntcreatefile(GtGuestState *state, gt_pid_t pid, gt_
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(FileHandle: 0x%lx, IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0, args[3]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(FileHandle: 0x%lx, IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0, args[3]);
 	free(args);
 }
 
@@ -1660,7 +1660,7 @@ void gt_windows_print_sysret_ntcreateiocompletion(GtGuestState *state, gt_pid_t 
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoCompletionHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoCompletionHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -1690,7 +1690,7 @@ void gt_windows_print_sysret_ntcreatejobobject(GtGuestState *state, gt_pid_t pid
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(JobHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(JobHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -1708,7 +1708,7 @@ void gt_windows_print_sysret_ntcreatejobset(GtGuestState *state, gt_pid_t pid, g
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -1738,7 +1738,7 @@ void gt_windows_print_sysret_ntcreatekeyedevent(GtGuestState *state, gt_pid_t pi
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(KeyedEventHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(KeyedEventHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -1772,7 +1772,7 @@ void gt_windows_print_sysret_ntcreatekey(GtGuestState *state, gt_pid_t pid, gt_t
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
 	uint64_t pulong_6 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[6], pid, &pulong_6);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(KeyHandle: 0x%lx, Disposition: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0, pulong_6);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(KeyHandle: 0x%lx, Disposition: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0, pulong_6);
 	free(args);
 }
 
@@ -1806,7 +1806,7 @@ void gt_windows_print_sysret_ntcreatekeytransacted(GtGuestState *state, gt_pid_t
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
 	uint64_t pulong_7 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[7], pid, &pulong_7);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(KeyHandle: 0x%lx, Disposition: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0, pulong_7);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(KeyHandle: 0x%lx, Disposition: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0, pulong_7);
 	free(args);
 }
 
@@ -1834,7 +1834,7 @@ void gt_windows_print_sysret_ntcreatemailslotfile(GtGuestState *state, gt_pid_t 
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(FileHandle: 0x%lx, IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0, args[3]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(FileHandle: 0x%lx, IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0, args[3]);
 	free(args);
 }
 
@@ -1865,7 +1865,7 @@ void gt_windows_print_sysret_ntcreatemutant(GtGuestState *state, gt_pid_t pid, g
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(MutantHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(MutantHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -1893,7 +1893,7 @@ void gt_windows_print_sysret_ntcreatenamedpipefile(GtGuestState *state, gt_pid_t
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(FileHandle: 0x%lx, IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0, args[3]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(FileHandle: 0x%lx, IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0, args[3]);
 	free(args);
 }
 
@@ -1911,7 +1911,7 @@ void gt_windows_print_sysret_ntcreatepagingfile(GtGuestState *state, gt_pid_t pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -1939,7 +1939,7 @@ void gt_windows_print_sysret_ntcreateport(GtGuestState *state, gt_pid_t pid, gt_
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PortHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PortHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -1969,7 +1969,7 @@ void gt_windows_print_sysret_ntcreateprivatenamespace(GtGuestState *state, gt_pi
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NamespaceHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NamespaceHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -1999,7 +1999,7 @@ void gt_windows_print_sysret_ntcreateprocessex(GtGuestState *state, gt_pid_t pid
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ProcessHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ProcessHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -2030,7 +2030,7 @@ void gt_windows_print_sysret_ntcreateprocess(GtGuestState *state, gt_pid_t pid, 
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ProcessHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ProcessHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -2050,7 +2050,7 @@ void gt_windows_print_sysret_ntcreateprofileex(GtGuestState *state, gt_pid_t pid
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ProfileHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ProfileHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -2070,7 +2070,7 @@ void gt_windows_print_sysret_ntcreateprofile(GtGuestState *state, gt_pid_t pid, 
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ProfileHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ProfileHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -2102,7 +2102,7 @@ void gt_windows_print_sysret_ntcreateresourcemanager(GtGuestState *state, gt_pid
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ResourceManagerHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ResourceManagerHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -2132,7 +2132,7 @@ void gt_windows_print_sysret_ntcreatesection(GtGuestState *state, gt_pid_t pid, 
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(SectionHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(SectionHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -2162,7 +2162,7 @@ void gt_windows_print_sysret_ntcreatesemaphore(GtGuestState *state, gt_pid_t pid
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(SemaphoreHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(SemaphoreHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -2194,7 +2194,7 @@ void gt_windows_print_sysret_ntcreatesymboliclinkobject(GtGuestState *state, gt_
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(LinkHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(LinkHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -2224,7 +2224,7 @@ void gt_windows_print_sysret_ntcreatethreadex(GtGuestState *state, gt_pid_t pid,
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ThreadHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ThreadHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -2255,7 +2255,7 @@ void gt_windows_print_sysret_ntcreatethread(GtGuestState *state, gt_pid_t pid, g
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ThreadHandle: 0x%lx, ClientId: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0, args[4]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ThreadHandle: 0x%lx, ClientId: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0, args[4]);
 	free(args);
 }
 
@@ -2285,7 +2285,7 @@ void gt_windows_print_sysret_ntcreatetimer(GtGuestState *state, gt_pid_t pid, gt
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TimerHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TimerHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -2315,7 +2315,7 @@ void gt_windows_print_sysret_ntcreatetoken(GtGuestState *state, gt_pid_t pid, gt
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TokenHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TokenHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -2347,7 +2347,7 @@ void gt_windows_print_sysret_ntcreatetransactionmanager(GtGuestState *state, gt_
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TmHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TmHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -2379,7 +2379,7 @@ void gt_windows_print_sysret_ntcreatetransaction(GtGuestState *state, gt_pid_t p
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TransactionHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TransactionHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -2424,7 +2424,7 @@ void gt_windows_print_sysret_ntcreateuserprocess(GtGuestState *state, gt_pid_t p
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
 	uint64_t phandle_1 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[1], pid, &phandle_1);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ProcessHandle: 0x%lx, ThreadHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0, phandle_1);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ProcessHandle: 0x%lx, ThreadHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0, phandle_1);
 	free(args);
 }
 
@@ -2452,7 +2452,7 @@ void gt_windows_print_sysret_ntcreatewaitableport(GtGuestState *state, gt_pid_t 
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PortHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PortHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -2482,7 +2482,7 @@ void gt_windows_print_sysret_ntcreateworkerfactory(GtGuestState *state, gt_pid_t
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(WorkerFactoryHandleReturn: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(WorkerFactoryHandleReturn: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -2500,7 +2500,7 @@ void gt_windows_print_sysret_ntdebugactiveprocess(GtGuestState *state, gt_pid_t 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ProcessHandle: 0x%lx, DebugObjectHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[0], args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ProcessHandle: 0x%lx, DebugObjectHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[0], args[1]);
 	free(args);
 }
 
@@ -2518,7 +2518,7 @@ void gt_windows_print_sysret_ntdebugcontinue(GtGuestState *state, gt_pid_t pid, 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(DebugObjectHandle: 0x%lx, ClientId: 0x%lx, ContinueStatus: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[0], args[1], args[2]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(DebugObjectHandle: 0x%lx, ClientId: 0x%lx, ContinueStatus: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[0], args[1], args[2]);
 	free(args);
 }
 
@@ -2536,7 +2536,7 @@ void gt_windows_print_sysret_ntdelayexecution(GtGuestState *state, gt_pid_t pid,
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -2554,7 +2554,7 @@ void gt_windows_print_sysret_ntdeleteatom(GtGuestState *state, gt_pid_t pid, gt_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -2572,7 +2572,7 @@ void gt_windows_print_sysret_ntdeletebootentry(GtGuestState *state, gt_pid_t pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -2590,7 +2590,7 @@ void gt_windows_print_sysret_ntdeletedriverentry(GtGuestState *state, gt_pid_t p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -2617,7 +2617,7 @@ void gt_windows_print_sysret_ntdeletefile(GtGuestState *state, gt_pid_t pid, gt_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -2635,7 +2635,7 @@ void gt_windows_print_sysret_ntdeletekey(GtGuestState *state, gt_pid_t pid, gt_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -2654,7 +2654,7 @@ void gt_windows_print_sysret_ntdeleteobjectauditalarm(GtGuestState *state, gt_pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -2672,7 +2672,7 @@ void gt_windows_print_sysret_ntdeleteprivatenamespace(GtGuestState *state, gt_pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -2690,7 +2690,7 @@ void gt_windows_print_sysret_ntdeletevaluekey(GtGuestState *state, gt_pid_t pid,
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -2708,7 +2708,7 @@ void gt_windows_print_sysret_ntdeviceiocontrolfile(GtGuestState *state, gt_pid_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[4]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[4]);
 	free(args);
 }
 
@@ -2726,7 +2726,7 @@ void gt_windows_print_sysret_ntdisablelastknowngood(GtGuestState *state, gt_pid_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -2744,7 +2744,7 @@ void gt_windows_print_sysret_ntdisplaystring(GtGuestState *state, gt_pid_t pid, 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -2762,7 +2762,7 @@ void gt_windows_print_sysret_ntdrawtext(GtGuestState *state, gt_pid_t pid, gt_ti
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -2781,7 +2781,7 @@ void gt_windows_print_sysret_ntduplicateobject(GtGuestState *state, gt_pid_t pid
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_3 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[3], pid, &phandle_3);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TargetHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_3);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TargetHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_3);
 	free(args);
 }
 
@@ -2812,7 +2812,7 @@ void gt_windows_print_sysret_ntduplicatetoken(GtGuestState *state, gt_pid_t pid,
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_5 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[5], pid, &phandle_5);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NewTokenHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_5);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NewTokenHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_5);
 	free(args);
 }
 
@@ -2830,7 +2830,7 @@ void gt_windows_print_sysret_ntenablelastknowngood(GtGuestState *state, gt_pid_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -2850,7 +2850,7 @@ void gt_windows_print_sysret_ntenumeratebootentries(GtGuestState *state, gt_pid_
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_1 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[1], pid, &pulong_1);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(BufferLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_1);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(BufferLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_1);
 	free(args);
 }
 
@@ -2870,7 +2870,7 @@ void gt_windows_print_sysret_ntenumeratedriverentries(GtGuestState *state, gt_pi
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_1 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[1], pid, &pulong_1);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(BufferLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_1);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(BufferLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_1);
 	free(args);
 }
 
@@ -2889,7 +2889,7 @@ void gt_windows_print_sysret_ntenumeratekey(GtGuestState *state, gt_pid_t pid, g
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_5 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[5], pid, &pulong_5);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ResultLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_5);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ResultLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_5);
 	free(args);
 }
 
@@ -2909,7 +2909,7 @@ void gt_windows_print_sysret_ntenumeratesystemenvironmentvaluesex(GtGuestState *
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_2 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[2], pid, &pulong_2);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Buffer: 0x%lx, BufferLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1], pulong_2);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Buffer: 0x%lx, BufferLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1], pulong_2);
 	free(args);
 }
 
@@ -2928,7 +2928,7 @@ void gt_windows_print_sysret_ntenumeratetransactionobject(GtGuestState *state, g
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_4);
 	free(args);
 }
 
@@ -2947,7 +2947,7 @@ void gt_windows_print_sysret_ntenumeratevaluekey(GtGuestState *state, gt_pid_t p
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_5 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[5], pid, &pulong_5);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ResultLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_5);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ResultLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_5);
 	free(args);
 }
 
@@ -2965,7 +2965,7 @@ void gt_windows_print_sysret_ntextendsection(GtGuestState *state, gt_pid_t pid, 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NewSectionSize: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NewSectionSize: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -2984,7 +2984,7 @@ void gt_windows_print_sysret_ntfiltertoken(GtGuestState *state, gt_pid_t pid, gt
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_5 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[5], pid, &phandle_5);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NewTokenHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_5);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NewTokenHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_5);
 	free(args);
 }
 
@@ -3002,7 +3002,7 @@ void gt_windows_print_sysret_ntfindatom(GtGuestState *state, gt_pid_t pid, gt_ti
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Atom: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[2]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Atom: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[2]);
 	free(args);
 }
 
@@ -3020,7 +3020,7 @@ void gt_windows_print_sysret_ntflushbuffersfile(GtGuestState *state, gt_pid_t pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -3038,7 +3038,7 @@ void gt_windows_print_sysret_ntflushinstalluilanguage(GtGuestState *state, gt_pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3056,7 +3056,7 @@ void gt_windows_print_sysret_ntflushinstructioncache(GtGuestState *state, gt_pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3074,7 +3074,7 @@ void gt_windows_print_sysret_ntflushkey(GtGuestState *state, gt_pid_t pid, gt_ti
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3092,7 +3092,7 @@ void gt_windows_print_sysret_ntflushprocesswritebuffers(GtGuestState *state, gt_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3110,7 +3110,7 @@ void gt_windows_print_sysret_ntflushvirtualmemory(GtGuestState *state, gt_pid_t 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*BaseAddress: 0x%lx, RegionSize: 0x%lx, IoStatus: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1], args[2], args[3]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*BaseAddress: 0x%lx, RegionSize: 0x%lx, IoStatus: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1], args[2], args[3]);
 	free(args);
 }
 
@@ -3128,7 +3128,7 @@ void gt_windows_print_sysret_ntflushwritebuffer(GtGuestState *state, gt_pid_t pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3146,7 +3146,7 @@ void gt_windows_print_sysret_ntfreeuserphysicalpages(GtGuestState *state, gt_pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NumberOfPages: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NumberOfPages: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -3164,7 +3164,7 @@ void gt_windows_print_sysret_ntfreevirtualmemory(GtGuestState *state, gt_pid_t p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*BaseAddress: 0x%lx, RegionSize: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1], args[2]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*BaseAddress: 0x%lx, RegionSize: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1], args[2]);
 	free(args);
 }
 
@@ -3182,7 +3182,7 @@ void gt_windows_print_sysret_ntfreezeregistry(GtGuestState *state, gt_pid_t pid,
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3200,7 +3200,7 @@ void gt_windows_print_sysret_ntfreezetransactions(GtGuestState *state, gt_pid_t 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3218,7 +3218,7 @@ void gt_windows_print_sysret_ntfscontrolfile(GtGuestState *state, gt_pid_t pid, 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[4]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[4]);
 	free(args);
 }
 
@@ -3236,7 +3236,7 @@ void gt_windows_print_sysret_ntgetcontextthread(GtGuestState *state, gt_pid_t pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ThreadContext: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ThreadContext: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -3254,7 +3254,7 @@ void gt_windows_print_sysret_ntgetcurrentprocessornumber(GtGuestState *state, gt
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3272,7 +3272,7 @@ void gt_windows_print_sysret_ntgetdevicepowerstate(GtGuestState *state, gt_pid_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*State: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*State: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -3292,7 +3292,7 @@ void gt_windows_print_sysret_ntgetmuiregistryinfo(GtGuestState *state, gt_pid_t 
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_1 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[1], pid, &pulong_1);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(DataSize: 0x%lx, Data: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_1, args[2]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(DataSize: 0x%lx, Data: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_1, args[2]);
 	free(args);
 }
 
@@ -3311,7 +3311,7 @@ void gt_windows_print_sysret_ntgetnextprocess(GtGuestState *state, gt_pid_t pid,
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &phandle_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NewProcessHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NewProcessHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_4);
 	free(args);
 }
 
@@ -3330,7 +3330,7 @@ void gt_windows_print_sysret_ntgetnextthread(GtGuestState *state, gt_pid_t pid, 
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_5 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[5], pid, &phandle_5);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NewThreadHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_5);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NewThreadHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_5);
 	free(args);
 }
 
@@ -3349,7 +3349,7 @@ void gt_windows_print_sysret_ntgetnlssectionptr(GtGuestState *state, gt_pid_t pi
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*SectionPointer: 0x%lx, SectionSize: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[3], pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*SectionPointer: 0x%lx, SectionSize: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[3], pulong_4);
 	free(args);
 }
 
@@ -3368,7 +3368,7 @@ void gt_windows_print_sysret_ntgetnotificationresourcemanager(GtGuestState *stat
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TransactionNotification: 0x%lx, ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1], pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TransactionNotification: 0x%lx, ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1], pulong_4);
 	free(args);
 }
 
@@ -3386,7 +3386,7 @@ void gt_windows_print_sysret_ntgetplugplayevent(GtGuestState *state, gt_pid_t pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3405,7 +3405,7 @@ void gt_windows_print_sysret_ntgetwritewatch(GtGuestState *state, gt_pid_t pid, 
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_6 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[6], pid, &pulong_6);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(EntriesInUserAddressArray: 0x%lx, Granularity: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[5], pulong_6);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(EntriesInUserAddressArray: 0x%lx, Granularity: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[5], pulong_6);
 	free(args);
 }
 
@@ -3423,7 +3423,7 @@ void gt_windows_print_sysret_ntimpersonateanonymoustoken(GtGuestState *state, gt
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3441,7 +3441,7 @@ void gt_windows_print_sysret_ntimpersonateclientofport(GtGuestState *state, gt_p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3459,7 +3459,7 @@ void gt_windows_print_sysret_ntimpersonatethread(GtGuestState *state, gt_pid_t p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3477,7 +3477,7 @@ void gt_windows_print_sysret_ntinitializenlsfiles(GtGuestState *state, gt_pid_t 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*BaseAddress: 0x%lx, DefaultLocaleId: 0x%lx, DefaultCasingTableSize: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[0], args[1], args[2]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*BaseAddress: 0x%lx, DefaultLocaleId: 0x%lx, DefaultCasingTableSize: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[0], args[1], args[2]);
 	free(args);
 }
 
@@ -3495,7 +3495,7 @@ void gt_windows_print_sysret_ntinitializeregistry(GtGuestState *state, gt_pid_t 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3513,7 +3513,7 @@ void gt_windows_print_sysret_ntinitiatepoweraction(GtGuestState *state, gt_pid_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3531,7 +3531,7 @@ void gt_windows_print_sysret_ntisprocessinjob(GtGuestState *state, gt_pid_t pid,
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3549,7 +3549,7 @@ void gt_windows_print_sysret_ntissystemresumeautomatic(GtGuestState *state, gt_p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3567,7 +3567,7 @@ void gt_windows_print_sysret_ntisuilanguagecomitted(GtGuestState *state, gt_pid_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3585,7 +3585,7 @@ void gt_windows_print_sysret_ntlistenport(GtGuestState *state, gt_pid_t pid, gt_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ConnectionRequest: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ConnectionRequest: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -3603,7 +3603,7 @@ void gt_windows_print_sysret_ntloaddriver(GtGuestState *state, gt_pid_t pid, gt_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3641,7 +3641,7 @@ void gt_windows_print_sysret_ntloadkey2(GtGuestState *state, gt_pid_t pid, gt_ti
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3679,7 +3679,7 @@ void gt_windows_print_sysret_ntloadkeyex(GtGuestState *state, gt_pid_t pid, gt_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3717,7 +3717,7 @@ void gt_windows_print_sysret_ntloadkey(GtGuestState *state, gt_pid_t pid, gt_tid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3736,7 +3736,7 @@ void gt_windows_print_sysret_ntlockfile(GtGuestState *state, gt_pid_t pid, gt_ti
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[4]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[4]);
 	free(args);
 }
 
@@ -3754,7 +3754,7 @@ void gt_windows_print_sysret_ntlockproductactivationkeys(GtGuestState *state, gt
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*pPrivateVer: 0x%lx, *pSafeMode: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[0], args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*pPrivateVer: 0x%lx, *pSafeMode: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[0], args[1]);
 	free(args);
 }
 
@@ -3772,7 +3772,7 @@ void gt_windows_print_sysret_ntlockregistrykey(GtGuestState *state, gt_pid_t pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3790,7 +3790,7 @@ void gt_windows_print_sysret_ntlockvirtualmemory(GtGuestState *state, gt_pid_t p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*BaseAddress: 0x%lx, RegionSize: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1], args[2]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*BaseAddress: 0x%lx, RegionSize: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1], args[2]);
 	free(args);
 }
 
@@ -3808,7 +3808,7 @@ void gt_windows_print_sysret_ntmakepermanentobject(GtGuestState *state, gt_pid_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3826,7 +3826,7 @@ void gt_windows_print_sysret_ntmaketemporaryobject(GtGuestState *state, gt_pid_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3849,7 +3849,7 @@ void gt_windows_print_sysret_ntmapcmfmodule(GtGuestState *state, gt_pid_t pid, g
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[3], pid, &pulong_3);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(CacheIndexOut: 0x%lx, CacheFlagsOut: 0x%lx, ViewSizeOut: 0x%lx, *BaseAddress: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_2, pulong_3, pulong_4, args[5]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(CacheIndexOut: 0x%lx, CacheFlagsOut: 0x%lx, ViewSizeOut: 0x%lx, *BaseAddress: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_2, pulong_3, pulong_4, args[5]);
 	free(args);
 }
 
@@ -3867,7 +3867,7 @@ void gt_windows_print_sysret_ntmapuserphysicalpages(GtGuestState *state, gt_pid_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3885,7 +3885,7 @@ void gt_windows_print_sysret_ntmapuserphysicalpagesscatter(GtGuestState *state, 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3903,7 +3903,7 @@ void gt_windows_print_sysret_ntmapviewofsection(GtGuestState *state, gt_pid_t pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*BaseAddress: 0x%lx, SectionOffset: 0x%lx, ViewSize: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[2], args[5], args[6]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*BaseAddress: 0x%lx, SectionOffset: 0x%lx, ViewSize: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[2], args[5], args[6]);
 	free(args);
 }
 
@@ -3921,7 +3921,7 @@ void gt_windows_print_sysret_ntmodifybootentry(GtGuestState *state, gt_pid_t pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3939,7 +3939,7 @@ void gt_windows_print_sysret_ntmodifydriverentry(GtGuestState *state, gt_pid_t p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -3957,7 +3957,7 @@ void gt_windows_print_sysret_ntnotifychangedirectoryfile(GtGuestState *state, gt
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[4]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[4]);
 	free(args);
 }
 
@@ -3976,7 +3976,7 @@ void gt_windows_print_sysret_ntnotifychangekey(GtGuestState *state, gt_pid_t pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[4]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[4]);
 	free(args);
 }
 
@@ -3995,7 +3995,7 @@ void gt_windows_print_sysret_ntnotifychangemultiplekeys(GtGuestState *state, gt_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[6]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[6]);
 	free(args);
 }
 
@@ -4013,7 +4013,7 @@ void gt_windows_print_sysret_ntnotifychangesession(GtGuestState *state, gt_pid_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -4043,7 +4043,7 @@ void gt_windows_print_sysret_ntopendirectoryobject(GtGuestState *state, gt_pid_t
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(DirectoryHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(DirectoryHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -4073,7 +4073,7 @@ void gt_windows_print_sysret_ntopenenlistment(GtGuestState *state, gt_pid_t pid,
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(EnlistmentHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(EnlistmentHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -4103,7 +4103,7 @@ void gt_windows_print_sysret_ntopenevent(GtGuestState *state, gt_pid_t pid, gt_t
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(EventHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(EventHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -4133,7 +4133,7 @@ void gt_windows_print_sysret_ntopeneventpair(GtGuestState *state, gt_pid_t pid, 
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(EventPairHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(EventPairHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -4163,7 +4163,7 @@ void gt_windows_print_sysret_ntopenfile(GtGuestState *state, gt_pid_t pid, gt_ti
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(FileHandle: 0x%lx, IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0, args[3]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(FileHandle: 0x%lx, IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0, args[3]);
 	free(args);
 }
 
@@ -4193,7 +4193,7 @@ void gt_windows_print_sysret_ntopeniocompletion(GtGuestState *state, gt_pid_t pi
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoCompletionHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoCompletionHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -4223,7 +4223,7 @@ void gt_windows_print_sysret_ntopenjobobject(GtGuestState *state, gt_pid_t pid, 
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(JobHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(JobHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -4253,7 +4253,7 @@ void gt_windows_print_sysret_ntopenkeyedevent(GtGuestState *state, gt_pid_t pid,
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(KeyedEventHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(KeyedEventHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -4283,7 +4283,7 @@ void gt_windows_print_sysret_ntopenkeyex(GtGuestState *state, gt_pid_t pid, gt_t
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(KeyHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(KeyHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -4313,7 +4313,7 @@ void gt_windows_print_sysret_ntopenkey(GtGuestState *state, gt_pid_t pid, gt_tid
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(KeyHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(KeyHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -4343,7 +4343,7 @@ void gt_windows_print_sysret_ntopenkeytransactedex(GtGuestState *state, gt_pid_t
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(KeyHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(KeyHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -4373,7 +4373,7 @@ void gt_windows_print_sysret_ntopenkeytransacted(GtGuestState *state, gt_pid_t p
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(KeyHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(KeyHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -4403,7 +4403,7 @@ void gt_windows_print_sysret_ntopenmutant(GtGuestState *state, gt_pid_t pid, gt_
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(MutantHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(MutantHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -4431,7 +4431,7 @@ void gt_windows_print_sysret_ntopenobjectauditalarm(GtGuestState *state, gt_pid_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(GenerateOnClose: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[11]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(GenerateOnClose: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[11]);
 	free(args);
 }
 
@@ -4461,7 +4461,7 @@ void gt_windows_print_sysret_ntopenprivatenamespace(GtGuestState *state, gt_pid_
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NamespaceHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NamespaceHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -4491,7 +4491,7 @@ void gt_windows_print_sysret_ntopenprocess(GtGuestState *state, gt_pid_t pid, gt
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ProcessHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ProcessHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -4510,7 +4510,7 @@ void gt_windows_print_sysret_ntopenprocesstokenex(GtGuestState *state, gt_pid_t 
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_3 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[3], pid, &phandle_3);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TokenHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_3);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TokenHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_3);
 	free(args);
 }
 
@@ -4529,7 +4529,7 @@ void gt_windows_print_sysret_ntopenprocesstoken(GtGuestState *state, gt_pid_t pi
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_2 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[2], pid, &phandle_2);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TokenHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_2);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TokenHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_2);
 	free(args);
 }
 
@@ -4559,7 +4559,7 @@ void gt_windows_print_sysret_ntopenresourcemanager(GtGuestState *state, gt_pid_t
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ResourceManagerHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ResourceManagerHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -4589,7 +4589,7 @@ void gt_windows_print_sysret_ntopensection(GtGuestState *state, gt_pid_t pid, gt
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(SectionHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(SectionHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -4619,7 +4619,7 @@ void gt_windows_print_sysret_ntopensemaphore(GtGuestState *state, gt_pid_t pid, 
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(SemaphoreHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(SemaphoreHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -4649,7 +4649,7 @@ void gt_windows_print_sysret_ntopensession(GtGuestState *state, gt_pid_t pid, gt
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(SessionHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(SessionHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -4679,7 +4679,7 @@ void gt_windows_print_sysret_ntopensymboliclinkobject(GtGuestState *state, gt_pi
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(LinkHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(LinkHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -4709,7 +4709,7 @@ void gt_windows_print_sysret_ntopenthread(GtGuestState *state, gt_pid_t pid, gt_
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ThreadHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ThreadHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -4729,7 +4729,7 @@ void gt_windows_print_sysret_ntopenthreadtokenex(GtGuestState *state, gt_pid_t p
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &phandle_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TokenHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TokenHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_4);
 	free(args);
 }
 
@@ -4749,7 +4749,7 @@ void gt_windows_print_sysret_ntopenthreadtoken(GtGuestState *state, gt_pid_t pid
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_3 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[3], pid, &phandle_3);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TokenHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_3);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TokenHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_3);
 	free(args);
 }
 
@@ -4779,7 +4779,7 @@ void gt_windows_print_sysret_ntopentimer(GtGuestState *state, gt_pid_t pid, gt_t
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TimerHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TimerHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -4811,7 +4811,7 @@ void gt_windows_print_sysret_ntopentransactionmanager(GtGuestState *state, gt_pi
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TmHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TmHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -4841,7 +4841,7 @@ void gt_windows_print_sysret_ntopentransaction(GtGuestState *state, gt_pid_t pid
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[0], pid, &phandle_0);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TransactionHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(TransactionHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0);
 	free(args);
 }
 
@@ -4859,7 +4859,7 @@ void gt_windows_print_sysret_ntplugplaycontrol(GtGuestState *state, gt_pid_t pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -4877,7 +4877,7 @@ void gt_windows_print_sysret_ntpowerinformation(GtGuestState *state, gt_pid_t pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -4895,7 +4895,7 @@ void gt_windows_print_sysret_ntpreparecomplete(GtGuestState *state, gt_pid_t pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -4913,7 +4913,7 @@ void gt_windows_print_sysret_ntprepareenlistment(GtGuestState *state, gt_pid_t p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -4931,7 +4931,7 @@ void gt_windows_print_sysret_ntprepreparecomplete(GtGuestState *state, gt_pid_t 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -4949,7 +4949,7 @@ void gt_windows_print_sysret_ntpreprepareenlistment(GtGuestState *state, gt_pid_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -4967,7 +4967,7 @@ void gt_windows_print_sysret_ntprivilegecheck(GtGuestState *state, gt_pid_t pid,
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(RequiredPrivileges: 0x%lx, Result: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1], args[2]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(RequiredPrivileges: 0x%lx, Result: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1], args[2]);
 	free(args);
 }
 
@@ -4988,7 +4988,7 @@ void gt_windows_print_sysret_ntprivilegedserviceauditalarm(GtGuestState *state, 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -5009,7 +5009,7 @@ void gt_windows_print_sysret_ntprivilegeobjectauditalarm(GtGuestState *state, gt
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -5027,7 +5027,7 @@ void gt_windows_print_sysret_ntpropagationcomplete(GtGuestState *state, gt_pid_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -5045,7 +5045,7 @@ void gt_windows_print_sysret_ntpropagationfailed(GtGuestState *state, gt_pid_t p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -5064,7 +5064,7 @@ void gt_windows_print_sysret_ntprotectvirtualmemory(GtGuestState *state, gt_pid_
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*BaseAddress: 0x%lx, RegionSize: 0x%lx, OldProtect: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1], args[2], pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*BaseAddress: 0x%lx, RegionSize: 0x%lx, OldProtect: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1], args[2], pulong_4);
 	free(args);
 }
 
@@ -5082,7 +5082,7 @@ void gt_windows_print_sysret_ntpulseevent(GtGuestState *state, gt_pid_t pid, gt_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PreviousState: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PreviousState: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -5109,7 +5109,7 @@ void gt_windows_print_sysret_ntqueryattributesfile(GtGuestState *state, gt_pid_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(FileInformation: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(FileInformation: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -5129,7 +5129,7 @@ void gt_windows_print_sysret_ntquerybootentryorder(GtGuestState *state, gt_pid_t
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_1 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[1], pid, &pulong_1);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Count: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_1);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Count: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_1);
 	free(args);
 }
 
@@ -5149,7 +5149,7 @@ void gt_windows_print_sysret_ntquerybootoptions(GtGuestState *state, gt_pid_t pi
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_1 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[1], pid, &pulong_1);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(BootOptionsLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_1);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(BootOptionsLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_1);
 	free(args);
 }
 
@@ -5167,7 +5167,7 @@ void gt_windows_print_sysret_ntquerydebugfilterstate(GtGuestState *state, gt_pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -5185,7 +5185,7 @@ void gt_windows_print_sysret_ntquerydefaultlocale(GtGuestState *state, gt_pid_t 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(DefaultLocaleId: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(DefaultLocaleId: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -5203,7 +5203,7 @@ void gt_windows_print_sysret_ntquerydefaultuilanguage(GtGuestState *state, gt_pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*DefaultUILanguageId: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[0]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*DefaultUILanguageId: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[0]);
 	free(args);
 }
 
@@ -5223,7 +5223,7 @@ void gt_windows_print_sysret_ntquerydirectoryfile(GtGuestState *state, gt_pid_t 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[4]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[4]);
 	free(args);
 }
 
@@ -5247,7 +5247,7 @@ void gt_windows_print_sysret_ntquerydirectoryobject(GtGuestState *state, gt_pid_
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[5], pid, &pulong_5);
 	uint64_t pulong_6 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[6], pid, &pulong_6);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Context: 0x%lx, ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_5, pulong_6);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Context: 0x%lx, ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_5, pulong_6);
 	free(args);
 }
 
@@ -5267,7 +5267,7 @@ void gt_windows_print_sysret_ntquerydriverentryorder(GtGuestState *state, gt_pid
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_1 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[1], pid, &pulong_1);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Count: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_1);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Count: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_1);
 	free(args);
 }
 
@@ -5288,7 +5288,7 @@ void gt_windows_print_sysret_ntqueryeafile(GtGuestState *state, gt_pid_t pid, gt
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -5307,7 +5307,7 @@ void gt_windows_print_sysret_ntqueryevent(GtGuestState *state, gt_pid_t pid, gt_
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_4);
 	free(args);
 }
 
@@ -5334,7 +5334,7 @@ void gt_windows_print_sysret_ntqueryfullattributesfile(GtGuestState *state, gt_p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(FileInformation: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(FileInformation: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -5353,7 +5353,7 @@ void gt_windows_print_sysret_ntqueryinformationatom(GtGuestState *state, gt_pid_
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_4);
 	free(args);
 }
 
@@ -5372,7 +5372,7 @@ void gt_windows_print_sysret_ntqueryinformationenlistment(GtGuestState *state, g
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_4);
 	free(args);
 }
 
@@ -5390,7 +5390,7 @@ void gt_windows_print_sysret_ntqueryinformationfile(GtGuestState *state, gt_pid_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -5409,7 +5409,7 @@ void gt_windows_print_sysret_ntqueryinformationjobobject(GtGuestState *state, gt
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_4);
 	free(args);
 }
 
@@ -5428,7 +5428,7 @@ void gt_windows_print_sysret_ntqueryinformationport(GtGuestState *state, gt_pid_
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_4);
 	free(args);
 }
 
@@ -5447,7 +5447,7 @@ void gt_windows_print_sysret_ntqueryinformationprocess(GtGuestState *state, gt_p
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_4);
 	free(args);
 }
 
@@ -5466,7 +5466,7 @@ void gt_windows_print_sysret_ntqueryinformationresourcemanager(GtGuestState *sta
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_4);
 	free(args);
 }
 
@@ -5485,7 +5485,7 @@ void gt_windows_print_sysret_ntqueryinformationthread(GtGuestState *state, gt_pi
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_4);
 	free(args);
 }
 
@@ -5504,7 +5504,7 @@ void gt_windows_print_sysret_ntqueryinformationtoken(GtGuestState *state, gt_pid
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_4);
 	free(args);
 }
 
@@ -5523,7 +5523,7 @@ void gt_windows_print_sysret_ntqueryinformationtransaction(GtGuestState *state, 
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_4);
 	free(args);
 }
 
@@ -5542,7 +5542,7 @@ void gt_windows_print_sysret_ntqueryinformationtransactionmanager(GtGuestState *
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_4);
 	free(args);
 }
 
@@ -5561,7 +5561,7 @@ void gt_windows_print_sysret_ntqueryinformationworkerfactory(GtGuestState *state
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_4);
 	free(args);
 }
 
@@ -5579,7 +5579,7 @@ void gt_windows_print_sysret_ntqueryinstalluilanguage(GtGuestState *state, gt_pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*InstallUILanguageId: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[0]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*InstallUILanguageId: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[0]);
 	free(args);
 }
 
@@ -5598,7 +5598,7 @@ void gt_windows_print_sysret_ntqueryintervalprofile(GtGuestState *state, gt_pid_
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_1 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[1], pid, &pulong_1);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Interval: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_1);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Interval: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_1);
 	free(args);
 }
 
@@ -5617,7 +5617,7 @@ void gt_windows_print_sysret_ntqueryiocompletion(GtGuestState *state, gt_pid_t p
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_4);
 	free(args);
 }
 
@@ -5636,7 +5636,7 @@ void gt_windows_print_sysret_ntquerykey(GtGuestState *state, gt_pid_t pid, gt_ti
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ResultLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ResultLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_4);
 	free(args);
 }
 
@@ -5657,7 +5657,7 @@ void gt_windows_print_sysret_ntquerylicensevalue(GtGuestState *state, gt_pid_t p
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[1], pid, &pulong_1);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Type: 0x%lx, ReturnedLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_1, pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Type: 0x%lx, ReturnedLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_1, pulong_4);
 	free(args);
 }
 
@@ -5679,7 +5679,7 @@ void gt_windows_print_sysret_ntquerymultiplevaluekey(GtGuestState *state, gt_pid
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
 	uint64_t pulong_5 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[5], pid, &pulong_5);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(BufferLength: 0x%lx, RequiredBufferLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_4, pulong_5);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(BufferLength: 0x%lx, RequiredBufferLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_4, pulong_5);
 	free(args);
 }
 
@@ -5698,7 +5698,7 @@ void gt_windows_print_sysret_ntquerymutant(GtGuestState *state, gt_pid_t pid, gt
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_4);
 	free(args);
 }
 
@@ -5717,7 +5717,7 @@ void gt_windows_print_sysret_ntqueryobject(GtGuestState *state, gt_pid_t pid, gt
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_4);
 	free(args);
 }
 
@@ -5745,7 +5745,7 @@ void gt_windows_print_sysret_ntqueryopensubkeysex(GtGuestState *state, gt_pid_t 
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_3 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[3], pid, &pulong_3);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(RequiredSize: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_3);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(RequiredSize: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_3);
 	free(args);
 }
 
@@ -5773,7 +5773,7 @@ void gt_windows_print_sysret_ntqueryopensubkeys(GtGuestState *state, gt_pid_t pi
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_1 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[1], pid, &pulong_1);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(HandleCount: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_1);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(HandleCount: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_1);
 	free(args);
 }
 
@@ -5791,7 +5791,7 @@ void gt_windows_print_sysret_ntqueryperformancecounter(GtGuestState *state, gt_p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PerformanceCounter: 0x%lx, PerformanceFrequency: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[0], args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PerformanceCounter: 0x%lx, PerformanceFrequency: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[0], args[1]);
 	free(args);
 }
 
@@ -5809,7 +5809,7 @@ void gt_windows_print_sysret_ntqueryportinformationprocess(GtGuestState *state, 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -5830,7 +5830,7 @@ void gt_windows_print_sysret_ntqueryquotainformationfile(GtGuestState *state, gt
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -5848,7 +5848,7 @@ void gt_windows_print_sysret_ntquerysection(GtGuestState *state, gt_pid_t pid, g
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[4]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[4]);
 	free(args);
 }
 
@@ -5867,7 +5867,7 @@ void gt_windows_print_sysret_ntquerysecurityattributestoken(GtGuestState *state,
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_5 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[5], pid, &pulong_5);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_5);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_5);
 	free(args);
 }
 
@@ -5886,7 +5886,7 @@ void gt_windows_print_sysret_ntquerysecurityobject(GtGuestState *state, gt_pid_t
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(LengthNeeded: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(LengthNeeded: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_4);
 	free(args);
 }
 
@@ -5905,7 +5905,7 @@ void gt_windows_print_sysret_ntquerysemaphore(GtGuestState *state, gt_pid_t pid,
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_4);
 	free(args);
 }
 
@@ -5925,7 +5925,7 @@ void gt_windows_print_sysret_ntquerysymboliclinkobject(GtGuestState *state, gt_p
 	uint8_t *unicode_str_1 = unicode_str_from_va(gt_loop_get_vmi_instance(state), args[1], pid);
 	uint64_t pulong_2 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[2], pid, &pulong_2);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(LinkTarget: %s, ReturnedLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), unicode_str_1, pulong_2);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(LinkTarget: %s, ReturnedLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), unicode_str_1, pulong_2);
 	free(unicode_str_1);	free(args);
 }
 
@@ -5948,7 +5948,7 @@ void gt_windows_print_sysret_ntquerysystemenvironmentvalueex(GtGuestState *state
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[3], pid, &pulong_3);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ValueLength: 0x%lx, Attributes: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_3, pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ValueLength: 0x%lx, Attributes: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_3, pulong_4);
 	free(args);
 }
 
@@ -5966,7 +5966,7 @@ void gt_windows_print_sysret_ntquerysystemenvironmentvalue(GtGuestState *state, 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[3]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[3]);
 	free(args);
 }
 
@@ -5985,7 +5985,7 @@ void gt_windows_print_sysret_ntquerysysteminformationex(GtGuestState *state, gt_
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_5 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[5], pid, &pulong_5);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_5);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_5);
 	free(args);
 }
 
@@ -6004,7 +6004,7 @@ void gt_windows_print_sysret_ntquerysysteminformation(GtGuestState *state, gt_pi
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_3 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[3], pid, &pulong_3);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_3);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_3);
 	free(args);
 }
 
@@ -6022,7 +6022,7 @@ void gt_windows_print_sysret_ntquerysystemtime(GtGuestState *state, gt_pid_t pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(SystemTime: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[0]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(SystemTime: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[0]);
 	free(args);
 }
 
@@ -6041,7 +6041,7 @@ void gt_windows_print_sysret_ntquerytimer(GtGuestState *state, gt_pid_t pid, gt_
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_4);
 	free(args);
 }
 
@@ -6064,7 +6064,7 @@ void gt_windows_print_sysret_ntquerytimerresolution(GtGuestState *state, gt_pid_
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[1], pid, &pulong_1);
 	uint64_t pulong_2 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[2], pid, &pulong_2);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(MaximumTime: 0x%lx, MinimumTime: 0x%lx, CurrentTime: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_0, pulong_1, pulong_2);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(MaximumTime: 0x%lx, MinimumTime: 0x%lx, CurrentTime: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_0, pulong_1, pulong_2);
 	free(args);
 }
 
@@ -6083,7 +6083,7 @@ void gt_windows_print_sysret_ntqueryvaluekey(GtGuestState *state, gt_pid_t pid, 
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_5 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[5], pid, &pulong_5);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ResultLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_5);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ResultLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_5);
 	free(args);
 }
 
@@ -6101,7 +6101,7 @@ void gt_windows_print_sysret_ntqueryvirtualmemory(GtGuestState *state, gt_pid_t 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[5]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[5]);
 	free(args);
 }
 
@@ -6119,7 +6119,7 @@ void gt_windows_print_sysret_ntqueryvolumeinformationfile(GtGuestState *state, g
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -6137,7 +6137,7 @@ void gt_windows_print_sysret_ntqueueapcthreadex(GtGuestState *state, gt_pid_t pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6155,7 +6155,7 @@ void gt_windows_print_sysret_ntqueueapcthread(GtGuestState *state, gt_pid_t pid,
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6173,7 +6173,7 @@ void gt_windows_print_sysret_ntraiseexception(GtGuestState *state, gt_pid_t pid,
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	char *bool_2 = args[2] ? "TRUE" : "FALSE";
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ExceptionRecord: 0x%lx, ContextRecord: 0x%lx, FirstChance: %s)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[0], args[1], bool_2);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ExceptionRecord: 0x%lx, ContextRecord: 0x%lx, FirstChance: %s)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[0], args[1], bool_2);
 	free(args);
 }
 
@@ -6192,7 +6192,7 @@ void gt_windows_print_sysret_ntraiseharderror(GtGuestState *state, gt_pid_t pid,
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_5 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[5], pid, &pulong_5);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Response: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_5);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(Response: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_5);
 	free(args);
 }
 
@@ -6211,7 +6211,7 @@ void gt_windows_print_sysret_ntreadfile(GtGuestState *state, gt_pid_t pid, gt_ti
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[4]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[4]);
 	free(args);
 }
 
@@ -6230,7 +6230,7 @@ void gt_windows_print_sysret_ntreadfilescatter(GtGuestState *state, gt_pid_t pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[4]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[4]);
 	free(args);
 }
 
@@ -6248,7 +6248,7 @@ void gt_windows_print_sysret_ntreadonlyenlistment(GtGuestState *state, gt_pid_t 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6266,7 +6266,7 @@ void gt_windows_print_sysret_ntreadrequestdata(GtGuestState *state, gt_pid_t pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NumberOfBytesRead: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[5]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NumberOfBytesRead: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[5]);
 	free(args);
 }
 
@@ -6284,7 +6284,7 @@ void gt_windows_print_sysret_ntreadvirtualmemory(GtGuestState *state, gt_pid_t p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NumberOfBytesRead: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[4]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NumberOfBytesRead: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[4]);
 	free(args);
 }
 
@@ -6302,7 +6302,7 @@ void gt_windows_print_sysret_ntrecoverenlistment(GtGuestState *state, gt_pid_t p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6320,7 +6320,7 @@ void gt_windows_print_sysret_ntrecoverresourcemanager(GtGuestState *state, gt_pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6338,7 +6338,7 @@ void gt_windows_print_sysret_ntrecovertransactionmanager(GtGuestState *state, gt
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6356,7 +6356,7 @@ void gt_windows_print_sysret_ntregisterprotocoladdressinformation(GtGuestState *
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6374,7 +6374,7 @@ void gt_windows_print_sysret_ntregisterthreadterminateport(GtGuestState *state, 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6392,7 +6392,7 @@ void gt_windows_print_sysret_ntreleasekeyedevent(GtGuestState *state, gt_pid_t p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6410,7 +6410,7 @@ void gt_windows_print_sysret_ntreleasemutant(GtGuestState *state, gt_pid_t pid, 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PreviousCount: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PreviousCount: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -6428,7 +6428,7 @@ void gt_windows_print_sysret_ntreleasesemaphore(GtGuestState *state, gt_pid_t pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PreviousCount: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[2]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PreviousCount: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[2]);
 	free(args);
 }
 
@@ -6446,7 +6446,7 @@ void gt_windows_print_sysret_ntreleaseworkerfactoryworker(GtGuestState *state, g
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6465,7 +6465,7 @@ void gt_windows_print_sysret_ntremoveiocompletionex(GtGuestState *state, gt_pid_
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_3 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[3], pid, &pulong_3);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NumEntriesRemoved: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_3);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NumEntriesRemoved: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_3);
 	free(args);
 }
 
@@ -6483,7 +6483,7 @@ void gt_windows_print_sysret_ntremoveiocompletion(GtGuestState *state, gt_pid_t 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*KeyContext: 0x%lx, *ApcContext: 0x%lx, IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1], args[2], args[3]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*KeyContext: 0x%lx, *ApcContext: 0x%lx, IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1], args[2], args[3]);
 	free(args);
 }
 
@@ -6501,7 +6501,7 @@ void gt_windows_print_sysret_ntremoveprocessdebug(GtGuestState *state, gt_pid_t 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ProcessHandle: 0x%lx, DebugObjectHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[0], args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ProcessHandle: 0x%lx, DebugObjectHandle: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[0], args[1]);
 	free(args);
 }
 
@@ -6519,7 +6519,7 @@ void gt_windows_print_sysret_ntrenamekey(GtGuestState *state, gt_pid_t pid, gt_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6537,7 +6537,7 @@ void gt_windows_print_sysret_ntrenametransactionmanager(GtGuestState *state, gt_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6575,7 +6575,7 @@ void gt_windows_print_sysret_ntreplacekey(GtGuestState *state, gt_pid_t pid, gt_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6595,7 +6595,7 @@ void gt_windows_print_sysret_ntreplacepartitionunit(GtGuestState *state, gt_pid_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6613,7 +6613,7 @@ void gt_windows_print_sysret_ntreplyport(GtGuestState *state, gt_pid_t pid, gt_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6631,7 +6631,7 @@ void gt_windows_print_sysret_ntreplywaitreceiveportex(GtGuestState *state, gt_pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*PortContext: 0x%lx, ReceiveMessage: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1], args[3]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*PortContext: 0x%lx, ReceiveMessage: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1], args[3]);
 	free(args);
 }
 
@@ -6649,7 +6649,7 @@ void gt_windows_print_sysret_ntreplywaitreceiveport(GtGuestState *state, gt_pid_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*PortContext: 0x%lx, ReceiveMessage: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1], args[3]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*PortContext: 0x%lx, ReceiveMessage: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1], args[3]);
 	free(args);
 }
 
@@ -6667,7 +6667,7 @@ void gt_windows_print_sysret_ntreplywaitreplyport(GtGuestState *state, gt_pid_t 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReplyMessage: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReplyMessage: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -6685,7 +6685,7 @@ void gt_windows_print_sysret_ntrequestport(GtGuestState *state, gt_pid_t pid, gt
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6703,7 +6703,7 @@ void gt_windows_print_sysret_ntrequestwaitreplyport(GtGuestState *state, gt_pid_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReplyMessage: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[2]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReplyMessage: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[2]);
 	free(args);
 }
 
@@ -6721,7 +6721,7 @@ void gt_windows_print_sysret_ntresetevent(GtGuestState *state, gt_pid_t pid, gt_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PreviousState: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PreviousState: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -6739,7 +6739,7 @@ void gt_windows_print_sysret_ntresetwritewatch(GtGuestState *state, gt_pid_t pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6757,7 +6757,7 @@ void gt_windows_print_sysret_ntrestorekey(GtGuestState *state, gt_pid_t pid, gt_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6775,7 +6775,7 @@ void gt_windows_print_sysret_ntresumeprocess(GtGuestState *state, gt_pid_t pid, 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6794,7 +6794,7 @@ void gt_windows_print_sysret_ntresumethread(GtGuestState *state, gt_pid_t pid, g
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_1 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[1], pid, &pulong_1);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PreviousSuspendCount: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_1);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PreviousSuspendCount: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_1);
 	free(args);
 }
 
@@ -6812,7 +6812,7 @@ void gt_windows_print_sysret_ntrollbackcomplete(GtGuestState *state, gt_pid_t pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6830,7 +6830,7 @@ void gt_windows_print_sysret_ntrollbackenlistment(GtGuestState *state, gt_pid_t 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6848,7 +6848,7 @@ void gt_windows_print_sysret_ntrollbacktransaction(GtGuestState *state, gt_pid_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6866,7 +6866,7 @@ void gt_windows_print_sysret_ntrollforwardtransactionmanager(GtGuestState *state
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6884,7 +6884,7 @@ void gt_windows_print_sysret_ntsavekeyex(GtGuestState *state, gt_pid_t pid, gt_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6902,7 +6902,7 @@ void gt_windows_print_sysret_ntsavekey(GtGuestState *state, gt_pid_t pid, gt_tid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6920,7 +6920,7 @@ void gt_windows_print_sysret_ntsavemergedkeys(GtGuestState *state, gt_pid_t pid,
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6945,7 +6945,7 @@ void gt_windows_print_sysret_ntsecureconnectport(GtGuestState *state, gt_pid_t p
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[6], pid, &pulong_6);
 	uint64_t pulong_8 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[8], pid, &pulong_8);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PortHandle: 0x%lx, ClientView: 0x%lx, ServerView: 0x%lx, MaxMessageLength: 0x%lx, ConnectionInformation: 0x%lx, ConnectionInformationLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), phandle_0, args[3], args[5], pulong_6, args[7], pulong_8);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PortHandle: 0x%lx, ClientView: 0x%lx, ServerView: 0x%lx, MaxMessageLength: 0x%lx, ConnectionInformation: 0x%lx, ConnectionInformationLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), phandle_0, args[3], args[5], pulong_6, args[7], pulong_8);
 	free(args);
 }
 
@@ -6963,7 +6963,7 @@ void gt_windows_print_sysret_ntserializeboot(GtGuestState *state, gt_pid_t pid, 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6981,7 +6981,7 @@ void gt_windows_print_sysret_ntsetbootentryorder(GtGuestState *state, gt_pid_t p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -6999,7 +6999,7 @@ void gt_windows_print_sysret_ntsetbootoptions(GtGuestState *state, gt_pid_t pid,
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7017,7 +7017,7 @@ void gt_windows_print_sysret_ntsetcontextthread(GtGuestState *state, gt_pid_t pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7035,7 +7035,7 @@ void gt_windows_print_sysret_ntsetdebugfilterstate(GtGuestState *state, gt_pid_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7053,7 +7053,7 @@ void gt_windows_print_sysret_ntsetdefaultharderrorport(GtGuestState *state, gt_p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7071,7 +7071,7 @@ void gt_windows_print_sysret_ntsetdefaultlocale(GtGuestState *state, gt_pid_t pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7089,7 +7089,7 @@ void gt_windows_print_sysret_ntsetdefaultuilanguage(GtGuestState *state, gt_pid_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7107,7 +7107,7 @@ void gt_windows_print_sysret_ntsetdriverentryorder(GtGuestState *state, gt_pid_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7125,7 +7125,7 @@ void gt_windows_print_sysret_ntseteafile(GtGuestState *state, gt_pid_t pid, gt_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -7143,7 +7143,7 @@ void gt_windows_print_sysret_ntseteventboostpriority(GtGuestState *state, gt_pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7161,7 +7161,7 @@ void gt_windows_print_sysret_ntsetevent(GtGuestState *state, gt_pid_t pid, gt_ti
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PreviousState: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PreviousState: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -7179,7 +7179,7 @@ void gt_windows_print_sysret_ntsethigheventpair(GtGuestState *state, gt_pid_t pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7197,7 +7197,7 @@ void gt_windows_print_sysret_ntsethighwaitloweventpair(GtGuestState *state, gt_p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7216,7 +7216,7 @@ void gt_windows_print_sysret_ntsetinformationdebugobject(GtGuestState *state, gt
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_4 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[4], pid, &pulong_4);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(DebugObjectHandle: 0x%lx, DebugObjectInformationClass: 0x%lx, DebugInformation: 0x%lx, DebugInformationLength: 0x%lx, ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[0], args[1], args[2], args[3], pulong_4);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(DebugObjectHandle: 0x%lx, DebugObjectInformationClass: 0x%lx, DebugInformation: 0x%lx, DebugInformationLength: 0x%lx, ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[0], args[1], args[2], args[3], pulong_4);
 	free(args);
 }
 
@@ -7234,7 +7234,7 @@ void gt_windows_print_sysret_ntsetinformationenlistment(GtGuestState *state, gt_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7252,7 +7252,7 @@ void gt_windows_print_sysret_ntsetinformationfile(GtGuestState *state, gt_pid_t 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -7270,7 +7270,7 @@ void gt_windows_print_sysret_ntsetinformationjobobject(GtGuestState *state, gt_p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7288,7 +7288,7 @@ void gt_windows_print_sysret_ntsetinformationkey(GtGuestState *state, gt_pid_t p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7306,7 +7306,7 @@ void gt_windows_print_sysret_ntsetinformationobject(GtGuestState *state, gt_pid_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7324,7 +7324,7 @@ void gt_windows_print_sysret_ntsetinformationprocess(GtGuestState *state, gt_pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7342,7 +7342,7 @@ void gt_windows_print_sysret_ntsetinformationresourcemanager(GtGuestState *state
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7360,7 +7360,7 @@ void gt_windows_print_sysret_ntsetinformationthread(GtGuestState *state, gt_pid_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7378,7 +7378,7 @@ void gt_windows_print_sysret_ntsetinformationtoken(GtGuestState *state, gt_pid_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7396,7 +7396,7 @@ void gt_windows_print_sysret_ntsetinformationtransaction(GtGuestState *state, gt
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7414,7 +7414,7 @@ void gt_windows_print_sysret_ntsetinformationtransactionmanager(GtGuestState *st
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7432,7 +7432,7 @@ void gt_windows_print_sysret_ntsetinformationworkerfactory(GtGuestState *state, 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7450,7 +7450,7 @@ void gt_windows_print_sysret_ntsetintervalprofile(GtGuestState *state, gt_pid_t 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7468,7 +7468,7 @@ void gt_windows_print_sysret_ntsetiocompletionex(GtGuestState *state, gt_pid_t p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7486,7 +7486,7 @@ void gt_windows_print_sysret_ntsetiocompletion(GtGuestState *state, gt_pid_t pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7504,7 +7504,7 @@ void gt_windows_print_sysret_ntsetldtentries(GtGuestState *state, gt_pid_t pid, 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7522,7 +7522,7 @@ void gt_windows_print_sysret_ntsetloweventpair(GtGuestState *state, gt_pid_t pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7540,7 +7540,7 @@ void gt_windows_print_sysret_ntsetlowwaithigheventpair(GtGuestState *state, gt_p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7558,7 +7558,7 @@ void gt_windows_print_sysret_ntsetquotainformationfile(GtGuestState *state, gt_p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -7576,7 +7576,7 @@ void gt_windows_print_sysret_ntsetsecurityobject(GtGuestState *state, gt_pid_t p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7594,7 +7594,7 @@ void gt_windows_print_sysret_ntsetsystemenvironmentvalueex(GtGuestState *state, 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7614,7 +7614,7 @@ void gt_windows_print_sysret_ntsetsystemenvironmentvalue(GtGuestState *state, gt
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7632,7 +7632,7 @@ void gt_windows_print_sysret_ntsetsysteminformation(GtGuestState *state, gt_pid_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7650,7 +7650,7 @@ void gt_windows_print_sysret_ntsetsystempowerstate(GtGuestState *state, gt_pid_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7668,7 +7668,7 @@ void gt_windows_print_sysret_ntsetsystemtime(GtGuestState *state, gt_pid_t pid, 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PreviousTime: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PreviousTime: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -7686,7 +7686,7 @@ void gt_windows_print_sysret_ntsetthreadexecutionstate(GtGuestState *state, gt_p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*PreviousFlags: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*PreviousFlags: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -7704,7 +7704,7 @@ void gt_windows_print_sysret_ntsettimerex(GtGuestState *state, gt_pid_t pid, gt_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7722,7 +7722,7 @@ void gt_windows_print_sysret_ntsettimer(GtGuestState *state, gt_pid_t pid, gt_ti
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PreviousState: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[6]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PreviousState: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[6]);
 	free(args);
 }
 
@@ -7741,7 +7741,7 @@ void gt_windows_print_sysret_ntsettimerresolution(GtGuestState *state, gt_pid_t 
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_2 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[2], pid, &pulong_2);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ActualTime: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_2);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ActualTime: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_2);
 	free(args);
 }
 
@@ -7759,7 +7759,7 @@ void gt_windows_print_sysret_ntsetuuidseed(GtGuestState *state, gt_pid_t pid, gt
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7777,7 +7777,7 @@ void gt_windows_print_sysret_ntsetvaluekey(GtGuestState *state, gt_pid_t pid, gt
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7795,7 +7795,7 @@ void gt_windows_print_sysret_ntsetvolumeinformationfile(GtGuestState *state, gt_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -7813,7 +7813,7 @@ void gt_windows_print_sysret_ntshutdownsystem(GtGuestState *state, gt_pid_t pid,
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7831,7 +7831,7 @@ void gt_windows_print_sysret_ntshutdownworkerfactory(GtGuestState *state, gt_pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*PendingWorkerCount: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*PendingWorkerCount: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -7849,7 +7849,7 @@ void gt_windows_print_sysret_ntsignalandwaitforsingleobject(GtGuestState *state,
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7867,7 +7867,7 @@ void gt_windows_print_sysret_ntsinglephasereject(GtGuestState *state, gt_pid_t p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7885,7 +7885,7 @@ void gt_windows_print_sysret_ntstartprofile(GtGuestState *state, gt_pid_t pid, g
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7903,7 +7903,7 @@ void gt_windows_print_sysret_ntstopprofile(GtGuestState *state, gt_pid_t pid, gt
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7921,7 +7921,7 @@ void gt_windows_print_sysret_ntsuspendprocess(GtGuestState *state, gt_pid_t pid,
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7940,7 +7940,7 @@ void gt_windows_print_sysret_ntsuspendthread(GtGuestState *state, gt_pid_t pid, 
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_1 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[1], pid, &pulong_1);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PreviousSuspendCount: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_1);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(PreviousSuspendCount: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_1);
 	free(args);
 }
 
@@ -7959,7 +7959,7 @@ void gt_windows_print_sysret_ntsystemdebugcontrol(GtGuestState *state, gt_pid_t 
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_5 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[5], pid, &pulong_5);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_5);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_5);
 	free(args);
 }
 
@@ -7977,7 +7977,7 @@ void gt_windows_print_sysret_ntterminatejobobject(GtGuestState *state, gt_pid_t 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -7995,7 +7995,7 @@ void gt_windows_print_sysret_ntterminateprocess(GtGuestState *state, gt_pid_t pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -8013,7 +8013,7 @@ void gt_windows_print_sysret_ntterminatethread(GtGuestState *state, gt_pid_t pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -8031,7 +8031,7 @@ void gt_windows_print_sysret_nttestalert(GtGuestState *state, gt_pid_t pid, gt_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -8049,7 +8049,7 @@ void gt_windows_print_sysret_ntthawregistry(GtGuestState *state, gt_pid_t pid, g
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -8067,7 +8067,7 @@ void gt_windows_print_sysret_ntthawtransactions(GtGuestState *state, gt_pid_t pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -8086,7 +8086,7 @@ void gt_windows_print_sysret_nttracecontrol(GtGuestState *state, gt_pid_t pid, g
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_5 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[5], pid, &pulong_5);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_5);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ReturnLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_5);
 	free(args);
 }
 
@@ -8104,7 +8104,7 @@ void gt_windows_print_sysret_nttraceevent(GtGuestState *state, gt_pid_t pid, gt_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -8124,7 +8124,7 @@ void gt_windows_print_sysret_nttranslatefilepath(GtGuestState *state, gt_pid_t p
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	uint64_t pulong_3 = 0;
 	vmi_read_64_va(gt_loop_get_vmi_instance(state), args[3], pid, &pulong_3);
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(OutputFilePathLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), pulong_3);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(OutputFilePathLength: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), pulong_3);
 	free(args);
 }
 
@@ -8142,7 +8142,7 @@ void gt_windows_print_sysret_ntumsthreadyield(GtGuestState *state, gt_pid_t pid,
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -8160,7 +8160,7 @@ void gt_windows_print_sysret_ntunloaddriver(GtGuestState *state, gt_pid_t pid, g
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -8187,7 +8187,7 @@ void gt_windows_print_sysret_ntunloadkey2(GtGuestState *state, gt_pid_t pid, gt_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -8214,7 +8214,7 @@ void gt_windows_print_sysret_ntunloadkeyex(GtGuestState *state, gt_pid_t pid, gt
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -8241,7 +8241,7 @@ void gt_windows_print_sysret_ntunloadkey(GtGuestState *state, gt_pid_t pid, gt_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -8259,7 +8259,7 @@ void gt_windows_print_sysret_ntunlockfile(GtGuestState *state, gt_pid_t pid, gt_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -8277,7 +8277,7 @@ void gt_windows_print_sysret_ntunlockvirtualmemory(GtGuestState *state, gt_pid_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*BaseAddress: 0x%lx, RegionSize: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1], args[2]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(*BaseAddress: 0x%lx, RegionSize: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1], args[2]);
 	free(args);
 }
 
@@ -8295,7 +8295,7 @@ void gt_windows_print_sysret_ntunmapviewofsection(GtGuestState *state, gt_pid_t 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -8313,7 +8313,7 @@ void gt_windows_print_sysret_ntvdmcontrol(GtGuestState *state, gt_pid_t pid, gt_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ServiceData: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(ServiceData: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -8331,7 +8331,7 @@ void gt_windows_print_sysret_ntwaitfordebugevent(GtGuestState *state, gt_pid_t p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 	char *bool_1 = args[1] ? "TRUE" : "FALSE";
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(DebugObjectHandle: 0x%lx, Alertable: %s, Timeout: 0x%lx, WaitStateChange: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[0], bool_1, args[2], args[3]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(DebugObjectHandle: 0x%lx, Alertable: %s, Timeout: 0x%lx, WaitStateChange: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[0], bool_1, args[2], args[3]);
 	free(args);
 }
 
@@ -8349,7 +8349,7 @@ void gt_windows_print_sysret_ntwaitforkeyedevent(GtGuestState *state, gt_pid_t p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -8367,7 +8367,7 @@ void gt_windows_print_sysret_ntwaitformultipleobjects32(GtGuestState *state, gt_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -8385,7 +8385,7 @@ void gt_windows_print_sysret_ntwaitformultipleobjects(GtGuestState *state, gt_pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -8403,7 +8403,7 @@ void gt_windows_print_sysret_ntwaitforsingleobject(GtGuestState *state, gt_pid_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -8421,7 +8421,7 @@ void gt_windows_print_sysret_ntwaitforworkviaworkerfactory(GtGuestState *state, 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(MiniPacket: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[1]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(MiniPacket: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[1]);
 	free(args);
 }
 
@@ -8439,7 +8439,7 @@ void gt_windows_print_sysret_ntwaithigheventpair(GtGuestState *state, gt_pid_t p
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -8457,7 +8457,7 @@ void gt_windows_print_sysret_ntwaitloweventpair(GtGuestState *state, gt_pid_t pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -8475,7 +8475,7 @@ void gt_windows_print_sysret_ntworkerfactoryworkerready(GtGuestState *state, gt_
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
@@ -8494,7 +8494,7 @@ void gt_windows_print_sysret_ntwritefilegather(GtGuestState *state, gt_pid_t pid
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[4]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[4]);
 	free(args);
 }
 
@@ -8513,7 +8513,7 @@ void gt_windows_print_sysret_ntwritefile(GtGuestState *state, gt_pid_t pid, gt_t
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[4]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(IoStatusBlock: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[4]);
 	free(args);
 }
 
@@ -8531,7 +8531,7 @@ void gt_windows_print_sysret_ntwriterequestdata(GtGuestState *state, gt_pid_t pi
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NumberOfBytesWritten: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[5]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NumberOfBytesWritten: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[5]);
 	free(args);
 }
 
@@ -8549,7 +8549,7 @@ void gt_windows_print_sysret_ntwritevirtualmemory(GtGuestState *state, gt_pid_t 
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NumberOfBytesWritten: 0x%lx)\n", pid, tid, proc, gt_loop_get_register(state, RAX), args[4]);
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT(NumberOfBytesWritten: 0x%lx)\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX), args[4]);
 	free(args);
 }
 
@@ -8567,7 +8567,7 @@ void gt_windows_print_sysret_ntyieldexecution(GtGuestState *state, gt_pid_t pid,
 	uint64_t *args = (uint64_t*)data;
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
 
-	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_register(state, RAX));
+	fprintf(stderr, "pid: %u/0x%lx (%s) sysret: Status(0x%lx) OUT()\n", pid, tid, proc, gt_loop_get_guest_register(state, RAX));
 	free(args);
 }
 
