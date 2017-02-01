@@ -1,0 +1,29 @@
+This is a log of guestrace main-loop performance, measured by running:
+
+	#include <stdio.h>
+	#include <unistd.h>
+
+	#define MULT 1000
+
+	int
+	main(int argc, char *argv[])
+	{
+		const long MAX = sysconf(_SC_OPEN_MAX);
+		printf("%ld iterations\n", MAX * MULT);
+		for (int i = 0; i < MULT; i++) {
+			for (long j = MAX; j >= 0; j--) {
+				close(j);
+			}
+		}
+	}
+
+with:
+
+	gcc -O2 -o perf perf.c
+	time ./perf
+
+COMMIT   ITERATIONS NATIVE GUESTRACE -s
+======   ========== ====== ============
+19722799 10240      0.004  2.612
+19722799 10240      0.004  2.621
+19722799 10240      0.004  2.608
