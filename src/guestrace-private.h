@@ -81,4 +81,9 @@ struct _GtLoop {
 	addr_t trampoline_addr;
 };
 
+struct _GtGuestState {
+	vmi_instance_t  vmi;
+        vmi_event_t    *event;
+};
+
 #endif

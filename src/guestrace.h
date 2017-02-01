@@ -19,6 +19,14 @@ typedef addr_t    gt_tid_t;
 typedef vmi_pid_t gt_pid_t;
 
 /**
+ * GtGuestState
+ *
+ * The `GtGuestState` struct is an opaque data type representing the state of
+ * the instrumented guest.
+ */
+typedef struct _GtGuestState GtGuestState;
+
+/**
  * GtSyscallFunc:
  * @vmi: the libvmi instance which abstracts the guest.
  * @event: the event which abstracts the system call which caused the guestrace
@@ -35,8 +43,7 @@ typedef vmi_pid_t gt_pid_t;
  * optionally return a pointer which the guestrace event loop will later pass
  * to the corresponding #GtSysretFunc after the system call returns.
  */
-typedef void *(*GtSyscallFunc) (vmi_instance_t vmi,
-                                vmi_event_t *event,
+typedef void *(*GtSyscallFunc) (GtGuestState *state,
                                 gt_pid_t pid,
                                 gt_tid_t tid,
                                 void *user_data);
@@ -55,14 +62,13 @@ typedef void *(*GtSyscallFunc) (vmi_instance_t vmi,
  * #GtSysretFunc implementation to free @user_data if the corresponding
  * #GtSyscallFunc returned a pointer to a dynamically-allocated object.
  */
-typedef void (*GtSysretFunc) (vmi_instance_t vmi,
-                              vmi_event_t *event,
+typedef void (*GtSysretFunc) (GtGuestState *state,
                               gt_pid_t pid,
                               gt_tid_t tid,
                               void *user_data);
 
 /**
- * GtSyscallCallbacks:
+ * GtSyscallCallbacks
  * @name: the name of the kernel function to instrument.
  * @syscall_cb: the #GtSyscallFunc which the guestrace event loop will invoke upon @name being called.
  * @sysret_cb: the #GtSysretFunc which the guestrace event loop will invoke when @name returns.
@@ -93,16 +99,19 @@ typedef enum GtOSType {
 	GT_OS_COUNT,
 } GtOSType;
 
-GtLoop  *gt_loop_new(const char *guest_name);
-GtOSType gt_loop_get_ostype(GtLoop *loop);
-gboolean gt_loop_set_cb(GtLoop *loop,
-                        const char *kernel_func,
-                        GtSyscallFunc syscall_cb,
-                        GtSysretFunc sysret_cb,
-                        void *user_data);
-int      gt_loop_set_cbs(GtLoop *loop, const GtSyscallCallback callbacks[]);
-void     gt_loop_run(GtLoop *loop);
-void     gt_loop_quit(GtLoop *loop);
-void     gt_loop_free(GtLoop *loop);
+GtLoop        *gt_loop_new(const char *guest_name);
+GtOSType       gt_loop_get_ostype(GtLoop *loop);
+gboolean       gt_loop_set_cb(GtLoop *loop,
+                              const char *kernel_func,
+                              GtSyscallFunc syscall_cb,
+                              GtSysretFunc sysret_cb,
+                              void *user_data);
+int            gt_loop_set_cbs(GtLoop *loop,
+                               const GtSyscallCallback callbacks[]);
+vmi_instance_t gt_loop_get_vmi_instance(GtGuestState *state);
+vmi_event_t   *gt_loop_get_vmi_event(GtGuestState *state);
+void           gt_loop_run(GtLoop *loop);
+void           gt_loop_quit(GtLoop *loop);
+void           gt_loop_free(GtLoop *loop);
 
 #endif

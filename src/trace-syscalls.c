@@ -339,7 +339,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		state->thread_id            = thread_id;
 
 		/* Invoke system-call callback in record. */
-		state->data          = record->syscall_cb(vmi, event, pid,
+		state->data          = record->syscall_cb(&(GtGuestState) { vmi, event }, pid,
 		                                          thread_id,
 		                                          record->data);
 
@@ -361,8 +361,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		if (NULL != state) {
 			gt_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 
-			state->syscall_paddr_record->sysret_cb(vmi,
-			                                       event,
+			state->syscall_paddr_record->sysret_cb(&(GtGuestState) { vmi, event },
 			                                       pid,
 			                                       thread_id,
 			                                       state->data);
@@ -601,6 +600,30 @@ gt_loop_get_ostype(GtLoop *loop)
 	default:
 		return GT_OS_UNKNOWN;
 	}
+}
+
+/**
+ * gt_loop_get_vmi_instance:
+ * @state: a pointer to a #GtGuestState.
+ *
+ * Returns the vmi_instance_t associated with @state.
+ */
+vmi_instance_t
+gt_loop_get_vmi_instance(GtGuestState *state)
+{
+	return state->vmi;
+}
+
+/**
+ * gt_loop_get_vmi_event:
+ * @state: a pointer to a #GtGuestState.
+ *
+ * Returns the vmi_event_t associated with @state.
+ */
+vmi_event_t *
+gt_loop_get_vmi_event(GtGuestState *state)
+{
+	return state->event;
 }
 
 /**
