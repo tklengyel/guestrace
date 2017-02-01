@@ -946,7 +946,8 @@ done:
  * The loop will invoke @syscall_cb with the parameters associated with the
  * call. When @kernel_func returns, the loop will invoke @sysret_cb.
  *
- * Returns: %TRUE on success, %FALSE on failure.
+ * Returns: %TRUE on success, %FALSE on failure; an invalid @kernel_func
+ * will cause the callback registration to fail.
  **/
 gboolean gt_loop_set_cb(GTLoop *loop,
                         const char *kernel_func,
@@ -989,7 +990,9 @@ done:
  * callback defined in @syscalls. The @syscalls array must be terminated with
  * an #GTSyscallCallback with each field set to NULL.
  *
- * Returns: %TRUE on success, %FALSE on failure.
+ * Returns: an integer which represents the number of callbacks
+ * successfully set; an invalid function name in @syscalls will
+ * cause the corresponding callback registration to fail.
  **/
 int
 gt_loop_set_cbs(GTLoop *loop, const GTSyscallCallback callbacks[])

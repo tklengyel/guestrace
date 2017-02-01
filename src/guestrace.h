@@ -99,7 +99,7 @@ gboolean gt_loop_set_cb(GTLoop *loop,
                         GTSyscallFunc syscall_cb,
                         GTSysretFunc sysret_cb,
                         void *user_data);
-gboolean gt_loop_set_cbs(GTLoop *loop, const GTSyscallCallback callbacks[]);
+int      gt_loop_set_cbs(GTLoop *loop, const GTSyscallCallback callbacks[]);
 void     gt_loop_run(GTLoop *loop);
 void     gt_loop_quit(GTLoop *loop);
 void     gt_loop_free(GTLoop *loop);
