@@ -1,4 +1,4 @@
-/* Generated on Linux_4.9.3-200.fc25.x86_64 on 01 Feb 2017 11:16:52*/
+/* Generated on Linux_4.9.3-200.fc25.x86_64 on 01 Feb 2017 11:40:30*/
 
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
@@ -91,7 +91,7 @@ void *gt_linux_print_syscall_sys_write(GtGuestState *state, gt_pid_t pid, gt_tid
 void *gt_linux_print_syscall_sys_open(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_loop_get_vmi_instance(state), pid);
-	char *arg0 = vmi_read_str_va(gt_loop_get_vmi_instance(state), gt_loop_get_vmi_event(state)->x86_regs->rdi, pid);
+	char *arg0 = gt_loop_get_string(state, gt_loop_get_vmi_event(state)->x86_regs->rdi, pid);
 	reg_t arg1 = gt_loop_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_loop_get_vmi_event(state)->x86_regs->rdx;
 	reg_t rsp = gt_loop_get_vmi_event(state)->x86_regs->rsp;

@@ -467,7 +467,7 @@ def create_printf_statement(count, syscall_data):
 
     for i in range(count):
         if syscall_data.get_arg_printf_type(i) == "char *":
-            func_str += "\tchar *arg{0} = vmi_read_str_va(gt_loop_get_vmi_instance(state), gt_loop_get_vmi_event(state)->x86_regs->{1}, pid);\n".format(i, REG[i])
+            func_str += "\tchar *arg{0} = gt_loop_get_string(state, gt_loop_get_vmi_event(state)->x86_regs->{1}, pid);\n".format(i, REG[i])
         else:
             func_str += "\treg_t arg{0} = gt_loop_get_vmi_event(state)->x86_regs->{1};\n".format(i, REG[i])
     func_str += '\treg_t rsp = gt_loop_get_vmi_event(state)->x86_regs->rsp;\n'

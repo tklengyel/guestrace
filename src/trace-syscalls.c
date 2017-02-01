@@ -651,6 +651,21 @@ done:
 }
 
 /**
+ * gt_loop_get_string:
+ * @state: a pointer to a #GtGuestState.
+ * @vaddr: a virtual address from the guest's address space.
+ * @pid: PID of the virtual address space (0 for kernel).
+ *
+ * Returns the NULL-terminated string which starts at @vaddr or NULL on error.
+ * The returned string must be freed by the caller.
+ */
+char *
+gt_loop_get_string(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid)
+{
+	return vmi_read_str_va(gt_loop_get_vmi_instance(state), vaddr, pid);
+}
+
+/**
  * gt_loop_get_vmi_instance:
  * @state: a pointer to a #GtGuestState.
  *
