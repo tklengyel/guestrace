@@ -76,10 +76,10 @@
 static uint8_t GT_BREAKPOINT_INST = 0xCC;
 
 /*
- * Handle terminating signals by setting interrupted flag. This allows
+ * Handle terminating signals by unsetting gt_running flag. This allows
  * a graceful exit.
  */
-static gboolean gt_interrupted = FALSE;
+static gboolean gt_running = TRUE;
 
 /*
  * A record which describes a frame. The children of these records (themselves
@@ -490,6 +490,8 @@ GtLoop *gt_loop_new(const char *guest_name)
 
 	loop = g_new0(GtLoop, 1);
 
+	loop->g_main_loop = g_main_loop_new(NULL, true);
+
 	/* Initialize the libvmi library. */
 	status = vmi_init(&loop->vmi,
 	                   VMI_XEN | VMI_INIT_COMPLETE | VMI_INIT_EVENTS,
@@ -689,6 +691,24 @@ gt_guest_get_vmi_event(GtGuestState *state)
 	return state->event;
 }
 
+static gboolean
+gt_loop_listen(gpointer user_data)
+{
+	GtLoop *loop = user_data;
+
+	status_t status = vmi_events_listen(loop->vmi, 500);
+	if (status != VMI_SUCCESS) {
+		fprintf(stderr, "error waiting for events\n");
+		gt_running = FALSE;
+	}
+
+	if (!gt_running) {
+		g_main_loop_quit(loop->g_main_loop);
+	}
+
+	return gt_running;
+}
+
 /**
  * gt_loop_run:
  * @loop: a #GtLoop.
@@ -730,13 +750,21 @@ void gt_loop_run(GtLoop *loop)
 
 	vmi_resume_vm(loop->vmi);
 
-	while(!gt_interrupted){
-		status_t status = vmi_events_listen(loop->vmi, 500);
-		if (status != VMI_SUCCESS) {
-			fprintf(stderr, "error waiting for events\n");
-			break;
-		}
+	g_idle_add(gt_loop_listen, loop);
+	g_main_loop_run(loop->g_main_loop);
+
+	vmi_pause_vm(loop->vmi);
+
+	g_hash_table_remove_all(loop->gt_page_translation);
+	g_hash_table_remove_all(loop->gt_ret_addr_mapping);
+	g_hash_table_remove_all(loop->gt_page_record_collection);
+
+	rc = xc_altp2m_switch_to_view(loop->xch, loop->domid, 0);
+	if (rc < 0) {
+		fprintf(stderr, "failed to reset EPT to point to default table\n");
 	}
+
+	vmi_resume_vm(loop->vmi);
 
 done:
 
@@ -753,22 +781,7 @@ done:
  */
 void gt_loop_quit(GtLoop *loop)
 {
-	int status;
-
-	vmi_pause_vm(loop->vmi);
-
-	g_hash_table_remove_all(loop->gt_page_translation);
-	g_hash_table_remove_all(loop->gt_ret_addr_mapping);
-	g_hash_table_remove_all(loop->gt_page_record_collection);
-
-	status = xc_altp2m_switch_to_view(loop->xch, loop->domid, 0);
-	if (0 > status) {
-		fprintf(stderr, "failed to reset EPT to point to default table\n");
-	}
-
-	vmi_resume_vm(loop->vmi);
-
-	gt_interrupted = TRUE;
+	gt_running = FALSE;
 }
 
 /**
@@ -802,6 +815,8 @@ void gt_loop_free(GtLoop *loop)
 	vmi_resume_vm(loop->vmi);
 
 	vmi_destroy(loop->vmi);
+
+	g_main_loop_unref(loop->g_main_loop);
 
 	g_free(loop);
 
@@ -1085,7 +1100,7 @@ gt_loop_set_cbs(GtLoop *loop, const GtCallbackRegistry callbacks[])
 {
 	int count = 0;
 
-	for (int i = 0; !gt_interrupted && callbacks[i].name; i++) {
+	for (int i = 0; callbacks[i].name; i++) {
 		gboolean ok = gt_loop_set_cb(loop,
 		                             callbacks[i].name,
 		                             callbacks[i].syscall_cb,
