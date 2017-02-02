@@ -33,6 +33,7 @@
  * page.
  */
 struct _GtLoop {
+	/* <private> */
 	GMainLoop *g_main_loop;
 
 	vmi_instance_t vmi;
@@ -83,6 +84,7 @@ struct _GtLoop {
 };
 
 struct _GtGuestState {
+	/* <private> */
 	vmi_instance_t  vmi;
         vmi_event_t    *event;
 };

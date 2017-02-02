@@ -15,12 +15,6 @@
  */
 typedef struct _GtLoop GtLoop;
 
-typedef addr_t    gt_addr_t;
-typedef addr_t    gt_tid_t;
-typedef vmi_pid_t gt_pid_t;
-typedef reg_t     gt_reg_t;
-typedef registers_t gt_reg_name_t;
-
 /**
  * GtGuestState
  *
@@ -28,6 +22,44 @@ typedef registers_t gt_reg_name_t;
  * the instrumented guest.
  */
 typedef struct _GtGuestState GtGuestState;
+
+/**
+ * gt_reg_name_t
+ *
+ * The `gt_reg_name_t` enum contains the valid names
+ * of the registers found on the guest.
+ */
+typedef registers_t gt_reg_name_t;
+
+/**
+ * gt_addr_t:
+ *
+ * A guest virtual memory address.
+ */
+typedef addr_t    gt_addr_t;
+
+/**
+ * gt_pid_t:
+ *
+ * The unique identifier for a guest process.
+ */
+typedef vmi_pid_t gt_pid_t;
+
+/**
+ * gt_tid_t:
+ *
+ * An identifier which serves to correlate between calls and returns
+ * at thread granularity. Generally the value of the stack pointer
+ * upon invoking a system call.
+ */
+typedef addr_t    gt_tid_t;
+
+/**
+ * gt_reg_t:
+ *
+ * The value of some guest register.
+ */
+typedef reg_t     gt_reg_t;
 
 /**
  * GtSyscallFunc:

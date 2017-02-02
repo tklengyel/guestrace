@@ -66,6 +66,44 @@
  * guestrace sets RIP to the original return point.
  */
 
+/**
+ * SECTION: guestrace
+ * @title: libguestrace
+ * @short_description: a library which allows programs to monitor the system
+ * calls serviced by a kernel running as a Xen guest.
+ * @include: libguestrace/guestrace.h
+ *
+ * A program using libguestrace registers callbacks which the guestrace event
+ * loop invokes when a system call occurs in the monitored guest operating system.
+ *
+ * <example>
+ * 	<title>Program which uses libguestrace to print open()s and read()s which occur on a Linux guest (error handling and other details omitted)</title>
+ * 	<programlisting>
+ * 	GLoop *loop = gt_loop_new("xen-guest-name");
+ *
+ * 	gt_loop_set_cb(loop, "sys_open", open_cb, sysret_cb, NULL);
+ * 	gt_loop_set_cb(loop, "sys_read", read_cb, sysret_cb, NULL);
+ *
+ * 	gt_loop_run(loop);
+ * 	</programlisting>
+ * </example>
+ *
+ * <example>
+ * 	<title>Example open_cb()</title>
+ * 	<programlisting>
+ *void *open_cb(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
+ *{
+ *        reg_t addr = gt_guest_get_register(state, RDI);
+ *        char *path = gt_guest_get_string(state, addr);
+ *        int flags  = gt_guest_get_register(state, RSI);
+ *        int mode   = gt_guest_get_register(state, RDX);
+ *        printf("%u called open(\"%s\", %i, %d)\n", pid, path, flags, mode);
+ *        return NULL;
+ *}
+ * 	</programlisting>
+ * </example>
+ **/
+
 /* Number of bits available for page offset. */
 #define GT_PAGE_OFFSET_BITS 12
 
@@ -671,7 +709,8 @@ gt_guest_get_string(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid)
  * gt_guest_get_vmi_instance:
  * @state: a pointer to a #GtGuestState.
  *
- * Returns the vmi_instance_t associated with @state.
+ * Returns the vmi_instance_t associated with @state. Refer to the libvmi
+ * documentation for a description of vmi_instance_t.
  */
 vmi_instance_t
 gt_guest_get_vmi_instance(GtGuestState *state)
@@ -683,7 +722,8 @@ gt_guest_get_vmi_instance(GtGuestState *state)
  * gt_guest_get_vmi_event:
  * @state: a pointer to a #GtGuestState.
  *
- * Returns the vmi_event_t associated with @state.
+ * Returns the vmi_event_t associated with @state. Refer to the libvmi
+ * documentation for a description of vmi_event_t.
  */
 vmi_event_t *
 gt_guest_get_vmi_event(GtGuestState *state)
