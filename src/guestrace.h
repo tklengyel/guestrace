@@ -111,6 +111,10 @@ gboolean       gt_loop_set_cb(GtLoop *loop,
                               void *user_data);
 int            gt_loop_set_cbs(GtLoop *loop,
                                const GtCallbackRegistry callbacks[]);
+guint          gt_loop_add_watch(GIOChannel *channel,
+                                 GIOCondition condition,
+                                 GIOFunc func,
+                                 gpointer user_data);
 gt_reg_t       gt_guest_get_register(GtGuestState *state, gt_reg_name_t name);
 char          *gt_guest_get_string(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid);
 vmi_instance_t gt_guest_get_vmi_instance(GtGuestState *state);

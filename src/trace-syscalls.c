@@ -1114,6 +1114,24 @@ gt_loop_set_cbs(GtLoop *loop, const GtCallbackRegistry callbacks[])
 	return count;
 }
 
+/**
+ * gt_loop_add_watch:
+ * @channel: a GIOChannel.
+ * @condition: the condition to watch for.
+ * @func: the function to call when the condition is satisfied.
+ * @user_data: user data to pass to @func.
+ *
+ * Returns: the event source ID.
+ **/
+guint
+gt_loop_add_watch(GIOChannel *channel,
+                  GIOCondition condition,
+                  GIOFunc func,
+                  gpointer user_data)
+{
+	return g_io_add_watch(channel, condition, func, user_data);
+}
+
 /*
  * Disassemble a page of memory beginning at <start> until
  * finding the correct mnemonic and op_str, returning the next address.
