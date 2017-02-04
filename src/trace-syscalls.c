@@ -183,6 +183,15 @@ gt_restore_return_addr (gpointer data)
 	gt_syscall_state *sys_state = data;
 	GtLoop *loop = sys_state->syscall_paddr_record->parent->loop;
 
+	if (gt_running) {
+		/*
+		 * Save time: no need to restore stack if guestrace remains
+		 * attached. In this case, we will return through the
+		 * trampoline by setting RIP.
+		 */
+		goto done;
+	}
+
 	addr_t pa = vmi_translate_kv2p(loop->vmi, sys_state->thread_id);
 	if (0 == pa) {
 		fprintf(stderr, "error restoring stack; guest will likely fail\n");
@@ -810,6 +819,14 @@ void gt_loop_run(GtLoop *loop)
 	g_main_loop_run(loop->g_main_loop);
 
 	vmi_pause_vm(loop->vmi);
+
+	/*
+	 * gt_running affects freeing of gt_ret_addr_mapping elements.
+	 * Must be false or return pointers on kernel stack will not be reset.
+	 * Thus we check no code has been altered in an ill way here, since
+	 * this requirement is not obvious.
+	 */
+	g_assert(!gt_running);
 
 	g_hash_table_remove_all(loop->gt_page_translation);
 	g_hash_table_remove_all(loop->gt_ret_addr_mapping);
