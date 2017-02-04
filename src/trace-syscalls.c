@@ -75,6 +75,9 @@
  *
  * A program using libguestrace registers callbacks which the guestrace event
  * loop invokes when a system call occurs in the monitored guest operating system.
+ * Libguestrace builds upon libvmi, and it makes libvmi's lower-level
+ * facilities available from within a callback through its
+ * gt_guest_get_vmi_instance() and gt_guest_get_vmi_event() routines.
  *
  * <example>
  * 	<title>Program which uses libguestrace to print open()s and read()s which occur on a Linux guest (error handling and other details omitted)</title>
@@ -89,14 +92,14 @@
  * </example>
  *
  * <example>
- * 	<title>Example open_cb()</title>
+ * 	<title>A simple open_cb() routine which prints the system-call's parameters</title>
  * 	<programlisting>
  *void *open_cb(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
  *{
- *        reg_t addr = gt_guest_get_register(state, RDI);
- *        char *path = gt_guest_get_string(state, addr);
- *        int flags  = gt_guest_get_register(state, RSI);
- *        int mode   = gt_guest_get_register(state, RDX);
+ *        gt_addr_t addr = gt_guest_get_register(state, RDI);
+ *        char *path     = gt_guest_get_string(state, addr);
+ *        int flags      = gt_guest_get_register(state, RSI);
+ *        int mode       = gt_guest_get_register(state, RDX);
  *        printf("%u called open(\"%s\", %i, %d)\n", pid, path, flags, mode);
  *        return NULL;
  *}
@@ -640,6 +643,19 @@ gt_loop_get_ostype(GtLoop *loop)
 	default:
 		return GT_OS_UNKNOWN;
 	}
+}
+
+/**
+ * gt_loop_get_vmi_instance:
+ * @loop: a pointer to a #GtLoop.
+ *
+ * Returns the vmi_instance_t associated with @loop. Refer to the libvmi
+ * documentation for a description of vmi_instance_t.
+ */
+vmi_instance_t
+gt_loop_get_vmi_instance(GtLoop *loop)
+{
+	return loop->vmi;
 }
 
 /**
