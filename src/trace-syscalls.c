@@ -349,6 +349,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	if (event->interrupt_event.gla != loop->trampoline_addr) {
 		/* Type-one breakpoint (system call). */
 		status_t status;
+		addr_t thread_id, return_loc;
 		gt_paddr_record *record;
 		gt_syscall_state *state;
 
@@ -369,14 +370,10 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		response = VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
 		         | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
 
-		addr_t thread_id  = event->x86_regs->rsp;
-		addr_t return_loc = vmi_translate_kv2p(vmi, thread_id);
-		if (0 == return_loc) {
-			goto done;
-		}
+		thread_id = return_loc = event->x86_regs->rsp;
 
 		addr_t return_addr = 0;
-		status = vmi_read_64_pa(vmi, return_loc, &return_addr);
+		status = vmi_read_64_va(vmi, return_loc, 0, &return_addr);
 		if (VMI_SUCCESS != status || return_addr != loop->return_addr) {
 			/* Return pointer not as expected. */
 			goto done;
@@ -399,7 +396,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		                    state);
 
 		/* Overwrite stack to return to trampoline. */
-		vmi_write_64_pa(vmi, return_loc, &loop->trampoline_addr);
+		vmi_write_64_va(vmi, return_loc, 0, &loop->trampoline_addr);
 	} else {
 		/* Type-two breakpoint (system return). */
 		gt_syscall_state *state;
