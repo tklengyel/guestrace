@@ -32,3 +32,19 @@ imp      19722799 10240      0.004  2.608
 imp      7713e259 10240      0.005  2.358
 imp      7713e259 10240      0.004  2.379
 imp      7713e259 10240      0.005  2.343
+
+imp      6f5018b2 10240      0.009  2.456
+imp      6f5018b2 10240      0.007  2.454
+imp      6f5018b2 10240      0.007  2.419
+
+imp      e4139e9d 10240      0.004  2.381
+imp      e4139e9d 10240      0.004  2.319
+imp      e4139e9d 10240      0.005  2.210
+
+These are the remaining parts of gt_breakpoint_cb which make up most of
+the function's runtime:
+
+	Call: Read return address
+	Call: Update stack (~93 usec)
+	Ret: Get PID (~125 usec)
+	Ret: Set RIP (~350 usec)
