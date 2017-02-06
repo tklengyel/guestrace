@@ -1,5 +1,6 @@
 #!/bin/sh
 
+[ -d m4 ] || mkdir m4
 gtkdocize || exit 1
 aclocal || exit 1
 autoconf || exit 1
