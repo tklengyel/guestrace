@@ -547,8 +547,6 @@ GtLoop *gt_loop_new(const char *guest_name)
 	if (VMI_SUCCESS != status) {
 		fprintf(stderr, "failed to init LibVMI library.\n");
 		goto done;
-	} else {
-		printf("LibVMI init succeeded!\n");
 	}
 
 	loop->gt_page_translation = g_hash_table_new(NULL, NULL);
@@ -960,11 +958,6 @@ static void
 gt_destroy_paddr_record (gpointer data) {
 	gt_paddr_record *paddr_record = data;
 
-	fprintf(stderr,
-	       "destroying paddr record at shadow physical address %lx\n",
-	       (paddr_record->parent->shadow_frame << GT_PAGE_OFFSET_BITS)
-	      + paddr_record->offset);
-
 	gt_remove_breakpoint(paddr_record);
 
 	g_free(paddr_record);
@@ -1027,8 +1020,6 @@ gt_setup_mem_trap (GtLoop *loop,
 	                                  GSIZE_TO_POINTER(shadow));
 	if (NULL == page_record) {
 		/* No record for this page yet; create one. */
-		fprintf(stderr, "creating new page trap on 0x%lx -> 0x%lx\n",
-		        shadow, frame);
 
 		/* Copy page to shadow. */
 		uint8_t buff[GT_PAGE_SIZE] = {0};

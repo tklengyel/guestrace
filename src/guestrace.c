@@ -120,14 +120,10 @@ main (int argc, char **argv) {
 		goto done;
 	}
 
-	printf("Waiting for events.\n");
-
 	status = VMI_SUCCESS;
 	gt_loop_run(loop);
 
 done:
-	printf("Shutting down guestrace.\n");
-
 	gt_loop_free(loop);
 
 	exit(VMI_SUCCESS == status ? EXIT_SUCCESS : EXIT_FAILURE);
