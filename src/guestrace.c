@@ -65,7 +65,7 @@ usage()
 	                "-n <VM name>\n"
 	                "\n"
 	                "-i  specify subset of system calls to instrument\n"
-	                "-s  operate in silent mode (no output on syscall/ret\n"
+	                "-s  operate in silent mode (no output on call/ret)\n"
 	                "-v  verbose\n"
 	                "-n  name of guest to instrument\n");
 }
