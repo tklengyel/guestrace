@@ -1,4 +1,4 @@
-/* Generated on Linux_4.9.7-201.fc25.x86_64 on 10 Feb 2017 23:17:19*/
+/* Generated on Linux_4.9.7-201.fc25.x86_64 on 12 Feb 2017 02:32:11*/
 
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
@@ -638,10 +638,10 @@ void *gt_linux_print_syscall_sys_vfork(GtGuestState *state, gt_pid_t pid, gt_tid
 void *gt_linux_print_syscall_sys_execve(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
+	char *arg0 = gt_guest_get_string(state, gt_guest_get_vmi_event(state)->x86_regs->rdi, pid);
 	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
 	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64", 0x%"PRIx64", 0x%"PRIx64")\n", pid, tid, proc, "sys_execve", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(\"%s\", %lu, %lu)\n", pid, tid, proc, "sys_execve", (char *) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -3251,7 +3251,7 @@ const GtCallbackRegistry GT_LINUX_SYSCALLS[] = {
 	{ "sys_clone", gt_linux_print_syscall_sys_clone, gt_linux_print_sysret },
 	{ "sys_fork", gt_linux_print_syscall_sys_fork, gt_linux_print_sysret },
 	{ "sys_vfork", gt_linux_print_syscall_sys_vfork, gt_linux_print_sysret },
-	{ "sys_execve", gt_linux_print_syscall_sys_execve, gt_linux_print_sysret },
+	{ "stub_execve", gt_linux_print_syscall_sys_execve, gt_linux_print_sysret },
 	{ "sys_exit", gt_linux_print_syscall_sys_exit, gt_linux_print_sysret },
 	{ "sys_wait4", gt_linux_print_syscall_sys_wait4, gt_linux_print_sysret },
 	{ "sys_kill", gt_linux_print_syscall_sys_kill, gt_linux_print_sysret },

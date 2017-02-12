@@ -150,6 +150,7 @@ guint          gt_loop_add_watch(GIOChannel *channel,
                                  gpointer user_data);
 gt_reg_t       gt_guest_get_register(GtGuestState *state, gt_reg_name_t name);
 char          *gt_guest_get_string(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid);
+char         **gt_guest_get_argv(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid);
 vmi_instance_t gt_guest_get_vmi_instance(GtGuestState *state);
 vmi_event_t   *gt_guest_get_vmi_event(GtGuestState *state);
 void           gt_loop_run(GtLoop *loop);

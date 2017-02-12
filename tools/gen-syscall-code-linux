@@ -17,7 +17,12 @@ import time
 from optparse import OptionParser
 
 ARG_TYPE_OVERRIDES = {
-    "sys_open": ( ( "char *", "%s" ),  ( "int", "%i" ), ( "unsigned long", "%lu" ) )
+    "sys_open": ( ( "char *", "%s" ),  ( "int", "%i" ), ( "unsigned long", "%lu" ) ),
+    "sys_execve": ( ( "char *", "%s" ),  ( "unsigned long", "%lu" ), ( "unsigned long", "%lu" ) ),
+}
+
+FUNCTION_OVERRIDES = {
+    "sys_execve": "stub_execve",
 }
 
 class syscall_data:
@@ -434,7 +439,10 @@ done:
     
     # generate the actual struct list
     for syscall_id in range(len(syscall_order)):
-        str += "\t{{ \"{0}\", gt_linux_print_syscall_{1}, gt_linux_print_sysret }},\n".format(syscall_order[syscall_id], syscall_order[syscall_id])
+        function_name = syscall_order[syscall_id]
+        if function_name in FUNCTION_OVERRIDES:
+            function_name = FUNCTION_OVERRIDES[function_name]
+        str += "\t{{ \"{0}\", gt_linux_print_syscall_{1}, gt_linux_print_sysret }},\n".format(function_name, syscall_order[syscall_id])
 
     str += """\t{ NULL, NULL, NULL }
 };

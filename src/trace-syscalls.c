@@ -727,6 +727,52 @@ gt_guest_get_string(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid)
 }
 
 /**
+ * gt_guest_get_argv:
+ * @state: a pointer to a #GtGuestState.
+ * @vaddr: a virtual address from the guest's address space.
+ * @pid: PID of the virtual address space (0 for kernel).
+ *
+ * Returns the NULL-terminated argv-style array which starts at @vaddr
+ * or NULL on error. Each item in the array is a string.
+ * The array and each string in the array must be freed by the caller.
+ */
+char **
+gt_guest_get_argv(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid)
+{
+	status_t status;
+	int length = 16, i = 0;
+	char **argv = g_new(char *, length);
+	vmi_instance_t vmi = gt_guest_get_vmi_instance(state);
+
+	do {
+		uint64_t vaddr2;
+		status = vmi_read_64_va(vmi, vaddr + (i * sizeof(char *)), pid, &vaddr2);
+		if (VMI_SUCCESS != status) {
+			goto done;
+		}
+		if (vaddr2 != 0) {
+			if (i == length) {
+				length *= 2;
+				argv = g_renew(char *, argv, length);
+			}
+			argv[i] = vmi_read_str_va(vmi, vaddr2, pid);
+		} else {
+			argv[i] = NULL;
+		}
+	} while (argv[i++] != NULL);
+
+done:
+	if (VMI_SUCCESS != status) {
+		for (i = 0; argv[i]; i++) {
+			g_free(argv[i]);
+		}
+		g_free(argv);
+	}
+
+	return argv;
+}
+
+/**
  * gt_guest_get_vmi_instance:
  * @state: a pointer to a #GtGuestState.
  *
