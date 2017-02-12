@@ -85,6 +85,7 @@ struct _GtLoop {
 
 struct _GtGuestState {
 	/* <private> */
+	GtLoop         *loop;
 	vmi_instance_t  vmi;
         vmi_event_t    *event;
 };

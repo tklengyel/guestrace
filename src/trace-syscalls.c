@@ -330,6 +330,26 @@ gt_paddr_record_from_va(GtLoop *loop, addr_t va) {
 	return gt_paddr_record_from_pa(loop, vmi_translate_kv2p(loop->vmi, va));
 }
 
+/**
+ * gt_guest_free_syscall_state:
+ * @state: a pointer to a #GtGuestState.
+ * @thread_id: the thread ID associated with the syscall to free.
+ *
+ * Frees the object which the guestrace event loop would have allocated
+ * when processing the system call associated with @thread_id. This is useful
+ * for system calls that never return (unless there is an error) such as execve.
+ * The application must first free the object pointed to by the @data
+ * argument to the #GtSyscallFunc before calling this function. The
+ * application should not call this function if the guestrace event loop
+ * will call #GtSysretFunc.
+ */
+void
+gt_guest_free_syscall_state(GtGuestState *state, gt_tid_t thread_id)
+{
+	g_hash_table_remove(state->loop->gt_ret_addr_mapping,
+			    GSIZE_TO_POINTER(thread_id));
+}
+
 /*
  * Service a triggered breakpoint. Restore the original page table for one
  * single-step iteration and invoke the system call or return callback.
@@ -386,7 +406,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		state->thread_id            = thread_id;
 
 		/* Invoke system-call callback in record. */
-		state->data          = record->syscall_cb(&(GtGuestState) { vmi, event },
+		state->data          = record->syscall_cb(&(GtGuestState) { loop, vmi, event },
 		                                          pid,
 		                                          thread_id,
 		                                          record->data);
@@ -409,7 +429,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		if (NULL != state) {
 			gt_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 
-			state->syscall_paddr_record->sysret_cb(&(GtGuestState) { vmi, event },
+			state->syscall_paddr_record->sysret_cb(&(GtGuestState) { loop, vmi, event },
 			                                       pid,
 			                                       thread_id,
 			                                       state->data);
@@ -420,8 +440,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 			 * This will free our gt_syscall_state object, but
 			 * sysret_cb must have freed state->data.
 			 */
-			g_hash_table_remove(loop->gt_ret_addr_mapping,
-			                    GSIZE_TO_POINTER(thread_id));
+			gt_guest_free_syscall_state(&(GtGuestState) { loop, vmi, event }, thread_id);
 		}
 	}
 
@@ -739,10 +758,16 @@ gt_guest_get_string(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid)
 char **
 gt_guest_get_argv(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid)
 {
-	status_t status;
+	status_t status = VMI_SUCCESS;
 	int length = 16, i = 0;
-	char **argv = g_new0(char *, length);
+	char **argv = NULL;
 	vmi_instance_t vmi = gt_guest_get_vmi_instance(state);
+
+	if (0 == vaddr) {
+		goto done;
+	}
+
+	argv = g_new0(char *, length);
 
 	do {
 		uint64_t vaddr2;
@@ -768,6 +793,7 @@ done:
 			g_free(argv[i]);
 		}
 		g_free(argv);
+		argv = NULL;
 	}
 
 	return argv;
