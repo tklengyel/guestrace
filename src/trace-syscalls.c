@@ -741,7 +741,7 @@ gt_guest_get_argv(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid)
 {
 	status_t status;
 	int length = 16, i = 0;
-	char **argv = g_new(char *, length);
+	char **argv = g_new0(char *, length);
 	vmi_instance_t vmi = gt_guest_get_vmi_instance(state);
 
 	do {
@@ -754,6 +754,7 @@ gt_guest_get_argv(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid)
 			if (i == length) {
 				length *= 2;
 				argv = g_renew(char *, argv, length);
+				memset(argv + i, 0x00, length - i);
 			}
 			argv[i] = vmi_read_str_va(vmi, vaddr2, pid);
 		} else {
