@@ -41,6 +41,10 @@ imp      e4139e9d 10240      0.004  2.381
 imp      e4139e9d 10240      0.004  2.319
 imp      e4139e9d 10240      0.005  2.210
 
+imp      1130f838 10240      0.004  2.394
+imp      1130f838 10240      0.001  2.464
+imp      1130f838 10240      0.004  2.430
+
 These are the remaining parts of gt_breakpoint_cb which make up most of
 the function's runtime:
 
