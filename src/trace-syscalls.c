@@ -390,6 +390,12 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		response = VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
 		         | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
 
+		/*
+		 * Testing indicated this was necessary to get vaddr
+		 * translations to consistently work in a GtSyscallFunc.
+		 */
+		vmi_pidcache_flush(loop->vmi);
+
 		thread_id = return_loc = event->x86_regs->rsp;
 
 		addr_t return_addr = 0;
