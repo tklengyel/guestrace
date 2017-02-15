@@ -1,4 +1,4 @@
-/* Generated on Linux_4.9.7-201.fc25.x86_64 on 12 Feb 2017 02:32:11*/
+/* Generated on Linux_4.9.7-201.fc25.x86_64 on 14 Feb 2017 20:57:55*/
 
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
@@ -152,7 +152,13 @@ void *gt_linux_print_syscall_sys_lseek(GtGuestState *state, gt_pid_t pid, gt_tid
 void *gt_linux_print_syscall_sys_mmap(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_mmap");
+	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
+	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
+	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
+	reg_t arg3 = gt_guest_get_vmi_event(state)->x86_regs->r10;
+	reg_t arg4 = gt_guest_get_vmi_event(state)->x86_regs->r8;
+	reg_t arg5 = gt_guest_get_vmi_event(state)->x86_regs->r9;
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu, %lu, %lu, %lu, %lu, %lu)\n", pid, tid, proc, "sys_mmap", (unsigned long) arg0, (unsigned long) arg1, (unsigned long) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5);
 	return NULL;
 }
 
@@ -1484,7 +1490,10 @@ void *gt_linux_print_syscall_sys_vhangup(GtGuestState *state, gt_pid_t pid, gt_t
 void *gt_linux_print_syscall_sys_modify_ldt(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_modify_ldt");
+	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
+	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
+	reg_t arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %lu)\n", pid, tid, proc, "sys_modify_ldt", (int) arg0, (unsigned long) arg1, (unsigned long) arg2);
 	return NULL;
 }
 
@@ -1520,7 +1529,9 @@ void *gt_linux_print_syscall_sys_prctl(GtGuestState *state, gt_pid_t pid, gt_tid
 void *gt_linux_print_syscall_sys_arch_prctl(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_arch_prctl");
+	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
+	reg_t arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, %lu)\n", pid, tid, proc, "sys_arch_prctl", (int) arg0, (unsigned long) arg1);
 	return NULL;
 }
 
@@ -1641,7 +1652,8 @@ void *gt_linux_print_syscall_sys_setdomainname(GtGuestState *state, gt_pid_t pid
 void *gt_linux_print_syscall_sys_iopl(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_iopl");
+	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu)\n", pid, tid, proc, "sys_iopl", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -1944,7 +1956,8 @@ void *gt_linux_print_syscall_sys_sched_getaffinity(GtGuestState *state, gt_pid_t
 void *gt_linux_print_syscall_sys_set_thread_area(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_set_thread_area");
+	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, tid, proc, "sys_set_thread_area", (unsigned long) arg0);
 	return NULL;
 }
 
@@ -2000,7 +2013,8 @@ void *gt_linux_print_syscall_sys_io_cancel(GtGuestState *state, gt_pid_t pid, gt
 void *gt_linux_print_syscall_sys_get_thread_area(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	char *proc = get_process_name(gt_guest_get_vmi_instance(state), pid);
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s()\n", pid, tid, proc, "sys_get_thread_area");
+	reg_t arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64")\n", pid, tid, proc, "sys_get_thread_area", (unsigned long) arg0);
 	return NULL;
 }
 
