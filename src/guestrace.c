@@ -243,7 +243,7 @@ main (int argc, char **argv) {
 		goto done;
 	}
 
-	message("%s\n", GT_OS_LINUX ? "linux" : "windows");
+	message("%s\n", GT_OS_LINUX == os ? "linux" : "windows");
 
 	registry = registry_build(orig_registry, instrument_list);
 	if (NULL == registry) {
