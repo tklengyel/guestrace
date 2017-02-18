@@ -21,18 +21,18 @@ early_boot_wait_for_os_load(GtLoop *loop)
 	addr_t lstar;
 
 	while (TRUE) {
-                status = vmi_get_vcpureg(loop->vmi, &lstar, MSR_LSTAR, 0);
-                if (VMI_SUCCESS != status) {
+		status = vmi_get_vcpureg(loop->vmi, &lstar, MSR_LSTAR, 0);
+		if (VMI_SUCCESS != status) {
 			fprintf(stderr, "failed to get MSR_LSTAR address\n");
-                        goto done;
-                }
+			goto done;
+		}
 
-                if (0 != lstar) {
-                        break;
-                }
+		if (0 != lstar) {
+			break;
+		}
 
-                usleep(100000);
-        }
+		usleep(100000);
+	}
 
 	loop->lstar_addr = lstar;
 
@@ -79,18 +79,18 @@ early_boot_wait_for_first_process(GtLoop *loop)
 	loop->cr3_event.data = loop;
 
 	status = vmi_register_event(loop->vmi, &loop->cr3_event);
-        if (VMI_SUCCESS != status) {
-                fprintf(stderr, "cr3 event setup failed\n");
-                goto done;
-        }
+	if (VMI_SUCCESS != status) {
+		fprintf(stderr, "cr3 event setup failed\n");
+		goto done;
+	}
 
 	while (!loop->initialized) {
-                status_t status = vmi_events_listen(loop->vmi, 100);
-                if (status != VMI_SUCCESS) {
-                        fprintf(stderr, "error waiting for events\n");
+		status_t status = vmi_events_listen(loop->vmi, 100);
+		if (status != VMI_SUCCESS) {
+			fprintf(stderr, "error waiting for events\n");
 			goto done;
-                }
-        }
+		}
+	}
 
 	status = VMI_SUCCESS;
 
