@@ -662,20 +662,6 @@ GtLoop *gt_loop_new(const char *guest_name)
 		goto done;
 	}
 
-	status = vmi_slat_switch(loop->vmi, loop->shadow_view);
-	if (VMI_SUCCESS != status) {
-		fprintf(stderr, "failed to enable shadow view\n");
-		goto done;
-	}
-
-	if (!gt_set_up_generic_events(loop)) {
-		goto done;
-	}
-
-	if (!gt_set_up_step_events(loop)) {
-		goto done;
-	}
-
 	vmi_resume_vm(loop->vmi);
 
 	status = early_boot_wait_for_first_process(loop);
@@ -683,17 +669,6 @@ GtLoop *gt_loop_new(const char *guest_name)
                 fprintf(stderr, "failed to wait for initialization\n");
                 goto done;
         }
-
-	loop->return_addr = loop->os_functions->find_return_point_addr(loop);
-	if (0 == loop->return_addr) {
-		goto done;
-	}
-
-	loop->trampoline_addr = gt_find_trampoline_addr(loop);
-	if (0 == loop->trampoline_addr) {
-		fprintf(stderr, "could not find addr. of existing int 3 inst.\n");
-		goto done;
-	}
 
 done:
 	if (VMI_SUCCESS != status) {
@@ -908,6 +883,35 @@ void gt_loop_run(GtLoop *loop)
 {
 	status_t status;
 
+	vmi_pause_vm(loop->vmi);
+
+	status = vmi_slat_switch(loop->vmi, loop->shadow_view);
+	if (VMI_SUCCESS != status) {
+		fprintf(stderr, "failed to enable shadow view\n");
+		goto done;
+	}
+
+	if (!gt_set_up_generic_events(loop)) {
+		goto done;
+	}
+
+	if (!gt_set_up_step_events(loop)) {
+		goto done;
+	}
+
+	loop->return_addr = loop->os_functions->find_return_point_addr(loop);
+	if (0 == loop->return_addr) {
+		goto done;
+	}
+
+	loop->trampoline_addr = gt_find_trampoline_addr(loop);
+	if (0 == loop->trampoline_addr) {
+		fprintf(stderr, "could not find addr. of existing int 3 inst.\n");
+		goto done;
+	}
+
+	vmi_resume_vm(loop->vmi);
+
 	g_idle_add(gt_loop_listen, loop);
 	g_main_loop_run(loop->g_main_loop);
 
@@ -932,6 +936,7 @@ void gt_loop_run(GtLoop *loop)
 
 	vmi_resume_vm(loop->vmi);
 
+done:
 	return;
 }
 
