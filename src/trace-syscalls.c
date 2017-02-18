@@ -587,12 +587,6 @@ GtLoop *gt_loop_new(const char *guest_name)
 		goto done;
 	}
 
-	status = early_boot_wait_for_os_load(loop);
-	if (VMI_SUCCESS != status) {
-                fprintf(stderr, "failed to wait on LSTAR.\n");
-                goto done;
-        }
-
 	loop->gt_page_translation = g_hash_table_new(NULL, NULL);
 	loop->gt_page_record_collection = g_hash_table_new_full(NULL,
 	                                                        NULL,
@@ -663,12 +657,6 @@ GtLoop *gt_loop_new(const char *guest_name)
 	}
 
 	vmi_resume_vm(loop->vmi);
-
-	status = early_boot_wait_for_first_process(loop);
-	if (VMI_SUCCESS != status) {
-                fprintf(stderr, "failed to wait for initialization\n");
-                goto done;
-        }
 
 done:
 	if (VMI_SUCCESS != status) {
@@ -882,6 +870,18 @@ gt_loop_listen(gpointer user_data)
 void gt_loop_run(GtLoop *loop)
 {
 	status_t status;
+
+	status = early_boot_wait_for_os_load(loop);
+	if (VMI_SUCCESS != status) {
+                fprintf(stderr, "failed to wait on LSTAR.\n");
+                goto done;
+        }
+
+	status = early_boot_wait_for_first_process(loop);
+	if (VMI_SUCCESS != status) {
+                fprintf(stderr, "failed to wait for initialization\n");
+                goto done;
+        }
 
 	vmi_pause_vm(loop->vmi);
 
