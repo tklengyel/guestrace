@@ -38,7 +38,6 @@ struct _GtLoop {
 
 	gboolean initialized;
 	addr_t lstar_addr;
-	uint8_t orig_inst;
 
 	os_t os;
 	uint8_t return_addr_width;
@@ -65,6 +64,7 @@ struct _GtLoop {
 	uint16_t shadow_view;
 	vmi_event_t breakpoint_event;
 	vmi_event_t memory_event;
+	vmi_event_t cr3_event;
 	vmi_event_t step_event[_GT_MAX_VCPUS];
 
 	/*

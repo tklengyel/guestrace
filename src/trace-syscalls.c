@@ -240,17 +240,6 @@ static event_response_t
 gt_singlestep_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	GtLoop *loop = event->data;
 
-	if (!loop->initialized) {
-		/* We do not set the runtime breakpoints until after
-		 * initialized is TRUE; thus we assume this single-step event
-		 * follows a R/W, and we ought to set again the initialization
-		 * breakpoint in case it was overwritten. The initialization
-		 * breakpoint itself detects the first system call which serves
-		 * as the final indication that the kernel is running.
-		 */
-		early_boot_reset_initialize_breakpoint(loop);
-	}
-
 	/* Resume use of shadow SLAT. */
 	event->slat_id = loop->shadow_view;
 
@@ -377,18 +366,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	GtLoop *loop = event->data;
 	event->interrupt_event.reinject = 0;
 
-	if (event->interrupt_event.gla == loop->lstar_addr) {
-		/* Initialization breakpoint. */
-		early_boot_remove_initialize_breakpoint(loop);
-		loop->initialized = TRUE;
-
-		/* Set VCPUs SLAT to use original for one step. */
-		event->slat_id = 0;
-
-		/* Turn on single-step and switch slat_id after return. */
-		response = VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
-		         | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
-	} else if (event->interrupt_event.gla != loop->trampoline_addr) {
+	if (event->interrupt_event.gla != loop->trampoline_addr) {
 		/* Type-one breakpoint (system call). */
 		status_t status;
 		addr_t thread_id, return_loc;
@@ -543,7 +521,7 @@ gt_find_trampoline_addr (GtLoop *loop)
 		goto done;
 	}
 
-	//g_assert(loop->lstar_addr == lstar);
+	g_assert(loop->lstar_addr == lstar);
 
 	addr_t lstar_p = vmi_translate_kv2p(loop->vmi, lstar);
 	if (0 == lstar_p) {
@@ -609,7 +587,7 @@ GtLoop *gt_loop_new(const char *guest_name)
 		goto done;
 	}
 
-	status = early_boot_wait_for_lstar(loop);
+	status = early_boot_wait_for_os_load(loop);
 	if (VMI_SUCCESS != status) {
                 fprintf(stderr, "failed to wait on LSTAR.\n");
                 goto done;
@@ -690,8 +668,6 @@ GtLoop *gt_loop_new(const char *guest_name)
 		goto done;
 	}
 
-/* FIXME: GUEST HANGS HERE WHEN PAUSING/RESUMING EACH STATEMENT! */
-
 	if (!gt_set_up_generic_events(loop)) {
 		goto done;
 	}
@@ -700,14 +676,9 @@ GtLoop *gt_loop_new(const char *guest_name)
 		goto done;
 	}
 
-	status = early_boot_set_initialize_breakpoint(loop);
-	if (VMI_SUCCESS != status) {
-		goto done;
-	}
-
 	vmi_resume_vm(loop->vmi);
 
-	status = early_boot_wait_for_initialized(loop);
+	status = early_boot_wait_for_first_process(loop);
 	if (VMI_SUCCESS != status) {
                 fprintf(stderr, "failed to wait for initialization\n");
                 goto done;
