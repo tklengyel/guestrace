@@ -20,6 +20,7 @@ early_boot_wait_for_os_load(GtLoop *loop)
 	status_t status = VMI_FAILURE;
 	addr_t lstar;
 
+	/* Libvmi does not appear to support LSTAR write events. */
 	while (TRUE) {
 		status = vmi_get_vcpureg(loop->vmi, &lstar, MSR_LSTAR, 0);
 		if (VMI_SUCCESS != status) {
