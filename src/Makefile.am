@@ -18,6 +18,7 @@ AM_LDFLAGS = \
 	$(LIBVMI_LIBS)
 
 libguestrace_0_0_la_SOURCES = \
+	early-boot.c \
 	functions-linux.c \
 	functions-windows.c \
 	trace-syscalls.c
@@ -43,6 +44,7 @@ guestrace_LDADD = \
 	libguestrace-0.0.la
 
 noinst_HEADERS = \
+	early-boot.h \
 	functions-linux.h \
 	functions-windows.h \
 	generated-windows.h \

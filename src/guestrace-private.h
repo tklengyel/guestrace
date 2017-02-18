@@ -6,9 +6,7 @@
 #include <xenctrl.h>
 
 #include "guestrace.h"
-
-/* Maximum number of VCPUs VisorFlow will support. */
-#define _GT_MAX_VCPUS 16
+#include "trace-syscalls.h"
 
 /* Includes collection of global state for callbacks.
  *
@@ -37,6 +35,10 @@ struct _GtLoop {
 	GMainLoop *g_main_loop;
 
 	vmi_instance_t vmi;
+
+	gboolean initialized;
+	addr_t lstar_addr;
+	uint8_t orig_inst;
 
 	os_t os;
 	uint8_t return_addr_width;

@@ -1,6 +1,7 @@
 #include <capstone/capstone.h>
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
+#include <libvmi/slat.h>
 #include <libvmi/libvmi_extra.h>
 #include <glib.h>
 #include <libxl_utils.h>
@@ -8,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "early-boot.h"
 #include "guestrace.h"
 #include "guestrace-private.h"
 #include "functions-linux.h"
@@ -107,14 +109,8 @@
  * </example>
  **/
 
-/* Number of bits available for page offset. */
-#define GT_PAGE_OFFSET_BITS 12
-
-/* Default page size on our domain. */
-#define GT_PAGE_SIZE (1 << GT_PAGE_OFFSET_BITS)
-
 /* Intel breakpoint interrupt (INT 3) instruction. */
-static uint8_t GT_BREAKPOINT_INST = 0xCC;
+uint8_t GT_BREAKPOINT_INST = 0xCC;
 
 /*
  * Handle terminating signals by unsetting gt_running flag. This allows
@@ -210,6 +206,7 @@ done:
 
 static void
 gt_destroy_page_record (gpointer data) {
+	status_t status;
 	gt_page_record *page_record = data;
 
 	g_hash_table_destroy(page_record->children);
@@ -220,11 +217,13 @@ gt_destroy_page_record (gpointer data) {
 	                  VMI_MEMACCESS_N,
 	                  page_record->loop->shadow_view);
 
-	xc_altp2m_change_gfn(page_record->loop->xch,
-	                     page_record->loop->domid,
-	                     page_record->loop->shadow_view,
-	                     page_record->shadow_frame,
-	                    ~0);
+	status = vmi_slat_change_gfn(page_record->loop->vmi,
+				     page_record->loop->shadow_view,
+				     page_record->shadow_frame,
+				    ~0);
+	if (VMI_SUCCESS != status) {
+		fprintf(stderr, "failed to update shadow view\n");
+	}
 
 	xc_domain_decrease_reservation_exact(page_record->loop->xch,
 	                                     page_record->loop->domid,
@@ -239,8 +238,20 @@ gt_destroy_page_record (gpointer data) {
  */
 static event_response_t
 gt_singlestep_cb(vmi_instance_t vmi, vmi_event_t *event) {
-	/* Resume use of shadow SLAT. */
 	GtLoop *loop = event->data;
+
+	if (!loop->initialized) {
+		/* We do not set the runtime breakpoints until after
+		 * initialized is TRUE; thus we assume this single-step event
+		 * follows a R/W, and we ought to set again the initialization
+		 * breakpoint in case it was overwritten. The initialization
+		 * breakpoint itself detects the first system call which serves
+		 * as the final indication that the kernel is running.
+		 */
+		early_boot_reset_initialize_breakpoint(loop);
+	}
+
+	/* Resume use of shadow SLAT. */
 	event->slat_id = loop->shadow_view;
 
 	/* Turn off single-step and switch slat_id. */
@@ -366,7 +377,18 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	GtLoop *loop = event->data;
 	event->interrupt_event.reinject = 0;
 
-	if (event->interrupt_event.gla != loop->trampoline_addr) {
+	if (event->interrupt_event.gla == loop->lstar_addr) {
+		/* Initialization breakpoint. */
+		early_boot_remove_initialize_breakpoint(loop);
+		loop->initialized = TRUE;
+
+		/* Set VCPUs SLAT to use original for one step. */
+		event->slat_id = 0;
+
+		/* Turn on single-step and switch slat_id after return. */
+		response = VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
+		         | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
+	} else if (event->interrupt_event.gla != loop->trampoline_addr) {
 		/* Type-one breakpoint (system call). */
 		status_t status;
 		addr_t thread_id, return_loc;
@@ -521,6 +543,8 @@ gt_find_trampoline_addr (GtLoop *loop)
 		goto done;
 	}
 
+	//g_assert(loop->lstar_addr == lstar);
+
 	addr_t lstar_p = vmi_translate_kv2p(loop->vmi, lstar);
 	if (0 == lstar_p) {
 		fprintf(stderr, "failed to translate virtual LSTAR to physical address");
@@ -557,6 +581,7 @@ done:
  **/
 GtLoop *gt_loop_new(const char *guest_name)
 {
+	int i;
 	GtLoop *loop;
 	int rc;
 	status_t status = VMI_FAILURE;
@@ -566,13 +591,29 @@ GtLoop *gt_loop_new(const char *guest_name)
 	loop->g_main_loop = g_main_loop_new(NULL, true);
 
 	/* Initialize the libvmi library. */
-	status = vmi_init(&loop->vmi,
-	                   VMI_XEN | VMI_INIT_COMPLETE | VMI_INIT_EVENTS,
-	                   guest_name);
+	for (i = 0; i < 300; i++) {
+		status = vmi_init(&loop->vmi,
+				   VMI_XEN | VMI_INIT_COMPLETE | VMI_INIT_EVENTS,
+				   guest_name);
+
+		if (VMI_SUCCESS == status) {
+			break;
+		}
+
+		usleep(100000);
+	}
+
+	/* Did vmi_init fail too many times above? */
 	if (VMI_SUCCESS != status) {
 		fprintf(stderr, "failed to init LibVMI library.\n");
 		goto done;
 	}
+
+	status = early_boot_wait_for_lstar(loop);
+	if (VMI_SUCCESS != status) {
+                fprintf(stderr, "failed to wait on LSTAR.\n");
+                goto done;
+        }
 
 	loop->gt_page_translation = g_hash_table_new(NULL, NULL);
 	loop->gt_page_record_collection = g_hash_table_new_full(NULL,
@@ -631,21 +672,57 @@ GtLoop *gt_loop_new(const char *guest_name)
 		goto done;
 	}
 
-	rc = xc_altp2m_set_domain_state(loop->xch, loop->domid, 1);
-	if (rc < 0) {
-		fprintf(stderr, "failed to enable altp2m on guest\n");
-                status = VMI_FAILURE;
+	status = vmi_slat_set_domain_state(loop->vmi, TRUE);
+	if (VMI_SUCCESS != status) {
+		fprintf(stderr, "failed to enable slat/altp2m on guest\n");
 		goto done;
 	}
 
-	rc = xc_altp2m_create_view(loop->xch, loop->domid, 0, &loop->shadow_view);
-	if (rc < 0) {
-		fprintf(stderr, "failed to create view for shadow page\n");
-                status = VMI_FAILURE;
+	status = vmi_slat_create(loop->vmi, &loop->shadow_view);
+	if (VMI_SUCCESS != status) {
+		fprintf(stderr, "failed to enable shadow view\n");
+		goto done;
+	}
+
+	status = vmi_slat_switch(loop->vmi, loop->shadow_view);
+	if (VMI_SUCCESS != status) {
+		fprintf(stderr, "failed to enable shadow view\n");
+		goto done;
+	}
+
+/* FIXME: GUEST HANGS HERE WHEN PAUSING/RESUMING EACH STATEMENT! */
+
+	if (!gt_set_up_generic_events(loop)) {
+		goto done;
+	}
+
+	if (!gt_set_up_step_events(loop)) {
+		goto done;
+	}
+
+	status = early_boot_set_initialize_breakpoint(loop);
+	if (VMI_SUCCESS != status) {
 		goto done;
 	}
 
 	vmi_resume_vm(loop->vmi);
+
+	status = early_boot_wait_for_initialized(loop);
+	if (VMI_SUCCESS != status) {
+                fprintf(stderr, "failed to wait for initialization\n");
+                goto done;
+        }
+
+	loop->return_addr = loop->os_functions->find_return_point_addr(loop);
+	if (0 == loop->return_addr) {
+		goto done;
+	}
+
+	loop->trampoline_addr = gt_find_trampoline_addr(loop);
+	if (0 == loop->trampoline_addr) {
+		fprintf(stderr, "could not find addr. of existing int 3 inst.\n");
+		goto done;
+	}
 
 done:
 	if (VMI_SUCCESS != status) {
@@ -858,37 +935,7 @@ gt_loop_listen(gpointer user_data)
  */
 void gt_loop_run(GtLoop *loop)
 {
-	int rc;
-
-	vmi_pause_vm(loop->vmi);
-
-	rc = xc_altp2m_switch_to_view(loop->xch, loop->domid, loop->shadow_view);
-	if (rc < 0) {
-		fprintf(stderr, "failed to enable shadow view\n");
-		goto done;
-	}
-
-	if (!gt_set_up_generic_events(loop)) {
-		goto done;
-	}
-
-	if (!gt_set_up_step_events(loop)) {
-		goto done;
-	}
-
-
-	loop->return_addr = loop->os_functions->find_return_point_addr(loop);
-	if (0 == loop->return_addr) {
-		goto done;
-	}
-
-	loop->trampoline_addr = gt_find_trampoline_addr(loop);
-	if (0 == loop->trampoline_addr) {
-		fprintf(stderr, "could not find addr. of existing int 3 inst.\n");
-		goto done;
-	}
-
-	vmi_resume_vm(loop->vmi);
+	status_t status;
 
 	g_idle_add(gt_loop_listen, loop);
 	g_main_loop_run(loop->g_main_loop);
@@ -907,14 +954,12 @@ void gt_loop_run(GtLoop *loop)
 	g_hash_table_remove_all(loop->gt_ret_addr_mapping);
 	g_hash_table_remove_all(loop->gt_page_record_collection);
 
-	rc = xc_altp2m_switch_to_view(loop->xch, loop->domid, 0);
-	if (rc < 0) {
+	status = vmi_slat_switch(loop->vmi, 0);
+	if (VMI_SUCCESS != status) {
 		fprintf(stderr, "failed to reset EPT to point to default table\n");
 	}
 
 	vmi_resume_vm(loop->vmi);
-
-done:
 
 	return;
 }
@@ -952,8 +997,8 @@ void gt_loop_free(GtLoop *loop)
 	g_hash_table_destroy(loop->gt_ret_addr_mapping);
 	g_hash_table_destroy(loop->gt_page_record_collection);
 
-	xc_altp2m_destroy_view(loop->xch, loop->domid, loop->shadow_view);
-	xc_altp2m_set_domain_state(loop->xch, loop->domid, 0);
+	vmi_slat_destroy(loop->vmi, loop->shadow_view);
+	vmi_slat_set_domain_state(loop->vmi, FALSE);
 	/* TODO: find out why this isn't decreasing main memory on next run of guestrace */
 	xc_domain_setmaxmem(loop->xch, loop->domid, loop->init_mem_size);
 
@@ -1084,12 +1129,11 @@ gt_setup_mem_trap (GtLoop *loop,
 		                    GSIZE_TO_POINTER(shadow));
 
 		/* Activate in shadow view. */
-		int xc_status = xc_altp2m_change_gfn(loop->xch,
-		                                     loop->domid,
-		                                     loop->shadow_view,
-		                                     frame,
-		                                     shadow);
-		if (xc_status < 0) {
+		status = vmi_slat_change_gfn(loop->vmi,
+		                             loop->shadow_view,
+		                             frame,
+		                             shadow);
+		if (VMI_SUCCESS != status) {
 			fprintf(stderr, "failed to update shadow view\n");
 			goto done;
 		}
