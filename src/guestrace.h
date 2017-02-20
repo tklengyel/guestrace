@@ -29,7 +29,7 @@ typedef struct _GtGuestState GtGuestState;
  * The `gt_reg_name_t` enum contains the valid names
  * of the registers found on the guest.
  */
-typedef registers_t gt_reg_name_t;
+typedef int gt_reg_name_t;
 
 /**
  * gt_addr_t:
