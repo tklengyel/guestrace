@@ -35,6 +35,7 @@ struct _GtLoop {
 	GMainLoop *g_main_loop;
 
 	vmi_instance_t vmi;
+	const char *guest_name;
 
 	gboolean initialized;
 	addr_t lstar_addr;

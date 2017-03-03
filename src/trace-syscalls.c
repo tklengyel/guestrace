@@ -686,6 +686,20 @@ gt_loop_get_ostype(GtLoop *loop)
 	}
 }
 
+ /**
+ * gt_loop_get_guest_name:
+ * @loop: a #GtLoop.
+ *
+ * Returns: the name of the guest to which #GtLoop has attached. The #GtLoop
+ * maintains ownership of the string. Thus the returned string must not be
+ * freed by the caller.
+ **/
+const char *
+gt_loop_get_guest_name(GtLoop *loop)
+{
+	return loop->guest_name;
+}
+
 /**
  * gt_loop_get_vmi_instance:
  * @loop: a pointer to a #GtLoop.

@@ -136,6 +136,7 @@ typedef enum GtOSType {
 
 GtLoop        *gt_loop_new(const char *guest_name);
 GtOSType       gt_loop_get_ostype(GtLoop *loop);
+const char    *gt_loop_get_guest_name(GtLoop *loop);
 vmi_instance_t gt_loop_get_vmi_instance(GtLoop *loop);
 gboolean       gt_loop_set_cb(GtLoop *loop,
                               const char *kernel_func,
