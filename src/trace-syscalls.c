@@ -567,6 +567,7 @@ GtLoop *gt_loop_new(const char *guest_name)
 	loop = g_new0(GtLoop, 1);
 
 	loop->g_main_loop = g_main_loop_new(NULL, true);
+	loop->guest_name = guest_name;
 
 	/* Initialize the libvmi library. */
 	for (i = 0; i < 300; i++) {
