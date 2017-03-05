@@ -1,5 +1,6 @@
 bin_PROGRAMS = \
-	guestrace
+	guestrace \
+	test-pendantic
 
 lib_LTLIBRARIES = libguestrace-0.0.la
 
@@ -41,6 +42,13 @@ guestrace_SOURCES = \
 	generated-windows.c
 
 guestrace_LDADD = \
+	libguestrace-0.0.la
+
+test_pendantic_SOURCES = \
+	test-pendantic.c \
+	generated-linux.c
+
+test_pendantic_LDADD = \
 	libguestrace-0.0.la
 
 noinst_HEADERS = \
