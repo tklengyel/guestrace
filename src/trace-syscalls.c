@@ -763,6 +763,23 @@ done:
 }
 
 /**
+ * gt_guest_get_bytes:
+ * @state: a pointer to a #GtGuestState.
+ * @vaddr: a virtual address from the guest's address space.
+ * @pid: PID of the virtual address space (0 for kernel).
+ * @buf: the data read from memory.
+ * @count: the number of bytes to read.
+ *
+ * Copies a sequence of up to @count bytes which starts at @vaddr into the
+ * memory starting at @buf. Returns the number of bytes copied.
+ */
+size_t
+gt_guest_get_bytes(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid, void *buf, size_t count)
+{
+	return vmi_read_va(gt_guest_get_vmi_instance(state), vaddr, pid, buf, count);
+}
+
+/**
  * gt_guest_get_string:
  * @state: a pointer to a #GtGuestState.
  * @vaddr: a virtual address from the guest's address space.
