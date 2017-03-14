@@ -118,6 +118,9 @@ uint8_t GT_BREAKPOINT_INST = 0xCC;
  */
 static gboolean gt_running = TRUE;
 
+/* Track whether we are in a GtSyscallFunc. */
+static gboolean in_syscall_cb = FALSE;
+
 /*
  * A record which describes a frame. The children of these records (themselves
  * of type gt_paddr_record) describe the physical addresses contained in the
@@ -412,10 +415,12 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		state->thread_id            = thread_id;
 
 		/* Invoke system-call callback in record. */
+		in_syscall_cb = TRUE;
 		state->data          = record->syscall_cb(&(GtGuestState) { loop, vmi, event },
 		                                          pid,
 		                                          thread_id,
 		                                          record->data);
+		in_syscall_cb = FALSE;
 
 		/* Record system-call state. */
 		g_hash_table_insert(loop->gt_ret_addr_mapping,
@@ -1333,7 +1338,7 @@ gt_loop_add_watch(GIOChannel *channel,
 addr_t
 _gt_find_addr_after_instruction (GtLoop *loop, addr_t start_v, char *mnemonic, char *ops)
 {
-	csh handle;
+	csh handle = 0;
 	cs_insn *inst;
 	size_t count, offset = ~0;
 	addr_t ret = 0;
@@ -1379,10 +1384,95 @@ _gt_find_addr_after_instruction (GtLoop *loop, addr_t start_v, char *mnemonic, c
 		goto done;
 	}
 
-	cs_close(&handle);
-
 	ret = start_v + offset;
 
 done:
+	if (0 != handle) {
+		cs_close(&handle);
+	}
+
 	return ret;
+}
+
+/**
+ * gt_loop_hijack_return:
+ * @state: a #GtGuestState.
+ * @errno: a #gint.
+ * @retval: a #gint.
+ *
+ * This function manipulates the guest to hijack the current system call such
+ * that the system call does not execute and instead immediately returns @retval.
+ * This function can only be called from within a #GtSyscallFunc.
+ *
+ * Returns: %TRUE on success, %FALSE on failure. A failure indicates that the
+ * function could not identify the portion of instructions in the system call
+ * which restores registers, restores the stack, and returns. In this case, the
+ * function does not change any state within the guest processor.
+ **/
+gboolean
+gt_hijack_return(GtGuestState *state, gint retval)
+{
+        csh handle = 0;
+        cs_insn *inst;
+        size_t count, offset = ~0;
+	gboolean ok = FALSE;
+	status_t status;
+        uint8_t code[GT_PAGE_SIZE];
+
+	/* Assert original view, as int3 byte will break disassembly. */
+	g_assert(0 == state->event->slat_id);
+	g_assert(in_syscall_cb);
+
+        addr_t start_v = state->event->x86_regs->rip;
+        addr_t start_p = vmi_translate_kv2p(state->vmi, start_v);
+        if (0 == start_p) {
+                fprintf(stderr, "failed to translate virtual start address to physical address\n");
+                goto done;
+        }
+
+        /* Read kernel instructions into code. */
+        status = vmi_read_pa(state->vmi, start_p, code, sizeof(code));
+        if (VMI_FAILURE == status) {
+                fprintf(stderr, "failed to read instructions from 0x%lx\n", start_p);
+                goto done;
+        }
+
+        if (cs_open(CS_ARCH_X86, CS_MODE_64, &handle) != CS_ERR_OK) {
+                fprintf(stderr, "failed to open capstone\n");
+                goto done;
+        }
+
+        /* Find RET inst. */
+        count = cs_disasm(handle, code, sizeof(code), 0, 0, &inst);
+        if (count > 0) {
+                size_t i;
+                for (i = 0; i < count; i++) {
+                        printf("%lx %s %s\n", inst[i].address, inst[i].mnemonic, inst[i].op_str);
+			if (0 == strcmp(inst[i].mnemonic, "ret")) {
+				offset = inst[i].address;
+				break;
+                        }
+                }
+                cs_free(inst, count);
+        } else {
+                fprintf(stderr, "failed to disassemble system-call handler\n");
+                goto done;
+        }
+
+	if (~0 == offset) {
+                fprintf(stderr, "did not find ret in system-call handler\n");
+                goto done;
+        }
+
+	vmi_set_vcpureg(state->vmi, retval, RAX, state->event->vcpu_id);
+	vmi_set_vcpureg(state->vmi, start_v + offset, RIP, state->event->vcpu_id);
+
+	ok = TRUE;
+
+done:
+	if (0 != handle) {
+		cs_close(&handle);
+	}
+
+        return ok;
 }

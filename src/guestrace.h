@@ -159,5 +159,6 @@ void           gt_guest_free_syscall_state(GtGuestState *state, gt_tid_t thread_
 void           gt_loop_run(GtLoop *loop);
 void           gt_loop_quit(GtLoop *loop);
 void           gt_loop_free(GtLoop *loop);
+gboolean       gt_hijack_return(GtGuestState *state, gint retval);
 
 #endif
