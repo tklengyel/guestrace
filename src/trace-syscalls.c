@@ -393,12 +393,6 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		response = VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
 		         | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
 
-		/*
-		 * Testing indicated this was necessary to get vaddr
-		 * translations to consistently work in a GtSyscallFunc.
-		 */
-		vmi_pidcache_flush(loop->vmi);
-
 		thread_id = return_loc = event->x86_regs->rsp;
 
 		addr_t return_addr = 0;
@@ -473,6 +467,27 @@ gt_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
 	     | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
 }
 
+/* Callback invoked on CR3 change (context switch). */
+static event_response_t
+gt_cr3_cb(vmi_instance_t vmi, vmi_event_t *event) {
+	event_response_t response = VMI_EVENT_RESPONSE_NONE;
+
+	/* This is not the case yet, since the event precedes the CR3 update. */
+	event->x86_regs->cr3 = event->reg_event.value;
+
+	/*
+	 * Testing indicated pidcache flush was necessary to get vaddr
+	 * translations to consistently work in a GtSyscallFunc. DRAKVUF
+	 * flushes all of the caches on a CR3 change, so we do too.
+	 */
+	vmi_pidcache_flush(vmi);
+	vmi_v2pcache_flush(vmi);
+	vmi_rvacache_flush(vmi);
+	vmi_symcache_flush(vmi);
+
+	return response;
+}
+
 /*
  * Setup our global interrupt to catch any interrupts on any pages.
  */
@@ -483,6 +498,9 @@ gt_set_up_generic_events (GtLoop *loop) {
 
 	SETUP_INTERRUPT_EVENT(&loop->breakpoint_event, 0, gt_breakpoint_cb);
 	loop->breakpoint_event.data = loop;
+
+	SETUP_REG_EVENT(&loop->cr3_event, CR3, VMI_REGACCESS_W, 0, gt_cr3_cb);
+	loop->cr3_event.data = loop;
 
 	status = vmi_register_event(loop->vmi, &loop->breakpoint_event);
 	if (VMI_SUCCESS != status) {
@@ -877,6 +895,25 @@ vmi_event_t *
 gt_guest_get_vmi_event(GtGuestState *state)
 {
 	return state->event;
+}
+
+char *
+gt_guest_get_process_name(GtGuestState *state, gt_pid_t pid)
+{
+	char *process_name = NULL;
+
+	switch (state->loop->os) {
+	case VMI_OS_LINUX:
+		process_name = gt_linux_get_process_name(state->vmi, pid);
+		break;
+	case VMI_OS_WINDOWS:
+		process_name = gt_windows_get_process_name(state->vmi, pid);
+		break;
+	default:
+		g_assert_not_reached();
+	}
+
+	return process_name;
 }
 
 static gboolean
