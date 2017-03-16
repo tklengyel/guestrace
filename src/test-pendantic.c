@@ -93,7 +93,6 @@ void handle_open_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *u
 	char *proc             = gt_guest_get_process_name(state, pid);
 
 	g_assert(NULL != proc);
-	g_assert(NULL != args->pathname);
 
 	if (!g_utf8_validate(proc, -1, NULL)) {
 		fprintf(stderr, "Bad string in process name.\n");
@@ -104,6 +103,8 @@ void handle_open_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *u
 	}
 
 	fprintf(stderr, "return %d; ", ret);
+
+	g_assert(NULL != args->pathname);
 
 	if (!g_utf8_validate(args->pathname, -1, NULL)) {
 		fprintf(stderr, "bad argument to open [%lx].\n", args->pathaddr);
