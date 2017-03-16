@@ -84,6 +84,8 @@ void *handle_open_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *us
 	args->flags    = gt_guest_get_register(state, RSI);
 	args->mode     = gt_guest_get_register(state, RDX);
 
+	g_assert(NULL != args->pathname);
+
 	return args;
 }
 
@@ -103,8 +105,6 @@ void handle_open_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *u
 	}
 
 	fprintf(stderr, "return %d; ", ret);
-
-	g_assert(NULL != args->pathname);
 
 	if (!g_utf8_validate(args->pathname, -1, NULL)) {
 		fprintf(stderr, "bad argument to open [%lx].\n", args->pathaddr);
@@ -160,6 +160,8 @@ void *handle_execve_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *
 	args           = g_new0(struct args_execve, 1);
 	args->fileaddr = gt_guest_get_register(state, RDI);
 	args->filename = gt_guest_get_string(state, args->fileaddr, pid);
+
+	g_assert(NULL != args->filename);
 
 	if (!g_utf8_validate(args->filename, -1, NULL)) {
 		fprintf(stderr, "bad argument to execve [%lx].\n", args->fileaddr);
