@@ -481,7 +481,7 @@ gt_cr3_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	 * flushes all of the caches on a CR3 change, so we do too.
 	 */
 	vmi_pidcache_flush(vmi);
-	vmi_v2pcache_flush(vmi);
+	vmi_v2pcache_flush(vmi, event->reg_event.previous);
 	vmi_rvacache_flush(vmi);
 	vmi_symcache_flush(vmi);
 
