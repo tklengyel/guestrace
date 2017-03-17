@@ -84,8 +84,6 @@ void *handle_open_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *us
 	args->flags    = gt_guest_get_register(state, RSI);
 	args->mode     = gt_guest_get_register(state, RDX);
 
-	g_assert(NULL != args->pathname);
-
 	return args;
 }
 
@@ -97,31 +95,23 @@ void handle_open_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *u
 	g_assert(NULL != proc);
 
 	if (!g_utf8_validate(proc, -1, NULL)) {
-		fprintf(stderr, "Bad string in process name.\n");
-		fprintf(stderr, "Process %d/%s\n", pid, proc);
-		g_assert_not_reached();
-	} else {
-		fprintf(stderr, "Process %d/%s; ", pid, proc);
+		fprintf(stderr, "Bad process name (open): %d/%s.\n", pid, proc);
 	}
 
-	fprintf(stderr, "return %d; ", ret);
+	if (ret < 0) {
+		goto done;
+	}
 
-	if (!g_utf8_validate(args->pathname, -1, NULL)) {
-		fprintf(stderr, "bad argument to open [%lx].\n", args->pathaddr);
-		fprintf(stderr, "open(%s [%lx], %d, %d)\n",
-		                 args->pathname,
-		                 args->pathaddr,
-		                 args->flags,
-		                 args->mode);
-		g_assert_not_reached();
-	} else {
-		fprintf(stderr, "open(%s [%lx], %d, %d)\n",
+	if (NULL == args->pathname || !g_utf8_validate(args->pathname, -1, NULL)) {
+		fprintf(stderr, "%s open(%s [%lx], %d, %d)\n",
+		                 proc,
 		                 args->pathname,
 		                 args->pathaddr,
 		                 args->flags,
 		                 args->mode);
 	}
 
+done:
 	g_free(args);
 }
 
@@ -134,14 +124,8 @@ void handle_clone_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *
 	char *proc = gt_guest_get_process_name(state, pid);
 
 	if (!g_utf8_validate(proc, -1, NULL)) {
-		fprintf(stderr, "Bad string in process name.\n");
-		fprintf(stderr, "Process %d/%s\n", pid, proc);
-		g_assert_not_reached();
-	} else {
-		fprintf(stderr, "Process %d/%s; ", pid, proc);
+		fprintf(stderr, "Bad process name (clone): %d/%s.\n", pid, proc);
 	}
-
-	fprintf(stderr, "clone returned\n");
 }
 
 void *handle_execve_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
@@ -150,11 +134,7 @@ void *handle_execve_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *
 	char *proc = gt_guest_get_process_name(state, pid);
 
 	if (!g_utf8_validate(proc, -1, NULL)) {
-		fprintf(stderr, "Bad string in process name.\n");
-		fprintf(stderr, "Process %d/%s\n", pid, proc);
-		g_assert_not_reached();
-	} else {
-		fprintf(stderr, "Process %d/%s; ", pid, proc);
+		fprintf(stderr, "Bad process name (execve): %d/%s.\n", pid, proc);
 	}
 
 	args           = g_new0(struct args_execve, 1);
@@ -163,14 +143,9 @@ void *handle_execve_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *
 
 	g_assert(NULL != args->filename);
 
-	if (!g_utf8_validate(args->filename, -1, NULL)) {
-		fprintf(stderr, "bad argument to execve [%lx].\n", args->fileaddr);
-		fprintf(stderr, "execve(%s [%lx], ...)\n",
-		                 args->filename,
-		                 args->fileaddr);
-		g_assert_not_reached();
-	} else {
-		fprintf(stderr, "execve(%s [%lx], ...)\n",
+	if (NULL == args->filename || !g_utf8_validate(args->filename, -1, NULL)) {
+		fprintf(stderr, "%s execve(%s [%lx], ...)\n",
+		                 proc,
 		                 args->filename,
 		                 args->fileaddr);
 	}
@@ -185,14 +160,10 @@ void handle_execve_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void 
 	g_assert(NULL != proc);
 
 	if (!g_utf8_validate(proc, -1, NULL)) {
-		fprintf(stderr, "Bad string in process name.\n");
-		fprintf(stderr, "Process %d/%s\n", pid, proc);
-		g_assert_not_reached();
-	} else {
-		fprintf(stderr, "Process %d/%s; ", pid, proc);
+		fprintf(stderr, "Bad process name (execve): %d/%s.\n", pid, proc);
 	}
 
-	fprintf(stderr, "WARNING: execve returned %d\n", ret);
+	fprintf(stderr, "%s call to execve returned %d\n", proc, ret);
 
 	g_free(user_data);
 }
