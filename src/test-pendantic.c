@@ -11,14 +11,12 @@ char *name   = NULL;
 
 struct args_open {
 	addr_t pathaddr;
-	char  *pathname;
 	int    flags;
 	int    mode;
 };
 
 struct args_execve {
 	addr_t fileaddr;
-	char  *filename;
 	/* Not done. */
 };
 
@@ -80,7 +78,6 @@ void *handle_open_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *us
 
 	args           = g_new0(struct args_open, 1);
 	args->pathaddr = gt_guest_get_register(state, RDI);
-	args->pathname = gt_guest_get_string(state, args->pathaddr, pid);
 	args->flags    = gt_guest_get_register(state, RSI);
 	args->mode     = gt_guest_get_register(state, RDX);
 
@@ -91,6 +88,7 @@ void handle_open_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *u
 	struct args_open *args = user_data;
 	int ret                = gt_guest_get_register(state, RAX);
 	char *proc             = gt_guest_get_process_name(state, pid);
+	char *pathname         = gt_guest_get_string(state, args->pathaddr, pid);
 
 	g_assert(NULL != proc);
 
@@ -102,13 +100,14 @@ void handle_open_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *u
 		goto done;
 	}
 
-	if (NULL == args->pathname || !g_utf8_validate(args->pathname, -1, NULL)) {
-		fprintf(stderr, "%s open(%s [%lx], %d, %d)\n",
+	if (NULL == pathname || !g_utf8_validate(pathname, -1, NULL)) {
+		fprintf(stderr, "%s open(%s [%lx], %d, %d) = %d\n",
 		                 proc,
-		                 args->pathname,
+		                 pathname,
 		                 args->pathaddr,
 		                 args->flags,
-		                 args->mode);
+		                 args->mode,
+	                         ret);
 	}
 
 done:
@@ -139,16 +138,6 @@ void *handle_execve_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *
 
 	args           = g_new0(struct args_execve, 1);
 	args->fileaddr = gt_guest_get_register(state, RDI);
-	args->filename = gt_guest_get_string(state, args->fileaddr, pid);
-
-	g_assert(NULL != args->filename);
-
-	if (NULL == args->filename || !g_utf8_validate(args->filename, -1, NULL)) {
-		fprintf(stderr, "%s execve(%s [%lx], ...)\n",
-		                 proc,
-		                 args->filename,
-		                 args->fileaddr);
-	}
 
 	return args;
 }
