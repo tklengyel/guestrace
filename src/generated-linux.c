@@ -1,4 +1,4 @@
-/* Generated on Linux_4.9.13-201.fc25.x86_64 on 17 Mar 2017 21:57:26*/
+/* Generated on Linux_4.9.13-201.fc25.x86_64 on 18 Mar 2017 00:16:47*/
 
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
@@ -28,7 +28,7 @@ void *gt_linux_record_syscall_sys_read_args(GtGuestState *state, gt_pid_t pid, g
 void gt_linux_print_syscall_sys_read(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_read_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -55,7 +55,7 @@ void *gt_linux_record_syscall_sys_write_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_write(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_write_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -82,7 +82,7 @@ void *gt_linux_record_syscall_sys_open_args(GtGuestState *state, gt_pid_t pid, g
 void gt_linux_print_syscall_sys_open(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_open_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	char *arg0 = gt_guest_get_string(state, args->arg0, pid);
 	reg_t arg1 = args->arg1;
@@ -105,7 +105,7 @@ void *gt_linux_record_syscall_sys_close_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_close(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_close_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu) = %ld\n", pid, tid, proc, "sys_close", (unsigned long) arg0, ret);
@@ -128,7 +128,7 @@ void *gt_linux_record_syscall_sys_stat_args(GtGuestState *state, gt_pid_t pid, g
 void gt_linux_print_syscall_sys_stat(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_stat_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -152,7 +152,7 @@ void *gt_linux_record_syscall_sys_fstat_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_fstat(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_fstat_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -176,7 +176,7 @@ void *gt_linux_record_syscall_sys_lstat_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_lstat(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_lstat_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -202,7 +202,7 @@ void *gt_linux_record_syscall_sys_poll_args(GtGuestState *state, gt_pid_t pid, g
 void gt_linux_print_syscall_sys_poll(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_poll_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -229,7 +229,7 @@ void *gt_linux_record_syscall_sys_lseek_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_lseek(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_lseek_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -262,7 +262,7 @@ void *gt_linux_record_syscall_sys_mmap_args(GtGuestState *state, gt_pid_t pid, g
 void gt_linux_print_syscall_sys_mmap(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_mmap_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -292,7 +292,7 @@ void *gt_linux_record_syscall_sys_mprotect_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_mprotect(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_mprotect_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -317,7 +317,7 @@ void *gt_linux_record_syscall_sys_munmap_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_munmap(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_munmap_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -339,7 +339,7 @@ void *gt_linux_record_syscall_sys_brk_args(GtGuestState *state, gt_pid_t pid, gt
 void gt_linux_print_syscall_sys_brk(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_brk_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu) = %ld\n", pid, tid, proc, "sys_brk", (unsigned long) arg0, ret);
@@ -366,7 +366,7 @@ void *gt_linux_record_syscall_sys_rt_sigaction_args(GtGuestState *state, gt_pid_
 void gt_linux_print_syscall_sys_rt_sigaction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_rt_sigaction_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -396,7 +396,7 @@ void *gt_linux_record_syscall_sys_rt_sigprocmask_args(GtGuestState *state, gt_pi
 void gt_linux_print_syscall_sys_rt_sigprocmask(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_rt_sigprocmask_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -418,7 +418,7 @@ void *gt_linux_record_syscall_sys_rt_sigreturn_args(GtGuestState *state, gt_pid_
 void gt_linux_print_syscall_sys_rt_sigreturn(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_rt_sigreturn_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_rt_sigreturn", ret);
 	g_free(args);
@@ -442,7 +442,7 @@ void *gt_linux_record_syscall_sys_ioctl_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_ioctl(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_ioctl_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -471,7 +471,7 @@ void *gt_linux_record_syscall_sys_pread_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_pread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_pread_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -501,7 +501,7 @@ void *gt_linux_record_syscall_sys_pwrite_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_pwrite(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_pwrite_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -529,7 +529,7 @@ void *gt_linux_record_syscall_sys_readv_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_readv(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_readv_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -556,7 +556,7 @@ void *gt_linux_record_syscall_sys_writev_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_writev(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_writev_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -581,7 +581,7 @@ void *gt_linux_record_syscall_sys_access_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_access(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_access_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -603,7 +603,7 @@ void *gt_linux_record_syscall_sys_pipe_args(GtGuestState *state, gt_pid_t pid, g
 void gt_linux_print_syscall_sys_pipe(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_pipe_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64") = %ld\n", pid, tid, proc, "sys_pipe", (unsigned long) arg0, ret);
@@ -632,7 +632,7 @@ void *gt_linux_record_syscall_sys_select_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_select(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_select_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -655,7 +655,7 @@ void *gt_linux_record_syscall_sys_sched_yield_args(GtGuestState *state, gt_pid_t
 void gt_linux_print_syscall_sys_sched_yield(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_sched_yield_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_sched_yield", ret);
 	g_free(args);
@@ -683,7 +683,7 @@ void *gt_linux_record_syscall_sys_mremap_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_mremap(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_mremap_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -712,7 +712,7 @@ void *gt_linux_record_syscall_sys_msync_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_msync(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_msync_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -739,7 +739,7 @@ void *gt_linux_record_syscall_sys_mincore_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_mincore(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_mincore_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -766,7 +766,7 @@ void *gt_linux_record_syscall_sys_madvise_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_madvise(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_madvise_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -793,7 +793,7 @@ void *gt_linux_record_syscall_sys_shmget_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_shmget(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_shmget_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -820,7 +820,7 @@ void *gt_linux_record_syscall_sys_shmat_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_shmat(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_shmat_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -847,7 +847,7 @@ void *gt_linux_record_syscall_sys_shmctl_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_shmctl(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_shmctl_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -870,7 +870,7 @@ void *gt_linux_record_syscall_sys_dup_args(GtGuestState *state, gt_pid_t pid, gt
 void gt_linux_print_syscall_sys_dup(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_dup_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu) = %ld\n", pid, tid, proc, "sys_dup", (unsigned long) arg0, ret);
@@ -893,7 +893,7 @@ void *gt_linux_record_syscall_sys_dup2_args(GtGuestState *state, gt_pid_t pid, g
 void gt_linux_print_syscall_sys_dup2(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_dup2_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -913,7 +913,7 @@ void *gt_linux_record_syscall_sys_pause_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_pause(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_pause_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_pause", ret);
 	g_free(args);
@@ -935,7 +935,7 @@ void *gt_linux_record_syscall_sys_nanosleep_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_nanosleep(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_nanosleep_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -959,7 +959,7 @@ void *gt_linux_record_syscall_sys_getitimer_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_getitimer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_getitimer_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -981,7 +981,7 @@ void *gt_linux_record_syscall_sys_alarm_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_alarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_alarm_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu) = %ld\n", pid, tid, proc, "sys_alarm", (unsigned long) arg0, ret);
@@ -1006,7 +1006,7 @@ void *gt_linux_record_syscall_sys_setitimer_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_setitimer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_setitimer_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1027,7 +1027,7 @@ void *gt_linux_record_syscall_sys_getpid_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_getpid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_getpid_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_getpid", ret);
 	g_free(args);
@@ -1053,7 +1053,7 @@ void *gt_linux_record_syscall_sys_sendfile_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_sendfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_sendfile_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1081,7 +1081,7 @@ void *gt_linux_record_syscall_sys_socket_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_socket(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_socket_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1108,7 +1108,7 @@ void *gt_linux_record_syscall_sys_connect_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_connect(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_connect_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1135,7 +1135,7 @@ void *gt_linux_record_syscall_sys_accept_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_accept(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_accept_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1168,7 +1168,7 @@ void *gt_linux_record_syscall_sys_sendto_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_sendto(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_sendto_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1204,7 +1204,7 @@ void *gt_linux_record_syscall_sys_recvfrom_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_recvfrom(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_recvfrom_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1234,7 +1234,7 @@ void *gt_linux_record_syscall_sys_sendmsg_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_sendmsg(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_sendmsg_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1261,7 +1261,7 @@ void *gt_linux_record_syscall_sys_recvmsg_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_recvmsg(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_recvmsg_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1286,7 +1286,7 @@ void *gt_linux_record_syscall_sys_shutdown_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_shutdown(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_shutdown_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1312,7 +1312,7 @@ void *gt_linux_record_syscall_sys_bind_args(GtGuestState *state, gt_pid_t pid, g
 void gt_linux_print_syscall_sys_bind(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_bind_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1337,7 +1337,7 @@ void *gt_linux_record_syscall_sys_listen_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_listen(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_listen_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1363,7 +1363,7 @@ void *gt_linux_record_syscall_sys_getsockname_args(GtGuestState *state, gt_pid_t
 void gt_linux_print_syscall_sys_getsockname(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_getsockname_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1390,7 +1390,7 @@ void *gt_linux_record_syscall_sys_getpeername_args(GtGuestState *state, gt_pid_t
 void gt_linux_print_syscall_sys_getpeername(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_getpeername_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1419,7 +1419,7 @@ void *gt_linux_record_syscall_sys_socketpair_args(GtGuestState *state, gt_pid_t 
 void gt_linux_print_syscall_sys_socketpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_socketpair_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1451,7 +1451,7 @@ void *gt_linux_record_syscall_sys_setsockopt_args(GtGuestState *state, gt_pid_t 
 void gt_linux_print_syscall_sys_setsockopt(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_setsockopt_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1484,7 +1484,7 @@ void *gt_linux_record_syscall_sys_getsockopt_args(GtGuestState *state, gt_pid_t 
 void gt_linux_print_syscall_sys_getsockopt(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_getsockopt_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1517,7 +1517,7 @@ void *gt_linux_record_syscall_sys_clone_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_clone(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_clone_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1540,7 +1540,7 @@ void *gt_linux_record_syscall_sys_fork_args(GtGuestState *state, gt_pid_t pid, g
 void gt_linux_print_syscall_sys_fork(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_fork_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_fork", ret);
 	g_free(args);
@@ -1558,7 +1558,7 @@ void *gt_linux_record_syscall_sys_vfork_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_vfork(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_vfork_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_vfork", ret);
 	g_free(args);
@@ -1582,7 +1582,7 @@ void *gt_linux_record_syscall_sys_execve_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_execve(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_execve_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	char *arg0 = gt_guest_get_string(state, args->arg0, pid);
 	reg_t arg1 = args->arg1;
@@ -1605,7 +1605,7 @@ void *gt_linux_record_syscall_sys_exit_args(GtGuestState *state, gt_pid_t pid, g
 void gt_linux_print_syscall_sys_exit(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_exit_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i) = %ld\n", pid, tid, proc, "sys_exit", (int) arg0, ret);
@@ -1632,7 +1632,7 @@ void *gt_linux_record_syscall_sys_wait4_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_wait4(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_wait4_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1658,7 +1658,7 @@ void *gt_linux_record_syscall_sys_kill_args(GtGuestState *state, gt_pid_t pid, g
 void gt_linux_print_syscall_sys_kill(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_kill_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1680,7 +1680,7 @@ void *gt_linux_record_syscall_sys_uname_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_uname(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_uname_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64") = %ld\n", pid, tid, proc, "sys_uname", (unsigned long) arg0, ret);
@@ -1705,7 +1705,7 @@ void *gt_linux_record_syscall_sys_semget_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_semget(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_semget_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1732,7 +1732,7 @@ void *gt_linux_record_syscall_sys_semop_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_semop(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_semop_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1761,7 +1761,7 @@ void *gt_linux_record_syscall_sys_semctl_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_semctl(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_semctl_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1785,7 +1785,7 @@ void *gt_linux_record_syscall_sys_shmdt_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_shmdt(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_shmdt_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64") = %ld\n", pid, tid, proc, "sys_shmdt", (unsigned long) arg0, ret);
@@ -1808,7 +1808,7 @@ void *gt_linux_record_syscall_sys_msgget_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_msgget(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_msgget_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1836,7 +1836,7 @@ void *gt_linux_record_syscall_sys_msgsnd_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_msgsnd(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_msgsnd_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1868,7 +1868,7 @@ void *gt_linux_record_syscall_sys_msgrcv_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_msgrcv(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_msgrcv_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1897,7 +1897,7 @@ void *gt_linux_record_syscall_sys_msgctl_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_msgctl(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_msgctl_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1924,7 +1924,7 @@ void *gt_linux_record_syscall_sys_fcntl_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_fcntl(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_fcntl_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1949,7 +1949,7 @@ void *gt_linux_record_syscall_sys_flock_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_flock(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_flock_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -1971,7 +1971,7 @@ void *gt_linux_record_syscall_sys_fsync_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_fsync(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_fsync_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu) = %ld\n", pid, tid, proc, "sys_fsync", (unsigned long) arg0, ret);
@@ -1992,7 +1992,7 @@ void *gt_linux_record_syscall_sys_fdatasync_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_fdatasync(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_fdatasync_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu) = %ld\n", pid, tid, proc, "sys_fdatasync", (unsigned long) arg0, ret);
@@ -2015,7 +2015,7 @@ void *gt_linux_record_syscall_sys_truncate_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_truncate(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_truncate_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2039,7 +2039,7 @@ void *gt_linux_record_syscall_sys_ftruncate_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_ftruncate(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_ftruncate_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2065,7 +2065,7 @@ void *gt_linux_record_syscall_sys_getdents_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_getdents(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_getdents_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2090,7 +2090,7 @@ void *gt_linux_record_syscall_sys_getcwd_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_getcwd(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_getcwd_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2112,7 +2112,7 @@ void *gt_linux_record_syscall_sys_chdir_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_chdir(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_chdir_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64") = %ld\n", pid, tid, proc, "sys_chdir", (unsigned long) arg0, ret);
@@ -2133,7 +2133,7 @@ void *gt_linux_record_syscall_sys_fchdir_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_fchdir(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_fchdir_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu) = %ld\n", pid, tid, proc, "sys_fchdir", (unsigned long) arg0, ret);
@@ -2156,7 +2156,7 @@ void *gt_linux_record_syscall_sys_rename_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_rename(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_rename_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2180,7 +2180,7 @@ void *gt_linux_record_syscall_sys_mkdir_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_mkdir(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_mkdir_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2202,7 +2202,7 @@ void *gt_linux_record_syscall_sys_rmdir_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_rmdir(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_rmdir_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64") = %ld\n", pid, tid, proc, "sys_rmdir", (unsigned long) arg0, ret);
@@ -2225,7 +2225,7 @@ void *gt_linux_record_syscall_sys_creat_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_creat(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_creat_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2249,7 +2249,7 @@ void *gt_linux_record_syscall_sys_link_args(GtGuestState *state, gt_pid_t pid, g
 void gt_linux_print_syscall_sys_link(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_link_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2271,7 +2271,7 @@ void *gt_linux_record_syscall_sys_unlink_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_unlink(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_unlink_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64") = %ld\n", pid, tid, proc, "sys_unlink", (unsigned long) arg0, ret);
@@ -2294,7 +2294,7 @@ void *gt_linux_record_syscall_sys_symlink_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_symlink(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_symlink_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2320,7 +2320,7 @@ void *gt_linux_record_syscall_sys_readlink_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_readlink(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_readlink_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2345,7 +2345,7 @@ void *gt_linux_record_syscall_sys_chmod_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_chmod(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_chmod_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2369,7 +2369,7 @@ void *gt_linux_record_syscall_sys_fchmod_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_fchmod(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_fchmod_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2395,7 +2395,7 @@ void *gt_linux_record_syscall_sys_chown_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_chown(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_chown_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2422,7 +2422,7 @@ void *gt_linux_record_syscall_sys_fchown_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_fchown(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_fchown_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2449,7 +2449,7 @@ void *gt_linux_record_syscall_sys_lchown_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_lchown(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_lchown_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2472,7 +2472,7 @@ void *gt_linux_record_syscall_sys_umask_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_umask(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_umask_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i) = %ld\n", pid, tid, proc, "sys_umask", (int) arg0, ret);
@@ -2495,7 +2495,7 @@ void *gt_linux_record_syscall_sys_gettimeofday_args(GtGuestState *state, gt_pid_
 void gt_linux_print_syscall_sys_gettimeofday(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_gettimeofday_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2519,7 +2519,7 @@ void *gt_linux_record_syscall_sys_getrlimit_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_getrlimit(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_getrlimit_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2543,7 +2543,7 @@ void *gt_linux_record_syscall_sys_getrusage_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_getrusage(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_getrusage_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2565,7 +2565,7 @@ void *gt_linux_record_syscall_sys_sysinfo_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_sysinfo(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_sysinfo_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64") = %ld\n", pid, tid, proc, "sys_sysinfo", (unsigned long) arg0, ret);
@@ -2586,7 +2586,7 @@ void *gt_linux_record_syscall_sys_times_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_times(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_times_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64") = %ld\n", pid, tid, proc, "sys_times", (unsigned long) arg0, ret);
@@ -2613,7 +2613,7 @@ void *gt_linux_record_syscall_sys_ptrace_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_ptrace(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_ptrace_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2635,7 +2635,7 @@ void *gt_linux_record_syscall_sys_getuid_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_getuid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_getuid_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_getuid", ret);
 	g_free(args);
@@ -2659,7 +2659,7 @@ void *gt_linux_record_syscall_sys_syslog_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_syslog(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_syslog_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2680,7 +2680,7 @@ void *gt_linux_record_syscall_sys_getgid_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_getgid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_getgid_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_getgid", ret);
 	g_free(args);
@@ -2700,7 +2700,7 @@ void *gt_linux_record_syscall_sys_setuid_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_setuid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_setuid_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu) = %ld\n", pid, tid, proc, "sys_setuid", (unsigned long) arg0, ret);
@@ -2721,7 +2721,7 @@ void *gt_linux_record_syscall_sys_setgid_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_setgid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_setgid_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu) = %ld\n", pid, tid, proc, "sys_setgid", (unsigned long) arg0, ret);
@@ -2740,7 +2740,7 @@ void *gt_linux_record_syscall_sys_geteuid_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_geteuid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_geteuid_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_geteuid", ret);
 	g_free(args);
@@ -2758,7 +2758,7 @@ void *gt_linux_record_syscall_sys_getegid_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_getegid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_getegid_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_getegid", ret);
 	g_free(args);
@@ -2780,7 +2780,7 @@ void *gt_linux_record_syscall_sys_setpgid_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_setpgid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_setpgid_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2800,7 +2800,7 @@ void *gt_linux_record_syscall_sys_getppid_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_getppid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_getppid_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_getppid", ret);
 	g_free(args);
@@ -2818,7 +2818,7 @@ void *gt_linux_record_syscall_sys_getpgrp_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_getpgrp(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_getpgrp_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_getpgrp", ret);
 	g_free(args);
@@ -2836,7 +2836,7 @@ void *gt_linux_record_syscall_sys_setsid_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_setsid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_setsid_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_setsid", ret);
 	g_free(args);
@@ -2858,7 +2858,7 @@ void *gt_linux_record_syscall_sys_setreuid_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_setreuid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_setreuid_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2882,7 +2882,7 @@ void *gt_linux_record_syscall_sys_setregid_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_setregid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_setregid_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2906,7 +2906,7 @@ void *gt_linux_record_syscall_sys_getgroups_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_getgroups(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_getgroups_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2930,7 +2930,7 @@ void *gt_linux_record_syscall_sys_setgroups_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_setgroups(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_setgroups_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2956,7 +2956,7 @@ void *gt_linux_record_syscall_sys_setresuid_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_setresuid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_setresuid_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -2983,7 +2983,7 @@ void *gt_linux_record_syscall_sys_getresuid_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_getresuid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_getresuid_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3010,7 +3010,7 @@ void *gt_linux_record_syscall_sys_setresgid_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_setresgid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_setresgid_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3037,7 +3037,7 @@ void *gt_linux_record_syscall_sys_getresgid_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_getresgid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_getresgid_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3060,7 +3060,7 @@ void *gt_linux_record_syscall_sys_getpgid_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_getpgid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_getpgid_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i) = %ld\n", pid, tid, proc, "sys_getpgid", (int) arg0, ret);
@@ -3081,7 +3081,7 @@ void *gt_linux_record_syscall_sys_setfsuid_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_setfsuid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_setfsuid_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu) = %ld\n", pid, tid, proc, "sys_setfsuid", (unsigned long) arg0, ret);
@@ -3102,7 +3102,7 @@ void *gt_linux_record_syscall_sys_setfsgid_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_setfsgid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_setfsgid_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu) = %ld\n", pid, tid, proc, "sys_setfsgid", (unsigned long) arg0, ret);
@@ -3123,7 +3123,7 @@ void *gt_linux_record_syscall_sys_getsid_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_getsid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_getsid_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i) = %ld\n", pid, tid, proc, "sys_getsid", (int) arg0, ret);
@@ -3146,7 +3146,7 @@ void *gt_linux_record_syscall_sys_capget_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_capget(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_capget_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3170,7 +3170,7 @@ void *gt_linux_record_syscall_sys_capset_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_capset(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_capset_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3194,7 +3194,7 @@ void *gt_linux_record_syscall_sys_rt_sigpending_args(GtGuestState *state, gt_pid
 void gt_linux_print_syscall_sys_rt_sigpending(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_rt_sigpending_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3222,7 +3222,7 @@ void *gt_linux_record_syscall_sys_rt_sigtimedwait_args(GtGuestState *state, gt_p
 void gt_linux_print_syscall_sys_rt_sigtimedwait(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_rt_sigtimedwait_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3250,7 +3250,7 @@ void *gt_linux_record_syscall_sys_rt_sigqueueinfo_args(GtGuestState *state, gt_p
 void gt_linux_print_syscall_sys_rt_sigqueueinfo(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_rt_sigqueueinfo_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3275,7 +3275,7 @@ void *gt_linux_record_syscall_sys_rt_sigsuspend_args(GtGuestState *state, gt_pid
 void gt_linux_print_syscall_sys_rt_sigsuspend(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_rt_sigsuspend_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3299,7 +3299,7 @@ void *gt_linux_record_syscall_sys_sigaltstack_args(GtGuestState *state, gt_pid_t
 void gt_linux_print_syscall_sys_sigaltstack(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_sigaltstack_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3323,7 +3323,7 @@ void *gt_linux_record_syscall_sys_utime_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_utime(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_utime_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3349,7 +3349,7 @@ void *gt_linux_record_syscall_sys_mknod_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_mknod(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_mknod_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3372,7 +3372,7 @@ void *gt_linux_record_syscall_sys_uselib_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_uselib(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_uselib_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64") = %ld\n", pid, tid, proc, "sys_uselib", (unsigned long) arg0, ret);
@@ -3393,7 +3393,7 @@ void *gt_linux_record_syscall_sys_personality_args(GtGuestState *state, gt_pid_t
 void gt_linux_print_syscall_sys_personality(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_personality_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu) = %ld\n", pid, tid, proc, "sys_personality", (unsigned long) arg0, ret);
@@ -3416,7 +3416,7 @@ void *gt_linux_record_syscall_sys_ustat_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_ustat(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_ustat_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3440,7 +3440,7 @@ void *gt_linux_record_syscall_sys_statfs_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_statfs(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_statfs_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3464,7 +3464,7 @@ void *gt_linux_record_syscall_sys_fstatfs_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_fstatfs(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_fstatfs_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3490,7 +3490,7 @@ void *gt_linux_record_syscall_sys_sysfs_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_sysfs(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_sysfs_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3515,7 +3515,7 @@ void *gt_linux_record_syscall_sys_getpriority_args(GtGuestState *state, gt_pid_t
 void gt_linux_print_syscall_sys_getpriority(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_getpriority_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3541,7 +3541,7 @@ void *gt_linux_record_syscall_sys_setpriority_args(GtGuestState *state, gt_pid_t
 void gt_linux_print_syscall_sys_setpriority(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_setpriority_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3566,7 +3566,7 @@ void *gt_linux_record_syscall_sys_sched_setparam_args(GtGuestState *state, gt_pi
 void gt_linux_print_syscall_sys_sched_setparam(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_sched_setparam_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3590,7 +3590,7 @@ void *gt_linux_record_syscall_sys_sched_getparam_args(GtGuestState *state, gt_pi
 void gt_linux_print_syscall_sys_sched_getparam(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_sched_getparam_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3616,7 +3616,7 @@ void *gt_linux_record_syscall_sys_sched_setscheduler_args(GtGuestState *state, g
 void gt_linux_print_syscall_sys_sched_setscheduler(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_sched_setscheduler_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3639,7 +3639,7 @@ void *gt_linux_record_syscall_sys_sched_getscheduler_args(GtGuestState *state, g
 void gt_linux_print_syscall_sys_sched_getscheduler(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_sched_getscheduler_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i) = %ld\n", pid, tid, proc, "sys_sched_getscheduler", (int) arg0, ret);
@@ -3660,7 +3660,7 @@ void *gt_linux_record_syscall_sys_sched_get_priority_max_args(GtGuestState *stat
 void gt_linux_print_syscall_sys_sched_get_priority_max(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_sched_get_priority_max_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i) = %ld\n", pid, tid, proc, "sys_sched_get_priority_max", (int) arg0, ret);
@@ -3681,7 +3681,7 @@ void *gt_linux_record_syscall_sys_sched_get_priority_min_args(GtGuestState *stat
 void gt_linux_print_syscall_sys_sched_get_priority_min(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_sched_get_priority_min_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i) = %ld\n", pid, tid, proc, "sys_sched_get_priority_min", (int) arg0, ret);
@@ -3704,7 +3704,7 @@ void *gt_linux_record_syscall_sys_sched_rr_get_interval_args(GtGuestState *state
 void gt_linux_print_syscall_sys_sched_rr_get_interval(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_sched_rr_get_interval_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3728,7 +3728,7 @@ void *gt_linux_record_syscall_sys_mlock_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_mlock(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_mlock_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3752,7 +3752,7 @@ void *gt_linux_record_syscall_sys_munlock_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_munlock(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_munlock_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3774,7 +3774,7 @@ void *gt_linux_record_syscall_sys_mlockall_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_mlockall(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_mlockall_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i) = %ld\n", pid, tid, proc, "sys_mlockall", (int) arg0, ret);
@@ -3793,7 +3793,7 @@ void *gt_linux_record_syscall_sys_munlockall_args(GtGuestState *state, gt_pid_t 
 void gt_linux_print_syscall_sys_munlockall(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_munlockall_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_munlockall", ret);
 	g_free(args);
@@ -3811,7 +3811,7 @@ void *gt_linux_record_syscall_sys_vhangup_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_vhangup(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_vhangup_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_vhangup", ret);
 	g_free(args);
@@ -3835,7 +3835,7 @@ void *gt_linux_record_syscall_sys_modify_ldt_args(GtGuestState *state, gt_pid_t 
 void gt_linux_print_syscall_sys_modify_ldt(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_modify_ldt_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3860,7 +3860,7 @@ void *gt_linux_record_syscall_sys_pivot_root_args(GtGuestState *state, gt_pid_t 
 void gt_linux_print_syscall_sys_pivot_root(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_pivot_root_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3882,7 +3882,7 @@ void *gt_linux_record_syscall_sys_sysctl_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_sysctl(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_sysctl_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64") = %ld\n", pid, tid, proc, "sys_sysctl", (unsigned long) arg0, ret);
@@ -3911,7 +3911,7 @@ void *gt_linux_record_syscall_sys_prctl_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_prctl(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_prctl_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3938,7 +3938,7 @@ void *gt_linux_record_syscall_sys_arch_prctl_args(GtGuestState *state, gt_pid_t 
 void gt_linux_print_syscall_sys_arch_prctl(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_arch_prctl_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -3960,7 +3960,7 @@ void *gt_linux_record_syscall_sys_adjtimex_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_adjtimex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_adjtimex_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64") = %ld\n", pid, tid, proc, "sys_adjtimex", (unsigned long) arg0, ret);
@@ -3983,7 +3983,7 @@ void *gt_linux_record_syscall_sys_setrlimit_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_setrlimit(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_setrlimit_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -4005,7 +4005,7 @@ void *gt_linux_record_syscall_sys_chroot_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_chroot(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_chroot_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64") = %ld\n", pid, tid, proc, "sys_chroot", (unsigned long) arg0, ret);
@@ -4024,7 +4024,7 @@ void *gt_linux_record_syscall_sys_sync_args(GtGuestState *state, gt_pid_t pid, g
 void gt_linux_print_syscall_sys_sync(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_sync_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_sync", ret);
 	g_free(args);
@@ -4044,7 +4044,7 @@ void *gt_linux_record_syscall_sys_acct_args(GtGuestState *state, gt_pid_t pid, g
 void gt_linux_print_syscall_sys_acct(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_acct_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64") = %ld\n", pid, tid, proc, "sys_acct", (unsigned long) arg0, ret);
@@ -4067,7 +4067,7 @@ void *gt_linux_record_syscall_sys_settimeofday_args(GtGuestState *state, gt_pid_
 void gt_linux_print_syscall_sys_settimeofday(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_settimeofday_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -4097,7 +4097,7 @@ void *gt_linux_record_syscall_sys_mount_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_mount(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_mount_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -4120,7 +4120,7 @@ void *gt_linux_record_syscall_sys_umount2_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_umount2(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_umount2_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_umount2", ret);
 	g_free(args);
@@ -4142,7 +4142,7 @@ void *gt_linux_record_syscall_sys_swapon_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_swapon(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_swapon_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -4164,7 +4164,7 @@ void *gt_linux_record_syscall_sys_swapoff_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_swapoff(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_swapoff_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64") = %ld\n", pid, tid, proc, "sys_swapoff", (unsigned long) arg0, ret);
@@ -4191,7 +4191,7 @@ void *gt_linux_record_syscall_sys_reboot_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_reboot(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_reboot_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -4217,7 +4217,7 @@ void *gt_linux_record_syscall_sys_sethostname_args(GtGuestState *state, gt_pid_t
 void gt_linux_print_syscall_sys_sethostname(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_sethostname_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -4241,7 +4241,7 @@ void *gt_linux_record_syscall_sys_setdomainname_args(GtGuestState *state, gt_pid
 void gt_linux_print_syscall_sys_setdomainname(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_setdomainname_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -4263,7 +4263,7 @@ void *gt_linux_record_syscall_sys_iopl_args(GtGuestState *state, gt_pid_t pid, g
 void gt_linux_print_syscall_sys_iopl(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_iopl_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu) = %ld\n", pid, tid, proc, "sys_iopl", (unsigned long) arg0, ret);
@@ -4288,7 +4288,7 @@ void *gt_linux_record_syscall_sys_ioperm_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_ioperm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_ioperm_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -4309,7 +4309,7 @@ void *gt_linux_record_syscall_sys_create_module_args(GtGuestState *state, gt_pid
 void gt_linux_print_syscall_sys_create_module(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_create_module_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_create_module", ret);
 	g_free(args);
@@ -4333,7 +4333,7 @@ void *gt_linux_record_syscall_sys_init_module_args(GtGuestState *state, gt_pid_t
 void gt_linux_print_syscall_sys_init_module(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_init_module_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -4358,7 +4358,7 @@ void *gt_linux_record_syscall_sys_delete_module_args(GtGuestState *state, gt_pid
 void gt_linux_print_syscall_sys_delete_module(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_delete_module_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -4378,7 +4378,7 @@ void *gt_linux_record_syscall_sys_get_kernel_syms_args(GtGuestState *state, gt_p
 void gt_linux_print_syscall_sys_get_kernel_syms(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_get_kernel_syms_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_get_kernel_syms", ret);
 	g_free(args);
@@ -4396,7 +4396,7 @@ void *gt_linux_record_syscall_sys_query_module_args(GtGuestState *state, gt_pid_
 void gt_linux_print_syscall_sys_query_module(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_query_module_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_query_module", ret);
 	g_free(args);
@@ -4422,7 +4422,7 @@ void *gt_linux_record_syscall_sys_quotactl_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_quotactl(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_quotactl_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -4444,7 +4444,7 @@ void *gt_linux_record_syscall_sys_nfsservctl_args(GtGuestState *state, gt_pid_t 
 void gt_linux_print_syscall_sys_nfsservctl(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_nfsservctl_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_nfsservctl", ret);
 	g_free(args);
@@ -4462,7 +4462,7 @@ void *gt_linux_record_syscall_sys_getpmsg_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_getpmsg(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_getpmsg_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_getpmsg", ret);
 	g_free(args);
@@ -4480,7 +4480,7 @@ void *gt_linux_record_syscall_sys_putpmsg_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_putpmsg(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_putpmsg_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_putpmsg", ret);
 	g_free(args);
@@ -4498,7 +4498,7 @@ void *gt_linux_record_syscall_sys_afs_syscall_args(GtGuestState *state, gt_pid_t
 void gt_linux_print_syscall_sys_afs_syscall(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_afs_syscall_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_afs_syscall", ret);
 	g_free(args);
@@ -4516,7 +4516,7 @@ void *gt_linux_record_syscall_sys_tuxcall_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_tuxcall(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_tuxcall_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_tuxcall", ret);
 	g_free(args);
@@ -4534,7 +4534,7 @@ void *gt_linux_record_syscall_sys_security_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_security(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_security_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_security", ret);
 	g_free(args);
@@ -4552,7 +4552,7 @@ void *gt_linux_record_syscall_sys_gettid_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_gettid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_gettid_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_gettid", ret);
 	g_free(args);
@@ -4576,7 +4576,7 @@ void *gt_linux_record_syscall_sys_readahead_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_readahead(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_readahead_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -4607,7 +4607,7 @@ void *gt_linux_record_syscall_sys_setxattr_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_setxattr(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_setxattr_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -4640,7 +4640,7 @@ void *gt_linux_record_syscall_sys_lsetxattr_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_lsetxattr(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_lsetxattr_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -4673,7 +4673,7 @@ void *gt_linux_record_syscall_sys_fsetxattr_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_fsetxattr(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_fsetxattr_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -4704,7 +4704,7 @@ void *gt_linux_record_syscall_sys_getxattr_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_getxattr(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_getxattr_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -4734,7 +4734,7 @@ void *gt_linux_record_syscall_sys_lgetxattr_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_lgetxattr(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_lgetxattr_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -4764,7 +4764,7 @@ void *gt_linux_record_syscall_sys_fgetxattr_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_fgetxattr(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_fgetxattr_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -4792,7 +4792,7 @@ void *gt_linux_record_syscall_sys_listxattr_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_listxattr(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_listxattr_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -4819,7 +4819,7 @@ void *gt_linux_record_syscall_sys_llistxattr_args(GtGuestState *state, gt_pid_t 
 void gt_linux_print_syscall_sys_llistxattr(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_llistxattr_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -4846,7 +4846,7 @@ void *gt_linux_record_syscall_sys_flistxattr_args(GtGuestState *state, gt_pid_t 
 void gt_linux_print_syscall_sys_flistxattr(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_flistxattr_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -4871,7 +4871,7 @@ void *gt_linux_record_syscall_sys_removexattr_args(GtGuestState *state, gt_pid_t
 void gt_linux_print_syscall_sys_removexattr(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_removexattr_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -4895,7 +4895,7 @@ void *gt_linux_record_syscall_sys_lremovexattr_args(GtGuestState *state, gt_pid_
 void gt_linux_print_syscall_sys_lremovexattr(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_lremovexattr_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -4919,7 +4919,7 @@ void *gt_linux_record_syscall_sys_fremovexattr_args(GtGuestState *state, gt_pid_
 void gt_linux_print_syscall_sys_fremovexattr(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_fremovexattr_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -4943,7 +4943,7 @@ void *gt_linux_record_syscall_sys_tkill_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_tkill(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_tkill_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -4965,7 +4965,7 @@ void *gt_linux_record_syscall_sys_time_args(GtGuestState *state, gt_pid_t pid, g
 void gt_linux_print_syscall_sys_time(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_time_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64") = %ld\n", pid, tid, proc, "sys_time", (unsigned long) arg0, ret);
@@ -4996,7 +4996,7 @@ void *gt_linux_record_syscall_sys_futex_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_futex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_futex_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5026,7 +5026,7 @@ void *gt_linux_record_syscall_sys_sched_setaffinity_args(GtGuestState *state, gt
 void gt_linux_print_syscall_sys_sched_setaffinity(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_sched_setaffinity_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5053,7 +5053,7 @@ void *gt_linux_record_syscall_sys_sched_getaffinity_args(GtGuestState *state, gt
 void gt_linux_print_syscall_sys_sched_getaffinity(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_sched_getaffinity_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5076,7 +5076,7 @@ void *gt_linux_record_syscall_sys_set_thread_area_args(GtGuestState *state, gt_p
 void gt_linux_print_syscall_sys_set_thread_area(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_set_thread_area_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64") = %ld\n", pid, tid, proc, "sys_set_thread_area", (unsigned long) arg0, ret);
@@ -5099,7 +5099,7 @@ void *gt_linux_record_syscall_sys_io_setup_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_io_setup(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_io_setup_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5121,7 +5121,7 @@ void *gt_linux_record_syscall_sys_io_destroy_args(GtGuestState *state, gt_pid_t 
 void gt_linux_print_syscall_sys_io_destroy(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_io_destroy_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64") = %ld\n", pid, tid, proc, "sys_io_destroy", (unsigned long) arg0, ret);
@@ -5150,7 +5150,7 @@ void *gt_linux_record_syscall_sys_io_getevents_args(GtGuestState *state, gt_pid_
 void gt_linux_print_syscall_sys_io_getevents(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_io_getevents_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5179,7 +5179,7 @@ void *gt_linux_record_syscall_sys_io_submit_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_io_submit(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_io_submit_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5206,7 +5206,7 @@ void *gt_linux_record_syscall_sys_io_cancel_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_io_cancel(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_io_cancel_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5229,7 +5229,7 @@ void *gt_linux_record_syscall_sys_get_thread_area_args(GtGuestState *state, gt_p
 void gt_linux_print_syscall_sys_get_thread_area(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_get_thread_area_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64") = %ld\n", pid, tid, proc, "sys_get_thread_area", (unsigned long) arg0, ret);
@@ -5254,7 +5254,7 @@ void *gt_linux_record_syscall_sys_lookup_dcookie_args(GtGuestState *state, gt_pi
 void gt_linux_print_syscall_sys_lookup_dcookie(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_lookup_dcookie_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5277,7 +5277,7 @@ void *gt_linux_record_syscall_sys_epoll_create_args(GtGuestState *state, gt_pid_
 void gt_linux_print_syscall_sys_epoll_create(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_epoll_create_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i) = %ld\n", pid, tid, proc, "sys_epoll_create", (int) arg0, ret);
@@ -5296,7 +5296,7 @@ void *gt_linux_record_syscall_sys_epoll_ctl_old_args(GtGuestState *state, gt_pid
 void gt_linux_print_syscall_sys_epoll_ctl_old(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_epoll_ctl_old_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_epoll_ctl_old", ret);
 	g_free(args);
@@ -5314,7 +5314,7 @@ void *gt_linux_record_syscall_sys_epoll_wait_old_args(GtGuestState *state, gt_pi
 void gt_linux_print_syscall_sys_epoll_wait_old(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_epoll_wait_old_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_epoll_wait_old", ret);
 	g_free(args);
@@ -5342,7 +5342,7 @@ void *gt_linux_record_syscall_sys_remap_file_pages_args(GtGuestState *state, gt_
 void gt_linux_print_syscall_sys_remap_file_pages(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_remap_file_pages_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5371,7 +5371,7 @@ void *gt_linux_record_syscall_sys_getdents64_args(GtGuestState *state, gt_pid_t 
 void gt_linux_print_syscall_sys_getdents64(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_getdents64_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5394,7 +5394,7 @@ void *gt_linux_record_syscall_sys_set_tid_address_args(GtGuestState *state, gt_p
 void gt_linux_print_syscall_sys_set_tid_address(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_set_tid_address_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64") = %ld\n", pid, tid, proc, "sys_set_tid_address", (unsigned long) arg0, ret);
@@ -5413,7 +5413,7 @@ void *gt_linux_record_syscall_sys_restart_syscall_args(GtGuestState *state, gt_p
 void gt_linux_print_syscall_sys_restart_syscall(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_restart_syscall_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_restart_syscall", ret);
 	g_free(args);
@@ -5439,7 +5439,7 @@ void *gt_linux_record_syscall_sys_semtimedop_args(GtGuestState *state, gt_pid_t 
 void gt_linux_print_syscall_sys_semtimedop(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_semtimedop_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5469,7 +5469,7 @@ void *gt_linux_record_syscall_sys_fadvise64_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_fadvise64(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_fadvise64_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5497,7 +5497,7 @@ void *gt_linux_record_syscall_sys_timer_create_args(GtGuestState *state, gt_pid_
 void gt_linux_print_syscall_sys_timer_create(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_timer_create_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5526,7 +5526,7 @@ void *gt_linux_record_syscall_sys_timer_settime_args(GtGuestState *state, gt_pid
 void gt_linux_print_syscall_sys_timer_settime(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_timer_settime_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5552,7 +5552,7 @@ void *gt_linux_record_syscall_sys_timer_gettime_args(GtGuestState *state, gt_pid
 void gt_linux_print_syscall_sys_timer_gettime(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_timer_gettime_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5574,7 +5574,7 @@ void *gt_linux_record_syscall_sys_timer_getoverrun_args(GtGuestState *state, gt_
 void gt_linux_print_syscall_sys_timer_getoverrun(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_timer_getoverrun_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu) = %ld\n", pid, tid, proc, "sys_timer_getoverrun", (unsigned long) arg0, ret);
@@ -5595,7 +5595,7 @@ void *gt_linux_record_syscall_sys_timer_delete_args(GtGuestState *state, gt_pid_
 void gt_linux_print_syscall_sys_timer_delete(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_timer_delete_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu) = %ld\n", pid, tid, proc, "sys_timer_delete", (unsigned long) arg0, ret);
@@ -5618,7 +5618,7 @@ void *gt_linux_record_syscall_sys_clock_settime_args(GtGuestState *state, gt_pid
 void gt_linux_print_syscall_sys_clock_settime(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_clock_settime_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5642,7 +5642,7 @@ void *gt_linux_record_syscall_sys_clock_gettime_args(GtGuestState *state, gt_pid
 void gt_linux_print_syscall_sys_clock_gettime(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_clock_gettime_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5666,7 +5666,7 @@ void *gt_linux_record_syscall_sys_clock_getres_args(GtGuestState *state, gt_pid_
 void gt_linux_print_syscall_sys_clock_getres(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_clock_getres_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5694,7 +5694,7 @@ void *gt_linux_record_syscall_sys_clock_nanosleep_args(GtGuestState *state, gt_p
 void gt_linux_print_syscall_sys_clock_nanosleep(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_clock_nanosleep_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5718,7 +5718,7 @@ void *gt_linux_record_syscall_sys_exit_group_args(GtGuestState *state, gt_pid_t 
 void gt_linux_print_syscall_sys_exit_group(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_exit_group_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i) = %ld\n", pid, tid, proc, "sys_exit_group", (int) arg0, ret);
@@ -5745,7 +5745,7 @@ void *gt_linux_record_syscall_sys_epoll_wait_args(GtGuestState *state, gt_pid_t 
 void gt_linux_print_syscall_sys_epoll_wait(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_epoll_wait_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5775,7 +5775,7 @@ void *gt_linux_record_syscall_sys_epoll_ctl_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_epoll_ctl(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_epoll_ctl_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5803,7 +5803,7 @@ void *gt_linux_record_syscall_sys_tgkill_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_tgkill(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_tgkill_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5828,7 +5828,7 @@ void *gt_linux_record_syscall_sys_utimes_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_utimes(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_utimes_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5848,7 +5848,7 @@ void *gt_linux_record_syscall_sys_vserver_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_vserver(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_vserver_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_vserver", ret);
 	g_free(args);
@@ -5878,7 +5878,7 @@ void *gt_linux_record_syscall_sys_mbind_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_mbind(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_mbind_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5908,7 +5908,7 @@ void *gt_linux_record_syscall_sys_set_mempolicy_args(GtGuestState *state, gt_pid
 void gt_linux_print_syscall_sys_set_mempolicy(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_set_mempolicy_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5939,7 +5939,7 @@ void *gt_linux_record_syscall_sys_get_mempolicy_args(GtGuestState *state, gt_pid
 void gt_linux_print_syscall_sys_get_mempolicy(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_get_mempolicy_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5970,7 +5970,7 @@ void *gt_linux_record_syscall_sys_mq_open_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_mq_open(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_mq_open_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -5994,7 +5994,7 @@ void *gt_linux_record_syscall_sys_mq_unlink_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_mq_unlink(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_mq_unlink_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(0x%"PRIx64") = %ld\n", pid, tid, proc, "sys_mq_unlink", (unsigned long) arg0, ret);
@@ -6023,7 +6023,7 @@ void *gt_linux_record_syscall_sys_mq_timedsend_args(GtGuestState *state, gt_pid_
 void gt_linux_print_syscall_sys_mq_timedsend(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_mq_timedsend_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6056,7 +6056,7 @@ void *gt_linux_record_syscall_sys_mq_timedreceive_args(GtGuestState *state, gt_p
 void gt_linux_print_syscall_sys_mq_timedreceive(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_mq_timedreceive_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6083,7 +6083,7 @@ void *gt_linux_record_syscall_sys_mq_notify_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_mq_notify(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_mq_notify_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6109,7 +6109,7 @@ void *gt_linux_record_syscall_sys_mq_getsetattr_args(GtGuestState *state, gt_pid
 void gt_linux_print_syscall_sys_mq_getsetattr(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_mq_getsetattr_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6138,7 +6138,7 @@ void *gt_linux_record_syscall_sys_kexec_load_args(GtGuestState *state, gt_pid_t 
 void gt_linux_print_syscall_sys_kexec_load(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_kexec_load_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6170,7 +6170,7 @@ void *gt_linux_record_syscall_sys_waitid_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_waitid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_waitid_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6203,7 +6203,7 @@ void *gt_linux_record_syscall_sys_add_key_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_add_key(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_add_key_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6234,7 +6234,7 @@ void *gt_linux_record_syscall_sys_request_key_args(GtGuestState *state, gt_pid_t
 void gt_linux_print_syscall_sys_request_key(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_request_key_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6266,7 +6266,7 @@ void *gt_linux_record_syscall_sys_keyctl_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_keyctl(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_keyctl_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6295,7 +6295,7 @@ void *gt_linux_record_syscall_sys_ioprio_set_args(GtGuestState *state, gt_pid_t 
 void gt_linux_print_syscall_sys_ioprio_set(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_ioprio_set_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6320,7 +6320,7 @@ void *gt_linux_record_syscall_sys_ioprio_get_args(GtGuestState *state, gt_pid_t 
 void gt_linux_print_syscall_sys_ioprio_get(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_ioprio_get_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6340,7 +6340,7 @@ void *gt_linux_record_syscall_sys_inotify_init_args(GtGuestState *state, gt_pid_
 void gt_linux_print_syscall_sys_inotify_init(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_inotify_init_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_inotify_init", ret);
 	g_free(args);
@@ -6364,7 +6364,7 @@ void *gt_linux_record_syscall_sys_inotify_add_watch_args(GtGuestState *state, gt
 void gt_linux_print_syscall_sys_inotify_add_watch(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_inotify_add_watch_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6389,7 +6389,7 @@ void *gt_linux_record_syscall_sys_inotify_rm_watch_args(GtGuestState *state, gt_
 void gt_linux_print_syscall_sys_inotify_rm_watch(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_inotify_rm_watch_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6417,7 +6417,7 @@ void *gt_linux_record_syscall_sys_migrate_pages_args(GtGuestState *state, gt_pid
 void gt_linux_print_syscall_sys_migrate_pages(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_migrate_pages_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6447,7 +6447,7 @@ void *gt_linux_record_syscall_sys_openat_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_openat(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_openat_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6475,7 +6475,7 @@ void *gt_linux_record_syscall_sys_mkdirat_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_mkdirat(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_mkdirat_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6504,7 +6504,7 @@ void *gt_linux_record_syscall_sys_mknodat_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_mknodat(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_mknodat_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6536,7 +6536,7 @@ void *gt_linux_record_syscall_sys_fchownat_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_fchownat(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_fchownat_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6565,7 +6565,7 @@ void *gt_linux_record_syscall_sys_futimesat_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_futimesat(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_futimesat_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6594,7 +6594,7 @@ void *gt_linux_record_syscall_sys_newfstatat_args(GtGuestState *state, gt_pid_t 
 void gt_linux_print_syscall_sys_newfstatat(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_newfstatat_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6622,7 +6622,7 @@ void *gt_linux_record_syscall_sys_unlinkat_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_unlinkat(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_unlinkat_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6651,7 +6651,7 @@ void *gt_linux_record_syscall_sys_renameat_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_renameat(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_renameat_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6683,7 +6683,7 @@ void *gt_linux_record_syscall_sys_linkat_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_linkat(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_linkat_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6712,7 +6712,7 @@ void *gt_linux_record_syscall_sys_symlinkat_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_symlinkat(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_symlinkat_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6741,7 +6741,7 @@ void *gt_linux_record_syscall_sys_readlinkat_args(GtGuestState *state, gt_pid_t 
 void gt_linux_print_syscall_sys_readlinkat(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_readlinkat_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6769,7 +6769,7 @@ void *gt_linux_record_syscall_sys_fchmodat_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_fchmodat(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_fchmodat_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6796,7 +6796,7 @@ void *gt_linux_record_syscall_sys_faccessat_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_faccessat(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_faccessat_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6829,7 +6829,7 @@ void *gt_linux_record_syscall_sys_pselect6_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_pselect6(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_pselect6_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6863,7 +6863,7 @@ void *gt_linux_record_syscall_sys_ppoll_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_ppoll(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_ppoll_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6888,7 +6888,7 @@ void *gt_linux_record_syscall_sys_unshare_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_unshare(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_unshare_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu) = %ld\n", pid, tid, proc, "sys_unshare", (unsigned long) arg0, ret);
@@ -6911,7 +6911,7 @@ void *gt_linux_record_syscall_sys_set_robust_list_args(GtGuestState *state, gt_p
 void gt_linux_print_syscall_sys_set_robust_list(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_set_robust_list_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6937,7 +6937,7 @@ void *gt_linux_record_syscall_sys_get_robust_list_args(GtGuestState *state, gt_p
 void gt_linux_print_syscall_sys_get_robust_list(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_get_robust_list_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -6970,7 +6970,7 @@ void *gt_linux_record_syscall_sys_splice_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_splice(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_splice_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7002,7 +7002,7 @@ void *gt_linux_record_syscall_sys_tee_args(GtGuestState *state, gt_pid_t pid, gt
 void gt_linux_print_syscall_sys_tee(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_tee_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7032,7 +7032,7 @@ void *gt_linux_record_syscall_sys_sync_file_range_args(GtGuestState *state, gt_p
 void gt_linux_print_syscall_sys_sync_file_range(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_sync_file_range_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7062,7 +7062,7 @@ void *gt_linux_record_syscall_sys_vmsplice_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_vmsplice(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_vmsplice_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7096,7 +7096,7 @@ void *gt_linux_record_syscall_sys_move_pages_args(GtGuestState *state, gt_pid_t 
 void gt_linux_print_syscall_sys_move_pages(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_move_pages_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7128,7 +7128,7 @@ void *gt_linux_record_syscall_sys_utimensat_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_utimensat(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_utimensat_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7162,7 +7162,7 @@ void *gt_linux_record_syscall_sys_epoll_pwait_args(GtGuestState *state, gt_pid_t
 void gt_linux_print_syscall_sys_epoll_pwait(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_epoll_pwait_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7192,7 +7192,7 @@ void *gt_linux_record_syscall_sys_signalfd_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_signalfd(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_signalfd_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7213,7 +7213,7 @@ void *gt_linux_record_syscall_sys_timerfd_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_timerfd(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_timerfd_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s() = %ld\n", pid, tid, proc, "sys_timerfd", ret);
 	g_free(args);
@@ -7233,7 +7233,7 @@ void *gt_linux_record_syscall_sys_eventfd_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_eventfd(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_eventfd_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%lu) = %ld\n", pid, tid, proc, "sys_eventfd", (unsigned long) arg0, ret);
@@ -7260,7 +7260,7 @@ void *gt_linux_record_syscall_sys_fallocate_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_fallocate(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_fallocate_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7290,7 +7290,7 @@ void *gt_linux_record_syscall_sys_timerfd_settime_args(GtGuestState *state, gt_p
 void gt_linux_print_syscall_sys_timerfd_settime(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_timerfd_settime_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7316,7 +7316,7 @@ void *gt_linux_record_syscall_sys_timerfd_gettime_args(GtGuestState *state, gt_p
 void gt_linux_print_syscall_sys_timerfd_gettime(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_timerfd_gettime_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7344,7 +7344,7 @@ void *gt_linux_record_syscall_sys_accept4_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_accept4(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_accept4_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7374,7 +7374,7 @@ void *gt_linux_record_syscall_sys_signalfd4_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_signalfd4(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_signalfd4_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7400,7 +7400,7 @@ void *gt_linux_record_syscall_sys_eventfd2_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_eventfd2(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_eventfd2_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7422,7 +7422,7 @@ void *gt_linux_record_syscall_sys_epoll_create1_args(GtGuestState *state, gt_pid
 void gt_linux_print_syscall_sys_epoll_create1(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_epoll_create1_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i) = %ld\n", pid, tid, proc, "sys_epoll_create1", (int) arg0, ret);
@@ -7447,7 +7447,7 @@ void *gt_linux_record_syscall_sys_dup3_args(GtGuestState *state, gt_pid_t pid, g
 void gt_linux_print_syscall_sys_dup3(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_dup3_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7472,7 +7472,7 @@ void *gt_linux_record_syscall_sys_pipe2_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_pipe2(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_pipe2_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7494,7 +7494,7 @@ void *gt_linux_record_syscall_sys_inotify_init1_args(GtGuestState *state, gt_pid
 void gt_linux_print_syscall_sys_inotify_init1(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_inotify_init1_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i) = %ld\n", pid, tid, proc, "sys_inotify_init1", (int) arg0, ret);
@@ -7523,7 +7523,7 @@ void *gt_linux_record_syscall_sys_preadv_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_preadv(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_preadv_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7556,7 +7556,7 @@ void *gt_linux_record_syscall_sys_pwritev_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_pwritev(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_pwritev_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7587,7 +7587,7 @@ void *gt_linux_record_syscall_sys_rt_tgsigqueueinfo_args(GtGuestState *state, gt
 void gt_linux_print_syscall_sys_rt_tgsigqueueinfo(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_rt_tgsigqueueinfo_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7619,7 +7619,7 @@ void *gt_linux_record_syscall_sys_perf_event_open_args(GtGuestState *state, gt_p
 void gt_linux_print_syscall_sys_perf_event_open(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_perf_event_open_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7652,7 +7652,7 @@ void *gt_linux_record_syscall_sys_recvmmsg_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_recvmmsg(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_recvmmsg_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7679,7 +7679,7 @@ void *gt_linux_record_syscall_sys_fanotify_init_args(GtGuestState *state, gt_pid
 void gt_linux_print_syscall_sys_fanotify_init(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_fanotify_init_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7709,7 +7709,7 @@ void *gt_linux_record_syscall_sys_fanotify_mark_args(GtGuestState *state, gt_pid
 void gt_linux_print_syscall_sys_fanotify_mark(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_fanotify_mark_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7740,7 +7740,7 @@ void *gt_linux_record_syscall_sys_prlimit64_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_prlimit64(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_prlimit64_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7772,7 +7772,7 @@ void *gt_linux_record_syscall_sys_name_to_handle_at_args(GtGuestState *state, gt
 void gt_linux_print_syscall_sys_name_to_handle_at(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_name_to_handle_at_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7801,7 +7801,7 @@ void *gt_linux_record_syscall_sys_open_by_handle_at_args(GtGuestState *state, gt
 void gt_linux_print_syscall_sys_open_by_handle_at(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_open_by_handle_at_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7826,7 +7826,7 @@ void *gt_linux_record_syscall_sys_clock_adjtime_args(GtGuestState *state, gt_pid
 void gt_linux_print_syscall_sys_clock_adjtime(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_clock_adjtime_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7848,7 +7848,7 @@ void *gt_linux_record_syscall_sys_syncfs_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_syncfs(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_syncfs_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i) = %ld\n", pid, tid, proc, "sys_syncfs", (int) arg0, ret);
@@ -7875,7 +7875,7 @@ void *gt_linux_record_syscall_sys_sendmmsg_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_sendmmsg(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_sendmmsg_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7901,7 +7901,7 @@ void *gt_linux_record_syscall_sys_setns_args(GtGuestState *state, gt_pid_t pid, 
 void gt_linux_print_syscall_sys_setns(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_setns_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7927,7 +7927,7 @@ void *gt_linux_record_syscall_sys_getcpu_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_getcpu(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_getcpu_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7960,7 +7960,7 @@ void *gt_linux_record_syscall_sys_process_vm_readv_args(GtGuestState *state, gt_
 void gt_linux_print_syscall_sys_process_vm_readv(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_process_vm_readv_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -7996,7 +7996,7 @@ void *gt_linux_record_syscall_sys_process_vm_writev_args(GtGuestState *state, gt
 void gt_linux_print_syscall_sys_process_vm_writev(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_process_vm_writev_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -8030,7 +8030,7 @@ void *gt_linux_record_syscall_sys_kcmp_args(GtGuestState *state, gt_pid_t pid, g
 void gt_linux_print_syscall_sys_kcmp(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_kcmp_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -8059,7 +8059,7 @@ void *gt_linux_record_syscall_sys_finit_module_args(GtGuestState *state, gt_pid_
 void gt_linux_print_syscall_sys_finit_module(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_finit_module_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -8086,7 +8086,7 @@ void *gt_linux_record_syscall_sys_sched_setattr_args(GtGuestState *state, gt_pid
 void gt_linux_print_syscall_sys_sched_setattr(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_sched_setattr_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -8115,7 +8115,7 @@ void *gt_linux_record_syscall_sys_sched_getattr_args(GtGuestState *state, gt_pid
 void gt_linux_print_syscall_sys_sched_getattr(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_sched_getattr_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -8147,7 +8147,7 @@ void *gt_linux_record_syscall_sys_renameat2_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_renameat2(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_renameat2_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -8176,7 +8176,7 @@ void *gt_linux_record_syscall_sys_seccomp_args(GtGuestState *state, gt_pid_t pid
 void gt_linux_print_syscall_sys_seccomp(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_seccomp_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -8203,7 +8203,7 @@ void *gt_linux_record_syscall_sys_getrandom_args(GtGuestState *state, gt_pid_t p
 void gt_linux_print_syscall_sys_getrandom(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_getrandom_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -8228,7 +8228,7 @@ void *gt_linux_record_syscall_sys_memfd_create_args(GtGuestState *state, gt_pid_
 void gt_linux_print_syscall_sys_memfd_create(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_memfd_create_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -8258,7 +8258,7 @@ void *gt_linux_record_syscall_sys_kexec_file_load_args(GtGuestState *state, gt_p
 void gt_linux_print_syscall_sys_kexec_file_load(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_kexec_file_load_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -8287,7 +8287,7 @@ void *gt_linux_record_syscall_sys_bpf_args(GtGuestState *state, gt_pid_t pid, gt
 void gt_linux_print_syscall_sys_bpf(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_bpf_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -8318,7 +8318,7 @@ void *gt_linux_record_syscall_sys_execveat_args(GtGuestState *state, gt_pid_t pi
 void gt_linux_print_syscall_sys_execveat(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_execveat_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -8343,7 +8343,7 @@ void *gt_linux_record_syscall_sys_userfaultfd_args(GtGuestState *state, gt_pid_t
 void gt_linux_print_syscall_sys_userfaultfd(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_userfaultfd_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i) = %ld\n", pid, tid, proc, "sys_userfaultfd", (int) arg0, ret);
@@ -8366,7 +8366,7 @@ void *gt_linux_record_syscall_sys_membarrier_args(GtGuestState *state, gt_pid_t 
 void gt_linux_print_syscall_sys_membarrier(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_membarrier_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -8392,7 +8392,7 @@ void *gt_linux_record_syscall_sys_mlock2_args(GtGuestState *state, gt_pid_t pid,
 void gt_linux_print_syscall_sys_mlock2(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_mlock2_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -8425,7 +8425,7 @@ void *gt_linux_record_syscall_sys_copy_file_range_args(GtGuestState *state, gt_p
 void gt_linux_print_syscall_sys_copy_file_range(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_copy_file_range_args *args = user_data;
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	char *proc = gt_guest_get_process_name(state, pid);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 	reg_t arg0 = args->arg0;
 	reg_t arg1 = args->arg1;
@@ -8435,11 +8435,6 @@ void gt_linux_print_syscall_sys_copy_file_range(GtGuestState *state, gt_pid_t pi
 	reg_t arg5 = args->arg5;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i, 0x%"PRIx64", %i, 0x%"PRIx64", %lu, %lu) = %ld\n", pid, tid, proc, "sys_copy_file_range", (int) arg0, (unsigned long) arg1, (int) arg2, (unsigned long) arg3, (unsigned long) arg4, (unsigned long) arg5, ret);
 	g_free(args);
-}
-
-void gt_linux_print_sysret(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
-	reg_t syscall_return = gt_guest_get_register(state, RAX);
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) return: 0x%"PRIx64"\n", pid, tid, gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid), syscall_return);
 }
 
 const GtCallbackRegistry GT_LINUX_SYSCALLS[] = {
