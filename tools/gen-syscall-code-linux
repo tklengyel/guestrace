@@ -371,7 +371,7 @@ def create_struct_c(syscall_map, syscall_order, kernel_info):
 
     # generate the print function for each syscall
     for syscall in syscall_order:
-        str += create_print_function(syscall_map[syscall])
+        str += create_syscall_functions(syscall_map[syscall])
 
     # generate the print_sysret_info function
     str += """void gt_linux_print_sysret(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
@@ -390,7 +390,7 @@ def create_struct_c(syscall_map, syscall_order, kernel_info):
         function_name = syscall_order[syscall_id]
         if function_name in FUNCTION_OVERRIDES:
             function_name = FUNCTION_OVERRIDES[function_name]
-        str += "\t{{ \"{0}\", gt_linux_print_syscall_{1}, gt_linux_print_sysret }},\n".format(function_name, syscall_order[syscall_id])
+        str += "\t{{ \"{0}\", gt_linux_record_syscall_{1}_args, gt_linux_print_syscall_{1} }},\n".format(function_name, syscall_order[syscall_id])
 
     str += """\t{ NULL, NULL, NULL }
 };
@@ -402,28 +402,58 @@ def create_struct_c(syscall_map, syscall_order, kernel_info):
     f.write(str)
     f.close
 
-def create_print_function(syscall_data):
-    """Generate a print function for a single syscall"""
-    func_str = """void *gt_linux_print_syscall_{0}(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
+def create_syscall_functions(syscall_data):
+    """Generate call and return functions for a single syscall"""
+    func_str  = create_structure(syscall_data.get_args_count(), syscall_data)
+    func_str += """
+void *gt_linux_record_syscall_{0}_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {{
-	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	struct {0}_args *args = g_new(struct {0}_args, 1);
 """.format(syscall_data.get_syscall_name())
-    func_str += create_printf_statement(syscall_data.get_args_count(), syscall_data)
-    func_str += """	return NULL;
-}\n\n"""
+    func_str += create_record_statements(syscall_data.get_args_count(), syscall_data)
+    func_str += """	return args;
+}}
+
+void gt_linux_print_syscall_{0}(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
+{{
+	struct {0}_args *args = user_data;
+	char *proc = gt_linux_get_process_name(gt_guest_get_vmi_instance(state), pid);
+	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
+""".format(syscall_data.get_syscall_name())
+    func_str += create_printf_statements(syscall_data.get_args_count(), syscall_data)
+    func_str += """	g_free(args);
+}
+
+"""
+    return func_str
+
+def create_structure(count, syscall_data):
+    str = 'struct {0}_args {{\n'.format(syscall_data.get_syscall_name())
+
+    for i in range(count):
+        str += '\treg_t arg{0};\n'.format(i)
+    str += '};\n'
+
+    return str
+
+def create_record_statements(count, syscall_data):
+    REG = "rdi", "rsi", "rdx", "r10", "r8", "r9"
+
+    func_str = ''
+
+    for i in range(count):
+        func_str += "\targs->arg{0} = gt_guest_get_vmi_event(state)->x86_regs->{1};\n".format(i, REG[i])
 
     return func_str
 
-def create_printf_statement(count, syscall_data):
-    REG = "rdi", "rsi", "rdx", "r10", "r8", "r9"
-
+def create_printf_statements(count, syscall_data):
     func_str = ""
 
     for i in range(count):
         if syscall_data.get_arg_printf_type(i) == "char *":
-            func_str += "\tchar *arg{0} = gt_guest_get_string(state, gt_guest_get_vmi_event(state)->x86_regs->{1}, pid);\n".format(i, REG[i])
+            func_str += "\tchar *arg{0} = gt_guest_get_string(state, args->arg{0}, pid);\n".format(i)
         else:
-            func_str += "\treg_t arg{0} = gt_guest_get_vmi_event(state)->x86_regs->{1};\n".format(i, REG[i])
+            func_str += "\treg_t arg{0} = args->arg{0};\n".format(i)
     func_str += '\tfprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s('
 
     if count != 0:
@@ -437,13 +467,13 @@ def create_printf_statement(count, syscall_data):
             else:
                 func_str += ', {0}'.format(syscall_data.get_arg_format(i))
 
-    func_str += ')\\n", pid, tid, proc, "' + syscall_data.get_syscall_name() + '"'
+    func_str += ') = %ld\\n", pid, tid, proc, "' + syscall_data.get_syscall_name() + '", '
 
     if count != 0:
         for i in range(0, count):
-            func_str += ', ({0}) arg{1}'.format(syscall_data.get_arg_printf_type(i), i)
+            func_str += '({0}) arg{1}, '.format(syscall_data.get_arg_printf_type(i), i)
 
-    func_str += ');\n'
+    func_str += 'ret);\n'
 
     return func_str
 
