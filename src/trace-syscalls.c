@@ -1484,7 +1484,6 @@ gt_hijack_return(GtGuestState *state, gint retval)
         if (count > 0) {
                 size_t i;
                 for (i = 0; i < count; i++) {
-                        printf("%lx %s %s\n", inst[i].address, inst[i].mnemonic, inst[i].op_str);
 			if (0 == strcmp(inst[i].mnemonic, "ret")) {
 				offset = inst[i].address;
 				break;
