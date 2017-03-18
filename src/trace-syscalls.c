@@ -777,9 +777,9 @@ gt_guest_get_register(GtGuestState *state, gt_reg_name_t name)
 	case R10:
 		reg = state->event->x86_regs->r10;
 		goto done;
+	default:
+		g_assert_not_reached();
 	}
-
-	g_assert_not_reached();
 
 done:
 	return reg;
