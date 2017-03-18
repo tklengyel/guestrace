@@ -89,7 +89,16 @@ message(const char *format, ...)
 
 void *silent_syscall(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
-    return NULL;
+
+	static long count = 1;
+
+	if (0 == count % 1000) {
+		fprintf(stderr, "%ld system calls invoked\n", count);
+	}
+
+	count++;
+
+	return NULL;
 }
 
 void silent_sysret(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
