@@ -163,6 +163,9 @@ typedef struct gt_syscall_state {
 	addr_t           thread_id; /* needed for teardown */
 } gt_syscall_state;
 
+/* For SIGSEGV, etc. handling. */
+static const int GT_EMERGENCY = 1;
+
 /*
  * Restore a stack return pointer; useful to ensure the kernel continues to
  * run after guestrace exit. Otherwise, guestrace's stack manipulation might
@@ -402,6 +405,15 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		state->syscall_paddr_record = record;
 		state->thread_id            = thread_id;
 
+		if (GT_EMERGENCY == setjmp(loop->jmpbuf[event->vcpu_id])) {
+			/*
+			 * Jump here on SIGSEGV to avoid re-running
+			 * faulty instruction in callback. See
+			 * gt_loop_jmp_past_cb().
+			 */
+			goto skip_syscall_cb;
+		}
+
 		/* Invoke system-call callback in record. */
 		in_syscall_cb = TRUE;
 		state->data   = record->syscall_cb(&(GtGuestState) { loop, vmi, event },
@@ -409,6 +421,9 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		                                     thread_id,
 		                                     record->data);
 		in_syscall_cb = FALSE;
+
+skip_syscall_cb:
+		memset(loop->jmpbuf[event->vcpu_id], 0x00, sizeof loop->jmpbuf[event->vcpu_id]);
 
 		/* Record system-call state. */
 		g_hash_table_insert(loop->gt_ret_addr_mapping,
@@ -428,10 +443,22 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		if (NULL != state) {
 			gt_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
 
+			if (GT_EMERGENCY == setjmp(loop->jmpbuf[event->vcpu_id])) {
+				/*
+				 * Jump here on SIGSEGV to avoid re-running
+				 * faulty instruction in callback. See
+				 * gt_loop_jmp_past_cb().
+				 */
+				goto skip_sysret_cb;
+			}
+
 			state->syscall_paddr_record->sysret_cb(&(GtGuestState) { loop, vmi, event },
 			                                       pid,
 			                                       thread_id,
 			                                       state->data);
+
+skip_sysret_cb:
+			memset(loop->jmpbuf[event->vcpu_id], 0x00, sizeof loop->jmpbuf[event->vcpu_id]);
 
 			vmi_set_vcpureg(vmi, loop->return_addr, RIP, event->vcpu_id);
 
@@ -927,40 +954,6 @@ gt_loop_listen(gpointer user_data)
 
 	return loop->running;
 }
-/**
- * gt_loop_detach:
- * @loop: a #GtLoop.
- *
- * Remove all instrumentation of guest embodied by @loop. This is generally not
- * called directly, as it is already called by gt_loop_run() after
- * gt_loop_quit() stops the loop. This functionality is exported for odd cases
- * such as SIGSEGV handlers.
- */
-void gt_loop_detach(GtLoop *loop)
-{
-	status_t status;
-
-	vmi_pause_vm(loop->vmi);
-
-	/*
-	 * loop->running affects freeing of gt_ret_addr_mapping elements.
-	 * Must be false or return pointers on kernel stack will not be reset.
-	 * Thus we check no code has been altered in an ill way here, since
-	 * this requirement is not obvious.
-	 */
-	g_assert(!loop->running);
-
-	g_hash_table_remove_all(loop->gt_page_translation);
-	g_hash_table_remove_all(loop->gt_ret_addr_mapping);
-	g_hash_table_remove_all(loop->gt_page_record_collection);
-
-	status = vmi_slat_switch(loop->vmi, 0);
-	if (VMI_SUCCESS != status) {
-		fprintf(stderr, "failed to reset EPT to point to default table\n");
-	}
-
-	vmi_resume_vm(loop->vmi);
-}
 
 /**
  * gt_loop_run:
@@ -1018,7 +1011,26 @@ void gt_loop_run(GtLoop *loop)
 	loop->running = TRUE;
 	g_main_loop_run(loop->g_main_loop);
 
-	gt_loop_detach(loop);
+	vmi_pause_vm(loop->vmi);
+
+	/*
+	 * loop->running affects freeing of gt_ret_addr_mapping elements.
+	 * Must be false or return pointers on kernel stack will not be reset.
+	 * Thus we check no code has been altered in an ill way here, since
+	 * this requirement is not obvious.
+	 */
+	g_assert(!loop->running);
+
+	g_hash_table_remove_all(loop->gt_page_translation);
+	g_hash_table_remove_all(loop->gt_ret_addr_mapping);
+	g_hash_table_remove_all(loop->gt_page_record_collection);
+
+	status = vmi_slat_switch(loop->vmi, 0);
+	if (VMI_SUCCESS != status) {
+		fprintf(stderr, "failed to reset EPT to point to default table\n");
+	}
+
+	vmi_resume_vm(loop->vmi);
 
 done:
 	return;
@@ -1439,6 +1451,35 @@ done:
 	}
 
 	return ret;
+}
+
+/**
+ * gt_loop_jmp_past_cb:
+ * @loop: a pointer to a #GtLoop.
+ *
+ * Skip over the syscall/sysret handler, usually to gracefully exit after
+ * SIGSEGV.
+ */
+void
+gt_loop_jmp_past_cb(GtLoop *loop)
+{
+	jmp_buf zero = { 0 };
+	int vcpus;
+
+	vcpus = vmi_get_num_vcpus(loop->vmi);
+	if (0 == vcpus) {
+		fprintf(stderr, "failed to get number of VCPUs\n");
+		goto done;
+	}
+
+	for (int i = 0; i < vcpus; i++) {
+		if (memcmp(zero, loop->jmpbuf[i], sizeof loop->jmpbuf[i])) {
+			longjmp(loop->jmpbuf[i], GT_EMERGENCY);
+		}
+	}
+
+done:
+	return;
 }
 
 /**

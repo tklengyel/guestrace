@@ -41,6 +41,9 @@ struct _GtLoop {
 	gboolean running;
 	addr_t lstar_addr;
 
+	/* For SIGSEGV, etc. handling. */
+	sigjmp_buf jmpbuf[_GT_MAX_VCPUS];
+
 	os_t os;
 	uint8_t return_addr_width;
 

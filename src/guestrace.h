@@ -5,6 +5,7 @@
 #include <libvmi/events.h>
 #include <glib.h>
 #include <libxl.h>
+#include <setjmp.h>
 #include <xenctrl.h>
 
 /**
@@ -160,7 +161,7 @@ void           gt_guest_free_syscall_state(GtGuestState *state, gt_tid_t thread_
 void           gt_loop_run(GtLoop *loop);
 void           gt_loop_quit(GtLoop *loop);
 void           gt_loop_free(GtLoop *loop);
-void           gt_loop_detach(GtLoop *loop);
+void           gt_loop_jmp_past_cb(GtLoop *loop);
 gboolean       gt_hijack_return(GtGuestState *state, gint retval);
 
 #endif

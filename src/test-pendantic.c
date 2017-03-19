@@ -66,8 +66,7 @@ done:
 static void
 usage()
 {
-	fprintf(stderr, "usage: guestrace [-i syscall1,syscall2] [-s] [-v] "
-	                "-n <VM name>\n"
+	fprintf(stderr, "usage: guestrace -n <VM name>\n"
 	                "\n"
 	                "-n  name of guest to instrument\n");
 }
