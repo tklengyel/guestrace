@@ -350,6 +350,88 @@ gt_guest_free_syscall_state(GtGuestState *state, gt_tid_t thread_id)
 			    GSIZE_TO_POINTER(thread_id));
 }
 
+/**
+ * gt_guest_hijack_return:
+ * @state: a #GtGuestState.
+ * @errno: a #gint.
+ * @retval: a #gint.
+ *
+ * This function manipulates the guest to hijack the current system call such
+ * that the system call does not execute and instead immediately returns @retval.
+ * This function can only be called from within a #GtSyscallFunc.
+ *
+ * Returns: %TRUE on success, %FALSE on failure. A failure indicates that the
+ * function could not identify the portion of instructions in the system call
+ * which restores registers, restores the stack, and returns. In this case, the
+ * function does not change any state within the guest processor.
+ **/
+gboolean
+gt_guest_hijack_return(GtGuestState *state, gint retval)
+{
+        csh handle = 0;
+        cs_insn *inst;
+        size_t count, offset = ~0;
+	gboolean ok = FALSE;
+	status_t status;
+        uint8_t code[GT_PAGE_SIZE];
+
+	/* Assert original view, as int3 byte will break disassembly. */
+	g_assert(0 == state->event->slat_id);
+	g_assert(in_syscall_cb);
+
+        addr_t start_v = state->event->x86_regs->rip;
+        addr_t start_p = vmi_translate_kv2p(state->vmi, start_v);
+        if (0 == start_p) {
+                fprintf(stderr, "failed to translate virtual start address to physical address\n");
+                goto done;
+        }
+
+        /* Read kernel instructions into code. */
+        status = vmi_read_pa(state->vmi, start_p, code, sizeof(code));
+        if (VMI_FAILURE == status) {
+                fprintf(stderr, "failed to read instructions from 0x%lx\n", start_p);
+                goto done;
+        }
+
+        if (cs_open(CS_ARCH_X86, CS_MODE_64, &handle) != CS_ERR_OK) {
+                fprintf(stderr, "failed to open capstone\n");
+                goto done;
+        }
+
+        /* Find RET inst. */
+        count = cs_disasm(handle, code, sizeof(code), 0, 0, &inst);
+        if (count > 0) {
+                size_t i;
+                for (i = 0; i < count; i++) {
+			if (0 == strcmp(inst[i].mnemonic, "ret")) {
+				offset = inst[i].address;
+				break;
+                        }
+                }
+                cs_free(inst, count);
+        } else {
+                fprintf(stderr, "failed to disassemble system-call handler\n");
+                goto done;
+        }
+
+	if (~0 == offset) {
+                fprintf(stderr, "did not find ret in system-call handler\n");
+                goto done;
+        }
+
+	vmi_set_vcpureg(state->vmi, retval, RAX, state->event->vcpu_id);
+	vmi_set_vcpureg(state->vmi, start_v + offset, RIP, state->event->vcpu_id);
+
+	ok = TRUE;
+
+done:
+	if (0 != handle) {
+		cs_close(&handle);
+	}
+
+        return ok;
+}
+
 /*
  * Service a triggered breakpoint. Restore the original page table for one
  * single-step iteration and invoke the system call or return callback.
@@ -1480,86 +1562,4 @@ gt_loop_jmp_past_cb(GtLoop *loop)
 
 done:
 	return;
-}
-
-/**
- * gt_loop_hijack_return:
- * @state: a #GtGuestState.
- * @errno: a #gint.
- * @retval: a #gint.
- *
- * This function manipulates the guest to hijack the current system call such
- * that the system call does not execute and instead immediately returns @retval.
- * This function can only be called from within a #GtSyscallFunc.
- *
- * Returns: %TRUE on success, %FALSE on failure. A failure indicates that the
- * function could not identify the portion of instructions in the system call
- * which restores registers, restores the stack, and returns. In this case, the
- * function does not change any state within the guest processor.
- **/
-gboolean
-gt_hijack_return(GtGuestState *state, gint retval)
-{
-        csh handle = 0;
-        cs_insn *inst;
-        size_t count, offset = ~0;
-	gboolean ok = FALSE;
-	status_t status;
-        uint8_t code[GT_PAGE_SIZE];
-
-	/* Assert original view, as int3 byte will break disassembly. */
-	g_assert(0 == state->event->slat_id);
-	g_assert(in_syscall_cb);
-
-        addr_t start_v = state->event->x86_regs->rip;
-        addr_t start_p = vmi_translate_kv2p(state->vmi, start_v);
-        if (0 == start_p) {
-                fprintf(stderr, "failed to translate virtual start address to physical address\n");
-                goto done;
-        }
-
-        /* Read kernel instructions into code. */
-        status = vmi_read_pa(state->vmi, start_p, code, sizeof(code));
-        if (VMI_FAILURE == status) {
-                fprintf(stderr, "failed to read instructions from 0x%lx\n", start_p);
-                goto done;
-        }
-
-        if (cs_open(CS_ARCH_X86, CS_MODE_64, &handle) != CS_ERR_OK) {
-                fprintf(stderr, "failed to open capstone\n");
-                goto done;
-        }
-
-        /* Find RET inst. */
-        count = cs_disasm(handle, code, sizeof(code), 0, 0, &inst);
-        if (count > 0) {
-                size_t i;
-                for (i = 0; i < count; i++) {
-			if (0 == strcmp(inst[i].mnemonic, "ret")) {
-				offset = inst[i].address;
-				break;
-                        }
-                }
-                cs_free(inst, count);
-        } else {
-                fprintf(stderr, "failed to disassemble system-call handler\n");
-                goto done;
-        }
-
-	if (~0 == offset) {
-                fprintf(stderr, "did not find ret in system-call handler\n");
-                goto done;
-        }
-
-	vmi_set_vcpureg(state->vmi, retval, RAX, state->event->vcpu_id);
-	vmi_set_vcpureg(state->vmi, start_v + offset, RIP, state->event->vcpu_id);
-
-	ok = TRUE;
-
-done:
-	if (0 != handle) {
-		cs_close(&handle);
-	}
-
-        return ok;
 }

@@ -158,10 +158,10 @@ vmi_instance_t gt_guest_get_vmi_instance(GtGuestState *state);
 vmi_event_t   *gt_guest_get_vmi_event(GtGuestState *state);
 char          *gt_guest_get_process_name(GtGuestState *state, gt_pid_t pid);
 void           gt_guest_free_syscall_state(GtGuestState *state, gt_tid_t thread_id);
+gboolean       gt_guest_hijack_return(GtGuestState *state, gint retval);
 void           gt_loop_run(GtLoop *loop);
 void           gt_loop_quit(GtLoop *loop);
 void           gt_loop_free(GtLoop *loop);
 void           gt_loop_jmp_past_cb(GtLoop *loop);
-gboolean       gt_hijack_return(GtGuestState *state, gint retval);
 
 #endif
