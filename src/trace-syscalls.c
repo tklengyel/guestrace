@@ -404,10 +404,10 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 
 		/* Invoke system-call callback in record. */
 		in_syscall_cb = TRUE;
-		state->data          = record->syscall_cb(&(GtGuestState) { loop, vmi, event },
-		                                          pid,
-		                                          thread_id,
-		                                          record->data);
+		state->data   = record->syscall_cb(&(GtGuestState) { loop, vmi, event },
+		                                     pid,
+		                                     thread_id,
+		                                     record->data);
 		in_syscall_cb = FALSE;
 
 		/* Record system-call state. */
