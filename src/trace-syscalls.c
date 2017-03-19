@@ -112,12 +112,6 @@
 /* Intel breakpoint interrupt (INT 3) instruction. */
 uint8_t GT_BREAKPOINT_INST = 0xCC;
 
-/*
- * Handle terminating signals by unsetting gt_running flag. This allows
- * a graceful exit.
- */
-static gboolean gt_running = TRUE;
-
 /* Track whether we are in a GtSyscallFunc. */
 static gboolean in_syscall_cb = FALSE;
 
@@ -182,7 +176,7 @@ gt_restore_return_addr (gpointer data)
 	gt_syscall_state *sys_state = data;
 	GtLoop *loop = sys_state->syscall_paddr_record->parent->loop;
 
-	if (gt_running) {
+	if (loop->running) {
 		/*
 		 * Save time: no need to restore stack if guestrace remains
 		 * attached. In this case, we will return through the
@@ -924,14 +918,48 @@ gt_loop_listen(gpointer user_data)
 	status_t status = vmi_events_listen(loop->vmi, 500);
 	if (status != VMI_SUCCESS) {
 		fprintf(stderr, "error waiting for events\n");
-		gt_running = FALSE;
+		loop->running = FALSE;
 	}
 
-	if (!gt_running) {
+	if (!loop->running) {
 		g_main_loop_quit(loop->g_main_loop);
 	}
 
-	return gt_running;
+	return loop->running;
+}
+/**
+ * gt_loop_detach:
+ * @loop: a #GtLoop.
+ *
+ * Remove all instrumentation of guest embodied by @loop. This is generally not
+ * called directly, as it is already called by gt_loop_run() after
+ * gt_loop_quit() stops the loop. This functionality is exported for odd cases
+ * such as SIGSEGV handlers.
+ */
+void gt_loop_detach(GtLoop *loop)
+{
+	status_t status;
+
+	vmi_pause_vm(loop->vmi);
+
+	/*
+	 * loop->running affects freeing of gt_ret_addr_mapping elements.
+	 * Must be false or return pointers on kernel stack will not be reset.
+	 * Thus we check no code has been altered in an ill way here, since
+	 * this requirement is not obvious.
+	 */
+	g_assert(!loop->running);
+
+	g_hash_table_remove_all(loop->gt_page_translation);
+	g_hash_table_remove_all(loop->gt_ret_addr_mapping);
+	g_hash_table_remove_all(loop->gt_page_record_collection);
+
+	status = vmi_slat_switch(loop->vmi, 0);
+	if (VMI_SUCCESS != status) {
+		fprintf(stderr, "failed to reset EPT to point to default table\n");
+	}
+
+	vmi_resume_vm(loop->vmi);
 }
 
 /**
@@ -987,28 +1015,10 @@ void gt_loop_run(GtLoop *loop)
 	vmi_resume_vm(loop->vmi);
 
 	g_idle_add(gt_loop_listen, loop);
+	loop->running = TRUE;
 	g_main_loop_run(loop->g_main_loop);
 
-	vmi_pause_vm(loop->vmi);
-
-	/*
-	 * gt_running affects freeing of gt_ret_addr_mapping elements.
-	 * Must be false or return pointers on kernel stack will not be reset.
-	 * Thus we check no code has been altered in an ill way here, since
-	 * this requirement is not obvious.
-	 */
-	g_assert(!gt_running);
-
-	g_hash_table_remove_all(loop->gt_page_translation);
-	g_hash_table_remove_all(loop->gt_ret_addr_mapping);
-	g_hash_table_remove_all(loop->gt_page_record_collection);
-
-	status = vmi_slat_switch(loop->vmi, 0);
-	if (VMI_SUCCESS != status) {
-		fprintf(stderr, "failed to reset EPT to point to default table\n");
-	}
-
-	vmi_resume_vm(loop->vmi);
+	gt_loop_detach(loop);
 
 done:
 	return;
@@ -1024,7 +1034,7 @@ done:
  */
 void gt_loop_quit(GtLoop *loop)
 {
-	gt_running = FALSE;
+	loop->running = FALSE;
 }
 
 /**

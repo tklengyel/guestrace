@@ -38,6 +38,7 @@ struct _GtLoop {
 	const char *guest_name;
 
 	gboolean initialized;
+	gboolean running;
 	addr_t lstar_addr;
 
 	os_t os;
