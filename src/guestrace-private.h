@@ -34,6 +34,8 @@ struct _GtLoop {
 	/* <private> */
 	GMainLoop *g_main_loop;
 
+	unsigned long count;
+
 	vmi_instance_t vmi;
 	const char *guest_name;
 

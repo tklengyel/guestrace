@@ -498,6 +498,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 
 		/* Invoke system-call callback in record. */
 		in_syscall_cb = TRUE;
+		loop->count++;
 		state->data   = record->syscall_cb(&(GtGuestState) { loop, vmi, event },
 		                                     pid,
 		                                     thread_id,
@@ -1451,6 +1452,18 @@ gt_loop_set_cbs(GtLoop *loop, const GtCallbackRegistry callbacks[])
 	}
 
 	return count;
+}
+
+/**
+ * gt_loop_get_syscall_count:
+ * @loop: a #GtLoop.
+ *
+ * Returns: the number of system calls observed.
+ **/
+unsigned long
+gt_loop_get_syscall_count(GtLoop *loop)
+{
+	return loop->count;
 }
 
 /**
