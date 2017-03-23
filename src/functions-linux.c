@@ -5,6 +5,64 @@
 #include "trace-syscalls.h"
 
 /*
+ * The libvmi dispatcher invokes this function each time the guest writes to
+ * CR3. We are interested in recognizing when the first user-space process
+ * runs. In the case of Linux, the bootloader loads the kernel, but then the
+ * kernel then decompresses itself. Breakpoints set too early will be
+ * overwritten by this process. Thus we watch for the value in CR3 to change.
+ *
+ * Windows seems to be easier. Its bootloader, NTLDR, does all of the real-
+ * mode work and even transitions the processor into protected (long?) mode.
+ * We still want to wait for a user-space process there because Windows seems
+ * to make system calls from the kernel when booting, and this confuses
+ * vmi_dtb_to_pid() until a user-space process exists.
+ */
+static event_response_t
+_gt_linux_cr3_cb(vmi_instance_t vmi, vmi_event_t *event) {
+        GtLoop *loop = event->data;
+        static addr_t prev = 0;
+
+        if (prev != 0 && prev != event->x86_regs->cr3) {
+                vmi_clear_event(loop->vmi, event, NULL);
+                loop->initialized = TRUE;
+        }
+
+        prev = event->x86_regs->cr3;
+
+        return VMI_EVENT_RESPONSE_NONE;
+}
+
+/* Wait for first user-space process; see above. */
+static status_t
+_gt_linux_wait_for_first_process(GtLoop *loop)
+{
+	status_t status = VMI_FAILURE;
+
+	SETUP_REG_EVENT(&loop->cr3_event, CR3, VMI_REGACCESS_W, 0, _gt_linux_cr3_cb);
+
+	loop->cr3_event.data = loop;
+
+	status = vmi_register_event(loop->vmi, &loop->cr3_event);
+	if (VMI_SUCCESS != status) {
+		fprintf(stderr, "cr3 event setup failed\n");
+		goto done;
+	}
+
+	while (!loop->initialized) {
+		status_t status = vmi_events_listen(loop->vmi, 100);
+		if (status != VMI_SUCCESS) {
+			fprintf(stderr, "error waiting for events\n");
+			goto done;
+		}
+	}
+
+	status = VMI_SUCCESS;
+
+done:
+	return status;
+}
+
+/*
  * Within the kernel's system-call handler function (that function pointed to
  * by the value in register LSTAR) there exists a call instruction which
  * invokes the per-system-call handler function. The function here finds
@@ -13,7 +71,7 @@
  * are returning directly to the kernel's system-call handler function from
  * those that have been called in a nested manner.
  */
-addr_t
+static addr_t
 _gt_linux_find_return_point_addr(GtLoop *loop)
 {
 	addr_t lstar, return_point_addr = 0;
@@ -33,12 +91,14 @@ done:
 	return return_point_addr;
 }
 
-struct os_functions os_functions_linux = {
-	.find_return_point_addr = _gt_linux_find_return_point_addr
-};
+static gt_pid_t
+_linux_get_pid(vmi_instance_t vmi, vmi_event_t *event)
+{
+	return vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
+}
 
-char *
-gt_linux_get_process_name(vmi_instance_t vmi, gt_pid_t pid)
+static char *
+_gt_linux_get_process_name(vmi_instance_t vmi, gt_pid_t pid)
 {
 	/* Gets the process name of the process with the input pid */
 	/* offsets from the LibVMI config file */
@@ -91,3 +151,17 @@ done:
 	return proc;
 
 }
+
+static gboolean
+_gt_linux_is_user_call(GtLoop *loop, vmi_event_t *event)
+{
+	return TRUE;
+}
+
+struct os_functions os_functions_linux = {
+	.wait_for_first_process = _gt_linux_wait_for_first_process,
+	.find_return_point_addr = _gt_linux_find_return_point_addr,
+	.get_pid = _linux_get_pid,
+	.get_process_name = _gt_linux_get_process_name,
+	.is_user_call = _gt_linux_is_user_call,
+};

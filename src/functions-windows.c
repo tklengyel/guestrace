@@ -2,7 +2,121 @@
 
 #include "guestrace.h"
 #include "guestrace-private.h"
+#include "rekall.h"
 #include "trace-syscalls.h"
+
+typedef enum privilege_mode {
+	KERNEL_MODE,
+	USER_MODE,
+	MAXIMUM_MODE,
+} privilege_mode_t;
+
+static privilege_mode_t
+_gt_windows_get_privilege_mode(vmi_instance_t vmi, vmi_event_t *event, gboolean do_flush)
+{
+	GtLoop *loop = event->data;
+	status_t status;
+	addr_t thread;
+	uint8_t previous_mode;
+	const char *rekall_profile;
+	static addr_t prcb;
+	static addr_t currentthread;
+	static addr_t previousmode;
+	static gboolean initialized = FALSE;
+
+	/*
+	 * Testing indicated pidcache flush was necessary to get vaddr
+	 * translations to consistently work in a GtSyscallFunc. DRAKVUF
+	 * flushes all of the caches on a CR3 change, so we do too.
+	 */
+	if (do_flush) {
+		vmi_pidcache_flush(vmi);
+		vmi_v2pcache_flush(vmi, event->reg_event.previous);
+		vmi_rvacache_flush(vmi);
+		vmi_symcache_flush(vmi);
+	}
+
+	if (!initialized) {
+		rekall_profile = vmi_get_rekall_path(loop->vmi);
+		if (NULL == rekall_profile) {
+			goto done;
+		}
+
+		status = rekall_profile_symbol_to_rva(rekall_profile, "_KPCR", "Prcb", &prcb);
+		if (VMI_SUCCESS != status) {
+			goto done;
+		}
+
+		status = rekall_profile_symbol_to_rva(rekall_profile, "_KPRCB", "CurrentThread", &currentthread);
+		if (VMI_SUCCESS != status) {
+			goto done;
+			}
+
+		status = rekall_profile_symbol_to_rva(rekall_profile, "_KTHREAD", "PreviousMode", &previousmode);
+		if (VMI_SUCCESS != status) {
+			goto done;
+		}
+
+		initialized = TRUE;
+	}
+
+	status = vmi_read_addr_va(loop->vmi, event->x86_regs->gs_base + prcb + currentthread, 0, &thread);
+	if (VMI_SUCCESS != status) {
+		goto done;
+	}
+
+	status = vmi_read_8_va(loop->vmi, thread + previousmode, 0, &previous_mode);
+	if (VMI_SUCCESS != status) {
+		goto done;
+	}
+
+done:
+	return previous_mode;
+}
+
+static event_response_t
+_gt_windows_cr3_cb(vmi_instance_t vmi, vmi_event_t *event)
+{
+	GtLoop *loop = event->data;
+	uint8_t previous_mode = _gt_windows_get_privilege_mode(vmi, event, TRUE);
+
+	if (USER_MODE == previous_mode) {
+		loop->initialized = TRUE;
+		vmi_clear_event(loop->vmi, event, NULL);
+	}
+
+	return VMI_EVENT_RESPONSE_NONE;
+}
+
+/* Wait for first user-space process; see above. */
+static status_t
+_gt_windows_wait_for_first_process(GtLoop *loop)
+{
+	status_t status = VMI_FAILURE;
+
+	SETUP_REG_EVENT(&loop->cr3_event, CR3, VMI_REGACCESS_W, 0, _gt_windows_cr3_cb);
+
+	loop->cr3_event.data = loop;
+
+	status = vmi_register_event(loop->vmi, &loop->cr3_event);
+	if (VMI_SUCCESS != status) {
+		fprintf(stderr, "cr3 event setup failed\n");
+		goto done;
+	}
+
+	while (!loop->initialized) {
+		status_t status = vmi_events_listen(loop->vmi, 100);
+		if (status != VMI_SUCCESS) {
+			fprintf(stderr, "error waiting for events\n");
+			goto done;
+		}
+	}
+
+	status = VMI_SUCCESS;
+
+done:
+	return status;
+}
 
 /*
  * Within the kernel's system-call handler function (that function pointed to
@@ -13,7 +127,7 @@
  * are returning directly to the kernel's system-call handler function from
  * those that have been called in a nested manner.
  */
-addr_t
+static addr_t
 _gt_windows_find_return_point_addr(GtLoop *loop)
 {
 	addr_t lstar, return_point_addr = 0;
@@ -33,13 +147,38 @@ done:
 	return return_point_addr;
 }
 
-struct os_functions os_functions_windows = {
-	.find_return_point_addr = _gt_windows_find_return_point_addr
-};
+static gt_pid_t
+_windows_get_pid(vmi_instance_t vmi, vmi_event_t *event)
+{
+	status_t status;
+	size_t count;
+	addr_t self;
+	access_context_t ctx;
+	gt_pid_t pid = 0;
+	reg_t gs = event->x86_regs->gs_base;
+
+	status = vmi_read_addr_va(vmi, gs + 0x30, 0, &self);
+	if (VMI_SUCCESS != status) {
+		pid = 0;
+		goto done;
+	}
+
+	ctx.translate_mechanism = VMI_TM_PROCESS_DTB;
+	ctx.dtb = event->x86_regs->cr3;
+	ctx.addr = self + 0x40;
+	count = vmi_read(vmi, &ctx, &pid, sizeof pid);
+	if (sizeof pid != count) {
+		pid = 0;
+		goto done;
+	}
+
+done:
+	return pid;
+}
 
 /* Gets the process name of the process with the PID that is input. */
-char *
-gt_windows_get_process_name(vmi_instance_t vmi, gt_pid_t pid)
+static char *
+_gt_windows_get_process_name(vmi_instance_t vmi, gt_pid_t pid)
 {
 	/* Gets the process name of the process with the input pid */
 	/* offsets from the LibVMI config file */
@@ -86,3 +225,26 @@ done:
 	return proc;
 
 }
+
+static gboolean
+_gt_windows_is_user_call(GtLoop *loop, vmi_event_t *event)
+{
+	gboolean ok;
+	uint8_t previous_mode = _gt_windows_get_privilege_mode(loop->vmi, event, FALSE);
+
+	if (USER_MODE == previous_mode) {
+		ok = TRUE;
+	} else {
+		ok = FALSE;
+	}
+
+	return ok;
+}
+
+struct os_functions os_functions_windows = {
+	.wait_for_first_process = _gt_windows_wait_for_first_process,
+	.find_return_point_addr = _gt_windows_find_return_point_addr,
+	.get_pid = _windows_get_pid,
+	.get_process_name = _gt_windows_get_process_name,
+	.is_user_call = _gt_windows_is_user_call,
+};

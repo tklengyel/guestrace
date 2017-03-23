@@ -350,6 +350,7 @@ gt_guest_free_syscall_state(GtGuestState *state, gt_tid_t thread_id)
 			    GSIZE_TO_POINTER(thread_id));
 }
 
+
 /**
  * gt_guest_hijack_return:
  * @state: a #GtGuestState.
@@ -448,6 +449,17 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	GtLoop *loop = event->data;
 	event->interrupt_event.reinject = 0;
 
+	if (!loop->os_functions->is_user_call(loop, event)) {
+		/* Set VCPUs SLAT to use original for one step. */
+		event->slat_id = 0;
+
+		/* Turn on single-step and switch slat_id after return. */
+		response = VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
+		         | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
+
+		goto done;
+	}
+
 	if (event->interrupt_event.gla != loop->trampoline_addr) {
 		/* Type-one breakpoint (system call). */
 		status_t status;
@@ -461,7 +473,6 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		if (NULL == record) {
 			/* Assume we didn't emplace interrupt. */
 			event->interrupt_event.reinject = 1;
-			/* TODO: Ensure this does the right thing: */
 			goto done;
 		}
 
@@ -481,7 +492,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 			goto done;
 		}
 
-		gt_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
+		gt_pid_t pid = loop->os_functions->get_pid(vmi, event);
 
 		state                       = g_new0(gt_syscall_state, 1);
 		state->syscall_paddr_record = record;
@@ -524,7 +535,7 @@ skip_syscall_cb:
 		                            GSIZE_TO_POINTER(thread_id));
 
 		if (NULL != state) {
-			gt_pid_t pid = vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
+			gt_pid_t pid = loop->os_functions->get_pid(vmi, event);
 
 			if (GT_EMERGENCY == setjmp(loop->jmpbuf[event->vcpu_id])) {
 				/*
@@ -1004,20 +1015,7 @@ gt_guest_get_vmi_event(GtGuestState *state)
 char *
 gt_guest_get_process_name(GtGuestState *state, gt_pid_t pid)
 {
-	char *process_name = NULL;
-
-	switch (state->loop->os) {
-	case VMI_OS_LINUX:
-		process_name = gt_linux_get_process_name(state->vmi, pid);
-		break;
-	case VMI_OS_WINDOWS:
-		process_name = gt_windows_get_process_name(state->vmi, pid);
-		break;
-	default:
-		g_assert_not_reached();
-	}
-
-	return process_name;
+	return state->loop->os_functions->get_process_name(state->vmi, pid);
 }
 
 static gboolean
@@ -1055,7 +1053,7 @@ void gt_loop_run(GtLoop *loop)
                 goto done;
         }
 
-	status = early_boot_wait_for_first_process(loop);
+	status = loop->os_functions->wait_for_first_process(loop);
 	if (VMI_SUCCESS != status) {
                 fprintf(stderr, "failed to wait for initialization\n");
                 goto done;
