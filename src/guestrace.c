@@ -161,7 +161,7 @@ registry_build(const GtCallbackRegistry *registry, char *instrument_list)
 				}
 			}
 
-			if (NULL == new[j].name) {
+			if (NULL == new[i].name) {
 				g_free(new);
 				new = NULL;
 				goto done;
