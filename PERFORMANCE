@@ -56,3 +56,12 @@ the function's runtime:
 	Call: Update stack (~93 usec)
 	Ret: Get PID (~125 usec)
 	Ret: Set RIP (~350 usec)
+
+Windows testing is more informal. From "Starting Windows" disappearing
+to blue background.
+
+
+COMPUTER COMMIT   TIME
+======== ======== ====
+
+imp      bf46901a 1:36
