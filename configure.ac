@@ -59,6 +59,17 @@ AC_SUBST(BLIG_LIBS)
 
 AC_DEFINE(HAVE_GLIB, 1, [Defined when glib was found])
 
+PKG_CHECK_MODULES(JSON_C, json-c, HAVE_JSON_C=yes, HAVE_JSON_C=no)
+
+if test "x$HAVE_JSON_C" = "xno"; then
+  AC_MSG_ERROR(you need json-c installed)
+fi
+
+AC_SUBST(JSON_C_CFLAGS)
+AC_SUBST(JSON_C_LIBS)
+
+AC_DEFINE(HAVE_JSON_C, 1, [Defined when json-c was found])
+
 AC_CHECK_LIB(xenlight, libxl_name_to_domid, , AC_MSG_ERROR(You are missing libxenlight))
 AC_CHECK_LIB(xenctrl, xc_altp2m_create_view, , AC_MSG_ERROR(You are missing libxenctrl))
 

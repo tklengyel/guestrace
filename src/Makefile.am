@@ -9,6 +9,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	$(CAPSTONE_CFLAGS) \
 	$(GLIB_CFLAGS) \
+	$(JSON_C_CFLAGS) \
 	$(LIBVMI_CFLAGS)
 
 AM_CFLAGS = \
@@ -17,6 +18,7 @@ AM_CFLAGS = \
 AM_LDFLAGS = \
 	$(CAPSTONE_LIBS) \
 	$(GLIB_LIBS) \
+	$(JSON_C_LIBS) \
 	$(LIBVMI_LIBS)
 
 libguestrace_0_0_la_SOURCES = \
