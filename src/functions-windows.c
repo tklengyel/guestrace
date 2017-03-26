@@ -14,10 +14,10 @@ typedef enum privilege_mode {
 static privilege_mode_t
 _gt_windows_get_privilege_mode(vmi_instance_t vmi, vmi_event_t *event, gboolean do_flush)
 {
+	uint8_t previous_mode = KERNEL_MODE;
 	GtLoop *loop = event->data;
 	status_t status;
 	addr_t thread;
-	uint8_t previous_mode;
 	const char *rekall_profile;
 	static addr_t prcb;
 	static addr_t currentthread;
