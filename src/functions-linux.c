@@ -2,6 +2,7 @@
 
 #include "guestrace.h"
 #include "guestrace-private.h"
+#include "rekall.h"
 #include "trace-syscalls.h"
 
 /*
@@ -92,9 +93,52 @@ done:
 }
 
 static gt_pid_t
-_linux_get_pid(vmi_instance_t vmi, vmi_event_t *event)
+_linux_get_pid(GtLoop *loop, vmi_event_t *event)
 {
-	return vmi_dtb_to_pid(vmi, event->x86_regs->cr3);
+	status_t status;
+	size_t count;
+	addr_t self;
+	access_context_t ctx;
+	gt_pid_t pid = 0;
+	reg_t gs = event->x86_regs->gs_base;
+	const char *rekall_profile;
+	static addr_t current_task_ptr;
+	static addr_t current_task;
+	static addr_t tgid;
+	static gboolean initialized = FALSE;
+
+	if (!initialized) {
+		rekall_profile = vmi_get_rekall_path(loop->vmi);
+		if (NULL == rekall_profile) {
+			goto done;
+		}
+
+		status = rekall_profile_symbol_to_rva(rekall_profile, "current_task", NULL, &current_task_ptr);
+		if (VMI_SUCCESS != status) {
+			goto done;
+		}
+
+		status = rekall_profile_symbol_to_rva(rekall_profile, "task_struct", "tgid", &tgid);
+		if (VMI_SUCCESS != status) {
+			goto done;
+		}
+
+		initialized = TRUE;
+	}
+
+	status = vmi_read_addr_va(loop->vmi, gs + current_task_ptr, 0, &current_task);
+	if (VMI_SUCCESS != status) {
+		goto done;
+	}
+
+	status = vmi_read_32_va(loop->vmi, current_task + tgid, 0, &pid);
+	if (VMI_SUCCESS != status) {
+		pid = 0;
+		goto done;
+	}
+
+done:
+	return pid;
 }
 
 static char *

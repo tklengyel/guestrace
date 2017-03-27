@@ -492,7 +492,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 			goto done;
 		}
 
-		gt_pid_t pid = loop->os_functions->get_pid(vmi, event);
+		gt_pid_t pid = loop->os_functions->get_pid(loop, event);
 
 		state                       = g_new0(gt_syscall_state, 1);
 		state->syscall_paddr_record = record;
@@ -535,7 +535,7 @@ skip_syscall_cb:
 		                            GSIZE_TO_POINTER(thread_id));
 
 		if (NULL != state) {
-			gt_pid_t pid = loop->os_functions->get_pid(vmi, event);
+			gt_pid_t pid = loop->os_functions->get_pid(loop, event);
 
 			if (GT_EMERGENCY == setjmp(loop->jmpbuf[event->vcpu_id])) {
 				/*
@@ -598,7 +598,6 @@ gt_cr3_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	vmi_pidcache_flush(vmi);
 	vmi_v2pcache_flush(vmi, event->reg_event.previous);
 	vmi_rvacache_flush(vmi);
-	vmi_symcache_flush(vmi);
 
 	return response;
 }

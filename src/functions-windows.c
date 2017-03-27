@@ -33,7 +33,6 @@ _gt_windows_get_privilege_mode(vmi_instance_t vmi, vmi_event_t *event, gboolean 
 		vmi_pidcache_flush(vmi);
 		vmi_v2pcache_flush(vmi, event->reg_event.previous);
 		vmi_rvacache_flush(vmi);
-		vmi_symcache_flush(vmi);
 	}
 
 	if (!initialized) {
@@ -148,7 +147,7 @@ done:
 }
 
 static gt_pid_t
-_windows_get_pid(vmi_instance_t vmi, vmi_event_t *event)
+_windows_get_pid(GtLoop *loop, vmi_event_t *event)
 {
 	status_t status;
 	size_t count;
@@ -156,8 +155,32 @@ _windows_get_pid(vmi_instance_t vmi, vmi_event_t *event)
 	access_context_t ctx;
 	gt_pid_t pid = 0;
 	reg_t gs = event->x86_regs->gs_base;
+	const char *rekall_profile;
+	static addr_t nttib;
+	static addr_t clientid;
+	static gboolean initialized = FALSE;
 
-	status = vmi_read_addr_va(vmi, gs + 0x30, 0, &self);
+	if (!initialized) {
+		rekall_profile = vmi_get_rekall_path(loop->vmi);
+		if (NULL == rekall_profile) {
+			goto done;
+		}
+
+		/* _NT_TIB64 is first field of _KPCR at GS register. */
+		status = rekall_profile_symbol_to_rva(rekall_profile, "_NT_TIB64", "Self", &nttib);
+		if (VMI_SUCCESS != status) {
+			goto done;
+		}
+
+		status = rekall_profile_symbol_to_rva(rekall_profile, "_TEB", "ClientId", &clientid);
+		if (VMI_SUCCESS != status) {
+			goto done;
+			}
+
+		initialized = TRUE;
+	}
+
+	status = vmi_read_addr_va(loop->vmi, gs + nttib, 0, &self);
 	if (VMI_SUCCESS != status) {
 		pid = 0;
 		goto done;
@@ -165,8 +188,8 @@ _windows_get_pid(vmi_instance_t vmi, vmi_event_t *event)
 
 	ctx.translate_mechanism = VMI_TM_PROCESS_DTB;
 	ctx.dtb = event->x86_regs->cr3;
-	ctx.addr = self + 0x40;
-	count = vmi_read(vmi, &ctx, &pid, sizeof pid);
+	ctx.addr = self + clientid;
+	count = vmi_read(loop->vmi, &ctx, &pid, sizeof pid);
 	if (sizeof pid != count) {
 		pid = 0;
 		goto done;
