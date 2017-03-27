@@ -558,8 +558,12 @@ skip_sysret_cb:
 			 * Update our current VCPU's registers with the
 			 * new return address
 			 */
+			/*
 			event->x86_regs->rip = loop->return_addr;
 			response |= VMI_EVENT_RESPONSE_SET_REGISTERS;
+			 */
+			/* TODO: This takes 50 us, the the code above breaks Linux. */
+			vmi_set_vcpureg(vmi, loop->return_addr, RIP, event->vcpu_id);
 
 			/*
 			 * This will free our gt_syscall_state object, but
