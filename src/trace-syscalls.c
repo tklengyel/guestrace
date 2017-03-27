@@ -554,7 +554,12 @@ skip_syscall_cb:
 skip_sysret_cb:
 			memset(loop->jmpbuf[event->vcpu_id], 0x00, sizeof loop->jmpbuf[event->vcpu_id]);
 
-			vmi_set_vcpureg(vmi, loop->return_addr, RIP, event->vcpu_id);
+			/*
+			 * Update our current VCPU's registers with the
+			 * new return address
+			 */
+			event->x86_regs->rip = loop->return_addr;
+			response |= VMI_EVENT_RESPONSE_SET_REGISTERS;
 
 			/*
 			 * This will free our gt_syscall_state object, but
