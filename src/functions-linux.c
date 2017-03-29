@@ -96,10 +96,7 @@ static gt_pid_t
 _linux_get_pid(GtLoop *loop, vmi_event_t *event)
 {
 	status_t status;
-	size_t count;
-	addr_t self;
-	access_context_t ctx;
-	gt_pid_t pid = 0;
+	uint32_t pid = 0;
 	reg_t gs = event->x86_regs->gs_base;
 	const char *rekall_profile;
 	static addr_t current_task_ptr;
@@ -139,6 +136,52 @@ _linux_get_pid(GtLoop *loop, vmi_event_t *event)
 
 done:
 	return pid;
+}
+
+static gt_tid_t
+_linux_get_tid(GtLoop *loop, vmi_event_t *event)
+{
+	status_t status;
+	uint32_t tid = 0;
+	reg_t gs = event->x86_regs->gs_base;
+	const char *rekall_profile;
+	static addr_t current_task_ptr;
+	static addr_t current_task;
+	static addr_t tgid;
+	static gboolean initialized = FALSE;
+
+	if (!initialized) {
+		rekall_profile = vmi_get_rekall_path(loop->vmi);
+		if (NULL == rekall_profile) {
+			goto done;
+		}
+
+		status = rekall_profile_symbol_to_rva(rekall_profile, "current_task", NULL, &current_task_ptr);
+		if (VMI_SUCCESS != status) {
+			goto done;
+		}
+
+		status = rekall_profile_symbol_to_rva(rekall_profile, "task_struct", "pid", &tgid);
+		if (VMI_SUCCESS != status) {
+			goto done;
+		}
+
+		initialized = TRUE;
+	}
+
+	status = vmi_read_addr_va(loop->vmi, gs + current_task_ptr, 0, &current_task);
+	if (VMI_SUCCESS != status) {
+		goto done;
+	}
+
+	status = vmi_read_32_va(loop->vmi, current_task + tgid, 0, &tid);
+	if (VMI_SUCCESS != status) {
+		tid = 0;
+		goto done;
+	}
+
+done:
+	return (gt_tid_t)tid;
 }
 
 static char *
@@ -206,6 +249,7 @@ struct os_functions os_functions_linux = {
 	.wait_for_first_process = _gt_linux_wait_for_first_process,
 	.find_return_point_addr = _gt_linux_find_return_point_addr,
 	.get_pid = _linux_get_pid,
+	.get_tid = _linux_get_tid,
 	.get_process_name = _gt_linux_get_process_name,
 	.is_user_call = _gt_linux_is_user_call,
 };

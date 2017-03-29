@@ -15,6 +15,7 @@
 #include "functions-linux.h"
 #include "functions-windows.h"
 #include "trace-syscalls.h"
+#include "rekall.h"
 
 /*
  * High-level design:
@@ -485,16 +486,19 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		response = VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
 		         | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
 
-		thread_id = return_loc = event->x86_regs->rsp;
+		thread_id = loop->os_functions->get_tid(loop, event);
+
+		if (g_hash_table_contains(loop->gt_ret_addr_mapping,
+		                          GSIZE_TO_POINTER(thread_id))) {
+			goto done;
+		}
+
+		return_loc = event->x86_regs->rsp;
 
 		addr_t return_addr = 0;
 		status = vmi_read_64_va(vmi, return_loc, 0, &return_addr);
 		if (VMI_SUCCESS != status) {
 			/* Couldn't get return pointer off of stack */
-			goto done;
-		}
-
-		if (return_addr != loop->return_addr && false == record->ignore_ret) {
 			goto done;
 		}
 
@@ -526,17 +530,21 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 skip_syscall_cb:
 		memset(loop->jmpbuf[event->vcpu_id], 0x00, sizeof loop->jmpbuf[event->vcpu_id]);
 
-		/* Record system-call state. */
-		g_hash_table_insert(loop->gt_ret_addr_mapping,
-		                    GSIZE_TO_POINTER(thread_id),
-		                    state);
+		if (!record->ignore_ret) {
+			/* Record system-call state. */
+			g_hash_table_insert(loop->gt_ret_addr_mapping,
+			                    GSIZE_TO_POINTER(thread_id),
+			                    state);
 
-		/* Overwrite stack to return to trampoline. */
-		vmi_write_64_va(vmi, return_loc, 0, &loop->trampoline_addr);
+			/* Overwrite stack to return to trampoline. */
+			vmi_write_64_va(vmi, return_loc, 0, &loop->trampoline_addr);
+		} else {
+			g_free(state);
+		}
 	} else {
 		/* Type-two breakpoint (system return). */
 		gt_syscall_state *state;
-		addr_t thread_id = event->x86_regs->rsp - loop->return_addr_width;
+		addr_t thread_id = loop->os_functions->get_tid(loop, event);
 
 		state = g_hash_table_lookup(loop->gt_ret_addr_mapping,
 		                            GSIZE_TO_POINTER(thread_id));

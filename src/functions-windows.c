@@ -199,6 +199,59 @@ done:
 	return pid;
 }
 
+static gt_tid_t
+_windows_get_tid(GtLoop *loop, vmi_event_t *event)
+{
+	status_t status;
+	size_t count;
+	addr_t self;
+	access_context_t ctx;
+	gt_tid_t tid = 0;
+	reg_t gs = event->x86_regs->gs_base;
+	const char *rekall_profile;
+	static addr_t nttib;
+	static addr_t clientid;
+	static gboolean initialized = FALSE;
+
+	if (!initialized) {
+		rekall_profile = vmi_get_rekall_path(loop->vmi);
+		if (NULL == rekall_profile) {
+			goto done;
+		}
+
+		/* _NT_TIB64 is first field of _KPCR at GS register. */
+		status = rekall_profile_symbol_to_rva(rekall_profile, "_NT_TIB64", "Self", &nttib);
+		if (VMI_SUCCESS != status) {
+			goto done;
+		}
+
+		status = rekall_profile_symbol_to_rva(rekall_profile, "_TEB", "ClientId", &clientid);
+		if (VMI_SUCCESS != status) {
+			goto done;
+			}
+
+		initialized = TRUE;
+	}
+
+	status = vmi_read_addr_va(loop->vmi, gs + nttib, 0, &self);
+	if (VMI_SUCCESS != status) {
+		tid = 0;
+		goto done;
+	}
+
+	ctx.translate_mechanism = VMI_TM_PROCESS_DTB;
+	ctx.dtb = event->x86_regs->cr3;
+	ctx.addr = self + clientid + vmi_get_address_width(loop->vmi);
+	count = vmi_read(loop->vmi, &ctx, &tid, sizeof tid);
+	if (sizeof tid != count) {
+		tid = 0;
+		goto done;
+	}
+
+done:
+	return tid;
+}
+
 /* Gets the process name of the process with the PID that is input. */
 static char *
 _gt_windows_get_process_name(vmi_instance_t vmi, gt_pid_t pid)
@@ -268,6 +321,7 @@ struct os_functions os_functions_windows = {
 	.wait_for_first_process = _gt_windows_wait_for_first_process,
 	.find_return_point_addr = _gt_windows_find_return_point_addr,
 	.get_pid = _windows_get_pid,
+	.get_tid = _windows_get_tid,
 	.get_process_name = _gt_windows_get_process_name,
 	.is_user_call = _gt_windows_is_user_call,
 };
