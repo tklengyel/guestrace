@@ -117,6 +117,7 @@ typedef struct GtCallbackRegistry {
         GtSyscallFunc syscall_cb;
         GtSysretFunc  sysret_cb;
         void         *user_data;
+        gboolean      ignore_ret;
 } GtCallbackRegistry;
 
 /**
@@ -143,7 +144,8 @@ gboolean       gt_loop_set_cb(GtLoop *loop,
                               const char *kernel_func,
                               GtSyscallFunc syscall_cb,
                               GtSysretFunc sysret_cb,
-                              void *user_data);
+                              void *user_data,
+                              gboolean ignore_ret);
 int            gt_loop_set_cbs(GtLoop *loop,
                                const GtCallbackRegistry callbacks[]);
 unsigned long  gt_loop_get_syscall_count(GtLoop *loop);
