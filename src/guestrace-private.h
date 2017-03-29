@@ -75,20 +75,8 @@ struct _GtLoop {
 	vmi_event_t step_event[_GT_MAX_VCPUS];
 
 	/*
-	 * Two addresses relevant to type-two breakpoints, which capture system
-	 * call returns:
-	 *
-	 * return_point_addr stores the return point immediately after the jump-
-	 * table call in the system-call handler. Following a type-one
-	 * breakpoint, we hijack the stack so that the particular system-call
-	 * routine returns to our type-two breakpoint. return_point_addr allows
-	 * us to remember where the control flow should continue after
-	 * servicing this breakpoint. We restore the proper control flow by
-	 * writing to RIP after servicing a type-two breakpoint.
-	 *
 	 * trampoline_addr is the address of the type-two breakpoint.
 	 */
-	addr_t return_addr;
 	addr_t trampoline_addr;
 };
 
@@ -96,7 +84,9 @@ struct _GtGuestState {
 	/* <private> */
 	GtLoop         *loop;
 	vmi_instance_t  vmi;
-        vmi_event_t    *event;
+	vmi_event_t    *event;
+	gboolean        hijack;
+	reg_t           hijack_return;
 };
 
 #endif

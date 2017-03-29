@@ -5,7 +5,6 @@
 struct os_functions {
 	/* <private> */
 	status_t (*wait_for_first_process) (GtLoop *loop);
-	addr_t (*find_return_point_addr) (GtLoop *loop);
 	gt_pid_t (*get_pid) (GtLoop *loop, vmi_event_t *event);
 	gt_tid_t (*get_tid) (GtLoop *loop, vmi_event_t *event);
 	char *(*get_process_name) (vmi_instance_t vmi, gt_pid_t pid);

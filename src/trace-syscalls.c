@@ -1,4 +1,3 @@
-#include <capstone/capstone.h>
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
 #include <libvmi/slat.h>
@@ -364,70 +363,12 @@ gt_guest_free_syscall_state(GtGuestState *state, gt_tid_t thread_id)
  * function does not change any state within the guest processor.
  **/
 gboolean
-gt_guest_hijack_return(GtGuestState *state, gint retval)
+gt_guest_hijack_return(GtGuestState *state, reg_t retval)
 {
-        csh handle = 0;
-        cs_insn *inst;
-        size_t count, offset = ~0;
-	gboolean ok = FALSE;
-	status_t status;
-        uint8_t code[GT_PAGE_SIZE];
+	state->hijack = true;
+	state->hijack_return = retval;
 
-	/* Assert original view, as int3 byte will break disassembly. */
-	g_assert(0 == state->event->slat_id);
-	g_assert(in_syscall_cb);
-
-        addr_t start_v = state->event->x86_regs->rip;
-        addr_t start_p = vmi_translate_kv2p(state->vmi, start_v);
-        if (0 == start_p) {
-                fprintf(stderr, "failed to translate virtual start address to physical address\n");
-                goto done;
-        }
-
-        /* Read kernel instructions into code. */
-        status = vmi_read_pa(state->vmi, start_p, code, sizeof(code));
-        if (VMI_FAILURE == status) {
-                fprintf(stderr, "failed to read instructions from 0x%lx\n", start_p);
-                goto done;
-        }
-
-        if (cs_open(CS_ARCH_X86, CS_MODE_64, &handle) != CS_ERR_OK) {
-                fprintf(stderr, "failed to open capstone\n");
-                goto done;
-        }
-
-        /* Find RET inst. */
-        count = cs_disasm(handle, code, sizeof(code), 0, 0, &inst);
-        if (count > 0) {
-                size_t i;
-                for (i = 0; i < count; i++) {
-			if (0 == strcmp(inst[i].mnemonic, "ret")) {
-				offset = inst[i].address;
-				break;
-                        }
-                }
-                cs_free(inst, count);
-        } else {
-                fprintf(stderr, "failed to disassemble system-call handler\n");
-                goto done;
-        }
-
-	if (~0 == offset) {
-                fprintf(stderr, "did not find ret in system-call handler\n");
-                goto done;
-        }
-
-	vmi_set_vcpureg(state->vmi, retval, RAX, state->event->vcpu_id);
-	vmi_set_vcpureg(state->vmi, start_v + offset, RIP, state->event->vcpu_id);
-
-	ok = TRUE;
-
-done:
-	if (0 != handle) {
-		cs_close(&handle);
-	}
-
-        return ok;
+	return TRUE;
 }
 
 /*
@@ -463,6 +404,8 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		addr_t thread_id, return_loc, return_addr = 0;
 		gt_paddr_record *record;
 		gt_syscall_state *state;
+
+		GtGuestState sys_state = { loop, vmi, event, FALSE, 0 };
 
 		/* Lookup record corresponding to breakpoint address. */
 		record = gt_paddr_record_from_va(loop,
@@ -513,16 +456,21 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		/* Invoke system-call callback in record. */
 		in_syscall_cb = TRUE;
 		loop->count++;
-		state->data   = record->syscall_cb(&(GtGuestState) { loop, vmi, event },
-		                                     pid,
-		                                     thread_id,
-		                                     record->data);
+		state->data   = record->syscall_cb(&sys_state,
+		                                    pid,
+		                                    thread_id,
+		                                    record->data);
 		in_syscall_cb = FALSE;
 
 skip_syscall_cb:
 		memset(loop->jmpbuf[event->vcpu_id], 0x00, sizeof loop->jmpbuf[event->vcpu_id]);
 
-		if (!record->ignore_ret) {
+		if (sys_state.hijack) {
+			vmi_set_vcpureg(vmi, sys_state.hijack_return, RAX, event->vcpu_id);
+			vmi_set_vcpureg(vmi, state->return_addr, RIP, event->vcpu_id);
+
+			g_free(state);
+		} else if (!record->ignore_ret) {
 			/* Record system-call state. */
 			g_hash_table_insert(loop->gt_ret_addr_mapping,
 			                    GSIZE_TO_POINTER(thread_id),
@@ -1091,11 +1039,6 @@ void gt_loop_run(GtLoop *loop)
 		goto done;
 	}
 
-	loop->return_addr = loop->os_functions->find_return_point_addr(loop);
-	if (0 == loop->return_addr) {
-		goto done;
-	}
-
 	loop->trampoline_addr = gt_find_trampoline_addr(loop);
 	if (0 == loop->trampoline_addr) {
 		fprintf(stderr, "could not find addr. of existing int 3 inst.\n");
@@ -1500,70 +1443,6 @@ gt_loop_add_watch(GIOChannel *channel,
                   gpointer user_data)
 {
 	return g_io_add_watch(channel, condition, func, user_data);
-}
-
-/*
- * Disassemble a page of memory beginning at <start> until
- * finding the correct mnemonic and op_str, returning the next address.
- * Note: op_str is optional.
- */
-addr_t
-_gt_find_addr_after_instruction (GtLoop *loop, addr_t start_v, char *mnemonic, char *ops)
-{
-	csh handle = 0;
-	cs_insn *inst;
-	size_t count, offset = ~0;
-	addr_t ret = 0;
-	uint8_t code[GT_PAGE_SIZE];
-
-	addr_t start_p = vmi_translate_kv2p(loop->vmi, start_v);
-	if (0 == start_p) {
-		fprintf(stderr, "failed to translate virtual start address to physical address\n");
-		goto done;
-	}
-
-	/* Read kernel instructions into code. */
-	status_t status = vmi_read_pa(loop->vmi, start_p, code, sizeof(code));
-	if (VMI_FAILURE == status) {
-		fprintf(stderr, "failed to read instructions from 0x%lx\n", start_p);
-		goto done;
-	}
-
-	if (cs_open(CS_ARCH_X86, CS_MODE_64, &handle) != CS_ERR_OK) {
-		fprintf(stderr, "failed to open capstone\n");
-		goto done;
-	}
-
-	/* Find CALL inst. and note address of inst. which follows. */
-	count = cs_disasm(handle, code, sizeof(code), 0, 0, &inst);
-	if (count > 0) {
-		size_t i;
-		for (i = 0; i < count; i++) {
-			if (0 == strcmp(inst[i].mnemonic, mnemonic)
-			 && (NULL == ops || 0 == strcmp(inst[i].op_str, ops))) {
-				offset = inst[i + 1].address;
-				break;
-			}
-		}
-		cs_free(inst, count);
-	} else {
-		fprintf(stderr, "failed to disassemble system-call handler\n");
-		goto done;
-	}
-
-	if (~0 == offset) {
-		fprintf(stderr, "did not find call in system-call handler\n");
-		goto done;
-	}
-
-	ret = start_v + offset;
-
-done:
-	if (0 != handle) {
-		cs_close(&handle);
-	}
-
-	return ret;
 }
 
 /**
