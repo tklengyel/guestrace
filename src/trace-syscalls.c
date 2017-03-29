@@ -145,7 +145,8 @@ typedef struct gt_paddr_record {
 	GtSyscallFunc   syscall_cb;
 	GtSysretFunc    sysret_cb;
 	gt_page_record *parent;
-	void           *data; /* Optional; passed to syscall_cb. */
+	void           *data;       /* Optional; passed to syscall_cb. */
+	gboolean        ignore_ret; /* Optional; passed to syscall_cb. */
 } gt_paddr_record;
 
 /*
@@ -161,6 +162,7 @@ typedef struct gt_syscall_state {
 	gt_paddr_record *syscall_paddr_record;
 	void            *data;
 	addr_t           thread_id; /* needed for teardown */
+	addr_t           return_addr;
 } gt_syscall_state;
 
 /* For SIGSEGV, etc. handling. */
@@ -194,7 +196,7 @@ gt_restore_return_addr (gpointer data)
 		goto done;
 	}
 
-	status = vmi_write_64_pa(loop->vmi, pa, &loop->return_addr);
+	status = vmi_write_64_pa(loop->vmi, pa, &sys_state->return_addr);
 	if (VMI_SUCCESS != status) {
 		fprintf(stderr, "error restoring stack; guest will likely fail\n");
 		goto done;
@@ -487,8 +489,12 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 
 		addr_t return_addr = 0;
 		status = vmi_read_64_va(vmi, return_loc, 0, &return_addr);
-		if (VMI_SUCCESS != status || return_addr != loop->return_addr) {
-			/* Return pointer not as expected. */
+		if (VMI_SUCCESS != status) {
+			/* Couldn't get return pointer off of stack */
+			goto done;
+		}
+
+		if (return_addr != loop->return_addr && false == record->ignore_ret) {
 			goto done;
 		}
 
@@ -497,6 +503,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		state                       = g_new0(gt_syscall_state, 1);
 		state->syscall_paddr_record = record;
 		state->thread_id            = thread_id;
+		state->return_addr          = return_addr;
 
 		if (GT_EMERGENCY == setjmp(loop->jmpbuf[event->vcpu_id])) {
 			/*
@@ -563,7 +570,7 @@ skip_sysret_cb:
 			response |= VMI_EVENT_RESPONSE_SET_REGISTERS;
 			 */
 			/* TODO: This takes 50 us, the the code above breaks Linux. */
-			vmi_set_vcpureg(vmi, loop->return_addr, RIP, event->vcpu_id);
+			vmi_set_vcpureg(vmi, state->return_addr, RIP, event->vcpu_id);
 
 			/*
 			 * This will free our gt_syscall_state object, but
@@ -1259,7 +1266,8 @@ gt_setup_mem_trap (GtLoop *loop,
                    addr_t va,
                    GtSyscallFunc syscall_cb,
                    GtSysretFunc sysret_cb,
-                   void *user_data)
+                   void *user_data,
+                   gboolean ignore_ret)
 {
 	size_t ret;
 	status_t status;
@@ -1359,6 +1367,7 @@ gt_setup_mem_trap (GtLoop *loop,
 	paddr_record->syscall_cb = syscall_cb;
 	paddr_record->sysret_cb  = sysret_cb;
 	paddr_record->data       = user_data;
+	paddr_record->ignore_ret = ignore_ret;
 
 	/* Write interrupt to our shadow page at the correct location. */
 	status = vmi_write_8_pa(loop->vmi,
@@ -1400,7 +1409,8 @@ gboolean gt_loop_set_cb(GtLoop *loop,
                         const char *kernel_func,
                         GtSyscallFunc syscall_cb,
                         GtSysretFunc sysret_cb,
-                        void *user_data)
+                        void *user_data,
+                        gboolean ignore_ret)
 {
 	gboolean fnval = FALSE;
 
@@ -1414,7 +1424,7 @@ gboolean gt_loop_set_cb(GtLoop *loop,
 		goto done;
 	}
 
-	syscall_trap = gt_setup_mem_trap(loop, sysaddr, syscall_cb, sysret_cb, user_data);
+	syscall_trap = gt_setup_mem_trap(loop, sysaddr, syscall_cb, sysret_cb, user_data, ignore_ret);
 	if (NULL == syscall_trap) {
 		goto done;
 	}
@@ -1451,7 +1461,8 @@ gt_loop_set_cbs(GtLoop *loop, const GtCallbackRegistry callbacks[])
 		                             callbacks[i].name,
 		                             callbacks[i].syscall_cb,
 		                             callbacks[i].sysret_cb,
-		                             callbacks[i].user_data);
+		                             callbacks[i].user_data,
+		                             callbacks[i].ignore_ret);
 		if (ok) {
 			count++;
 		}
