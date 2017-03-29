@@ -664,6 +664,7 @@ GtLoop *gt_loop_new(const char *guest_name)
 	int i;
 	GtLoop *loop;
 	int rc;
+	gboolean ok;
 	status_t status = VMI_FAILURE;
 
 	loop = g_new0(GtLoop, 1);
@@ -712,6 +713,13 @@ GtLoop *gt_loop_new(const char *guest_name)
 		break;
 	default:
 		fprintf(stderr, "unknown guest operating system\n");
+		status = VMI_FAILURE;
+		goto done;
+	}
+
+	ok = loop->os_functions->initialize(loop);
+	if (!ok) {
+		fprintf(stderr, "error initializing for operating system\n");
 		status = VMI_FAILURE;
 		goto done;
 	}

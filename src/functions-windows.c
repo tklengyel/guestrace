@@ -11,6 +11,62 @@ typedef enum privilege_mode {
 	MAXIMUM_MODE,
 } privilege_mode_t;
 
+enum {
+	OFFSET_KPCR_PRCB = 0,
+	OFFSET_KPRCB_CURRENTTHREAD,
+	OFFSET_KTHREAD_PREVIOUSMODE,
+	OFFSET_NT_TIB64_SELF,
+	OFFSET_TEB_CLIENTID,
+	OFFSET_BAD,
+};
+
+typedef struct offset_definition_t {
+	int   id;
+	char *struct_name;
+	char *field_name;
+} offset_definition_t;
+
+static offset_definition_t offset_def[] = {
+	{ OFFSET_KPCR_PRCB,            "_KPCR", "Prcb" },
+	{ OFFSET_KPRCB_CURRENTTHREAD,  "_KPRCB",  "CurrentThread" },
+	{ OFFSET_KTHREAD_PREVIOUSMODE, "_KTHREAD",  "PreviousMode" },
+	{ OFFSET_NT_TIB64_SELF,        "_NT_TIB64",  "Self" },
+	{ OFFSET_TEB_CLIENTID,         "_TEB",  "ClientId" },
+	{ OFFSET_BAD, NULL, NULL }
+};
+
+static addr_t   offset[OFFSET_BAD];
+static gboolean initialized = FALSE;
+
+static gboolean
+_gt_windows_initialize(GtLoop *loop)
+{
+	const char *rekall_profile;
+	status_t status;
+
+	g_assert(!initialized);
+
+	rekall_profile = vmi_get_rekall_path(loop->vmi);
+	if (NULL == rekall_profile) {
+		goto done;
+	}
+
+	for (int i = 0; i < OFFSET_BAD; i++) {
+		status = rekall_profile_symbol_to_rva(rekall_profile,
+		                                      offset_def[i].struct_name,
+		                                      offset_def[i].field_name,
+		                                     &offset[i]);
+		if (VMI_SUCCESS != status) {
+			goto done;
+		}
+	}
+
+	initialized = TRUE;
+
+done:
+	return initialized;
+}
+
 static privilege_mode_t
 _gt_windows_get_privilege_mode(vmi_instance_t vmi, vmi_event_t *event, gboolean do_flush)
 {
@@ -18,11 +74,8 @@ _gt_windows_get_privilege_mode(vmi_instance_t vmi, vmi_event_t *event, gboolean 
 	GtLoop *loop = event->data;
 	status_t status;
 	addr_t thread;
-	const char *rekall_profile;
-	static addr_t prcb;
-	static addr_t currentthread;
-	static addr_t previousmode;
-	static gboolean initialized = FALSE;
+
+	g_assert(initialized);
 
 	/*
 	 * Testing indicated pidcache flush was necessary to get vaddr
@@ -35,36 +88,20 @@ _gt_windows_get_privilege_mode(vmi_instance_t vmi, vmi_event_t *event, gboolean 
 		vmi_rvacache_flush(vmi);
 	}
 
-	if (!initialized) {
-		rekall_profile = vmi_get_rekall_path(loop->vmi);
-		if (NULL == rekall_profile) {
-			goto done;
-		}
-
-		status = rekall_profile_symbol_to_rva(rekall_profile, "_KPCR", "Prcb", &prcb);
-		if (VMI_SUCCESS != status) {
-			goto done;
-		}
-
-		status = rekall_profile_symbol_to_rva(rekall_profile, "_KPRCB", "CurrentThread", &currentthread);
-		if (VMI_SUCCESS != status) {
-			goto done;
-			}
-
-		status = rekall_profile_symbol_to_rva(rekall_profile, "_KTHREAD", "PreviousMode", &previousmode);
-		if (VMI_SUCCESS != status) {
-			goto done;
-		}
-
-		initialized = TRUE;
-	}
-
-	status = vmi_read_addr_va(loop->vmi, event->x86_regs->gs_base + prcb + currentthread, 0, &thread);
+	status = vmi_read_addr_va(loop->vmi,
+	                          event->x86_regs->gs_base
+	                        + offset[OFFSET_KPCR_PRCB]
+	                        + offset[OFFSET_KPRCB_CURRENTTHREAD],
+	                          0,
+	                         &thread);
 	if (VMI_SUCCESS != status) {
 		goto done;
 	}
 
-	status = vmi_read_8_va(loop->vmi, thread + previousmode, 0, &previous_mode);
+	status = vmi_read_8_va(loop->vmi,
+	                       thread + offset[OFFSET_KTHREAD_PREVIOUSMODE],
+	                       0,
+	                      &previous_mode);
 	if (VMI_SUCCESS != status) {
 		goto done;
 	}
@@ -77,8 +114,11 @@ static event_response_t
 _gt_windows_cr3_cb(vmi_instance_t vmi, vmi_event_t *event)
 {
 	GtLoop *loop = event->data;
-	uint8_t previous_mode = _gt_windows_get_privilege_mode(vmi, event, TRUE);
+	uint8_t previous_mode;
 
+	g_assert(initialized);
+
+	previous_mode = _gt_windows_get_privilege_mode(vmi, event, TRUE);
 	if (USER_MODE == previous_mode) {
 		loop->initialized = TRUE;
 		vmi_clear_event(loop->vmi, event, NULL);
@@ -92,6 +132,8 @@ static status_t
 _gt_windows_wait_for_first_process(GtLoop *loop)
 {
 	status_t status = VMI_FAILURE;
+
+	g_assert(initialized);
 
 	SETUP_REG_EVENT(&loop->cr3_event, CR3, VMI_REGACCESS_W, 0, _gt_windows_cr3_cb);
 
@@ -126,32 +168,10 @@ _windows_get_pid(GtLoop *loop, vmi_event_t *event)
 	access_context_t ctx;
 	gt_pid_t pid = 0;
 	reg_t gs = event->x86_regs->gs_base;
-	const char *rekall_profile;
-	static addr_t nttib;
-	static addr_t clientid;
-	static gboolean initialized = FALSE;
 
-	if (!initialized) {
-		rekall_profile = vmi_get_rekall_path(loop->vmi);
-		if (NULL == rekall_profile) {
-			goto done;
-		}
+	g_assert(initialized);
 
-		/* _NT_TIB64 is first field of _KPCR at GS register. */
-		status = rekall_profile_symbol_to_rva(rekall_profile, "_NT_TIB64", "Self", &nttib);
-		if (VMI_SUCCESS != status) {
-			goto done;
-		}
-
-		status = rekall_profile_symbol_to_rva(rekall_profile, "_TEB", "ClientId", &clientid);
-		if (VMI_SUCCESS != status) {
-			goto done;
-			}
-
-		initialized = TRUE;
-	}
-
-	status = vmi_read_addr_va(loop->vmi, gs + nttib, 0, &self);
+	status = vmi_read_addr_va(loop->vmi, gs + offset[OFFSET_NT_TIB64_SELF], 0, &self);
 	if (VMI_SUCCESS != status) {
 		pid = 0;
 		goto done;
@@ -159,7 +179,7 @@ _windows_get_pid(GtLoop *loop, vmi_event_t *event)
 
 	ctx.translate_mechanism = VMI_TM_PROCESS_DTB;
 	ctx.dtb = event->x86_regs->cr3;
-	ctx.addr = self + clientid;
+	ctx.addr = self + offset[OFFSET_TEB_CLIENTID];
 	count = vmi_read(loop->vmi, &ctx, &pid, sizeof pid);
 	if (sizeof pid != count) {
 		pid = 0;
@@ -233,6 +253,8 @@ _gt_windows_get_process_name(vmi_instance_t vmi, gt_pid_t pid)
 	unsigned long pid_offset = vmi_get_offset(vmi, "win_pid");
 	unsigned long name_offset = vmi_get_offset(vmi, "win_pname");
 
+	g_assert(initialized);
+
 	/* addresses for the linux process list and current process */
 	addr_t list_head = 0;
 	addr_t list_curr = 0;
@@ -277,8 +299,11 @@ static gboolean
 _gt_windows_is_user_call(GtLoop *loop, vmi_event_t *event)
 {
 	gboolean ok;
-	uint8_t previous_mode = _gt_windows_get_privilege_mode(loop->vmi, event, FALSE);
+	uint8_t previous_mode;
 
+	g_assert(initialized);
+
+	previous_mode = _gt_windows_get_privilege_mode(loop->vmi, event, FALSE);
 	if (USER_MODE == previous_mode) {
 		ok = TRUE;
 	} else {
@@ -289,6 +314,7 @@ _gt_windows_is_user_call(GtLoop *loop, vmi_event_t *event)
 }
 
 struct os_functions os_functions_windows = {
+	.initialize = _gt_windows_initialize,
 	.wait_for_first_process = _gt_windows_wait_for_first_process,
 	.get_pid = _windows_get_pid,
 	.get_tid = _windows_get_tid,

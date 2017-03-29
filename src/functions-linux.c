@@ -5,6 +5,58 @@
 #include "rekall.h"
 #include "trace-syscalls.h"
 
+enum {
+	OFFSET_CURRENT_TASK = 0,
+	OFFSET_TASK_STRUCT_TGID,
+	OFFSET_TASK_STRUCT_PID,
+	OFFSET_BAD,
+};
+
+typedef struct offset_definition_t {
+	int   id;
+	char *struct_name;
+	char *field_name;
+} offset_definition_t;
+
+static offset_definition_t offset_def[] = {
+	{ OFFSET_CURRENT_TASK,     "current_task",  NULL },
+	{ OFFSET_TASK_STRUCT_TGID, "task_struct",  "tgid" },
+	{ OFFSET_TASK_STRUCT_PID,  "task_struct",  "pid" },
+	{ OFFSET_BAD, NULL, NULL }
+};
+
+static addr_t   offset[OFFSET_BAD];
+static gboolean initialized = FALSE;
+
+static gboolean
+_gt_linux_initialize(GtLoop *loop)
+{
+	const char *rekall_profile;
+	status_t status;
+
+	g_assert(!initialized);
+
+	rekall_profile = vmi_get_rekall_path(loop->vmi);
+	if (NULL == rekall_profile) {
+		goto done;
+	}
+
+	for (int i = 0; i < OFFSET_BAD; i++) {
+		status = rekall_profile_symbol_to_rva(rekall_profile,
+		                                      offset_def[i].struct_name,
+		                                      offset_def[i].field_name,
+		                                     &offset[i]);
+		if (VMI_SUCCESS != status) {
+			goto done;
+		}
+	}
+
+	initialized = TRUE;
+
+done:
+	return initialized;
+}
+
 /*
  * The libvmi dispatcher invokes this function each time the guest writes to
  * CR3. We are interested in recognizing when the first user-space process
@@ -23,6 +75,8 @@ _gt_linux_cr3_cb(vmi_instance_t vmi, vmi_event_t *event) {
         GtLoop *loop = event->data;
         static addr_t prev = 0;
 
+	g_assert(initialized);
+
         if (prev != 0 && prev != event->x86_regs->cr3) {
                 vmi_clear_event(loop->vmi, event, NULL);
                 loop->initialized = TRUE;
@@ -38,6 +92,8 @@ static status_t
 _gt_linux_wait_for_first_process(GtLoop *loop)
 {
 	status_t status = VMI_FAILURE;
+
+	g_assert(initialized);
 
 	SETUP_REG_EVENT(&loop->cr3_event, CR3, VMI_REGACCESS_W, 0, _gt_linux_cr3_cb);
 
@@ -69,37 +125,16 @@ _linux_get_pid(GtLoop *loop, vmi_event_t *event)
 	status_t status;
 	uint32_t pid = 0;
 	reg_t gs = event->x86_regs->gs_base;
-	const char *rekall_profile;
-	static addr_t current_task_ptr;
 	static addr_t current_task;
-	static addr_t tgid;
-	static gboolean initialized = FALSE;
 
-	if (!initialized) {
-		rekall_profile = vmi_get_rekall_path(loop->vmi);
-		if (NULL == rekall_profile) {
-			goto done;
-		}
+	g_assert(initialized);
 
-		status = rekall_profile_symbol_to_rva(rekall_profile, "current_task", NULL, &current_task_ptr);
-		if (VMI_SUCCESS != status) {
-			goto done;
-		}
-
-		status = rekall_profile_symbol_to_rva(rekall_profile, "task_struct", "tgid", &tgid);
-		if (VMI_SUCCESS != status) {
-			goto done;
-		}
-
-		initialized = TRUE;
-	}
-
-	status = vmi_read_addr_va(loop->vmi, gs + current_task_ptr, 0, &current_task);
+	status = vmi_read_addr_va(loop->vmi, gs + offset[OFFSET_CURRENT_TASK], 0, &current_task);
 	if (VMI_SUCCESS != status) {
 		goto done;
 	}
 
-	status = vmi_read_32_va(loop->vmi, current_task + tgid, 0, &pid);
+	status = vmi_read_32_va(loop->vmi, current_task + offset[OFFSET_TASK_STRUCT_TGID], 0, &pid);
 	if (VMI_SUCCESS != status) {
 		pid = 0;
 		goto done;
@@ -115,37 +150,14 @@ _linux_get_tid(GtLoop *loop, vmi_event_t *event)
 	status_t status;
 	uint32_t tid = 0;
 	reg_t gs = event->x86_regs->gs_base;
-	const char *rekall_profile;
-	static addr_t current_task_ptr;
 	static addr_t current_task;
-	static addr_t tgid;
-	static gboolean initialized = FALSE;
 
-	if (!initialized) {
-		rekall_profile = vmi_get_rekall_path(loop->vmi);
-		if (NULL == rekall_profile) {
-			goto done;
-		}
-
-		status = rekall_profile_symbol_to_rva(rekall_profile, "current_task", NULL, &current_task_ptr);
-		if (VMI_SUCCESS != status) {
-			goto done;
-		}
-
-		status = rekall_profile_symbol_to_rva(rekall_profile, "task_struct", "pid", &tgid);
-		if (VMI_SUCCESS != status) {
-			goto done;
-		}
-
-		initialized = TRUE;
-	}
-
-	status = vmi_read_addr_va(loop->vmi, gs + current_task_ptr, 0, &current_task);
+	status = vmi_read_addr_va(loop->vmi, gs + offset[OFFSET_CURRENT_TASK], 0, &current_task);
 	if (VMI_SUCCESS != status) {
 		goto done;
 	}
 
-	status = vmi_read_32_va(loop->vmi, current_task + tgid, 0, &tid);
+	status = vmi_read_32_va(loop->vmi, current_task + offset[OFFSET_TASK_STRUCT_PID], 0, &tid);
 	if (VMI_SUCCESS != status) {
 		tid = 0;
 		goto done;
@@ -163,6 +175,8 @@ _gt_linux_get_process_name(vmi_instance_t vmi, gt_pid_t pid)
 	unsigned long task_offset = vmi_get_offset(vmi, "linux_tasks");
 	unsigned long pid_offset = vmi_get_offset(vmi, "linux_pid");
 	unsigned long name_offset = vmi_get_offset(vmi, "linux_name");
+
+	g_assert(initialized);
 
 	/* addresses for the linux process list and current process */
 	addr_t list_head = 0;
@@ -213,10 +227,13 @@ done:
 static gboolean
 _gt_linux_is_user_call(GtLoop *loop, vmi_event_t *event)
 {
+	g_assert(initialized);
+
 	return TRUE;
 }
 
 struct os_functions os_functions_linux = {
+	.initialize = _gt_linux_initialize,
 	.wait_for_first_process = _gt_linux_wait_for_first_process,
 	.get_pid = _linux_get_pid,
 	.get_tid = _linux_get_tid,

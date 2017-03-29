@@ -4,6 +4,7 @@
 /* Operating-system-specific operations. */
 struct os_functions {
 	/* <private> */
+	gboolean (*initialize) (GtLoop *loop);
 	status_t (*wait_for_first_process) (GtLoop *loop);
 	gt_pid_t (*get_pid) (GtLoop *loop, vmi_event_t *event);
 	gt_tid_t (*get_tid) (GtLoop *loop, vmi_event_t *event);
