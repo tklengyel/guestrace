@@ -156,13 +156,13 @@ typedef struct gt_paddr_record {
  * system return.
  *
  * Stored in gt_ret_addr_mapping.
- * 	Key:   addr_t (thread_id AKA thread's stack pointer)
+ * 	Key:   addr_t (return_loc AKA thread's stack pointer)
  * 	Value: gt_syscall_state
  */
 typedef struct gt_syscall_state {
 	gt_paddr_record *syscall_paddr_record;
 	void            *data;
-	addr_t           thread_id; /* needed for teardown */
+	addr_t           return_loc; /* needed for teardown */
 	addr_t           return_addr;
 } gt_syscall_state;
 
@@ -180,24 +180,18 @@ gt_restore_return_addr (gpointer data)
 {
 	status_t status;
 	gt_syscall_state *sys_state = data;
-	GtLoop *loop = sys_state->syscall_paddr_record->parent->loop;
 
-	if (loop->running) {
+	if (0 == sys_state->return_loc) {
 		/*
-		 * Save time: no need to restore stack if guestrace remains
-		 * attached. In this case, we will return through the
+		 * Save time: In this case, we will return through the
 		 * trampoline by setting RIP.
 		 */
 		goto done;
 	}
 
-	addr_t pa = vmi_translate_kv2p(loop->vmi, sys_state->thread_id);
-	if (0 == pa) {
-		fprintf(stderr, "error restoring stack; guest will likely fail\n");
-		goto done;
-	}
+	GtLoop *loop = sys_state->syscall_paddr_record->parent->loop;
 
-	status = vmi_write_64_pa(loop->vmi, pa, &sys_state->return_addr);
+	status = vmi_write_64_va(loop->vmi, sys_state->return_loc, 0, &sys_state->return_addr);
 	if (VMI_SUCCESS != status) {
 		fprintf(stderr, "error restoring stack; guest will likely fail\n");
 		goto done;
@@ -466,7 +460,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	if (event->interrupt_event.gla != loop->trampoline_addr) {
 		/* Type-one breakpoint (system call). */
 		status_t status;
-		addr_t thread_id, return_loc;
+		addr_t thread_id, return_loc, return_addr = 0;
 		gt_paddr_record *record;
 		gt_syscall_state *state;
 
@@ -487,15 +481,13 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		         | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
 
 		thread_id = loop->os_functions->get_tid(loop, event);
+		return_loc = event->x86_regs->rsp;
 
 		if (g_hash_table_contains(loop->gt_ret_addr_mapping,
 		                          GSIZE_TO_POINTER(thread_id))) {
 			goto done;
 		}
 
-		return_loc = event->x86_regs->rsp;
-
-		addr_t return_addr = 0;
 		status = vmi_read_64_va(vmi, return_loc, 0, &return_addr);
 		if (VMI_SUCCESS != status) {
 			/* Couldn't get return pointer off of stack */
@@ -506,7 +498,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 
 		state                       = g_new0(gt_syscall_state, 1);
 		state->syscall_paddr_record = record;
-		state->thread_id            = thread_id;
+		state->return_loc           = return_loc;
 		state->return_addr          = return_addr;
 
 		if (GT_EMERGENCY == setjmp(loop->jmpbuf[event->vcpu_id])) {
@@ -573,12 +565,13 @@ skip_sysret_cb:
 			 * Update our current VCPU's registers with the
 			 * new return address
 			 */
-			/*
-			event->x86_regs->rip = loop->return_addr;
-			response |= VMI_EVENT_RESPONSE_SET_REGISTERS;
-			 */
-			/* TODO: This takes 50 us, the the code above breaks Linux. */
 			vmi_set_vcpureg(vmi, state->return_addr, RIP, event->vcpu_id);
+
+			/*
+			 * Tell destruction routine to ignore restoring
+			 * the stack to save time
+			 */
+			state->return_loc = 0;
 
 			/*
 			 * This will free our gt_syscall_state object, but
