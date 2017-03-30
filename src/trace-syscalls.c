@@ -15,6 +15,7 @@
 #include "functions-windows.h"
 #include "trace-syscalls.h"
 #include "rekall.h"
+#include "state-stack.h"
 
 /*
  * High-level design:
@@ -115,55 +116,6 @@ uint8_t GT_BREAKPOINT_INST = 0xCC;
 /* Track whether we are in a GtSyscallFunc. */
 static gboolean in_syscall_cb = FALSE;
 
-/*
- * A record which describes a frame. The children of these records (themselves
- * of type gt_paddr_record) describe the physical addresses contained in the
- * frame which themselves contain a breakpoint. This is needed when the guest
- * operating system triggers such a breakpoint.
- *
- * Stored in gt_page_record_collection.
- * 	Key:   addr_t (shadow frame)
- * 	Value: gt_page_record
- */
-typedef struct gt_page_record {
-	addr_t      frame;
-	addr_t      shadow_frame;
-	GHashTable *children;
-	GtLoop     *loop;
-} gt_page_record;
-
-/*
- * A record which describes the information associated with a physical address
- * which contains a breakpoint.
- *
- * Stored in children field of gt_page_record.
- * 	Key:   addr_t (shadow offset)
- * 	Value: gt_paddr_record
- */
-typedef struct gt_paddr_record {
-	addr_t          offset;
-	GtSyscallFunc   syscall_cb;
-	GtSysretFunc    sysret_cb;
-	gt_page_record *parent;
-	void           *data;       /* Optional; passed to syscall_cb. */
-} gt_paddr_record;
-
-/*
- * Describes the state associated with a system call. This information is
- * stored and later made available while servicing the corresponding
- * system return.
- *
- * Stored in gt_ret_addr_mapping.
- * 	Key:   addr_t (return_loc AKA thread's stack pointer)
- * 	Value: gt_syscall_state
- */
-typedef struct gt_syscall_state {
-	gt_paddr_record *syscall_paddr_record;
-	void            *data;
-	addr_t           return_loc; /* needed for teardown */
-	addr_t           return_addr;
-} gt_syscall_state;
-
 /* For SIGSEGV, etc. handling. */
 static const int GT_EMERGENCY = 1;
 
@@ -195,8 +147,8 @@ gt_restore_return_addr(gpointer data)
 static void
 gt_restore_return_addrs(gpointer data)
 {
-	GQueue *stack = data;
-	g_queue_free_full(stack, gt_restore_return_addr);
+	state_stack_t *stack = data;
+	state_stack_free(stack, gt_restore_return_addr);
 }
 
 static void
@@ -341,21 +293,7 @@ gt_paddr_record_from_va(GtLoop *loop, addr_t va) {
 void
 gt_guest_free_syscall_state(GtGuestState *state, gt_tid_t thread_id)
 {
-	GQueue *stack = g_hash_table_lookup(state->loop->gt_ret_addr_mapping,
-	                                    GSIZE_TO_POINTER(thread_id));
-	if (NULL == stack) {
-		goto done;
-	}
-
-	g_queue_pop_head(stack);
-
-	if (g_queue_is_empty(stack)) {
-		g_hash_table_remove(state->loop->gt_ret_addr_mapping,
-		                    GSIZE_TO_POINTER(thread_id));
-	}
-
-done:
-	return;
+	state_stack_free_tid(state->loop, thread_id);
 }
 
 
@@ -479,39 +417,23 @@ skip_syscall_cb:
 			g_free(state);
 		} else {
 			/* Record system-call state. */
-			GQueue *stack;
-
-			stack = g_hash_table_lookup(loop->gt_ret_addr_mapping,
-			                            GSIZE_TO_POINTER(thread_id));
-			if (NULL == stack) {
-				stack = g_queue_new();
-				g_hash_table_insert(loop->gt_ret_addr_mapping,
-			                            GSIZE_TO_POINTER(thread_id),
-			                            stack);
-			}
-
-			g_queue_push_head(stack, state);
+			state_stack_push_tid(loop, thread_id, state);
 
 			/* Overwrite stack to return to trampoline. */
 			vmi_write_64_va(vmi, return_loc, 0, &loop->trampoline_addr);
 		}
 	} else {
 		/* Type-two breakpoint (system return). */
-		GQueue *stack;
 		gt_syscall_state *state;
 		addr_t thread_id = loop->os_functions->get_tid(loop, event);
 
-		stack = g_hash_table_lookup(loop->gt_ret_addr_mapping,
-		                            GSIZE_TO_POINTER(thread_id));
-		if (NULL == stack) {
+		state = state_stack_pop_tid(loop, thread_id);
+		if (NULL == state) {
+			/*
+			 * Likely clone() or similar call (i.e., TID changed
+			 * out from under us).
+			 */
 			goto done;
-		}
-
-		state = g_queue_pop_head(stack);
-
-		if (g_queue_is_empty(stack)) {
-			g_hash_table_remove(loop->gt_ret_addr_mapping,
-			                    GSIZE_TO_POINTER(thread_id));
 		}
 
 		gt_pid_t pid = loop->os_functions->get_pid(loop, event);

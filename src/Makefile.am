@@ -26,6 +26,7 @@ libguestrace_0_0_la_SOURCES = \
 	functions-linux.c \
 	functions-windows.c \
 	rekall.c \
+	state-stack.c \
 	trace-syscalls.c
 
 libguestraceincludedir = \
@@ -68,4 +69,5 @@ noinst_HEADERS = \
 	generated-linux.h \
 	guestrace-private.h \
 	rekall.h \
+	state-stack.h \
 	trace-syscalls.h
