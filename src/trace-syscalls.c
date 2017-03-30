@@ -146,7 +146,6 @@ typedef struct gt_paddr_record {
 	GtSysretFunc    sysret_cb;
 	gt_page_record *parent;
 	void           *data;       /* Optional; passed to syscall_cb. */
-	gboolean        ignore_ret; /* Optional; passed to syscall_cb. */
 } gt_paddr_record;
 
 /*
@@ -175,29 +174,29 @@ static const int GT_EMERGENCY = 1;
  * system-call return.
  */
 static void
-gt_restore_return_addr (gpointer data)
+gt_restore_return_addr(gpointer data)
 {
 	status_t status;
 	gt_syscall_state *sys_state = data;
-
-	if (0 == sys_state->return_loc) {
-		/*
-		 * Save time: In this case, we will return through the
-		 * trampoline by setting RIP.
-		 */
-		goto done;
-	}
-
 	GtLoop *loop = sys_state->syscall_paddr_record->parent->loop;
 
-	status = vmi_write_64_va(loop->vmi, sys_state->return_loc, 0, &sys_state->return_addr);
+	status = vmi_write_64_va(loop->vmi,
+				 sys_state->return_loc,
+				 0,
+				&sys_state->return_addr);
 	if (VMI_SUCCESS != status) {
-		fprintf(stderr, "error restoring stack; guest will likely fail\n");
-		goto done;
+		fprintf(stderr, "error restoring stack; guest will"
+				"guest will likely fail if running\n");
 	}
 
-done:
 	g_free(sys_state);
+}
+
+static void
+gt_restore_return_addrs(gpointer data)
+{
+	GQueue *stack = data;
+	g_queue_free_full(stack, gt_restore_return_addr);
 }
 
 static void
@@ -342,8 +341,21 @@ gt_paddr_record_from_va(GtLoop *loop, addr_t va) {
 void
 gt_guest_free_syscall_state(GtGuestState *state, gt_tid_t thread_id)
 {
-	g_hash_table_remove(state->loop->gt_ret_addr_mapping,
-			    GSIZE_TO_POINTER(thread_id));
+	GQueue *stack = g_hash_table_lookup(state->loop->gt_ret_addr_mapping,
+	                                    GSIZE_TO_POINTER(thread_id));
+	if (NULL == stack) {
+		goto done;
+	}
+
+	g_queue_pop_head(stack);
+
+	if (g_queue_is_empty(stack)) {
+		g_hash_table_remove(state->loop->gt_ret_addr_mapping,
+		                    GSIZE_TO_POINTER(thread_id));
+	}
+
+done:
+	return;
 }
 
 
@@ -426,11 +438,6 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		thread_id = loop->os_functions->get_tid(loop, event);
 		return_loc = event->x86_regs->rsp;
 
-		if (g_hash_table_contains(loop->gt_ret_addr_mapping,
-		                          GSIZE_TO_POINTER(thread_id))) {
-			goto done;
-		}
-
 		status = vmi_read_64_va(vmi, return_loc, 0, &return_addr);
 		if (VMI_SUCCESS != status) {
 			/* Couldn't get return pointer off of stack */
@@ -470,63 +477,73 @@ skip_syscall_cb:
 			vmi_set_vcpureg(vmi, state->return_addr, RIP, event->vcpu_id);
 
 			g_free(state);
-		} else if (!record->ignore_ret) {
+		} else {
 			/* Record system-call state. */
-			g_hash_table_insert(loop->gt_ret_addr_mapping,
-			                    GSIZE_TO_POINTER(thread_id),
-			                    state);
+			GQueue *stack;
+
+			stack = g_hash_table_lookup(loop->gt_ret_addr_mapping,
+			                            GSIZE_TO_POINTER(thread_id));
+			if (NULL == stack) {
+				stack = g_queue_new();
+				g_hash_table_insert(loop->gt_ret_addr_mapping,
+			                            GSIZE_TO_POINTER(thread_id),
+			                            stack);
+			}
+
+			g_queue_push_head(stack, state);
 
 			/* Overwrite stack to return to trampoline. */
 			vmi_write_64_va(vmi, return_loc, 0, &loop->trampoline_addr);
-		} else {
-			g_free(state);
 		}
 	} else {
 		/* Type-two breakpoint (system return). */
+		GQueue *stack;
 		gt_syscall_state *state;
 		addr_t thread_id = loop->os_functions->get_tid(loop, event);
 
-		state = g_hash_table_lookup(loop->gt_ret_addr_mapping,
+		stack = g_hash_table_lookup(loop->gt_ret_addr_mapping,
 		                            GSIZE_TO_POINTER(thread_id));
+		if (NULL == stack) {
+			goto done;
+		}
 
-		if (NULL != state) {
-			gt_pid_t pid = loop->os_functions->get_pid(loop, event);
+		state = g_queue_pop_head(stack);
 
-			if (GT_EMERGENCY == setjmp(loop->jmpbuf[event->vcpu_id])) {
-				/*
-				 * Jump here on SIGSEGV to avoid re-running
-				 * faulty instruction in callback. See
-				 * gt_loop_jmp_past_cb().
-				 */
-				goto skip_sysret_cb;
-			}
+		if (g_queue_is_empty(stack)) {
+			g_hash_table_remove(loop->gt_ret_addr_mapping,
+			                    GSIZE_TO_POINTER(thread_id));
+		}
 
-			state->syscall_paddr_record->sysret_cb(&(GtGuestState) { loop, vmi, event },
-			                                       pid,
-			                                       thread_id,
-			                                       state->data);
+		gt_pid_t pid = loop->os_functions->get_pid(loop, event);
+
+		if (GT_EMERGENCY == setjmp(loop->jmpbuf[event->vcpu_id])) {
+			/*
+			 * Jump here on SIGSEGV to avoid re-running
+			 * faulty instruction in callback. See
+			 * gt_loop_jmp_past_cb().
+			 */
+			goto skip_sysret_cb;
+		}
+
+		state->syscall_paddr_record->sysret_cb(&(GtGuestState) { loop, vmi, event },
+						       pid,
+						       thread_id,
+						       state->data);
 
 skip_sysret_cb:
-			memset(loop->jmpbuf[event->vcpu_id], 0x00, sizeof loop->jmpbuf[event->vcpu_id]);
+		memset(loop->jmpbuf[event->vcpu_id], 0x00, sizeof loop->jmpbuf[event->vcpu_id]);
 
-			/*
-			 * Update our current VCPU's registers with the
-			 * new return address
-			 */
-			vmi_set_vcpureg(vmi, state->return_addr, RIP, event->vcpu_id);
+		/*
+		 * Update our current VCPU's registers with the
+		 * new return address
+		 */
+		vmi_set_vcpureg(vmi, state->return_addr, RIP, event->vcpu_id);
 
-			/*
-			 * Tell destruction routine to ignore restoring
-			 * the stack to save time
-			 */
-			state->return_loc = 0;
-
-			/*
-			 * This will free our gt_syscall_state object, but
-			 * sysret_cb must have freed state->data.
-			 */
-			gt_guest_free_syscall_state(&(GtGuestState) { loop, vmi, event }, thread_id);
-		}
+		/*
+		 * This will free our gt_syscall_state object, but
+		 * sysret_cb must have freed state->data.
+		 */
+		g_free(state);
 	}
 
 done:
@@ -699,7 +716,7 @@ GtLoop *gt_loop_new(const char *guest_name)
 	loop->gt_ret_addr_mapping = g_hash_table_new_full(NULL,
 	                                                  NULL,
 	                                                  NULL,
-	                                                  gt_restore_return_addr);
+	                                                  gt_restore_return_addrs);
 
 	vmi_pause_vm(loop->vmi);
 
@@ -1218,8 +1235,7 @@ gt_setup_mem_trap (GtLoop *loop,
                    addr_t va,
                    GtSyscallFunc syscall_cb,
                    GtSysretFunc sysret_cb,
-                   void *user_data,
-                   gboolean ignore_ret)
+                   void *user_data)
 {
 	size_t ret;
 	status_t status;
@@ -1319,7 +1335,6 @@ gt_setup_mem_trap (GtLoop *loop,
 	paddr_record->syscall_cb = syscall_cb;
 	paddr_record->sysret_cb  = sysret_cb;
 	paddr_record->data       = user_data;
-	paddr_record->ignore_ret = ignore_ret;
 
 	/* Write interrupt to our shadow page at the correct location. */
 	status = vmi_write_8_pa(loop->vmi,
@@ -1361,8 +1376,7 @@ gboolean gt_loop_set_cb(GtLoop *loop,
                         const char *kernel_func,
                         GtSyscallFunc syscall_cb,
                         GtSysretFunc sysret_cb,
-                        void *user_data,
-                        gboolean ignore_ret)
+                        void *user_data)
 {
 	gboolean fnval = FALSE;
 
@@ -1376,7 +1390,7 @@ gboolean gt_loop_set_cb(GtLoop *loop,
 		goto done;
 	}
 
-	syscall_trap = gt_setup_mem_trap(loop, sysaddr, syscall_cb, sysret_cb, user_data, ignore_ret);
+	syscall_trap = gt_setup_mem_trap(loop, sysaddr, syscall_cb, sysret_cb, user_data);
 	if (NULL == syscall_trap) {
 		goto done;
 	}
@@ -1413,8 +1427,7 @@ gt_loop_set_cbs(GtLoop *loop, const GtCallbackRegistry callbacks[])
 		                             callbacks[i].name,
 		                             callbacks[i].syscall_cb,
 		                             callbacks[i].sysret_cb,
-		                             callbacks[i].user_data,
-		                             callbacks[i].ignore_ret);
+		                             callbacks[i].user_data);
 		if (ok) {
 			count++;
 		}
