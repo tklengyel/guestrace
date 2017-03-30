@@ -1,7 +1,5 @@
 #include "state-stack.h"
 
-typedef GQueue state_stack_t;
-
 void
 state_stack_free(state_stack_t *stack, GDestroyNotify free_func)
 {
@@ -19,11 +17,7 @@ state_stack_free_tid(GtLoop *loop, gt_tid_t tid)
 		goto done;
 	}
 
-	g_queue_pop_head(stack);
-
-	if (g_queue_is_empty(stack)) {
-		g_hash_table_remove(map, GSIZE_TO_POINTER(tid));
-	}
+	g_hash_table_remove(map, GSIZE_TO_POINTER(tid));
 
 done:
 	return;
