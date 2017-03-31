@@ -1,4 +1,4 @@
-/* Generated on Linux_4.9.14-200.fc25.x86_64 on 23 Mar 2017 10:38:15*/
+/* Generated on Linux_4.10.5-200.fc25.x86_64 on 30 Mar 2017 22:53:28*/
 
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
@@ -1595,13 +1595,6 @@ struct sys_exit_args {
 	reg_t arg0;
 };
 
-void *gt_linux_record_syscall_sys_exit_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
-{
-	struct sys_exit_args *args = g_new(struct sys_exit_args, 1);
-	args->arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	return args;
-}
-
 void gt_linux_print_syscall_sys_exit(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_exit_args *args = user_data;
@@ -1610,6 +1603,14 @@ void gt_linux_print_syscall_sys_exit(GtGuestState *state, gt_pid_t pid, gt_tid_t
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i) = %ld\n", pid, tid, proc, "sys_exit", (int) arg0, ret);
 	g_free(args);
+}
+
+void *gt_linux_record_syscall_sys_exit_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
+{
+	struct sys_exit_args *args = g_new(struct sys_exit_args, 1);
+	args->arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
+	gt_linux_print_syscall_sys_exit(state, pid, tid, args);
+    return NULL;
 }
 
 struct sys_wait4_args {
@@ -5708,13 +5709,6 @@ struct sys_exit_group_args {
 	reg_t arg0;
 };
 
-void *gt_linux_record_syscall_sys_exit_group_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
-{
-	struct sys_exit_group_args *args = g_new(struct sys_exit_group_args, 1);
-	args->arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	return args;
-}
-
 void gt_linux_print_syscall_sys_exit_group(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_exit_group_args *args = user_data;
@@ -5723,6 +5717,14 @@ void gt_linux_print_syscall_sys_exit_group(GtGuestState *state, gt_pid_t pid, gt
 	reg_t arg0 = args->arg0;
 	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(%i) = %ld\n", pid, tid, proc, "sys_exit_group", (int) arg0, ret);
 	g_free(args);
+}
+
+void *gt_linux_record_syscall_sys_exit_group_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
+{
+	struct sys_exit_group_args *args = g_new(struct sys_exit_group_args, 1);
+	args->arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
+	gt_linux_print_syscall_sys_exit_group(state, pid, tid, args);
+    return NULL;
 }
 
 struct sys_epoll_wait_args {
@@ -8498,7 +8500,7 @@ const GtCallbackRegistry GT_LINUX_SYSCALLS[] = {
 	{ "sys_fork", gt_linux_record_syscall_sys_fork_args, gt_linux_print_syscall_sys_fork },
 	{ "sys_vfork", gt_linux_record_syscall_sys_vfork_args, gt_linux_print_syscall_sys_vfork },
 	{ "stub_execve", gt_linux_record_syscall_sys_execve_args, gt_linux_print_syscall_sys_execve },
-	{ "sys_exit", gt_linux_record_syscall_sys_exit_args, gt_linux_print_syscall_sys_exit },
+	{ "sys_exit", gt_linux_record_syscall_sys_exit_args, NULL },
 	{ "sys_wait4", gt_linux_record_syscall_sys_wait4_args, gt_linux_print_syscall_sys_wait4 },
 	{ "sys_kill", gt_linux_record_syscall_sys_kill_args, gt_linux_print_syscall_sys_kill },
 	{ "sys_uname", gt_linux_record_syscall_sys_uname_args, gt_linux_print_syscall_sys_uname },
@@ -8669,7 +8671,7 @@ const GtCallbackRegistry GT_LINUX_SYSCALLS[] = {
 	{ "sys_clock_gettime", gt_linux_record_syscall_sys_clock_gettime_args, gt_linux_print_syscall_sys_clock_gettime },
 	{ "sys_clock_getres", gt_linux_record_syscall_sys_clock_getres_args, gt_linux_print_syscall_sys_clock_getres },
 	{ "sys_clock_nanosleep", gt_linux_record_syscall_sys_clock_nanosleep_args, gt_linux_print_syscall_sys_clock_nanosleep },
-	{ "sys_exit_group", gt_linux_record_syscall_sys_exit_group_args, gt_linux_print_syscall_sys_exit_group },
+	{ "sys_exit_group", gt_linux_record_syscall_sys_exit_group_args, NULL },
 	{ "sys_epoll_wait", gt_linux_record_syscall_sys_epoll_wait_args, gt_linux_print_syscall_sys_epoll_wait },
 	{ "sys_epoll_ctl", gt_linux_record_syscall_sys_epoll_ctl_args, gt_linux_print_syscall_sys_epoll_ctl },
 	{ "sys_tgkill", gt_linux_record_syscall_sys_tgkill_args, gt_linux_print_syscall_sys_tgkill },

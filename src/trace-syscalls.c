@@ -435,12 +435,14 @@ skip_syscall_cb:
 			vmi_set_vcpureg(vmi, state->return_addr, RIP, event->vcpu_id);
 
 			g_free(state);
-		} else {
+		} else if (NULL != record->sysret_cb) {
 			/* Record system-call state. */
 			state_stacks_tid_push(loop->state_stacks, thread_id, state);
 
 			/* Overwrite stack to return to trampoline. */
 			vmi_write_64_va(vmi, return_loc, 0, &loop->trampoline_addr);
+		} else {
+			/* Do nothing: sysret callback not registered. */
 		}
 	} else {
 		/* Type-two breakpoint (system return). */
@@ -1300,7 +1302,7 @@ done:
  * a system call.
  * @syscall_cb: a #GtSyscallFunc which will handle the named system call.
  * @sysret_cb: a #GtSysretFunc which will handle returns from the named
- * system call.
+ * system call, or NULL if the system call never returns.
  * @user_data: optional data which the guestrace event loop will pass to each call of @syscall_cb
  *
  * Sets the callback functions associated with @kernel_func. Each time
