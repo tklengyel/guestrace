@@ -129,8 +129,35 @@ static void
 gt_restore_return_addr(gpointer data, gpointer user_data)
 {
 	status_t status;
+	addr_t current_return_addr;
 	gt_syscall_state *sys_state = data;
 	GtLoop *loop = sys_state->syscall_paddr_record->parent->loop;
+
+	status = vmi_read_64_va(loop->vmi,
+	                        sys_state->return_loc,
+	                        0,
+	                       &current_return_addr);
+	if (VMI_SUCCESS != status) {
+		/* Couldn't get return pointer off of stack */
+		fprintf(stderr, "error checking stack; guest might"
+				"fail if running\n");
+		goto done;
+	}
+
+	if (current_return_addr != loop->trampoline_addr) {
+		/*
+		 * Previous stack from seems gone. For example, perhaps an
+		 * execve never returned through the kernel stack. We support
+		 * return-free instrumentation, but there still seems to exist
+		 * a race condition in execve. Execve is odd because it returns
+		 * on error, but not otherwise. An application might leave the
+		 * return instrumentation in place in the case of execve to
+		 * catch * failures.
+		 */
+		fprintf(stderr, "not restoring return address on stack for "
+		                "call state; existing address unexpected\n");
+		goto done;
+	}
 
 	status = vmi_write_64_va(loop->vmi,
 				 sys_state->return_loc,
@@ -138,8 +165,10 @@ gt_restore_return_addr(gpointer data, gpointer user_data)
 				&sys_state->return_addr);
 	if (VMI_SUCCESS != status) {
 		fprintf(stderr, "error restoring stack; guest will"
-				"guest will likely fail if running\n");
+				"likely fail if running\n");
 	}
+done:
+	return;
 }
 
 static void
