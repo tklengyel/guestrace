@@ -140,8 +140,6 @@ gt_restore_return_addr(gpointer data, gpointer user_data)
 		fprintf(stderr, "error restoring stack; guest will"
 				"guest will likely fail if running\n");
 	}
-
-	g_free(sys_state);
 }
 
 static void
