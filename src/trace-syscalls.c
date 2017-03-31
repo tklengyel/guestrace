@@ -15,7 +15,7 @@
 #include "functions-windows.h"
 #include "trace-syscalls.h"
 #include "rekall.h"
-#include "state-stack.h"
+#include "state-stacks.h"
 
 /*
  * High-level design:
@@ -126,7 +126,7 @@ static const int GT_EMERGENCY = 1;
  * system-call return.
  */
 static void
-gt_restore_return_addr(gpointer data)
+gt_restore_return_addr(gpointer data, gpointer user_data)
 {
 	status_t status;
 	gt_syscall_state *sys_state = data;
@@ -142,13 +142,6 @@ gt_restore_return_addr(gpointer data)
 	}
 
 	g_free(sys_state);
-}
-
-static void
-gt_restore_return_addrs(gpointer data)
-{
-	state_stack_t *stack = data;
-	state_stack_free(stack, gt_restore_return_addr);
 }
 
 static void
@@ -293,7 +286,7 @@ gt_paddr_record_from_va(GtLoop *loop, addr_t va) {
 void
 gt_guest_free_syscall_state(GtGuestState *state, gt_tid_t thread_id)
 {
-	state_stack_free_tid(state->loop, thread_id);
+	state_stacks_tid_free(state->loop->state_stacks, thread_id);
 }
 
 
@@ -417,7 +410,7 @@ skip_syscall_cb:
 			g_free(state);
 		} else {
 			/* Record system-call state. */
-			state_stack_push_tid(loop, thread_id, state);
+			state_stacks_tid_push(loop->state_stacks, thread_id, state);
 
 			/* Overwrite stack to return to trampoline. */
 			vmi_write_64_va(vmi, return_loc, 0, &loop->trampoline_addr);
@@ -427,7 +420,7 @@ skip_syscall_cb:
 		gt_syscall_state *state;
 		addr_t thread_id = loop->os_functions->get_tid(loop, event);
 
-		state = state_stack_pop_tid(loop, thread_id);
+		state = state_stacks_tid_pop(loop->state_stacks, thread_id);
 		if (NULL == state) {
 			/*
 			 * Likely clone() or similar call (i.e., TID changed
@@ -635,10 +628,7 @@ GtLoop *gt_loop_new(const char *guest_name)
 	                                                        NULL,
 	                                                        NULL,
 	                                                        gt_destroy_page_record);
-	loop->gt_ret_addr_mapping = g_hash_table_new_full(NULL,
-	                                                  NULL,
-	                                                  NULL,
-	                                                  gt_restore_return_addrs);
+	loop->state_stacks = state_stacks_new(gt_restore_return_addr);
 
 	vmi_pause_vm(loop->vmi);
 
@@ -1001,7 +991,7 @@ void gt_loop_run(GtLoop *loop)
 	vmi_pause_vm(loop->vmi);
 
 	/*
-	 * loop->running affects freeing of gt_ret_addr_mapping elements.
+	 * loop->running affects freeing of state_stacks elements.
 	 * Must be false or return pointers on kernel stack will not be reset.
 	 * Thus we check no code has been altered in an ill way here, since
 	 * this requirement is not obvious.
@@ -1009,7 +999,7 @@ void gt_loop_run(GtLoop *loop)
 	g_assert(!loop->running);
 
 	g_hash_table_remove_all(loop->gt_page_translation);
-	g_hash_table_remove_all(loop->gt_ret_addr_mapping);
+	state_stacks_remove_all(loop->state_stacks);
 	g_hash_table_remove_all(loop->gt_page_record_collection);
 
 	status = vmi_slat_switch(loop->vmi, 0);
@@ -1053,7 +1043,7 @@ void gt_loop_free(GtLoop *loop)
 	vmi_pause_vm(loop->vmi);
 
 	g_hash_table_destroy(loop->gt_page_translation);
-	g_hash_table_destroy(loop->gt_ret_addr_mapping);
+	state_stacks_destroy(loop->state_stacks);
 	g_hash_table_destroy(loop->gt_page_record_collection);
 
 	vmi_slat_destroy(loop->vmi, loop->shadow_view);
