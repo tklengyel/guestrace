@@ -24,9 +24,4 @@ struct os_functions {
 /* Intel breakpoint interrupt (INT 3) instruction. */
 extern uint8_t GT_BREAKPOINT_INST;
 
-addr_t _gt_find_addr_after_instruction(GtLoop *loop,
-                                      addr_t start_v,
-                                      char *mnemonic,
-                                      char *ops);
-
 #endif
