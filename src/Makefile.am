@@ -33,7 +33,8 @@ libguestraceincludedir = \
 	$(includedir)/libguestrace-@API_VERSION@/libguestrace
 
 libguestraceinclude_HEADERS = \
-	guestrace.h
+	guestrace.h \
+	rekall.h
 
 generated-linux.c: ../tools/gen-syscall-code-linux
 	../tools/gen-syscall-code-linux
@@ -68,6 +69,5 @@ noinst_HEADERS = \
 	generated-windows.h \
 	generated-linux.h \
 	guestrace-private.h \
-	rekall.h \
 	state-stacks.h \
 	trace-syscalls.h

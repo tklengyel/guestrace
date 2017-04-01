@@ -2,11 +2,31 @@
 #define REKALL_H
 
 #include <libvmi/libvmi.h>
+#include <glib.h>
 
-status_t
-rekall_profile_symbol_to_rva(const char *rekall_profile,
-                             const char *symbol,
-                             const char *subsymbol,
-                             addr_t *rva);
+#include "guestrace.h"
+
+enum {
+	GT_OFFSET_WINDOWS_KPCR_PRCB = 0,
+	GT_OFFSET_WINDOWS_KPRCB_CURRENTTHREAD,
+	GT_OFFSET_WINDOWS_KTHREAD_PREVIOUSMODE,
+	GT_OFFSET_WINDOWS_NT_TIB64_SELF,
+	GT_OFFSET_WINDOWS_TEB_CLIENTID,
+	GT_OFFSET_WINDOWS_EPROCESS_UNIQUEPROCESSID,
+	GT_OFFSET_WINDOWS_TEB_PROCESSENVIRONMENTBLOCK,
+	GT_OFFSET_WINDOWS_PEB_PROCESSPARAMETERS,
+	GT_OFFSET_WINDOWS_RTL_USER_PROCESS_PARAMETERS_IMAGEPATHNAME,
+	GT_OFFSET_WINDOWS_UNICODE_STRING_BUFFER,
+	GT_OFFSET_WINDOWS_BAD,
+};
+
+enum {
+	GT_OFFSET_LINUX_CURRENT_TASK = 0,
+	GT_OFFSET_LINUX_TASK_STRUCT_TGID,
+	GT_OFFSET_LINUX_TASK_STRUCT_PID,
+	GT_OFFSET_LINUX_BAD,
+};
+
+addr_t gt_rekall_get_offset(GtGuestState *state, int offset);
 
 #endif

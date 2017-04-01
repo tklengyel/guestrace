@@ -3,14 +3,8 @@
 #include "guestrace.h"
 #include "guestrace-private.h"
 #include "rekall.h"
+#include "rekall-private.h"
 #include "trace-syscalls.h"
-
-enum {
-	OFFSET_CURRENT_TASK = 0,
-	OFFSET_TASK_STRUCT_TGID,
-	OFFSET_TASK_STRUCT_PID,
-	OFFSET_BAD,
-};
 
 typedef struct offset_definition_t {
 	int   id;
@@ -19,20 +13,20 @@ typedef struct offset_definition_t {
 } offset_definition_t;
 
 static offset_definition_t offset_def[] = {
-	{ OFFSET_CURRENT_TASK,     "current_task",  NULL },
-	{ OFFSET_TASK_STRUCT_TGID, "task_struct",  "tgid" },
-	{ OFFSET_TASK_STRUCT_PID,  "task_struct",  "pid" },
-	{ OFFSET_BAD, NULL, NULL }
+	{ GT_OFFSET_LINUX_CURRENT_TASK,     "current_task",  NULL },
+	{ GT_OFFSET_LINUX_TASK_STRUCT_TGID, "task_struct",  "tgid" },
+	{ GT_OFFSET_LINUX_TASK_STRUCT_PID,  "task_struct",  "pid" },
+	{ GT_OFFSET_LINUX_BAD, NULL, NULL }
 };
 
-static addr_t   offset[OFFSET_BAD];
+static addr_t   offset[GT_OFFSET_LINUX_BAD];
 static gboolean initialized = FALSE;
 
 static gboolean
 _gt_linux_initialize(GtLoop *loop)
 {
 	const char *rekall_profile;
-	status_t status;
+	gboolean ok;
 
 	g_assert(!initialized);
 
@@ -41,12 +35,12 @@ _gt_linux_initialize(GtLoop *loop)
 		goto done;
 	}
 
-	for (int i = 0; i < OFFSET_BAD; i++) {
-		status = rekall_profile_symbol_to_rva(rekall_profile,
-		                                      offset_def[i].struct_name,
-		                                      offset_def[i].field_name,
-		                                     &offset[i]);
-		if (VMI_SUCCESS != status) {
+	for (int i = 0; i < GT_OFFSET_LINUX_BAD; i++) {
+		ok = gt_rekall_symbol_to_rva(rekall_profile,
+		                             offset_def[i].struct_name,
+		                             offset_def[i].field_name,
+		                            &offset[i]);
+		if (!ok) {
 			goto done;
 		}
 	}
@@ -129,12 +123,12 @@ _linux_get_pid(GtLoop *loop, vmi_event_t *event)
 
 	g_assert(initialized);
 
-	status = vmi_read_addr_va(loop->vmi, gs + offset[OFFSET_CURRENT_TASK], 0, &current_task);
+	status = vmi_read_addr_va(loop->vmi, gs + offset[GT_OFFSET_LINUX_CURRENT_TASK], 0, &current_task);
 	if (VMI_SUCCESS != status) {
 		goto done;
 	}
 
-	status = vmi_read_32_va(loop->vmi, current_task + offset[OFFSET_TASK_STRUCT_TGID], 0, &pid);
+	status = vmi_read_32_va(loop->vmi, current_task + offset[GT_OFFSET_LINUX_TASK_STRUCT_TGID], 0, &pid);
 	if (VMI_SUCCESS != status) {
 		pid = 0;
 		goto done;
@@ -152,12 +146,12 @@ _linux_get_tid(GtLoop *loop, vmi_event_t *event)
 	reg_t gs = event->x86_regs->gs_base;
 	static addr_t current_task;
 
-	status = vmi_read_addr_va(loop->vmi, gs + offset[OFFSET_CURRENT_TASK], 0, &current_task);
+	status = vmi_read_addr_va(loop->vmi, gs + offset[GT_OFFSET_LINUX_CURRENT_TASK], 0, &current_task);
 	if (VMI_SUCCESS != status) {
 		goto done;
 	}
 
-	status = vmi_read_32_va(loop->vmi, current_task + offset[OFFSET_TASK_STRUCT_PID], 0, &tid);
+	status = vmi_read_32_va(loop->vmi, current_task + offset[GT_OFFSET_LINUX_TASK_STRUCT_PID], 0, &tid);
 	if (VMI_SUCCESS != status) {
 		tid = 0;
 		goto done;
@@ -232,6 +226,12 @@ _gt_linux_is_user_call(GtLoop *loop, vmi_event_t *event)
 	return TRUE;
 }
 
+static addr_t
+_gt_linux_get_offset(int offset_id)
+{
+	return offset_id > GT_OFFSET_WINDOWS_BAD ? 0 : offset[offset_id];
+}
+
 struct os_functions os_functions_linux = {
 	.initialize = _gt_linux_initialize,
 	.wait_for_first_process = _gt_linux_wait_for_first_process,
@@ -239,4 +239,5 @@ struct os_functions os_functions_linux = {
 	.get_tid = _linux_get_tid,
 	.get_process_name = _gt_linux_get_process_name,
 	.is_user_call = _gt_linux_is_user_call,
+	.get_offset = _gt_linux_get_offset,
 };

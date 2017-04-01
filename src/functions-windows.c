@@ -3,6 +3,7 @@
 #include "guestrace.h"
 #include "guestrace-private.h"
 #include "rekall.h"
+#include "rekall-private.h"
 #include "trace-syscalls.h"
 
 typedef enum privilege_mode {
@@ -11,15 +12,6 @@ typedef enum privilege_mode {
 	MAXIMUM_MODE,
 } privilege_mode_t;
 
-enum {
-	OFFSET_KPCR_PRCB = 0,
-	OFFSET_KPRCB_CURRENTTHREAD,
-	OFFSET_KTHREAD_PREVIOUSMODE,
-	OFFSET_NT_TIB64_SELF,
-	OFFSET_TEB_CLIENTID,
-	OFFSET_BAD,
-};
-
 typedef struct offset_definition_t {
 	int   id;
 	char *struct_name;
@@ -27,22 +19,27 @@ typedef struct offset_definition_t {
 } offset_definition_t;
 
 static offset_definition_t offset_def[] = {
-	{ OFFSET_KPCR_PRCB,            "_KPCR", "Prcb" },
-	{ OFFSET_KPRCB_CURRENTTHREAD,  "_KPRCB",  "CurrentThread" },
-	{ OFFSET_KTHREAD_PREVIOUSMODE, "_KTHREAD",  "PreviousMode" },
-	{ OFFSET_NT_TIB64_SELF,        "_NT_TIB64",  "Self" },
-	{ OFFSET_TEB_CLIENTID,         "_TEB",  "ClientId" },
-	{ OFFSET_BAD, NULL, NULL }
+	{ GT_OFFSET_WINDOWS_KPCR_PRCB,                                 "_KPCR", "Prcb" },
+	{ GT_OFFSET_WINDOWS_KPRCB_CURRENTTHREAD,                       "_KPRCB",  "CurrentThread" },
+	{ GT_OFFSET_WINDOWS_KTHREAD_PREVIOUSMODE,                      "_KTHREAD",  "PreviousMode" },
+	{ GT_OFFSET_WINDOWS_NT_TIB64_SELF,                             "_NT_TIB64",  "Self" },
+	{ GT_OFFSET_WINDOWS_TEB_CLIENTID,                              "_TEB",  "ClientId" },
+	{ GT_OFFSET_WINDOWS_EPROCESS_UNIQUEPROCESSID,                  "_EPROCESS", "UniqueProcessId" },
+	{ GT_OFFSET_WINDOWS_TEB_PROCESSENVIRONMENTBLOCK,               "_TEB", "ProcessEnvironmentBlock" },
+	{ GT_OFFSET_WINDOWS_PEB_PROCESSPARAMETERS,                     "_PEB", "ProcessParameters" },
+	{ GT_OFFSET_WINDOWS_RTL_USER_PROCESS_PARAMETERS_IMAGEPATHNAME, "_PEB", "ProcessParameters" },
+	{ GT_OFFSET_WINDOWS_UNICODE_STRING_BUFFER,                     "_UNICODE_STRING", "Buffer" },
+	{ GT_OFFSET_WINDOWS_BAD, NULL, NULL }
 };
 
-static addr_t   offset[OFFSET_BAD];
+static addr_t   offset[GT_OFFSET_WINDOWS_BAD];
 static gboolean initialized = FALSE;
 
 static gboolean
 _gt_windows_initialize(GtLoop *loop)
 {
 	const char *rekall_profile;
-	status_t status;
+	gboolean ok;
 
 	g_assert(!initialized);
 
@@ -51,12 +48,12 @@ _gt_windows_initialize(GtLoop *loop)
 		goto done;
 	}
 
-	for (int i = 0; i < OFFSET_BAD; i++) {
-		status = rekall_profile_symbol_to_rva(rekall_profile,
-		                                      offset_def[i].struct_name,
-		                                      offset_def[i].field_name,
-		                                     &offset[i]);
-		if (VMI_SUCCESS != status) {
+	for (int i = 0; i < GT_OFFSET_WINDOWS_BAD; i++) {
+		ok = gt_rekall_symbol_to_rva(rekall_profile,
+		                             offset_def[i].struct_name,
+		                             offset_def[i].field_name,
+		                            &offset[i]);
+		if (!ok) {
 			goto done;
 		}
 	}
@@ -90,8 +87,8 @@ _gt_windows_get_privilege_mode(vmi_instance_t vmi, vmi_event_t *event, gboolean 
 
 	status = vmi_read_addr_va(loop->vmi,
 	                          event->x86_regs->gs_base
-	                        + offset[OFFSET_KPCR_PRCB]
-	                        + offset[OFFSET_KPRCB_CURRENTTHREAD],
+	                        + offset[GT_OFFSET_WINDOWS_KPCR_PRCB]
+	                        + offset[GT_OFFSET_WINDOWS_KPRCB_CURRENTTHREAD],
 	                          0,
 	                         &thread);
 	if (VMI_SUCCESS != status) {
@@ -99,7 +96,7 @@ _gt_windows_get_privilege_mode(vmi_instance_t vmi, vmi_event_t *event, gboolean 
 	}
 
 	status = vmi_read_8_va(loop->vmi,
-	                       thread + offset[OFFSET_KTHREAD_PREVIOUSMODE],
+	                       thread + offset[GT_OFFSET_WINDOWS_KTHREAD_PREVIOUSMODE],
 	                       0,
 	                      &previous_mode);
 	if (VMI_SUCCESS != status) {
@@ -171,7 +168,7 @@ _windows_get_pid(GtLoop *loop, vmi_event_t *event)
 
 	g_assert(initialized);
 
-	status = vmi_read_addr_va(loop->vmi, gs + offset[OFFSET_NT_TIB64_SELF], 0, &self);
+	status = vmi_read_addr_va(loop->vmi, gs + offset[GT_OFFSET_WINDOWS_NT_TIB64_SELF], 0, &self);
 	if (VMI_SUCCESS != status) {
 		pid = 0;
 		goto done;
@@ -179,7 +176,7 @@ _windows_get_pid(GtLoop *loop, vmi_event_t *event)
 
 	ctx.translate_mechanism = VMI_TM_PROCESS_DTB;
 	ctx.dtb = event->x86_regs->cr3;
-	ctx.addr = self + offset[OFFSET_TEB_CLIENTID];
+	ctx.addr = self + offset[GT_OFFSET_WINDOWS_TEB_CLIENTID];
 	count = vmi_read(loop->vmi, &ctx, &pid, sizeof pid);
 	if (sizeof pid != count) {
 		pid = 0;
@@ -211,12 +208,12 @@ _windows_get_tid(GtLoop *loop, vmi_event_t *event)
 		}
 
 		/* _NT_TIB64 is first field of _KPCR at GS register. */
-		status = rekall_profile_symbol_to_rva(rekall_profile, "_NT_TIB64", "Self", &nttib);
+		status = gt_rekall_symbol_to_rva(rekall_profile, "_NT_TIB64", "Self", &nttib);
 		if (VMI_SUCCESS != status) {
 			goto done;
 		}
 
-		status = rekall_profile_symbol_to_rva(rekall_profile, "_TEB", "ClientId", &clientid);
+		status = gt_rekall_symbol_to_rva(rekall_profile, "_TEB", "ClientId", &clientid);
 		if (VMI_SUCCESS != status) {
 			goto done;
 			}
@@ -313,6 +310,12 @@ _gt_windows_is_user_call(GtLoop *loop, vmi_event_t *event)
 	return ok;
 }
 
+static addr_t
+_gt_windows_get_offset(int offset_id)
+{
+	return offset_id > GT_OFFSET_WINDOWS_BAD ? 0 : offset[offset_id];
+}
+
 struct os_functions os_functions_windows = {
 	.initialize = _gt_windows_initialize,
 	.wait_for_first_process = _gt_windows_wait_for_first_process,
@@ -320,4 +323,5 @@ struct os_functions os_functions_windows = {
 	.get_tid = _windows_get_tid,
 	.get_process_name = _gt_windows_get_process_name,
 	.is_user_call = _gt_windows_is_user_call,
+	.get_offset = _gt_windows_get_offset,
 };
