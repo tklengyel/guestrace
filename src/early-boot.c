@@ -36,7 +36,7 @@ early_boot_wait_for_os_load(GtLoop *loop)
 		usleep(100000);
 	}
 
-	loop->lstar_addr = lstar;
+	loop->lstar_addr = GT_PAGE_ADDR(lstar);
 
 done:
 	return status;
