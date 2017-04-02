@@ -81,7 +81,7 @@ done:
 }
 
 addr_t
-gt_rekall_get_offset(GtGuestState *state, int offset_id)
+gt_rekall_offset(GtGuestState *state, int offset_id)
 {
 	return state->loop->os_functions->get_offset(offset_id);
 }

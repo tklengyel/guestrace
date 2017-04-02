@@ -27,6 +27,6 @@ enum {
 	GT_OFFSET_LINUX_BAD,
 };
 
-addr_t gt_rekall_get_offset(GtGuestState *state, int offset);
+addr_t gt_rekall_offset(GtGuestState *state, int offset);
 
 #endif
