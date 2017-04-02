@@ -965,29 +965,41 @@ void gt_loop_free(GtLoop *loop)
 		goto done;
 	}
 
+	if (NULL == loop->vmi) {
+		goto done;
+	}
+
 	vmi_pause_vm(loop->vmi);
 
 	g_hash_table_destroy(loop->gt_page_translation);
 	state_stacks_destroy(loop->state_stacks);
 	g_hash_table_destroy(loop->gt_page_record_collection);
 
-	vmi_slat_destroy(loop->vmi, loop->shadow_view);
-	vmi_slat_set_domain_state(loop->vmi, FALSE);
-	/* TODO: find out why this isn't decreasing main memory on next run of guestrace */
-	xc_domain_setmaxmem(loop->xch, loop->domid, loop->init_mem_size);
+	if (0 != loop->shadow_view) {
+		vmi_slat_destroy(loop->vmi, loop->shadow_view);
+		vmi_slat_set_domain_state(loop->vmi, FALSE);
+	}
 
-	libxl_ctx_free(loop->ctx);
-	xc_interface_close(loop->xch);
+	if (NULL != loop->ctx) {
+		libxl_ctx_free(loop->ctx);
+	}
+
+	if (NULL != loop->xch) {
+		xc_domain_setmaxmem(loop->xch, loop->domid, loop->init_mem_size);
+		xc_interface_close(loop->xch);
+	}
 
 	vmi_resume_vm(loop->vmi);
 
 	vmi_destroy(loop->vmi);
 
-	g_main_loop_unref(loop->g_main_loop);
-
-	g_free(loop);
+	if (NULL != loop->g_main_loop) {
+		g_main_loop_unref(loop->g_main_loop);
+	}
 
 done:
+	g_free(loop);
+
 	return;
 }
 
