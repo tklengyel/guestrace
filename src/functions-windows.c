@@ -27,7 +27,7 @@ static offset_definition_t offset_def[] = {
 	{ GT_OFFSET_WINDOWS_EPROCESS_UNIQUEPROCESSID,                  "_EPROCESS", "UniqueProcessId" },
 	{ GT_OFFSET_WINDOWS_TEB_PROCESSENVIRONMENTBLOCK,               "_TEB", "ProcessEnvironmentBlock" },
 	{ GT_OFFSET_WINDOWS_PEB_PROCESSPARAMETERS,                     "_PEB", "ProcessParameters" },
-	{ GT_OFFSET_WINDOWS_RTL_USER_PROCESS_PARAMETERS_IMAGEPATHNAME, "_PEB", "ProcessParameters" },
+	{ GT_OFFSET_WINDOWS_RTL_USER_PROCESS_PARAMETERS_IMAGEPATHNAME, "_PEB", "ImagePathName" },
 	{ GT_OFFSET_WINDOWS_UNICODE_STRING_BUFFER,                     "_UNICODE_STRING", "Buffer" },
 	{ GT_OFFSET_WINDOWS_BAD, NULL, NULL }
 };
