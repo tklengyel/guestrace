@@ -34,6 +34,7 @@ typedef struct gt_page_record {
 typedef struct gt_paddr_record {
 	/* <private> */
 	addr_t          offset;
+	const char     *name;
 	GtSyscallFunc   syscall_cb;
 	GtSysretFunc    sysret_cb;
 	gt_page_record *parent;
@@ -65,5 +66,6 @@ void              state_stacks_remove_all(state_stacks_t *collection);
 void              state_stacks_tid_free(state_stacks_t *collection, gt_tid_t tid);
 void              state_stacks_tid_push(state_stacks_t *collection, gt_tid_t tid, gt_syscall_state *state);
 gt_syscall_state *state_stacks_tid_pop(state_stacks_t *collection, gt_tid_t tid);
+gt_syscall_state *state_stacks_tid_dequeue(state_stacks_t *collection, gt_tid_t tid);
 
 #endif
