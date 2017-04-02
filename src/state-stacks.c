@@ -97,3 +97,24 @@ state_stacks_tid_pop(state_stacks_t *collection, gt_tid_t tid)
 done:
 	return state;
 }
+
+gt_syscall_state *
+state_stacks_tid_dequeue(state_stacks_t *collection, gt_tid_t tid)
+{
+	state_stack_t *stack;
+	void *state = NULL;
+
+	stack = g_hash_table_lookup(collection->map, GSIZE_TO_POINTER(tid));
+	if (NULL == stack) {
+		goto done;
+	}
+
+	state = g_queue_pop_tail(stack->stack);
+
+	if (g_queue_is_empty(stack->stack)) {
+		g_hash_table_remove(collection->map, GSIZE_TO_POINTER(tid));
+	}
+
+done:
+	return state;
+}

@@ -316,7 +316,10 @@ gt_paddr_record_from_va(GtLoop *loop, addr_t va) {
 void
 gt_guest_free_syscall_state(GtGuestState *state, gt_tid_t thread_id)
 {
-	state_stacks_tid_free(state->loop->state_stacks, thread_id);
+	gt_syscall_state *sys_state;
+
+	sys_state = state_stacks_tid_dequeue(state->loop->state_stacks, thread_id);
+	g_free(sys_state);
 }
 
 
@@ -340,6 +343,14 @@ gt_guest_hijack_return(GtGuestState *state, reg_t retval)
 {
 	state->hijack = true;
 	state->hijack_return = retval;
+
+	return TRUE;
+}
+
+gboolean
+gt_guest_drop_return_breakpoint(GtGuestState *state, gt_tid_t thread_id)
+{
+	state->skip_return = TRUE;
 
 	return TRUE;
 }
@@ -376,7 +387,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		gt_paddr_record *record;
 		gt_syscall_state *state;
 
-		GtGuestState sys_state = { loop, vmi, event, FALSE, 0 };
+		GtGuestState sys_state = { loop, vmi, event, FALSE, FALSE, 0 };
 
 		/* Lookup record corresponding to breakpoint address. */
 		record = gt_paddr_record_from_va(loop,
@@ -415,30 +426,42 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		/* Invoke system-call callback in record. */
 		in_syscall_cb = TRUE;
 		loop->count++;
-		state->data   = record->syscall_cb(&sys_state,
-		                                    pid,
-		                                    thread_id,
-		                                    record->data);
+		state->data = record->syscall_cb(&sys_state,
+		                                  pid,
+		                                  thread_id,
+		                                  record->data);
 		in_syscall_cb = FALSE;
 
 skip_syscall_cb:
 		memset(loop->jmpbuf[event->vcpu_id], 0x00, sizeof loop->jmpbuf[event->vcpu_id]);
 
-		//fprintf(stderr, "%s\n", "syscall");
-
 		if (sys_state.hijack) {
+			/*
+			 * Application called gt_guest_hijack_return().
+			 * Remove record pushed above.
+			 */
+			g_assert(NULL == state->data);
+
 			vmi_set_vcpureg(vmi, sys_state.hijack_return, RAX, event->vcpu_id);
 			vmi_set_vcpureg(vmi, state->return_addr, RIP, event->vcpu_id);
 
 			g_free(state);
-		} else if (NULL != record->sysret_cb) {
+		} else if (FALSE == sys_state.skip_return
+		        && NULL != record->sysret_cb) {
+			/* Normal code path. */
+
 			/* Record system-call state. */
 			state_stacks_tid_push(loop->state_stacks, thread_id, state);
 
 			/* Overwrite stack to return to trampoline. */
 			vmi_write_64_va(vmi, return_loc, 0, &loop->trampoline_addr);
 		} else {
-			/* Do nothing: sysret callback not registered. */
+			/*
+			 * Sysret callback not registered or application called
+			 * gt_guest_drop_return_breakpoint().
+			 */
+			g_assert(NULL == state->data);
+			g_free(state);
 		}
 	} else {
 		/* Type-two breakpoint (system return). */
@@ -465,7 +488,7 @@ skip_syscall_cb:
 			goto skip_sysret_cb;
 		}
 
-		state->syscall_paddr_record->sysret_cb(&(GtGuestState) { loop, vmi, event },
+		state->syscall_paddr_record->sysret_cb(&(GtGuestState) { loop, vmi, event, FALSE, FALSE, 0 },
 						       pid,
 						       thread_id,
 						       state->data);
@@ -473,13 +496,8 @@ skip_syscall_cb:
 skip_sysret_cb:
 		memset(loop->jmpbuf[event->vcpu_id], 0x00, sizeof loop->jmpbuf[event->vcpu_id]);
 
-		/* Tell LibVMI to reset registers */
-		response |= VMI_EVENT_RESPONSE_SET_REGISTERS;
-
-		/*
-		 * Set RIP to the original return location
-		 */
-		event->x86_regs->rip = state->return_addr;
+		/* Set RIP to the original return location. */
+		vmi_set_vcpureg(vmi, state->return_addr, RIP, event->vcpu_id);
 
 		/*
 		 * This will free our gt_syscall_state object, but
@@ -1175,6 +1193,7 @@ gt_destroy_paddr_record (gpointer data) {
 static gt_paddr_record *
 gt_setup_mem_trap (GtLoop *loop,
                    addr_t va,
+                   const char *name,
                    GtSyscallFunc syscall_cb,
                    GtSysretFunc sysret_cb,
                    void *user_data)
@@ -1273,6 +1292,7 @@ gt_setup_mem_trap (GtLoop *loop,
 	/* Create physical-address record and add to page record. */
 	paddr_record             = g_new0(gt_paddr_record, 1);
 	paddr_record->offset     = shadow_offset;
+	paddr_record->name       = name;
 	paddr_record->parent     = page_record;
 	paddr_record->syscall_cb = syscall_cb;
 	paddr_record->sysret_cb  = sysret_cb;
@@ -1332,7 +1352,7 @@ gboolean gt_loop_set_cb(GtLoop *loop,
 		goto done;
 	}
 
-	syscall_trap = gt_setup_mem_trap(loop, sysaddr, syscall_cb, sysret_cb, user_data);
+	syscall_trap = gt_setup_mem_trap(loop, sysaddr, kernel_func, syscall_cb, sysret_cb, user_data);
 	if (NULL == syscall_trap) {
 		goto done;
 	}

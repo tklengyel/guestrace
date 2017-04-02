@@ -86,6 +86,7 @@ struct _GtGuestState {
 	GtLoop         *loop;
 	vmi_instance_t  vmi;
 	vmi_event_t    *event;
+	gboolean        skip_return;
 	gboolean        hijack;
 	reg_t           hijack_return;
 };
