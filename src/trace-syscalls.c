@@ -341,8 +341,6 @@ gt_guest_free_syscall_state(GtGuestState *state, gt_tid_t thread_id)
 gboolean
 gt_guest_hijack_return(GtGuestState *state, reg_t retval)
 {
-fprintf(stderr, "HIJACK\n");
-return TRUE;
 	state->hijack = true;
 	state->hijack_return = retval;
 
