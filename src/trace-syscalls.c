@@ -142,7 +142,7 @@ gt_restore_return_addr(gpointer data, gpointer user_data)
 	                       &current_return_addr);
 	if (VMI_SUCCESS != status) {
 		/* Couldn't get return pointer off of stack */
-		fprintf(stderr, "error checking stack; guest might"
+		fprintf(stderr, "error checking stack; guest might "
 				"fail if running\n");
 		goto done;
 	}
