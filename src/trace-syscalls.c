@@ -355,6 +355,17 @@ gt_guest_drop_return_breakpoint(GtGuestState *state, gt_tid_t thread_id)
 	return TRUE;
 }
 
+static event_response_t
+gt_original_slat_singlestep(vmi_event_t *event)
+{
+	/* Set VCPUs SLAT to use original for one step. */
+	event->slat_id = 0;
+
+	/* Turn on single-step and switch slat_id after return. */
+	return VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
+             | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
+}
+
 /*
  * Service a triggered breakpoint. Restore the original page table for one
  * single-step iteration and invoke the system call or return callback.
@@ -366,17 +377,14 @@ gt_guest_drop_return_breakpoint(GtGuestState *state, gt_tid_t thread_id)
  */
 static event_response_t
 gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
-	/* Set VCPUs SLAT to use original for one step. */
-	event->slat_id = 0;
-
-	/* Turn on single-step and switch slat_id after return. */
-	event_response_t response = VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
-	                          | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
+	event_response_t response = VMI_EVENT_RESPONSE_NONE;
 
 	GtLoop *loop = event->data;
 	event->interrupt_event.reinject = 0;
 
 	if (!loop->os_functions->is_user_call(loop, event)) {
+		response = gt_original_slat_singlestep(event);
+
 		goto done;
 	}
 
@@ -386,6 +394,9 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		addr_t thread_id, return_loc, return_addr = 0;
 		gt_paddr_record *record;
 		gt_syscall_state *state;
+
+		/* Set VCPUs SLAT to use original for one step. */
+		response = gt_original_slat_singlestep(event);
 
 		GtGuestState sys_state = { loop, vmi, event, FALSE, FALSE, 0 };
 
@@ -444,6 +455,13 @@ skip_syscall_cb:
 
 			vmi_set_vcpureg(vmi, sys_state.hijack_return, RAX, event->vcpu_id);
 			vmi_set_vcpureg(vmi, state->return_addr, RIP, event->vcpu_id);
+
+			/*
+			 * Revert to avoid changing SLAT and setting singlestep.
+			 * We are hijacking RIP, so no need to remove breakpoint
+			 * for one step.
+			 */
+			response = VMI_EVENT_RESPONSE_NONE;
 
 			g_free(state);
 		} else if (FALSE == sys_state.skip_return
