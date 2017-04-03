@@ -921,14 +921,31 @@ gt_guest_get_process_name(GtGuestState *state, gt_pid_t pid)
 }
 
 static gboolean
-gt_loop_listen(gpointer user_data)
+gt_handle_vmi_event(GIOChannel *chan, GIOCondition condition, gpointer user_data)
 {
+	status_t status;
 	GtLoop *loop = user_data;
 
-	status_t status = vmi_events_listen(loop->vmi, 500);
-	if (status != VMI_SUCCESS) {
-		fprintf(stderr, "error waiting for events\n");
-		loop->running = FALSE;
+	switch (condition) {
+	case G_IO_IN:
+		status = vmi_events_listen(loop->vmi, 0);
+		if (status != VMI_SUCCESS) {
+			fprintf(stderr, "error waiting for events\n");
+			loop->running = FALSE;
+		}
+		break;
+	case G_IO_ERR:
+		fprintf(stderr, "error reading fd\n");
+		break;
+	case G_IO_HUP:
+		fprintf(stderr, "fd hungup\n");
+		break;
+	case G_IO_NVAL:
+		fprintf(stderr, "fd not valid\n");
+		break;
+	default:
+		fprintf(stderr, "unknown error reading fd\n");
+		break;
 	}
 
 	if (!loop->running) {
@@ -1097,6 +1114,8 @@ done:
 void gt_loop_run(GtLoop *loop)
 {
 	status_t status;
+	int vmi_fd;
+	GIOChannel *channel_vmi;
 
 	status = early_boot_wait_for_os_load(loop);
 	if (VMI_SUCCESS != status) {
@@ -1132,9 +1151,15 @@ void gt_loop_run(GtLoop *loop)
 		goto done;
 	}
 
+	vmi_fd = vmi_event_get_fd(loop->vmi);
+	channel_vmi = g_io_channel_unix_new(vmi_fd);
+	gt_loop_add_watch(channel_vmi,
+	                  G_IO_IN | G_IO_ERR | G_IO_HUP | G_IO_NVAL,
+	                  gt_handle_vmi_event,
+	                  loop);
+
 	vmi_resume_vm(loop->vmi);
 
-	g_idle_add(gt_loop_listen, loop);
 	loop->running = TRUE;
 	g_main_loop_run(loop->g_main_loop);
 
