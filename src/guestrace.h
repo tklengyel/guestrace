@@ -49,9 +49,8 @@ typedef vmi_pid_t gt_pid_t;
 /**
  * gt_tid_t:
  *
- * An identifier which serves to correlate between calls and returns
- * at thread granularity. Generally the value of the stack pointer
- * upon invoking a system call.
+ * The unique identifier for a guest thread.  An identifier which serves
+ * to correlate between calls and returns at thread granularity.
  */
 typedef addr_t    gt_tid_t;
 

@@ -158,7 +158,7 @@ _linux_get_tid(GtLoop *loop, vmi_event_t *event)
 	}
 
 done:
-	return (gt_tid_t)tid;
+	return (gt_tid_t) tid;
 }
 
 static char *
