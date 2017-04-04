@@ -367,16 +367,20 @@ gt_original_slat_singlestep(vmi_event_t *event)
 }
 
 /*
- * Service a triggered breakpoint. Restore the original page table for one
- * single-step iteration and invoke the system call or return callback.
+ * Service a triggered breakpoint.
  *
- * In the case of a system call, enable the syscall return breakpoint.
+ * In the case of a system call, invoke the syscall callback and replace the
+ * return address on the stack with the address of an interrupt instruction
+ * which serves as the sysret breakpoint. Switch to the original page (no
+ * breakpoint) for one instruction to execute the original (non-interrupt)
+ * instruction.
  *
- * In the case of a system return, disable the syscall return breakpoint until
- * the next system call enables it.
+ * In the case of a system return, set the RIP to the original return address
+ * after invoking the sysret callback.
  */
 static event_response_t
 gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
+	GtGuestState sys_state;
 	event_response_t response = VMI_EVENT_RESPONSE_NONE;
 
 	GtLoop *loop = event->data;
@@ -384,7 +388,6 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 
 	if (!loop->os_functions->is_user_call(loop, event)) {
 		response = gt_original_slat_singlestep(event);
-
 		goto done;
 	}
 
@@ -398,27 +401,36 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		/* Set VCPUs SLAT to use original for one step. */
 		response = gt_original_slat_singlestep(event);
 
-		GtGuestState sys_state = { loop, vmi, event, FALSE, FALSE, 0 };
-
 		/* Lookup record corresponding to breakpoint address. */
 		record = gt_paddr_record_from_va(loop,
 		                                 event->interrupt_event.gla);
 		if (NULL == record) {
 			/* Assume we didn't emplace interrupt. */
+			fprintf(stderr, "missing record; "
+			                "assuming not from VisorFlow\n");
 			event->interrupt_event.reinject = 1;
 			goto done;
 		}
 
-		thread_id = loop->os_functions->get_tid(loop, event);
 		return_loc = event->x86_regs->rsp;
 
-		status = vmi_read_64_va(vmi, return_loc, 0, &return_addr);
-		if (VMI_SUCCESS != status) {
-			/* Couldn't get return pointer off of stack */
+		gt_pid_t pid = loop->os_functions->get_pid(loop, event);
+		if (0 == pid) {
+			fprintf(stderr, "failed to read process ID (syscall)\n");
 			goto done;
 		}
 
-		gt_pid_t pid = loop->os_functions->get_pid(loop, event);
+		thread_id  = loop->os_functions->get_tid(loop, event);
+		if (0 == thread_id) {
+			fprintf(stderr, "failed to read thread ID (syscall)\n");
+			goto done;
+		}
+
+		status = vmi_read_64_va(vmi, return_loc, 0, &return_addr);
+		if (VMI_SUCCESS != status) {
+			fprintf(stderr, "count not read return pointer off stack\n");
+			goto done;
+		}
 
 		state                       = g_new0(gt_syscall_state, 1);
 		state->syscall_paddr_record = record;
@@ -437,6 +449,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		/* Invoke system-call callback in record. */
 		in_syscall_cb = TRUE;
 		loop->count++;
+		sys_state = (GtGuestState) { loop, vmi, event, FALSE, FALSE, 0 };
 		state->data = record->syscall_cb(&sys_state,
 		                                  pid,
 		                                  thread_id,
@@ -485,15 +498,24 @@ skip_syscall_cb:
 		/* Type-two breakpoint (system return). */
 		gt_syscall_state *state;
 		addr_t thread_id = loop->os_functions->get_tid(loop, event);
+		if (0 == thread_id) {
+			fprintf(stderr, "failed to read thread ID (sysret)\n");
+			goto done;
+		}
+
 		gt_pid_t pid = loop->os_functions->get_pid(loop, event);
+		if (0 == pid) {
+			fprintf(stderr, "failed to read process ID (sysret)\n");
+			goto done;
+		}
 
 		state = state_stacks_tid_pop(loop->state_stacks, thread_id);
 		if (NULL == state) {
-			fprintf(stderr, "!!!BUG -> PID: %d, Thread: %ld, RSP: 0x%lx\n", pid, thread_id, event->x86_regs->rsp);
 			/*
 			 * Likely clone() or similar call (i.e., TID changed
 			 * out from under us).
 			 */
+			fprintf(stderr, "no state for sysret %d:%ld\n", pid, thread_id);
 			goto done;
 		}
 
@@ -506,10 +528,11 @@ skip_syscall_cb:
 			goto skip_sysret_cb;
 		}
 
-		state->syscall_paddr_record->sysret_cb(&(GtGuestState) { loop, vmi, event, FALSE, FALSE, 0 },
-						       pid,
-						       thread_id,
-						       state->data);
+		sys_state = (GtGuestState) { loop, vmi, event, FALSE, FALSE, 0 };
+		state->syscall_paddr_record->sysret_cb(&sys_state,
+						        pid,
+						        thread_id,
+						        state->data);
 
 skip_sysret_cb:
 		memset(loop->jmpbuf[event->vcpu_id], 0x00, sizeof loop->jmpbuf[event->vcpu_id]);
