@@ -407,7 +407,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		if (NULL == record) {
 			/* Assume we didn't emplace interrupt. */
 			fprintf(stderr, "missing record; "
-			                "ekssuming  not from VisorFlow\n");
+			                "assuming not from VisorFlow\n");
 			event->interrupt_event.reinject = 1;
 			goto done;
 		}
@@ -416,13 +416,13 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 
 		gt_pid_t pid = loop->os_functions->get_pid(loop, event);
 		if (0 == pid) {
-			fprintf(stderr, "failed to read process ID\n");
+			fprintf(stderr, "failed to read process ID (syscall)\n");
 			goto done;
 		}
 
 		thread_id  = loop->os_functions->get_tid(loop, event);
 		if (0 == thread_id) {
-			fprintf(stderr, "failed to read thread ID\n");
+			fprintf(stderr, "failed to read thread ID (syscall)\n");
 			goto done;
 		}
 
@@ -499,13 +499,13 @@ skip_syscall_cb:
 		gt_syscall_state *state;
 		addr_t thread_id = loop->os_functions->get_tid(loop, event);
 		if (0 == thread_id) {
-			fprintf(stderr, "failed to read thread ID\n");
+			fprintf(stderr, "failed to read thread ID (sysret)\n");
 			goto done;
 		}
 
 		gt_pid_t pid = loop->os_functions->get_pid(loop, event);
 		if (0 == pid) {
-			fprintf(stderr, "failed to read process ID\n");
+			fprintf(stderr, "failed to read process ID (sysret)\n");
 			goto done;
 		}
 
