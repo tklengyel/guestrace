@@ -194,34 +194,12 @@ _windows_get_tid(GtLoop *loop, vmi_event_t *event)
 	size_t count;
 	addr_t self;
 	access_context_t ctx;
-	gt_tid_t tid = 0;
+	gt_pid_t tid = 0;
 	reg_t gs = event->x86_regs->gs_base;
-	const char *rekall_profile;
-	static addr_t nttib;
-	static addr_t clientid;
-	static gboolean initialized = FALSE;
 
-	if (!initialized) {
-		rekall_profile = vmi_get_rekall_path(loop->vmi);
-		if (NULL == rekall_profile) {
-			goto done;
-		}
+	g_assert(initialized);
 
-		/* _NT_TIB64 is first field of _KPCR at GS register. */
-		status = gt_rekall_symbol_to_rva(rekall_profile, "_NT_TIB64", "Self", &nttib);
-		if (VMI_SUCCESS != status) {
-			goto done;
-		}
-
-		status = gt_rekall_symbol_to_rva(rekall_profile, "_TEB", "ClientId", &clientid);
-		if (VMI_SUCCESS != status) {
-			goto done;
-			}
-
-		initialized = TRUE;
-	}
-
-	status = vmi_read_addr_va(loop->vmi, gs + nttib, 0, &self);
+	status = vmi_read_addr_va(loop->vmi, gs + offset[GT_OFFSET_WINDOWS_NT_TIB64_SELF], 0, &self);
 	if (VMI_SUCCESS != status) {
 		tid = 0;
 		goto done;
@@ -229,7 +207,7 @@ _windows_get_tid(GtLoop *loop, vmi_event_t *event)
 
 	ctx.translate_mechanism = VMI_TM_PROCESS_DTB;
 	ctx.dtb = event->x86_regs->cr3;
-	ctx.addr = self + clientid + vmi_get_address_width(loop->vmi);
+	ctx.addr = self + offset[GT_OFFSET_WINDOWS_TEB_CLIENTID] + vmi_get_address_width(loop->vmi);
 	count = vmi_read(loop->vmi, &ctx, &tid, sizeof tid);
 	if (sizeof tid != count) {
 		tid = 0;
