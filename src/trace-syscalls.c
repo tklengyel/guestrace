@@ -538,7 +538,9 @@ skip_sysret_cb:
 		memset(loop->jmpbuf[event->vcpu_id], 0x00, sizeof loop->jmpbuf[event->vcpu_id]);
 
 		/* Set RIP to the original return location. */
-		vmi_set_vcpureg(vmi, state->return_addr, RIP, event->vcpu_id);
+		if (VMI_SUCCESS != vmi_set_vcpureg(vmi, state->return_addr, RIP, event->vcpu_id)) {
+			fprintf(stderr, "failed to update RIP on sysret");
+		}
 
 		/*
 		 * This will free our gt_syscall_state object, but
@@ -1313,6 +1315,16 @@ gt_setup_mem_trap (GtLoop *loop,
 			fprintf(stderr, "failed to update shadow view\n");
 			goto done;
 		}
+
+		/* Establish callback on a R/W of this page. */
+		status = vmi_set_mem_event(loop->vmi,
+		                           frame,
+		                           VMI_MEMACCESS_RW,
+		                           loop->shadow_view);
+		if (VMI_SUCCESS != status) {
+			fprintf(stderr, "couldn't set frame permissions for 0x%lx\n", frame);
+			goto done;
+		}
 	}
 
 	page_record = g_hash_table_lookup(loop->gt_page_record_collection,
@@ -1353,10 +1365,6 @@ gt_setup_mem_trap (GtLoop *loop,
 		g_hash_table_insert(loop->gt_page_record_collection,
 		                    GSIZE_TO_POINTER(shadow),
 		                    page_record);
-
-		/* Establish callback on a R/W of this page. */
-		vmi_set_mem_event(loop->vmi, frame, VMI_MEMACCESS_RW,
-		                  loop->shadow_view);
 	} else {
 		/* We already have a page record for this page in collection. */
 		paddr_record = g_hash_table_lookup(page_record->children,
@@ -1426,6 +1434,7 @@ gboolean gt_loop_set_cb(GtLoop *loop,
 	vmi_pause_vm(loop->vmi);
 
 	sysaddr = vmi_translate_ksym2v(loop->vmi, kernel_func);
+	fprintf(stderr, "%s -> 0x%lx\n", kernel_func, sysaddr);
 	if (0 == sysaddr) {
 		goto done;
 	}
