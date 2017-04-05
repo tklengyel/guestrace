@@ -79,6 +79,9 @@ struct _GtLoop {
 	 * trampoline_addr is the address of the type-two breakpoint.
 	 */
 	addr_t trampoline_addr;
+
+	/* Channel to interract with LibVMI */
+	GIOChannel *channel_vmi;
 };
 
 struct _GtGuestState {

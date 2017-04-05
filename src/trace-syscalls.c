@@ -113,9 +113,6 @@
 /* Intel breakpoint interrupt (INT 3) instruction. */
 uint8_t GT_BREAKPOINT_INST = 0xCC;
 
-/* Intel ret instruction */
-uint8_t GT_RET_INST = 0xC3;
-
 /* Track whether we are in a GtSyscallFunc. */
 static gboolean in_syscall_cb = FALSE;
 
@@ -564,7 +561,11 @@ gt_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
 	event->slat_id = 0;
 
 	if (event->mem_event.out_access & VMI_MEMACCESS_W) {
-		fprintf(stderr, "guest writing to executable page; need to update shadow pages\n");
+		/*
+		 * todo: if this happens, we need to update our shadow view
+		 * with the updated contents of this page after the step
+		 */
+		fprintf(stderr, "guest attempting to write to executable memory\n");
 	}
 
 	return VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
@@ -749,12 +750,6 @@ GtLoop *gt_loop_new(const char *guest_name)
 	}
 
 	if (!gt_set_up_step_events(loop)) {
-		goto done;
-	}
-
-	rc = xc_altp2m_switch_to_view(loop->xch, loop->domid, loop->shadow_view);
-	if (0 != rc) {
-		fprintf(stderr, "failed to switch to shadow view\n");
 		goto done;
 	}
 
@@ -1177,7 +1172,6 @@ void gt_loop_run(GtLoop *loop)
 {
 	status_t status;
 	int vmi_fd;
-	GIOChannel *channel_vmi;
 
 	status = early_boot_wait_for_os_load(loop);
 	if (VMI_SUCCESS != status) {
@@ -1199,9 +1193,15 @@ void gt_loop_run(GtLoop *loop)
 		goto done;
 	}
 
+	int rc = xc_altp2m_switch_to_view(loop->xch, loop->domid, loop->shadow_view);
+	if (0 != rc) {
+		fprintf(stderr, "failed to switch to shadow view\n");
+		goto done;
+	}
+
 	vmi_fd = vmi_event_get_fd(loop->vmi);
-	channel_vmi = g_io_channel_unix_new(vmi_fd);
-	gt_loop_add_watch(channel_vmi,
+	loop->channel_vmi = g_io_channel_unix_new(vmi_fd);
+	gt_loop_add_watch(loop->channel_vmi,
 	                  G_IO_IN | G_IO_ERR | G_IO_HUP | G_IO_NVAL,
 	                  gt_handle_vmi_event,
 	                  loop);
