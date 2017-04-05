@@ -176,7 +176,6 @@ done:
 
 static void
 gt_destroy_page_record (gpointer data) {
-	status_t status;
 	gt_page_record *page_record = data;
 
 	g_hash_table_destroy(page_record->children);
@@ -187,11 +186,12 @@ gt_destroy_page_record (gpointer data) {
 	                  VMI_MEMACCESS_N,
 	                  page_record->loop->shadow_view);
 
-	status = vmi_slat_change_gfn(page_record->loop->vmi,
-				     page_record->loop->shadow_view,
-				     page_record->shadow_frame,
-				    ~0);
-	if (VMI_SUCCESS != status) {
+	int xc_status = xc_altp2m_change_gfn(page_record->loop->xch,
+	                                     page_record->loop->domid,
+	                                     page_record->loop->shadow_view,
+	                                     page_record->shadow_frame,
+	                                    ~0);
+	if (0 != xc_status) {
 		fprintf(stderr, "failed to update shadow view\n");
 	}
 
@@ -728,15 +728,21 @@ GtLoop *gt_loop_new(const char *guest_name)
 		goto done;
 	}
 
-	status = vmi_slat_set_domain_state(loop->vmi, TRUE);
-	if (VMI_SUCCESS != status) {
-		fprintf(stderr, "failed to enable slat/altp2m on guest\n");
+	rc = xc_altp2m_set_domain_state(loop->xch, loop->domid, TRUE);
+	if (0 != rc) {
+		fprintf(stderr, "failed to enable slat on guest\n");
 		goto done;
 	}
 
-	status = vmi_slat_create(loop->vmi, &loop->shadow_view);
-	if (VMI_SUCCESS != status) {
-		fprintf(stderr, "failed to enable shadow view\n");
+	rc = xc_altp2m_create_view(loop->xch, loop->domid, 0, &loop->shadow_view);
+	if (0 != rc) {
+		fprintf(stderr, "failed to create slat\n");
+		goto done;
+	}
+
+	rc = xc_altp2m_switch_to_view(loop->xch, loop->domid, loop->shadow_view);
+	if (0 != rc) {
+		fprintf(stderr, "failed to switch to shadow view\n");
 		goto done;
 	}
 
@@ -1036,8 +1042,9 @@ void gt_loop_free(GtLoop *loop)
 	g_hash_table_destroy(loop->gt_page_record_collection);
 
 	if (0 != loop->shadow_view) {
-		vmi_slat_destroy(loop->vmi, loop->shadow_view);
-		vmi_slat_set_domain_state(loop->vmi, FALSE);
+		xc_altp2m_switch_to_view(loop->xch, loop->domid, 0);
+		xc_altp2m_destroy_view(loop->xch, loop->domid, loop->shadow_view);
+		xc_altp2m_set_domain_state(loop->xch, loop->domid, FALSE);
 	}
 
 	if (NULL != loop->ctx) {
@@ -1174,12 +1181,6 @@ void gt_loop_run(GtLoop *loop)
 
 	vmi_pause_vm(loop->vmi);
 
-	status = vmi_slat_switch(loop->vmi, loop->shadow_view);
-	if (VMI_SUCCESS != status) {
-		fprintf(stderr, "failed to enable shadow view\n");
-		goto done;
-	}
-
 	if (!gt_set_up_generic_events(loop)) {
 		goto done;
 	}
@@ -1219,11 +1220,6 @@ void gt_loop_run(GtLoop *loop)
 	g_hash_table_remove_all(loop->gt_page_translation);
 	state_stacks_remove_all(loop->state_stacks);
 	g_hash_table_remove_all(loop->gt_page_record_collection);
-
-	status = vmi_slat_switch(loop->vmi, 0);
-	if (VMI_SUCCESS != status) {
-		fprintf(stderr, "failed to reset EPT to point to default table\n");
-	}
 
 	vmi_resume_vm(loop->vmi);
 
@@ -1307,22 +1303,13 @@ gt_setup_mem_trap (GtLoop *loop,
 		                    GSIZE_TO_POINTER(shadow));
 
 		/* Activate in shadow view. */
-		status = vmi_slat_change_gfn(loop->vmi,
-		                             loop->shadow_view,
-		                             frame,
-		                             shadow);
-		if (VMI_SUCCESS != status) {
+		int xc_status = xc_altp2m_change_gfn(loop->xch,
+		                                     loop->domid,
+		                                     loop->shadow_view,
+		                                     frame,
+		                                     shadow);
+		if (0 != xc_status) {
 			fprintf(stderr, "failed to update shadow view\n");
-			goto done;
-		}
-
-		/* Establish callback on a R/W of this page. */
-		status = vmi_set_mem_event(loop->vmi,
-		                           frame,
-		                           VMI_MEMACCESS_RW,
-		                           loop->shadow_view);
-		if (VMI_SUCCESS != status) {
-			fprintf(stderr, "couldn't set frame permissions for 0x%lx\n", frame);
 			goto done;
 		}
 	}
@@ -1365,6 +1352,16 @@ gt_setup_mem_trap (GtLoop *loop,
 		g_hash_table_insert(loop->gt_page_record_collection,
 		                    GSIZE_TO_POINTER(shadow),
 		                    page_record);
+
+		/* Establish callback on a R/W of this page. */
+		status = vmi_set_mem_event(loop->vmi,
+		                           frame,
+		                           VMI_MEMACCESS_RW,
+		                           loop->shadow_view);
+		if (VMI_SUCCESS != status) {
+			fprintf(stderr, "couldn't set frame permissions for 0x%lx\n", frame);
+			goto done;
+		}
 	} else {
 		/* We already have a page record for this page in collection. */
 		paddr_record = g_hash_table_lookup(page_record->children,
