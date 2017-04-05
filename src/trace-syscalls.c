@@ -563,6 +563,10 @@ gt_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
 	/* Switch back to original SLAT for one step. */
 	event->slat_id = 0;
 
+	if (event->mem_event.out_access & VMI_MEMACCESS_W) {
+		fprintf(stderr, "guest writing to executable page; need to update shadow pages\n");
+	}
+
 	return VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
 	     | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
 }
@@ -737,6 +741,14 @@ GtLoop *gt_loop_new(const char *guest_name)
 	rc = xc_altp2m_create_view(loop->xch, loop->domid, 0, &loop->shadow_view);
 	if (0 != rc) {
 		fprintf(stderr, "failed to create slat\n");
+		goto done;
+	}
+
+	if (!gt_set_up_generic_events(loop)) {
+		goto done;
+	}
+
+	if (!gt_set_up_step_events(loop)) {
 		goto done;
 	}
 
@@ -1181,14 +1193,6 @@ void gt_loop_run(GtLoop *loop)
 
 	vmi_pause_vm(loop->vmi);
 
-	if (!gt_set_up_generic_events(loop)) {
-		goto done;
-	}
-
-	if (!gt_set_up_step_events(loop)) {
-		goto done;
-	}
-
 	loop->trampoline_addr = gt_find_trampoline_addr(loop);
 	if (0 == loop->trampoline_addr) {
 		fprintf(stderr, "could not find addr. of existing int 3 inst.\n");
@@ -1431,7 +1435,6 @@ gboolean gt_loop_set_cb(GtLoop *loop,
 	vmi_pause_vm(loop->vmi);
 
 	sysaddr = vmi_translate_ksym2v(loop->vmi, kernel_func);
-	fprintf(stderr, "%s -> 0x%lx\n", kernel_func, sysaddr);
 	if (0 == sysaddr) {
 		goto done;
 	}
