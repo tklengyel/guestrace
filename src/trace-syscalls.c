@@ -459,7 +459,6 @@ skip_syscall_cb:
 		if (sys_state.hijack) {
 			/*
 			 * Application called gt_guest_hijack_return().
-			 * Remove record pushed above.
 			 */
 			g_assert(NULL == state->data);
 
@@ -508,10 +507,6 @@ skip_syscall_cb:
 
 		state = state_stacks_tid_pop(loop->state_stacks, thread_id);
 		if (NULL == state) {
-			/*
-			 * Likely clone() or similar call (i.e., TID changed
-			 * out from under us).
-			 */
 			fprintf(stderr, "no state for sysret %d:%ld\n", pid, thread_id);
 			goto done;
 		}
@@ -535,9 +530,8 @@ skip_sysret_cb:
 		memset(loop->jmpbuf[event->vcpu_id], 0x00, sizeof loop->jmpbuf[event->vcpu_id]);
 
 		/* Set RIP to the original return location. */
-		if (VMI_SUCCESS != vmi_set_vcpureg(vmi, state->return_addr, RIP, event->vcpu_id)) {
-			fprintf(stderr, "failed to update RIP on sysret");
-		}
+		event->x86_regs->rip = state->return_addr;
+		response |= VMI_EVENT_RESPONSE_SET_REGISTERS;
 
 		/*
 		 * This will free our gt_syscall_state object, but
