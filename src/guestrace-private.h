@@ -74,6 +74,7 @@ struct _GtLoop {
 	vmi_event_t memory_event;
 	vmi_event_t cr3_event;
 	vmi_event_t step_event[_GT_MAX_VCPUS];
+	addr_t mem_watch[_GT_MAX_VCPUS];
 
 	/*
 	 * trampoline_addr is the address of the type-two breakpoint.

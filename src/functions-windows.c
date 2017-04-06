@@ -113,14 +113,21 @@ _gt_windows_cr3_cb(vmi_instance_t vmi, vmi_event_t *event)
 	GtLoop *loop = event->data;
 	uint8_t previous_mode;
 
+	if (loop->initialized) {
+		vmi_pidcache_flush(vmi);
+		vmi_v2pcache_flush(vmi, event->reg_event.previous);
+		vmi_rvacache_flush(vmi);
+		goto done;	
+	}
+
 	g_assert(initialized);
 
 	previous_mode = _gt_windows_get_privilege_mode(vmi, event, TRUE);
 	if (USER_MODE == previous_mode) {
 		loop->initialized = TRUE;
-		vmi_clear_event(loop->vmi, event, NULL);
 	}
 
+done:
 	return VMI_EVENT_RESPONSE_NONE;
 }
 

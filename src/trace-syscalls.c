@@ -200,12 +200,63 @@ gt_destroy_page_record (gpointer data) {
 	g_free(page_record);
 }
 
+void
+gt_rewrite_interrupts(gpointer key, gpointer value, gpointer user_data)
+{
+	uint8_t *cache = user_data;
+	addr_t shadow_offset = GPOINTER_TO_INT(key);
+	cache[shadow_offset] = GT_BREAKPOINT_INST;
+}
+
 /*
  * Callback after a step event on any VCPU.
  */
 static event_response_t
 gt_singlestep_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	GtLoop *loop = event->data;
+	uint8_t cache[GT_PAGE_SIZE] = { 0 };
+	size_t ret;
+
+	if (0 != loop->mem_watch[event->vcpu_id]) {
+		fprintf(stderr, "updating cached shadow memory\n");
+		
+		gt_page_record *record = g_hash_table_lookup(loop->gt_page_record_collection,
+	                                                 GSIZE_TO_POINTER(loop->mem_watch[event->vcpu_id]));
+
+		if (NULL == record) {
+			fprintf(stderr, "could not update shadow memory\n");
+			goto done;
+		}
+
+		vmi_pause_vm(loop->vmi);
+
+		ret = vmi_read_pa(loop->vmi,
+		                  record->frame << GT_PAGE_OFFSET_BITS,
+		                 &cache,
+		                  GT_PAGE_SIZE);
+		if (GT_PAGE_SIZE != ret) {
+			fprintf(stderr, "failed to read in syscall page\n");
+			vmi_resume_vm(loop->vmi);
+			goto done;
+		}
+
+		g_hash_table_foreach(record->children, &gt_rewrite_interrupts, &cache);
+
+		ret = vmi_write_pa(loop->vmi,
+		                   record->shadow_frame << GT_PAGE_OFFSET_BITS,
+		                  &cache,
+		                   GT_PAGE_SIZE);
+		if (GT_PAGE_SIZE != ret) {
+			fprintf(stderr, "failed to write to shadow page\n");
+			vmi_resume_vm(loop->vmi);
+			goto done;
+		}
+
+		vmi_resume_vm(loop->vmi);
+	} 
+
+done:
+	loop->mem_watch[event->vcpu_id] = 0;
 
 	/* Resume use of shadow SLAT. */
 	event->slat_id = loop->shadow_view;
@@ -241,6 +292,7 @@ gt_set_up_step_events (GtLoop *loop)
 		                       gt_singlestep_cb,
 		                       0);
 		loop->step_event[vcpu].data = loop;
+		loop->mem_watch[vcpu] = 0;
 
 		if (VMI_SUCCESS != vmi_register_event(loop->vmi,
 		                                     &loop->step_event[vcpu])) {
@@ -531,7 +583,7 @@ skip_sysret_cb:
 
 		/* Set RIP to the original return location. */
 		event->x86_regs->rip = state->return_addr;
-		response |= VMI_EVENT_RESPONSE_SET_REGISTERS;
+		response = VMI_EVENT_RESPONSE_SET_REGISTERS;
 
 		/*
 		 * This will free our gt_syscall_state object, but
@@ -552,18 +604,35 @@ done:
 static event_response_t
 gt_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
 	/* Switch back to original SLAT for one step. */
-	event->slat_id = 0;
+	GtLoop *loop = event->data;
+	event_response_t response = VMI_EVENT_RESPONSE_NONE;
 
+	if (!g_hash_table_lookup(loop->gt_page_translation, GINT_TO_POINTER(event->mem_event.gfn))) {
+		fprintf(stderr, "memory event on shadow frame\n");
+		if (event->mem_event.out_access & VMI_MEMACCESS_W) {
+			fprintf(stderr, "w: VCPU -> %d, SLAT -> %d, RIP -> 0x%lx, GLA -> 0x%lx, GFN -> 0x%lx\n", event->vcpu_id, event->slat_id, event->x86_regs->rip, event->mem_event.gla, event->mem_event.gfn);
+		}
+		if (event->mem_event.out_access & VMI_MEMACCESS_R) {
+			fprintf(stderr, "r: VCPU -> %d, SLAT -> %d, RIP -> 0x%lx, GLA -> 0x%lx, GFN -> 0x%lx\n", event->vcpu_id, event->slat_id, event->x86_regs->rip, event->mem_event.gla, event->mem_event.gfn);
+		}
+		if (event->mem_event.out_access & VMI_MEMACCESS_X) {
+			fprintf(stderr, "x: VCPU -> %d, SLAT -> %d, RIP -> 0x%lx, GLA -> 0x%lx, GFN -> 0x%lx\n", event->vcpu_id, event->slat_id, event->x86_regs->rip, event->mem_event.gla, event->mem_event.gfn);
+		}
+		goto done;
+	}
+	
 	if (event->mem_event.out_access & VMI_MEMACCESS_W) {
-		/*
-		 * todo: if this happens, we need to update our shadow view
-		 * with the updated contents of this page after the step
-		 */
-		fprintf(stderr, "guest attempting to write to executable memory\n");
+		/* tell our step event we need to copy new data to shadow frame */
+		loop->mem_watch[event->vcpu_id] = event->mem_event.gfn;
 	}
 
-	return VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
-	     | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
+	event->slat_id = 0;
+
+	response = VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
+	         | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
+
+done:
+	return response;
 }
 
 /* Callback invoked on CR3 change (context switch). */
@@ -682,6 +751,7 @@ GtLoop *gt_loop_new(const char *guest_name)
 		break;
 	case VMI_OS_WINDOWS:
 		loop->os_functions = &os_functions_windows;
+		vmi_init_paging(loop->vmi, (1u << 0));
 		break;
 	default:
 		fprintf(stderr, "unknown guest operating system\n");
@@ -1310,6 +1380,17 @@ gt_setup_mem_trap (GtLoop *loop,
 			fprintf(stderr, "failed to update shadow view\n");
 			goto done;
 		}
+
+		/* Activate in shadow view. */
+		xc_status = xc_altp2m_change_gfn(loop->xch,
+		                                     loop->domid,
+		                                     loop->shadow_view,
+		                                     shadow,
+		                                     0);
+		if (0 != xc_status) {
+			fprintf(stderr, "failed to zeroed shadow view\n");
+			goto done;
+		}
 	}
 
 	page_record = g_hash_table_lookup(loop->gt_page_record_collection,
@@ -1358,6 +1439,15 @@ gt_setup_mem_trap (GtLoop *loop,
 		                           loop->shadow_view);
 		if (VMI_SUCCESS != status) {
 			fprintf(stderr, "couldn't set frame permissions for 0x%lx\n", frame);
+			goto done;
+		}
+
+		status = vmi_set_mem_event(loop->vmi,
+		                           shadow,
+		                           VMI_MEMACCESS_RW,
+		                           loop->shadow_view);
+		if (VMI_SUCCESS != status) {
+			fprintf(stderr, "couldn't set shadow permissions for 0x%lx\n", frame);
 			goto done;
 		}
 	} else {
