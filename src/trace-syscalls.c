@@ -465,8 +465,8 @@ skip_syscall_cb:
 			event->x86_regs->rip = state->return_addr;
 
 			/*
-			 * Revert to avoid changing SLAT and setting singlestep.
-			 * We are hijacking RIP, so no need to remove breakpoint
+			 * Avoid changing SLAT and setting singlestep. We are
+			 * hijacking RIP, so no need to remove breakpoint
 			 * for one step.
 			 */
 			response = VMI_EVENT_RESPONSE_SET_REGISTERS;
