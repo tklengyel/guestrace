@@ -409,8 +409,6 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 			goto done;
 		}
 
-		return_loc = event->x86_regs->rsp;
-
 		gt_pid_t pid = loop->os_functions->get_pid(loop, event);
 		if (0 == pid) {
 			fprintf(stderr, "failed to read process ID (syscall)\n");
@@ -423,6 +421,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 			goto done;
 		}
 
+		return_loc = event->x86_regs->rsp;
 		status = vmi_read_64_va(vmi, return_loc, 0, &return_addr);
 		if (VMI_SUCCESS != status) {
 			fprintf(stderr, "count not read return pointer off stack\n");
@@ -462,15 +461,15 @@ skip_syscall_cb:
 			 */
 			g_assert(NULL == state->data);
 
-			vmi_set_vcpureg(vmi, sys_state.hijack_return, RAX, event->vcpu_id);
-			vmi_set_vcpureg(vmi, state->return_addr, RIP, event->vcpu_id);
+			event->x86_regs->rax = sys_state.hijack_return;
+			event->x86_regs->rip = state->return_addr;
 
 			/*
 			 * Revert to avoid changing SLAT and setting singlestep.
 			 * We are hijacking RIP, so no need to remove breakpoint
 			 * for one step.
 			 */
-			response = VMI_EVENT_RESPONSE_NONE;
+			response = VMI_EVENT_RESPONSE_SET_REGISTERS;
 
 			g_free(state);
 		} else if (FALSE == sys_state.skip_return
