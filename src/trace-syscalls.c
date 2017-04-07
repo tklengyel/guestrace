@@ -350,29 +350,6 @@ gt_paddr_record_from_va(GtLoop *loop, addr_t va) {
 }
 
 /**
- * gt_guest_free_syscall_state:
- * @state: a pointer to a #GtGuestState.
- * @thread_id: the thread ID associated with the syscall to free.
- *
- * Frees the object which the guestrace event loop would have allocated
- * when processing the system call associated with @thread_id. This is useful
- * for system calls that never return (unless there is an error) such as execve.
- * The application must first free the object pointed to by the @data
- * argument to the #GtSyscallFunc before calling this function. The
- * application should not call this function if the guestrace event loop
- * will call #GtSysretFunc.
- */
-void
-gt_guest_free_syscall_state(GtGuestState *state, gt_tid_t thread_id)
-{
-	gt_syscall_state *sys_state;
-
-	sys_state = state_stacks_tid_dequeue(state->loop->state_stacks, thread_id);
-	g_free(sys_state);
-}
-
-
-/**
  * gt_guest_hijack_return:
  * @state: a #GtGuestState.
  * @errno: a #gint.
