@@ -602,6 +602,10 @@ skip_syscall_cb:
 			goto done;
 		}
 
+		if (event->x86_regs->rsp - 8 != state->return_loc) {
+			fprintf(stderr, "pop getting wrong return location\n");
+		}
+
 		//fprintf(stderr, "\t\tRET_ADDR -> 0x%lx\n", state->return_addr);
 
 		if (GT_EMERGENCY == setjmp(loop->jmpbuf[event->vcpu_id])) {
@@ -670,6 +674,7 @@ gt_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
 		if (event->mem_event.out_access & VMI_MEMACCESS_W) {
 			loop->mem_watch[event->vcpu_id] = event->mem_event.gfn;
 		}
+
 		event->slat_id = 0;
 	}
 
@@ -680,7 +685,7 @@ gt_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
 /* Callback invoked on CR3 change (context switch). */
 static event_response_t
 gt_cr3_cb(vmi_instance_t vmi, vmi_event_t *event) {
-	event_response_t response = VMI_EVENT_RESPONSE_NONE;
+	GtLoop *loop = event->data;
 
 	/* This is not the case yet, since the event precedes the CR3 update. */
 	event->x86_regs->cr3 = event->reg_event.value;
@@ -693,8 +698,8 @@ gt_cr3_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	vmi_pidcache_flush(vmi);
 	vmi_v2pcache_flush(vmi, event->reg_event.previous);
 	vmi_rvacache_flush(vmi);
-
-	return response;
+	
+	return VMI_EVENT_RESPONSE_NONE;
 }
 
 /*
@@ -918,14 +923,6 @@ GtLoop *gt_loop_new(const char *guest_name)
 	}
 
 	loop->shadow_guard_frame = gt_allocate_shadow_frame(loop);
-
-	if (!gt_set_up_generic_events(loop)) {
-		goto done;
-	}
-
-	if (!gt_set_up_step_events(loop)) {
-		goto done;
-	}
 
 	if (!gt_set_up_memory_events(loop)) {
 		goto done;
@@ -1222,6 +1219,8 @@ void gt_loop_free(GtLoop *loop)
 
 	vmi_pause_vm(loop->vmi);
 
+	fprintf(stderr, "finished instrumentating %lu syscalls; good bye\n", loop->count);
+
 	g_hash_table_destroy(loop->gt_page_translation);
 	state_stacks_destroy(loop->state_stacks);
 	g_hash_table_destroy(loop->gt_page_record_collection);
@@ -1319,15 +1318,23 @@ void gt_loop_run(GtLoop *loop)
 
 	status = early_boot_wait_for_os_load(loop);
 	if (VMI_SUCCESS != status) {
-                fprintf(stderr, "failed to wait on LSTAR.\n");
-                goto done;
-        }
+		fprintf(stderr, "failed to wait on LSTAR.\n");
+		goto done;
+	}
 
 	status = loop->os_functions->wait_for_first_process(loop);
 	if (VMI_SUCCESS != status) {
-                fprintf(stderr, "failed to wait for initialization\n");
-                goto done;
-        }
+		fprintf(stderr, "failed to wait for initialization\n");
+		goto done;
+	}
+
+	if (!gt_set_up_generic_events(loop)) {
+		goto done;
+	}
+
+	if (!gt_set_up_step_events(loop)) {
+		goto done;
+	}
 
 	vmi_pause_vm(loop->vmi);
 
@@ -1600,10 +1607,10 @@ gboolean gt_loop_set_cb(GtLoop *loop,
 
 	sysaddr = vmi_translate_ksym2v(loop->vmi, kernel_func);
 	if (0 == sysaddr) {
+		fprintf(stderr, "couldn't locate the address of kernel symbol '%s'\n", kernel_func);
 		goto done;
 	}
 
-	fprintf(stderr, "%s -> 0x%lx\n", kernel_func, sysaddr);
 	syscall_trap = gt_setup_mem_trap(loop, sysaddr, kernel_func, syscall_cb, sysret_cb, user_data);
 	if (NULL == syscall_trap) {
 		goto done;
