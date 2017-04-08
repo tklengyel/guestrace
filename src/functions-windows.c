@@ -114,6 +114,12 @@ _gt_windows_cr3_cb(vmi_instance_t vmi, vmi_event_t *event)
 	uint8_t previous_mode;
 
 	if (loop->initialized) {
+		/*fprintf(stderr, "CR3 change: 0x%lx -> 0x%lx, RIP -> 0x%lx, RSP -> 0x%lx\n",
+			event->reg_event.previous,
+			event->x86_regs->cr3,
+			event->x86_regs->rip,
+			event->x86_regs->rsp);*/
+
 		vmi_pidcache_flush(vmi);
 		vmi_v2pcache_flush(vmi, event->reg_event.previous);
 		vmi_rvacache_flush(vmi);

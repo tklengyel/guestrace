@@ -183,13 +183,28 @@ gt_destroy_page_record (gpointer data) {
 	                  VMI_MEMACCESS_N,
 	                  page_record->loop->shadow_view);
 
+	/* Stop monitoring this page. */
+	vmi_set_mem_event(page_record->loop->vmi,
+	                  page_record->shadow_frame,
+	                  VMI_MEMACCESS_N,
+	                  page_record->loop->shadow_view);
+
 	int xc_status = xc_altp2m_change_gfn(page_record->loop->xch,
 	                                     page_record->loop->domid,
 	                                     page_record->loop->shadow_view,
-	                                     page_record->shadow_frame,
+	                                     page_record->frame,
 	                                    ~0);
 	if (0 != xc_status) {
 		fprintf(stderr, "failed to update shadow view\n");
+	}
+
+	xc_status = xc_altp2m_change_gfn(page_record->loop->xch,
+	                                 page_record->loop->domid,
+	                                 page_record->loop->shadow_guard_view,
+	                                 page_record->shadow_frame,
+	                                ~0);
+	if (0 != xc_status) {
+		fprintf(stderr, "failed to update shadow guard view\n");
 	}
 
 	xc_domain_decrease_reservation_exact(page_record->loop->xch,
@@ -397,7 +412,17 @@ gt_guest_hijack_return(GtGuestState *state, reg_t retval)
 }
 
 gboolean
-gt_guest_drop_return_breakpoint(GtGuestState *state, gt_tid_t thread_id)
+gt_guest_clear_return_state(GtGuestState *state)
+{
+	state->clear_state = TRUE;
+
+	gt_guest_drop_return_breakpoint(state);
+
+	return TRUE;
+}
+
+gboolean
+gt_guest_drop_return_breakpoint(GtGuestState *state)
 {
 	state->skip_return = TRUE;
 
@@ -447,6 +472,8 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		gt_paddr_record *record;
 		gt_syscall_state *state;
 
+		//uint16_t old_slat = event->slat_id;
+
 		/* Set VCPUs SLAT to use original for one step. */
 		response = gt_original_slat_singlestep(event);
 
@@ -463,13 +490,13 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 
 		gt_pid_t pid = loop->os_functions->get_pid(loop, event);
 		if (0 == pid) {
-			fprintf(stderr, "failed to read process ID (syscall)\n");
+			//fprintf(stderr, "failed to read process ID (syscall)\n");
 			goto done;
 		}
 
 		thread_id  = loop->os_functions->get_tid(loop, event);
 		if (0 == thread_id) {
-			fprintf(stderr, "failed to read thread ID (syscall)\n");
+			//fprintf(stderr, "failed to read thread ID (syscall)\n");
 			goto done;
 		}
 
@@ -528,6 +555,20 @@ skip_syscall_cb:
 		        && NULL != record->sysret_cb) {
 			/* Normal code path. */
 
+			/*fprintf(stderr, "PUSH (%s): CR3 -> 0x%lx, CR0 -> 0x%lx, CR2-> 0x%lx, CR4 -> 0x%lx, PID -> %d, TID -> %ld, VCPU -> %d, SLAT -> %d, RIP -> 0x%lx, RSP -> 0x%lx, RET_ADDR -> 0x%lx \n",
+				            record->name,
+				            event->x86_regs->cr3,
+				            event->x86_regs->cr0,
+				            event->x86_regs->cr2,
+				            event->x86_regs->cr4,
+				            pid,
+				            thread_id,
+				            event->vcpu_id,
+				            old_slat,
+				            event->x86_regs->rip,
+				            event->x86_regs->rsp,
+				            return_addr);*/
+
 			/* Record system-call state. */
 			state_stacks_tid_push(loop->state_stacks, thread_id, state);
 
@@ -538,6 +579,14 @@ skip_syscall_cb:
 			 * Sysret callback not registered or application called
 			 * gt_guest_drop_return_breakpoint().
 			 */
+			if (sys_state.skip_return && sys_state.clear_state) {
+				gt_syscall_state *clr;
+				do {
+					clr = state_stacks_tid_pop(loop->state_stacks, thread_id);
+				}
+				while (clr);
+			}
+
 			g_assert(NULL == state->data);
 			g_free(state);
 		}
@@ -546,21 +595,37 @@ skip_syscall_cb:
 		gt_syscall_state *state;
 		addr_t thread_id = loop->os_functions->get_tid(loop, event);
 		if (0 == thread_id) {
-			fprintf(stderr, "failed to read thread ID (sysret)\n");
+			//fprintf(stderr, "failed to read thread ID (sysret)\n");
 			goto done;
 		}
 
 		gt_pid_t pid = loop->os_functions->get_pid(loop, event);
 		if (0 == pid) {
-			fprintf(stderr, "failed to read process ID (sysret)\n");
+			//fprintf(stderr, "failed to read process ID (sysret)\n");
 			goto done;
 		}
+
+		/*fprintf(stderr, "POP: CR3 -> 0x%lx, CR0 -> 0x%lx, CR2-> 0x%lx, CR4 -> 0x%lx, PID -> %d, TID -> %ld, VCPU -> %d, SLAT -> %d, RIP -> 0x%lx, RSP -> 0x%lx \n",
+			            event->x86_regs->cr3,
+			            event->x86_regs->cr0,
+			            event->x86_regs->cr2,
+			            event->x86_regs->cr4,
+			            pid,
+			            thread_id,
+			            event->vcpu_id,
+			            event->slat_id,
+			            event->x86_regs->rip,
+			            event->x86_regs->rsp);*/
 
 		state = state_stacks_tid_pop(loop->state_stacks, thread_id);
 		if (NULL == state) {
 			fprintf(stderr, "no state for sysret %d:%ld\n", pid, thread_id);
+			fprintf(stderr, "current count -> %lu\n", loop->count);
+			g_assert(FALSE);
 			goto done;
 		}
+
+		//fprintf(stderr, "\t\tRET_ADDR -> 0x%lx\n", state->return_addr);
 
 		if (GT_EMERGENCY == setjmp(loop->jmpbuf[event->vcpu_id])) {
 			/*
@@ -583,6 +648,7 @@ skip_sysret_cb:
 		/* Set RIP to the original return location. */
 		event->x86_regs->rip = state->return_addr;
 		response = VMI_EVENT_RESPONSE_SET_REGISTERS;
+		//vmi_set_vcpureg(loop->vmi, state->return_addr, RIP, event->vcpu_id);
 
 		/*
 		 * This will free our gt_syscall_state object, but
@@ -604,34 +670,34 @@ static event_response_t
 gt_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
 	/* Switch back to original SLAT for one step. */
 	GtLoop *loop = event->data;
-	event_response_t response = VMI_EVENT_RESPONSE_NONE;
 
 	if (!g_hash_table_lookup(loop->gt_page_translation, GINT_TO_POINTER(event->mem_event.gfn))) {
-		fprintf(stderr, "memory event on shadow frame\n");
+		fprintf(stderr, "!!! hit a shadow frame (%c%c%c): "
+		                "GLA -> 0x%lx, GFN -> 0x%lx (0x%lx), "
+		                "PTW -> %d, "
+		                "VALID -> %d, "
+		                "SLAT -> %d"
+		                "\n",
+		                (event->mem_event.out_access & VMI_MEMACCESS_R) ? 'r' : '-',
+		                (event->mem_event.out_access & VMI_MEMACCESS_W) ? 'w' : '-',
+		                (event->mem_event.out_access & VMI_MEMACCESS_X) ? 'x' : '-',
+		                 event->mem_event.gla, 
+		                 event->mem_event.gfn,
+		                 event->mem_event.offset,
+		                 event->mem_event.gptw,
+		                 event->mem_event.gla_valid,
+		                 event->slat_id);
+		event->slat_id = loop->shadow_guard_view;
+	} else {
+		/* In the off-chance they write to executable kernel memory */
 		if (event->mem_event.out_access & VMI_MEMACCESS_W) {
-			fprintf(stderr, "w: VCPU -> %d, SLAT -> %d, RIP -> 0x%lx, GLA -> 0x%lx, GFN -> 0x%lx\n", event->vcpu_id, event->slat_id, event->x86_regs->rip, event->mem_event.gla, event->mem_event.gfn);
+			loop->mem_watch[event->vcpu_id] = event->mem_event.gfn;
 		}
-		if (event->mem_event.out_access & VMI_MEMACCESS_R) {
-			fprintf(stderr, "r: VCPU -> %d, SLAT -> %d, RIP -> 0x%lx, GLA -> 0x%lx, GFN -> 0x%lx\n", event->vcpu_id, event->slat_id, event->x86_regs->rip, event->mem_event.gla, event->mem_event.gfn);
-		}
-		if (event->mem_event.out_access & VMI_MEMACCESS_X) {
-			fprintf(stderr, "x: VCPU -> %d, SLAT -> %d, RIP -> 0x%lx, GLA -> 0x%lx, GFN -> 0x%lx\n", event->vcpu_id, event->slat_id, event->x86_regs->rip, event->mem_event.gla, event->mem_event.gfn);
-		}
-		goto done;
-	}
-	
-	if (event->mem_event.out_access & VMI_MEMACCESS_W) {
-		/* tell our step event we need to copy new data to shadow frame */
-		loop->mem_watch[event->vcpu_id] = event->mem_event.gfn;
+		event->slat_id = 0;
 	}
 
-	event->slat_id = 0;
-
-	response = VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
-	         | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
-
-done:
-	return response;
+	return VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
+	     | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
 }
 
 /* Callback invoked on CR3 change (context switch). */
@@ -676,7 +742,7 @@ gt_set_up_generic_events (GtLoop *loop) {
 
 	SETUP_MEM_EVENT(&loop->memory_event,
 	                ~0ULL,
-	                 VMI_MEMACCESS_RW,
+	                 VMI_MEMACCESS_RWX,
 	                 gt_mem_rw_cb,
 	                 1);
 
@@ -692,6 +758,43 @@ gt_set_up_generic_events (GtLoop *loop) {
 
 done:
 	return ok;
+}
+
+/* Allocate a new page of memory in the guest's address space. */
+static addr_t
+gt_allocate_shadow_frame (GtLoop *loop)
+{
+	int rc;
+	xen_pfn_t gfn = 0;
+	uint64_t proposed_mem_size = loop->curr_mem_size + GT_PAGE_SIZE;
+
+	rc = xc_domain_setmaxmem(loop->xch, loop->domid, proposed_mem_size);
+	if (rc < 0) {
+		fprintf(stderr,
+		       "failed to increase memory size on guest to %lx\n",
+		        proposed_mem_size);
+		goto done;
+	}
+
+	loop->curr_mem_size = proposed_mem_size;
+
+	rc = xc_domain_increase_reservation_exact(loop->xch, loop->domid,
+	                                              1, 0, 0, &gfn);
+	if (rc < 0) {
+		fprintf(stderr, "failed to increase reservation on guest");
+		goto done;
+	}
+
+	rc = xc_domain_populate_physmap_exact(loop->xch, loop->domid, 1, 0,
+	                                          0, &gfn);
+	if (rc < 0) {
+		fprintf(stderr, "failed to populate GFN at 0x%lx\n", gfn);
+		gfn = 0;
+		goto done;
+	}
+
+done:
+	return gfn;
 }
 
 /**
@@ -750,7 +853,11 @@ GtLoop *gt_loop_new(const char *guest_name)
 		break;
 	case VMI_OS_WINDOWS:
 		loop->os_functions = &os_functions_windows;
-		vmi_init_paging(loop->vmi, (1u << 0));
+		if (VMI_PM_UNKNOWN == vmi_init_paging(loop->vmi, (1u << 0))) {
+			fprintf(stderr, "couldn't init windows paging\n");
+			status = VMI_FAILURE;
+			goto done;
+		}
 		break;
 	default:
 		fprintf(stderr, "unknown guest operating system\n");
@@ -804,9 +911,17 @@ GtLoop *gt_loop_new(const char *guest_name)
 
 	rc = xc_altp2m_create_view(loop->xch, loop->domid, 0, &loop->shadow_view);
 	if (0 != rc) {
-		fprintf(stderr, "failed to create slat\n");
+		fprintf(stderr, "failed to create shadow slat\n");
 		goto done;
 	}
+
+	rc = xc_altp2m_create_view(loop->xch, loop->domid, 0, &loop->shadow_guard_view);
+	if (0 != rc) {
+		fprintf(stderr, "failed to create shadow guard slat\n");
+		goto done;
+	}
+
+	loop->shadow_guard_frame = gt_allocate_shadow_frame(loop);
 
 	if (!gt_set_up_generic_events(loop)) {
 		goto done;
@@ -1111,9 +1226,12 @@ void gt_loop_free(GtLoop *loop)
 	state_stacks_destroy(loop->state_stacks);
 	g_hash_table_destroy(loop->gt_page_record_collection);
 
+	xc_domain_decrease_reservation_exact(loop->xch, loop->domid, 1, 0, &loop->shadow_guard_frame);
+
 	if (0 != loop->shadow_view) {
 		xc_altp2m_switch_to_view(loop->xch, loop->domid, 0);
 		xc_altp2m_destroy_view(loop->xch, loop->domid, loop->shadow_view);
+		xc_altp2m_destroy_view(loop->xch, loop->domid, loop->shadow_guard_view);
 		xc_altp2m_set_domain_state(loop->xch, loop->domid, FALSE);
 	}
 
@@ -1138,43 +1256,6 @@ done:
 	g_free(loop);
 
 	return;
-}
-
-/* Allocate a new page of memory in the guest's address space. */
-static addr_t
-gt_allocate_shadow_frame (GtLoop *loop)
-{
-	int rc;
-	xen_pfn_t gfn = 0;
-	uint64_t proposed_mem_size = loop->curr_mem_size + GT_PAGE_SIZE;
-
-	rc = xc_domain_setmaxmem(loop->xch, loop->domid, proposed_mem_size);
-	if (rc < 0) {
-		fprintf(stderr,
-		       "failed to increase memory size on guest to %lx\n",
-		        proposed_mem_size);
-		goto done;
-	}
-
-	loop->curr_mem_size = proposed_mem_size;
-
-	rc = xc_domain_increase_reservation_exact(loop->xch, loop->domid,
-	                                              1, 0, 0, &gfn);
-	if (rc < 0) {
-		fprintf(stderr, "failed to increase reservation on guest");
-		goto done;
-	}
-
-	rc = xc_domain_populate_physmap_exact(loop->xch, loop->domid, 1, 0,
-	                                          0, &gfn);
-	if (rc < 0) {
-		fprintf(stderr, "failed to populate GFN at 0x%lx\n", gfn);
-		gfn = 0;
-		goto done;
-	}
-
-done:
-	return gfn;
 }
 
 /* Search the kernel code address space for an existing int 3 instruction. */
@@ -1380,14 +1461,14 @@ gt_setup_mem_trap (GtLoop *loop,
 			goto done;
 		}
 
-		/* Activate in shadow view. */
+		/* Activate in shadow guard view. */
 		xc_status = xc_altp2m_change_gfn(loop->xch,
-		                                     loop->domid,
-		                                     loop->shadow_view,
-		                                     shadow,
-		                                     0);
+		                                 loop->domid,
+		                                 loop->shadow_guard_view,
+		                                 shadow,
+		                                 loop->shadow_guard_frame);
 		if (0 != xc_status) {
-			fprintf(stderr, "failed to zeroed shadow view\n");
+			fprintf(stderr, "failed to update zeroed shadow view\n");
 			goto done;
 		}
 	}
@@ -1443,7 +1524,7 @@ gt_setup_mem_trap (GtLoop *loop,
 
 		status = vmi_set_mem_event(loop->vmi,
 		                           shadow,
-		                           VMI_MEMACCESS_RW,
+		                           VMI_MEMACCESS_RWX,
 		                           loop->shadow_view);
 		if (VMI_SUCCESS != status) {
 			fprintf(stderr, "couldn't set shadow permissions for 0x%lx\n", frame);
@@ -1522,6 +1603,7 @@ gboolean gt_loop_set_cb(GtLoop *loop,
 		goto done;
 	}
 
+	fprintf(stderr, "%s -> 0x%lx\n", kernel_func, sysaddr);
 	syscall_trap = gt_setup_mem_trap(loop, sysaddr, kernel_func, syscall_cb, sysret_cb, user_data);
 	if (NULL == syscall_trap) {
 		goto done;
