@@ -98,8 +98,7 @@ usage()
 void *handle_open_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	if (!test_return) {
-		int i = *(int *) 0;
-		printf("%d\n", i);
+		kill(0, SIGSEGV);
 		g_assert_not_reached();
 	}
 
@@ -108,8 +107,7 @@ void *handle_open_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *us
 
 void handle_open_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
 	if (test_return) {
-		int i = *(int *) 0;
-		printf("%d\n", i);
+		kill(0, SIGSEGV);
 		g_assert_not_reached();
 	}
 }
