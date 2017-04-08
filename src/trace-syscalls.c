@@ -365,29 +365,6 @@ gt_paddr_record_from_va(GtLoop *loop, addr_t va) {
 }
 
 /**
- * gt_guest_free_syscall_state:
- * @state: a pointer to a #GtGuestState.
- * @thread_id: the thread ID associated with the syscall to free.
- *
- * Frees the object which the guestrace event loop would have allocated
- * when processing the system call associated with @thread_id. This is useful
- * for system calls that never return (unless there is an error) such as execve.
- * The application must first free the object pointed to by the @data
- * argument to the #GtSyscallFunc before calling this function. The
- * application should not call this function if the guestrace event loop
- * will call #GtSysretFunc.
- */
-void
-gt_guest_free_syscall_state(GtGuestState *state, gt_tid_t thread_id)
-{
-	gt_syscall_state *sys_state;
-
-	sys_state = state_stacks_tid_dequeue(state->loop->state_stacks, thread_id);
-	g_free(sys_state);
-}
-
-
-/**
  * gt_guest_hijack_return:
  * @state: a #GtGuestState.
  * @errno: a #gint.
@@ -724,33 +701,52 @@ gt_cr3_cb(vmi_instance_t vmi, vmi_event_t *event) {
  * Setup our global interrupt to catch any interrupts on any pages.
  */
 static bool
-gt_set_up_generic_events (GtLoop *loop) {
+gt_set_up_memory_events (GtLoop *loop) {
 	bool ok = false;
 	status_t status;
-
-	SETUP_INTERRUPT_EVENT(&loop->breakpoint_event, 0, gt_breakpoint_cb);
-	loop->breakpoint_event.data = loop;
-
-	SETUP_REG_EVENT(&loop->cr3_event, CR3, VMI_REGACCESS_W, 0, gt_cr3_cb);
-	loop->cr3_event.data = loop;
-
-	status = vmi_register_event(loop->vmi, &loop->breakpoint_event);
-	if (VMI_SUCCESS != status) {
-		fprintf(stderr, "Failed to setup interrupt event\n");
-		goto done;
-	}
 
 	SETUP_MEM_EVENT(&loop->memory_event,
 	                ~0ULL,
 	                 VMI_MEMACCESS_RWX,
 	                 gt_mem_rw_cb,
 	                 1);
-
 	loop->memory_event.data = loop;
 
 	status = vmi_register_event(loop->vmi, &loop->memory_event);
 	if (VMI_SUCCESS != status) {
 		fprintf(stderr, "failed to setup memory event\n");
+		goto done;
+	}
+
+	ok = true;
+
+done:
+	return ok;
+}
+
+/*
+ * Setup our global interrupt to catch any interrupts on any pages.
+ */
+static bool
+gt_set_up_generic_events (GtLoop *loop) {
+	bool ok = false;
+	status_t status;
+
+	SETUP_REG_EVENT(&loop->cr3_event, CR3, VMI_REGACCESS_W, 0, gt_cr3_cb);
+	loop->cr3_event.data = loop;
+
+	status = vmi_register_event(loop->vmi, &loop->cr3_event);
+	if (VMI_SUCCESS != status) {
+		fprintf(stderr, "Failed to setup interrupt event\n");
+		goto done;
+	}
+
+	SETUP_INTERRUPT_EVENT(&loop->breakpoint_event, 0, gt_breakpoint_cb);
+	loop->breakpoint_event.data = loop;
+
+	status = vmi_register_event(loop->vmi, &loop->breakpoint_event);
+	if (VMI_SUCCESS != status) {
+		fprintf(stderr, "Failed to setup interrupt event\n");
 		goto done;
 	}
 
@@ -928,6 +924,10 @@ GtLoop *gt_loop_new(const char *guest_name)
 	}
 
 	if (!gt_set_up_step_events(loop)) {
+		goto done;
+	}
+
+	if (!gt_set_up_memory_events(loop)) {
 		goto done;
 	}
 

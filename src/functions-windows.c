@@ -113,19 +113,6 @@ _gt_windows_cr3_cb(vmi_instance_t vmi, vmi_event_t *event)
 	GtLoop *loop = event->data;
 	uint8_t previous_mode;
 
-	if (loop->initialized) {
-		/*fprintf(stderr, "CR3 change: 0x%lx -> 0x%lx, RIP -> 0x%lx, RSP -> 0x%lx\n",
-			event->reg_event.previous,
-			event->x86_regs->cr3,
-			event->x86_regs->rip,
-			event->x86_regs->rsp);*/
-
-		vmi_pidcache_flush(vmi);
-		vmi_v2pcache_flush(vmi, event->reg_event.previous);
-		vmi_rvacache_flush(vmi);
-		goto done;	
-	}
-
 	g_assert(initialized);
 
 	previous_mode = _gt_windows_get_privilege_mode(vmi, event, TRUE);
@@ -133,7 +120,6 @@ _gt_windows_cr3_cb(vmi_instance_t vmi, vmi_event_t *event)
 		loop->initialized = TRUE;
 	}
 
-done:
 	return VMI_EVENT_RESPONSE_NONE;
 }
 
@@ -163,6 +149,7 @@ _gt_windows_wait_for_first_process(GtLoop *loop)
 		}
 	}
 
+	vmi_clear_event(loop->vmi, &loop->cr3_event, NULL);
 	status = VMI_SUCCESS;
 
 done:
