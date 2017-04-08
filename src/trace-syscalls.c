@@ -919,14 +919,6 @@ GtLoop *gt_loop_new(const char *guest_name)
 
 	loop->shadow_guard_frame = gt_allocate_shadow_frame(loop);
 
-	if (!gt_set_up_generic_events(loop)) {
-		goto done;
-	}
-
-	if (!gt_set_up_step_events(loop)) {
-		goto done;
-	}
-
 	if (!gt_set_up_memory_events(loop)) {
 		goto done;
 	}
@@ -1330,6 +1322,14 @@ void gt_loop_run(GtLoop *loop)
         }
 
 	vmi_pause_vm(loop->vmi);
+
+	if (!gt_set_up_generic_events(loop)) {
+		goto done;
+	}
+
+	if (!gt_set_up_step_events(loop)) {
+		goto done;
+	}
 
 	loop->trampoline_addr = gt_find_trampoline_addr(loop);
 	if (0 == loop->trampoline_addr) {
