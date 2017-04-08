@@ -72,7 +72,6 @@ _gt_linux_cr3_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	g_assert(initialized);
 
         if (prev != 0 && prev != event->x86_regs->cr3) {
-                vmi_clear_event(loop->vmi, event, NULL);
                 loop->initialized = TRUE;
         }
 
@@ -90,7 +89,6 @@ _gt_linux_wait_for_first_process(GtLoop *loop)
 	g_assert(initialized);
 
 	SETUP_REG_EVENT(&loop->cr3_event, CR3, VMI_REGACCESS_W, 0, _gt_linux_cr3_cb);
-
 	loop->cr3_event.data = loop;
 
 	status = vmi_register_event(loop->vmi, &loop->cr3_event);
@@ -107,6 +105,7 @@ _gt_linux_wait_for_first_process(GtLoop *loop)
 		}
 	}
 
+	vmi_clear_event(loop->vmi, &loop->cr3_event, NULL);
 	status = VMI_SUCCESS;
 
 done:

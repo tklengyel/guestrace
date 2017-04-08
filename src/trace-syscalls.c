@@ -635,33 +635,52 @@ gt_cr3_cb(vmi_instance_t vmi, vmi_event_t *event) {
  * Setup our global interrupt to catch any interrupts on any pages.
  */
 static bool
-gt_set_up_generic_events (GtLoop *loop) {
+gt_set_up_memory_events (GtLoop *loop) {
 	bool ok = false;
 	status_t status;
-
-	SETUP_INTERRUPT_EVENT(&loop->breakpoint_event, 0, gt_breakpoint_cb);
-	loop->breakpoint_event.data = loop;
-
-	SETUP_REG_EVENT(&loop->cr3_event, CR3, VMI_REGACCESS_W, 0, gt_cr3_cb);
-	loop->cr3_event.data = loop;
-
-	status = vmi_register_event(loop->vmi, &loop->breakpoint_event);
-	if (VMI_SUCCESS != status) {
-		fprintf(stderr, "Failed to setup interrupt event\n");
-		goto done;
-	}
 
 	SETUP_MEM_EVENT(&loop->memory_event,
 	                ~0ULL,
 	                 VMI_MEMACCESS_RW,
 	                 gt_mem_rw_cb,
 	                 1);
-
 	loop->memory_event.data = loop;
 
 	status = vmi_register_event(loop->vmi, &loop->memory_event);
 	if (VMI_SUCCESS != status) {
 		fprintf(stderr, "failed to setup memory event\n");
+		goto done;
+	}
+
+	ok = true;
+
+done:
+	return ok;
+}
+
+/*
+ * Setup our global interrupt to catch any interrupts on any pages.
+ */
+static bool
+gt_set_up_generic_events (GtLoop *loop) {
+	bool ok = false;
+	status_t status;
+
+	SETUP_REG_EVENT(&loop->cr3_event, CR3, VMI_REGACCESS_W, 0, gt_cr3_cb);
+	loop->cr3_event.data = loop;
+
+	status = vmi_register_event(loop->vmi, &loop->cr3_event);
+	if (VMI_SUCCESS != status) {
+		fprintf(stderr, "Failed to setup interrupt event\n");
+		goto done;
+	}
+
+	SETUP_INTERRUPT_EVENT(&loop->breakpoint_event, 0, gt_breakpoint_cb);
+	loop->breakpoint_event.data = loop;
+
+	status = vmi_register_event(loop->vmi, &loop->breakpoint_event);
+	if (VMI_SUCCESS != status) {
+		fprintf(stderr, "Failed to setup interrupt event\n");
 		goto done;
 	}
 
@@ -785,11 +804,7 @@ GtLoop *gt_loop_new(const char *guest_name)
 		goto done;
 	}
 
-	if (!gt_set_up_generic_events(loop)) {
-		goto done;
-	}
-
-	if (!gt_set_up_step_events(loop)) {
+	if (!gt_set_up_memory_events(loop)) {
 		goto done;
 	}
 
@@ -1226,6 +1241,14 @@ void gt_loop_run(GtLoop *loop)
         }
 
 	vmi_pause_vm(loop->vmi);
+
+	if (!gt_set_up_generic_events(loop)) {
+		goto done;
+	}
+
+	if (!gt_set_up_step_events(loop)) {
+		goto done;
+	}
 
 	loop->trampoline_addr = gt_find_trampoline_addr(loop);
 	if (0 == loop->trampoline_addr) {
