@@ -627,9 +627,9 @@ skip_sysret_cb:
 		memset(loop->jmpbuf[event->vcpu_id], 0x00, sizeof loop->jmpbuf[event->vcpu_id]);
 
 		/* Set RIP to the original return location. */
-		event->x86_regs->rip = state->return_addr;
-		response = VMI_EVENT_RESPONSE_SET_REGISTERS;
-		//vmi_set_vcpureg(loop->vmi, state->return_addr, RIP, event->vcpu_id);
+		//event->x86_regs->rip = state->return_addr;
+		//response = VMI_EVENT_RESPONSE_SET_REGISTERS;
+		vmi_set_vcpureg(loop->vmi, state->return_addr, RIP, event->vcpu_id);
 
 		/*
 		 * This will free our gt_syscall_state object, but
@@ -685,8 +685,6 @@ gt_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
 /* Callback invoked on CR3 change (context switch). */
 static event_response_t
 gt_cr3_cb(vmi_instance_t vmi, vmi_event_t *event) {
-	GtLoop *loop = event->data;
-
 	/* This is not the case yet, since the event precedes the CR3 update. */
 	event->x86_regs->cr3 = event->reg_event.value;
 
@@ -742,7 +740,7 @@ gt_set_up_generic_events (GtLoop *loop) {
 
 	status = vmi_register_event(loop->vmi, &loop->cr3_event);
 	if (VMI_SUCCESS != status) {
-		fprintf(stderr, "Failed to setup interrupt event\n");
+		fprintf(stderr, "Failed to setup cr3 event\n");
 		goto done;
 	}
 
@@ -1219,7 +1217,7 @@ void gt_loop_free(GtLoop *loop)
 
 	vmi_pause_vm(loop->vmi);
 
-	fprintf(stderr, "finished instrumentating %lu syscalls; good bye\n", loop->count);
+	fprintf(stderr, "finished instrumenting %lu syscalls; good bye\n", loop->count);
 
 	g_hash_table_destroy(loop->gt_page_translation);
 	state_stacks_destroy(loop->state_stacks);
@@ -1325,14 +1323,6 @@ void gt_loop_run(GtLoop *loop)
 	status = loop->os_functions->wait_for_first_process(loop);
 	if (VMI_SUCCESS != status) {
 		fprintf(stderr, "failed to wait for initialization\n");
-		goto done;
-	}
-
-	if (!gt_set_up_generic_events(loop)) {
-		goto done;
-	}
-
-	if (!gt_set_up_step_events(loop)) {
 		goto done;
 	}
 
