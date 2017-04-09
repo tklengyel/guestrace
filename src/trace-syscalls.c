@@ -517,15 +517,18 @@ skip_syscall_cb:
 			 */
 			g_assert(NULL == state->data);
 
-			event->x86_regs->rax = sys_state.hijack_return;
-			event->x86_regs->rip = state->return_addr;
+			/*event->x86_regs->rax = sys_state.hijack_return;
+			event->x86_regs->rip = state->return_addr;*/
+
+			vmi_set_vcpureg(loop->vmi, sys_state.hijack_return, RAX, event->vcpu_id);
+			vmi_set_vcpureg(loop->vmi, state->return_addr, RIP, event->vcpu_id);
 
 			/*
 			 * Avoid changing SLAT and setting singlestep. We are
 			 * hijacking RIP, so no need to remove breakpoint
 			 * for one step.
 			 */
-			response = VMI_EVENT_RESPONSE_SET_REGISTERS;
+			//response = VMI_EVENT_RESPONSE_SET_REGISTERS;
 
 			g_free(state);
 		} else if (FALSE == sys_state.skip_return
@@ -653,7 +656,7 @@ gt_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
 	GtLoop *loop = event->data;
 
 	if (!g_hash_table_lookup(loop->gt_page_translation, GINT_TO_POINTER(event->mem_event.gfn))) {
-		fprintf(stderr, "!!! hit a shadow frame (%c%c%c): "
+		/*fprintf(stderr, "!!! hit a shadow frame (%c%c%c): "
 		                "GLA -> 0x%lx, GFN -> 0x%lx (0x%lx), "
 		                "PTW -> %d, "
 		                "VALID -> %d, "
@@ -667,7 +670,7 @@ gt_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
 		                 event->mem_event.offset,
 		                 event->mem_event.gptw,
 		                 event->mem_event.gla_valid,
-		                 event->slat_id);
+		                 event->slat_id);*/
 		event->slat_id = loop->shadow_guard_view;
 	} else {
 		/* In the off-chance they write to executable kernel memory */
