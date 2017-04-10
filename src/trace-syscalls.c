@@ -640,17 +640,6 @@ gt_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
 /* Callback invoked on CR3 change (context switch). */
 static event_response_t
 gt_cr3_cb(vmi_instance_t vmi, vmi_event_t *event) {
-	GtLoop *loop = event->data;
-	int old_slat = event->slat_id;
-	event_response_t response = VMI_EVENT_RESPONSE_NONE;
-
-	/* This is not the case yet, since the event precedes the CR3 update. */
-	if (vmi_dtb_to_pid(vmi, event->reg_event.value) <= 4) {
-		event->slat_id = 0;
-		goto done;
-	}
-
-	event->slat_id = loop->shadow_view;
 	event->x86_regs->cr3 = event->reg_event.value;
 
 	/*
@@ -662,12 +651,7 @@ gt_cr3_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	vmi_v2pcache_flush(vmi, event->reg_event.previous);
 	vmi_rvacache_flush(vmi);
 	
-done:
-	if (old_slat != event->slat_id) {
-		response = VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
-	}
-
-	return response;
+	return VMI_EVENT_RESPONSE_NONE;
 }
 
 /*
