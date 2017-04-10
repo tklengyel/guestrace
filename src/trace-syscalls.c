@@ -183,12 +183,6 @@ gt_destroy_page_record (gpointer data) {
 	                  VMI_MEMACCESS_N,
 	                  page_record->loop->shadow_view);
 
-	/* Stop monitoring this page. */
-	vmi_set_mem_event(page_record->loop->vmi,
-	                  page_record->shadow_frame,
-	                  VMI_MEMACCESS_N,
-	                  page_record->loop->shadow_view);
-
 	int xc_status = xc_altp2m_change_gfn(page_record->loop->xch,
 	                                     page_record->loop->domid,
 	                                     page_record->loop->shadow_view,
@@ -196,15 +190,6 @@ gt_destroy_page_record (gpointer data) {
 	                                    ~0);
 	if (0 != xc_status) {
 		fprintf(stderr, "failed to update shadow view\n");
-	}
-
-	xc_status = xc_altp2m_change_gfn(page_record->loop->xch,
-	                                 page_record->loop->domid,
-	                                 page_record->loop->shadow_guard_view,
-	                                 page_record->shadow_frame,
-	                                ~0);
-	if (0 != xc_status) {
-		fprintf(stderr, "failed to update shadow guard view\n");
 	}
 
 	xc_domain_decrease_reservation_exact(page_record->loop->xch,
@@ -233,8 +218,6 @@ gt_singlestep_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	size_t ret;
 
 	if (0 != loop->mem_watch[event->vcpu_id]) {
-		fprintf(stderr, "updating cached shadow memory\n");
-		
 		gt_page_record *record = g_hash_table_lookup(loop->gt_page_record_collection,
 	                                                 GSIZE_TO_POINTER(loop->mem_watch[event->vcpu_id]));
 
@@ -599,14 +582,9 @@ skip_syscall_cb:
 
 		state = state_stacks_tid_pop(loop->state_stacks, thread_id);
 		if (NULL == state) {
-			fprintf(stderr, "no state for sysret %d:%ld\n", pid, thread_id);
+			fprintf(stderr, "no state for sysret %d:%ld; prepare for crash\n", pid, thread_id);
 			fprintf(stderr, "current count -> %lu\n", loop->count);
-			g_assert(FALSE);
 			goto done;
-		}
-
-		if (event->x86_regs->rsp - 8 != state->return_loc) {
-			fprintf(stderr, "pop getting wrong return location\n");
 		}
 
 		//fprintf(stderr, "\t\tRET_ADDR -> 0x%lx\n", state->return_addr);
@@ -653,33 +631,7 @@ done:
 static event_response_t
 gt_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
 	/* Switch back to original SLAT for one step. */
-	GtLoop *loop = event->data;
-
-	if (!g_hash_table_lookup(loop->gt_page_translation, GINT_TO_POINTER(event->mem_event.gfn))) {
-		/*fprintf(stderr, "!!! hit a shadow frame (%c%c%c): "
-		                "GLA -> 0x%lx, GFN -> 0x%lx (0x%lx), "
-		                "PTW -> %d, "
-		                "VALID -> %d, "
-		                "SLAT -> %d"
-		                "\n",
-		                (event->mem_event.out_access & VMI_MEMACCESS_R) ? 'r' : '-',
-		                (event->mem_event.out_access & VMI_MEMACCESS_W) ? 'w' : '-',
-		                (event->mem_event.out_access & VMI_MEMACCESS_X) ? 'x' : '-',
-		                 event->mem_event.gla, 
-		                 event->mem_event.gfn,
-		                 event->mem_event.offset,
-		                 event->mem_event.gptw,
-		                 event->mem_event.gla_valid,
-		                 event->slat_id);*/
-		event->slat_id = loop->shadow_guard_view;
-	} else {
-		/* In the off-chance they write to executable kernel memory */
-		if (event->mem_event.out_access & VMI_MEMACCESS_W) {
-			loop->mem_watch[event->vcpu_id] = event->mem_event.gfn;
-		}
-
-		event->slat_id = 0;
-	}
+	event->slat_id = 0;
 
 	return VMI_EVENT_RESPONSE_TOGGLE_SINGLESTEP
 	     | VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
@@ -688,7 +640,17 @@ gt_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
 /* Callback invoked on CR3 change (context switch). */
 static event_response_t
 gt_cr3_cb(vmi_instance_t vmi, vmi_event_t *event) {
+	GtLoop *loop = event->data;
+	int old_slat = event->slat_id;
+	event_response_t response = VMI_EVENT_RESPONSE_NONE;
+
 	/* This is not the case yet, since the event precedes the CR3 update. */
+	if (vmi_dtb_to_pid(vmi, event->reg_event.value) <= 4) {
+		event->slat_id = 0;
+		goto done;
+	}
+
+	event->slat_id = loop->shadow_view;
 	event->x86_regs->cr3 = event->reg_event.value;
 
 	/*
@@ -700,7 +662,12 @@ gt_cr3_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	vmi_v2pcache_flush(vmi, event->reg_event.previous);
 	vmi_rvacache_flush(vmi);
 	
-	return VMI_EVENT_RESPONSE_NONE;
+done:
+	if (old_slat != event->slat_id) {
+		response = VMI_EVENT_RESPONSE_VMM_PAGETABLE_ID;
+	}
+
+	return response;
 }
 
 /*
@@ -917,17 +884,7 @@ GtLoop *gt_loop_new(const char *guest_name)
 		goto done;
 	}
 
-	rc = xc_altp2m_create_view(loop->xch, loop->domid, 0, &loop->shadow_guard_view);
-	if (0 != rc) {
-		fprintf(stderr, "failed to create shadow guard slat\n");
-		goto done;
-	}
-
-	loop->shadow_guard_frame = gt_allocate_shadow_frame(loop);
-
-	if (!gt_set_up_memory_events(loop)) {
-		goto done;
-	}
+	gt_set_up_memory_events(loop);
 
 	vmi_resume_vm(loop->vmi);
 
@@ -1226,12 +1183,9 @@ void gt_loop_free(GtLoop *loop)
 	state_stacks_destroy(loop->state_stacks);
 	g_hash_table_destroy(loop->gt_page_record_collection);
 
-	xc_domain_decrease_reservation_exact(loop->xch, loop->domid, 1, 0, &loop->shadow_guard_frame);
-
 	if (0 != loop->shadow_view) {
 		xc_altp2m_switch_to_view(loop->xch, loop->domid, 0);
 		xc_altp2m_destroy_view(loop->xch, loop->domid, loop->shadow_view);
-		xc_altp2m_destroy_view(loop->xch, loop->domid, loop->shadow_guard_view);
 		xc_altp2m_set_domain_state(loop->xch, loop->domid, FALSE);
 	}
 
@@ -1435,11 +1389,20 @@ gt_setup_mem_trap (GtLoop *loop,
 	gt_page_record  *page_record  = NULL;
 	gt_paddr_record *paddr_record = NULL;
 
-	addr_t pa = vmi_translate_kv2p(loop->vmi, va);
-	if (0 == pa) {
-		fprintf(stderr, "virtual addr. translation failed: %lx\n", va);
+	page_info_t pinfo = { 0 };
+
+	if (VMI_SUCCESS != vmi_pagetable_lookup_extended(loop->vmi,
+	                                                 vmi_pid_to_dtb(loop->vmi, 0),
+	                                                 va,
+	                                                 &pinfo))
+	{
+		fprintf(stderr, "couldn't get pagetable information\n");
 		goto done;
 	}
+
+	g_assert(GT_PAGE_SIZE == pinfo.size);
+
+	addr_t pa = pinfo.paddr;
 
 	addr_t frame = pa >> GT_PAGE_OFFSET_BITS;
 	addr_t shadow = (addr_t) g_hash_table_lookup(loop->gt_page_translation,
@@ -1466,17 +1429,6 @@ gt_setup_mem_trap (GtLoop *loop,
 		                                     shadow);
 		if (0 != xc_status) {
 			fprintf(stderr, "failed to update shadow view\n");
-			goto done;
-		}
-
-		/* Activate in shadow guard view. */
-		xc_status = xc_altp2m_change_gfn(loop->xch,
-		                                 loop->domid,
-		                                 loop->shadow_guard_view,
-		                                 shadow,
-		                                 loop->shadow_guard_frame);
-		if (0 != xc_status) {
-			fprintf(stderr, "failed to update zeroed shadow view\n");
 			goto done;
 		}
 	}
@@ -1527,15 +1479,6 @@ gt_setup_mem_trap (GtLoop *loop,
 		                           loop->shadow_view);
 		if (VMI_SUCCESS != status) {
 			fprintf(stderr, "couldn't set frame permissions for 0x%lx\n", frame);
-			goto done;
-		}
-
-		status = vmi_set_mem_event(loop->vmi,
-		                           shadow,
-		                           VMI_MEMACCESS_RWX,
-		                           loop->shadow_view);
-		if (VMI_SUCCESS != status) {
-			fprintf(stderr, "couldn't set shadow permissions for 0x%lx\n", frame);
 			goto done;
 		}
 	} else {
