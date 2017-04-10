@@ -69,5 +69,6 @@ noinst_HEADERS = \
 	generated-windows.h \
 	generated-linux.h \
 	guestrace-private.h \
+	rekall-private.h \
 	state-stacks.h \
 	trace-syscalls.h
