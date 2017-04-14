@@ -630,6 +630,12 @@ done:
  */
 static event_response_t
 gt_mem_rw_cb (vmi_instance_t vmi, vmi_event_t *event) {
+	GtLoop *loop = event->data;
+
+	if (event->mem_event.in_access & VMI_MEMACCESS_W) {
+		loop->mem_watch[event->vcpu_id] = event->mem_event.gfn;
+	}
+
 	/* Switch back to original SLAT for one step. */
 	event->slat_id = 0;
 
