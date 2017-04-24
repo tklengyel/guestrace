@@ -432,8 +432,6 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		gt_paddr_record *record;
 		gt_syscall_state *state;
 
-		//uint16_t old_slat = event->slat_id;
-
 		/* Set VCPUs SLAT to use original for one step. */
 		response = gt_original_slat_singlestep(event);
 
@@ -450,13 +448,13 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 
 		gt_pid_t pid = loop->os_functions->get_pid(loop, event);
 		if (0 == pid) {
-			//fprintf(stderr, "failed to read process ID (syscall)\n");
+			fprintf(stderr, "failed to read process ID (syscall)\n");
 			goto done;
 		}
 
 		thread_id  = loop->os_functions->get_tid(loop, event);
 		if (0 == thread_id) {
-			//fprintf(stderr, "failed to read thread ID (syscall)\n");
+			fprintf(stderr, "failed to read thread ID (syscall)\n");
 			goto done;
 		}
 
@@ -500,37 +498,20 @@ skip_syscall_cb:
 			 */
 			g_assert(NULL == state->data);
 
-			/*event->x86_regs->rax = sys_state.hijack_return;
-			event->x86_regs->rip = state->return_addr;*/
-
-			vmi_set_vcpureg(loop->vmi, sys_state.hijack_return, RAX, event->vcpu_id);
-			vmi_set_vcpureg(loop->vmi, state->return_addr, RIP, event->vcpu_id);
+			event->x86_regs->rax = sys_state.hijack_return;
+			event->x86_regs->rip = state->return_addr;
 
 			/*
 			 * Avoid changing SLAT and setting singlestep. We are
 			 * hijacking RIP, so no need to remove breakpoint
 			 * for one step.
 			 */
-			//response = VMI_EVENT_RESPONSE_SET_REGISTERS;
+			response = VMI_EVENT_RESPONSE_SET_REGISTERS;
 
 			g_free(state);
 		} else if (FALSE == sys_state.skip_return
 		        && NULL != record->sysret_cb) {
 			/* Normal code path. */
-
-			/*fprintf(stderr, "PUSH (%s): CR3 -> 0x%lx, CR0 -> 0x%lx, CR2-> 0x%lx, CR4 -> 0x%lx, PID -> %d, TID -> %ld, VCPU -> %d, SLAT -> %d, RIP -> 0x%lx, RSP -> 0x%lx, RET_ADDR -> 0x%lx \n",
-				            record->name,
-				            event->x86_regs->cr3,
-				            event->x86_regs->cr0,
-				            event->x86_regs->cr2,
-				            event->x86_regs->cr4,
-				            pid,
-				            thread_id,
-				            event->vcpu_id,
-				            old_slat,
-				            event->x86_regs->rip,
-				            event->x86_regs->rsp,
-				            return_addr);*/
 
 			/* Record system-call state. */
 			state_stacks_tid_push(loop->state_stacks, thread_id, state);
@@ -558,36 +539,21 @@ skip_syscall_cb:
 		gt_syscall_state *state;
 		addr_t thread_id = loop->os_functions->get_tid(loop, event);
 		if (0 == thread_id) {
-			//fprintf(stderr, "failed to read thread ID (sysret)\n");
+			fprintf(stderr, "failed to read thread ID (sysret)\n");
 			goto done;
 		}
 
 		gt_pid_t pid = loop->os_functions->get_pid(loop, event);
 		if (0 == pid) {
-			//fprintf(stderr, "failed to read process ID (sysret)\n");
+			fprintf(stderr, "failed to read process ID (sysret)\n");
 			goto done;
 		}
-
-		/*fprintf(stderr, "POP: CR3 -> 0x%lx, CR0 -> 0x%lx, CR2-> 0x%lx, CR4 -> 0x%lx, PID -> %d, TID -> %ld, VCPU -> %d, SLAT -> %d, RIP -> 0x%lx, RSP -> 0x%lx \n",
-			            event->x86_regs->cr3,
-			            event->x86_regs->cr0,
-			            event->x86_regs->cr2,
-			            event->x86_regs->cr4,
-			            pid,
-			            thread_id,
-			            event->vcpu_id,
-			            event->slat_id,
-			            event->x86_regs->rip,
-			            event->x86_regs->rsp);*/
 
 		state = state_stacks_tid_pop(loop->state_stacks, thread_id);
 		if (NULL == state) {
 			fprintf(stderr, "no state for sysret %d:%ld; prepare for crash\n", pid, thread_id);
-			fprintf(stderr, "current count -> %lu\n", loop->count);
 			goto done;
 		}
-
-		//fprintf(stderr, "\t\tRET_ADDR -> 0x%lx\n", state->return_addr);
 
 		if (GT_EMERGENCY == setjmp(loop->jmpbuf[event->vcpu_id])) {
 			/*
@@ -608,9 +574,8 @@ skip_sysret_cb:
 		memset(loop->jmpbuf[event->vcpu_id], 0x00, sizeof loop->jmpbuf[event->vcpu_id]);
 
 		/* Set RIP to the original return location. */
-		//event->x86_regs->rip = state->return_addr;
-		//response = VMI_EVENT_RESPONSE_SET_REGISTERS;
-		vmi_set_vcpureg(loop->vmi, state->return_addr, RIP, event->vcpu_id);
+		event->x86_regs->rip = state->return_addr;
+		response = VMI_EVENT_RESPONSE_SET_REGISTERS;
 
 		/*
 		 * This will free our gt_syscall_state object, but
