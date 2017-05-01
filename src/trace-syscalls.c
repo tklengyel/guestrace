@@ -1355,7 +1355,10 @@ gt_setup_mem_trap (GtLoop *loop,
 		goto done;
 	}
 
-	g_assert(GT_PAGE_SIZE == pinfo.size);
+	if (GT_PAGE_SIZE != pinfo.size) {
+		fprintf(stderr, "trap page size != 4KB (0x%x)\n", pinfo.size);
+		goto done;
+	}
 
 	addr_t pa = pinfo.paddr;
 
