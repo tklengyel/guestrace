@@ -1362,6 +1362,13 @@ gt_setup_mem_trap (GtLoop *loop,
 	if (GT_PAGE_SIZE != pinfo.size) {
 		fprintf(stderr, "trap page size != 4KB (0x%x)\n", pinfo.size);
 		if (VMI_OS_WINDOWS == loop->os) {
+			/*
+			 * Windows seems to write to its pages, and our 4-KB
+			 * memory events might not catch this. The present
+			 * work around is to give the VM < 2 GB of memory.
+			 * What we really need to do is figure out how to make
+			 * 2 MB shadow pages.
+			 */
 			goto done;
 		}
 	}
