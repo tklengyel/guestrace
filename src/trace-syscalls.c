@@ -365,8 +365,12 @@ gt_paddr_record_from_va(GtLoop *loop, addr_t va) {
 gboolean
 gt_guest_hijack_return(GtGuestState *state, reg_t retval)
 {
-	state->hijack = true;
-	state->hijack_return = retval;
+	if (VMI_OS_LINUX == state->loop->os) {
+		fprintf(stderr, "FIXME: gt_guest_hijack_return on Linux\n");
+	} else {
+		state->hijack = true;
+		state->hijack_return = retval;
+	}
 
 	return TRUE;
 }
