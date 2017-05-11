@@ -444,8 +444,6 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		                                 event->interrupt_event.gla);
 		if (NULL == record) {
 			/* Assume we didn't emplace interrupt. */
-			fprintf(stderr, "missing record; "
-			                "assuming not from VisorFlow\n");
 			event->interrupt_event.reinject = 1;
 			goto done;
 		}
