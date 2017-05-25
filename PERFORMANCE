@@ -62,7 +62,7 @@ imp      23c96e7f 10240      0.004  0.823
 imp      23c96e7f 10240      0.004  0.820
 
 imp      11509e2e 10240      0.004  0.803
-imp      11509e2e 10240      0.004  0.393
+imp      11509e2e 10240      0.004  0.893
 imp      11509e2e 10240      0.004  0.808
 
 These are the remaining parts of gt_breakpoint_cb which make up most of
