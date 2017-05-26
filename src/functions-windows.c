@@ -26,6 +26,7 @@ static offset_definition_t offset_def[] = {
 	{ GT_OFFSET_WINDOWS_NT_TIB64_SELF,                             "_NT_TIB64",  "Self" },
 	{ GT_OFFSET_WINDOWS_TEB_CLIENTID,                              "_TEB",  "ClientId" },
 	{ GT_OFFSET_WINDOWS_EPROCESS_UNIQUEPROCESSID,                  "_EPROCESS", "UniqueProcessId" },
+	{ GT_OFFSET_WINDOWS_EPROCESS_PNAME,                            "_EPROCESS", "ImageFileName" },
 	{ GT_OFFSET_WINDOWS_TEB_PROCESSENVIRONMENTBLOCK,               "_TEB", "ProcessEnvironmentBlock" },
 	{ GT_OFFSET_WINDOWS_PEB_PROCESSPARAMETERS,                     "_PEB", "ProcessParameters" },
 	{ GT_OFFSET_WINDOWS_RTL_USER_PROCESS_PARAMETERS_IMAGEPATHNAME, "_RTL_USER_PROCESS_PARAMETERS", "ImagePathName" },
@@ -237,50 +238,40 @@ done:
 
 /* Gets the process name of the process with the PID that is input. */
 static char *
-_gt_windows_get_process_name(vmi_instance_t vmi, gt_pid_t pid)
+_gt_windows_get_process_name(vmi_instance_t vmi, vmi_event_t *event)
 {
-	/* Gets the process name of the process with the input pid */
-	/* offsets from the LibVMI config file */
-	unsigned long task_offset = vmi_get_offset(vmi, "win_tasks");
-	unsigned long pid_offset = vmi_get_offset(vmi, "win_pid");
-	unsigned long name_offset = vmi_get_offset(vmi, "win_pname");
+	status_t status;
+	addr_t thread, process;
+	char *proc = NULL;
 
 	g_assert(initialized);
 
-	/* addresses for the linux process list and current process */
-	addr_t list_head = 0;
-	addr_t list_curr = 0;
-	addr_t curr_proc = 0;
-
-	gt_pid_t curr_pid = 0;		/* pid of the processes task struct we are examining */
-	char *proc = NULL;		/* process name of the current process we are examining */
-
-	if(VMI_FAILURE == vmi_read_addr_ksym(vmi, "PsActiveProcessHead", &list_head)) {
-		printf("Failed to find PsActiveProcessHead\\n");
+	status = vmi_read_addr_va(vmi,
+	                          event->x86_regs->gs_base
+	                        + offset[GT_OFFSET_WINDOWS_KPCR_PRCB]
+	                        + offset[GT_OFFSET_WINDOWS_KPRCB_CURRENTTHREAD],
+	                          0,
+	                         &thread);
+	if (VMI_SUCCESS != status) {
 		goto done;
 	}
 
-	list_curr = list_head;							/* set the current process to the head */
+	status = vmi_read_addr_va(vmi,
+	                          thread
+	                        + offset[GT_OFFSET_WINDOWS_KTHREAD_PROCESS],
+	                          0,
+	                         &process);
+	if (VMI_SUCCESS != status) {
+		goto done;
+	}
 
-	do{
-		curr_proc = list_curr - task_offset;						/* subtract the task offset to get to the start of the task_struct */
-		if (VMI_FAILURE == vmi_read_32_va(vmi, curr_proc + pid_offset, 0, (uint32_t*)&curr_pid)) {		/* read the current pid using the pid offset from the start of the task struct */
-			printf("Failed to get the pid of the process we are examining!\\n");
-			goto done;
-		}
-
-		if (pid == curr_pid) {
-			proc = vmi_read_str_va(vmi, curr_proc + name_offset, 0);		/* get the process name if the current pid is equal to the pis we are looking for */
-			goto done;								/* go to done to exit */
-		}
-
-		if (VMI_FAILURE == vmi_read_addr_va(vmi, list_curr, 0, &list_curr)) {				/* read the memory from the address of list_curr which will return a pointer to the */
-			printf("Failed to get the next task in the process list!\\n");
-			goto done;
-		}
-
-	} while (list_curr != list_head);							/* next task_struct. Continue the loop until we get back to the beginning as the  */
-/* process list is doubly linked and circular */
+	proc = vmi_read_str_va(vmi,
+	                       process
+	                     + offset[GT_OFFSET_WINDOWS_EPROCESS_PNAME],
+	                       0);
+	if (NULL == proc) {
+		goto done;
+	}
 
 done:
 	return proc;

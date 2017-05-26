@@ -16,6 +16,7 @@ static offset_definition_t offset_def[] = {
 	{ GT_OFFSET_LINUX_CURRENT_TASK,     "current_task",  NULL },
 	{ GT_OFFSET_LINUX_TASK_STRUCT_TGID, "task_struct",  "tgid" },
 	{ GT_OFFSET_LINUX_TASK_STRUCT_PID,  "task_struct",  "pid" },
+	{ GT_OFFSET_LINUX_TASK_STRUCT_COMM,  "task_struct",  "comm" },
 	{ GT_OFFSET_LINUX_BAD, NULL, NULL }
 };
 
@@ -116,18 +117,25 @@ static gt_pid_t
 _linux_get_pid(GtLoop *loop, vmi_event_t *event)
 {
 	status_t status;
+	addr_t current_task;
 	uint32_t pid = 0;
-	reg_t gs = event->x86_regs->gs_base;
-	static addr_t current_task;
 
 	g_assert(initialized);
 
-	status = vmi_read_addr_va(loop->vmi, gs + offset[GT_OFFSET_LINUX_CURRENT_TASK], 0, &current_task);
+	status = vmi_read_addr_va(loop->vmi,
+	                          event->x86_regs->gs_base
+	                        + offset[GT_OFFSET_LINUX_CURRENT_TASK],
+	                          0,
+	                         &current_task);
 	if (VMI_SUCCESS != status) {
 		goto done;
 	}
 
-	status = vmi_read_32_va(loop->vmi, current_task + offset[GT_OFFSET_LINUX_TASK_STRUCT_TGID], 0, &pid);
+	status = vmi_read_32_va(loop->vmi,
+	                        current_task
+	                      + offset[GT_OFFSET_LINUX_TASK_STRUCT_TGID],
+	                        0,
+	                       &pid);
 	if (VMI_SUCCESS != status) {
 		pid = 0;
 		goto done;
@@ -141,16 +149,23 @@ static gt_tid_t
 _linux_get_tid(GtLoop *loop, vmi_event_t *event)
 {
 	status_t status;
+	addr_t current_task;
 	uint32_t tid = 0;
-	reg_t gs = event->x86_regs->gs_base;
-	static addr_t current_task;
 
-	status = vmi_read_addr_va(loop->vmi, gs + offset[GT_OFFSET_LINUX_CURRENT_TASK], 0, &current_task);
+	status = vmi_read_addr_va(loop->vmi,
+	                          event->x86_regs->gs_base
+	                        + offset[GT_OFFSET_LINUX_CURRENT_TASK],
+	                          0,
+	                         &current_task);
 	if (VMI_SUCCESS != status) {
 		goto done;
 	}
 
-	status = vmi_read_32_va(loop->vmi, current_task + offset[GT_OFFSET_LINUX_TASK_STRUCT_PID], 0, &tid);
+	status = vmi_read_32_va(loop->vmi,
+	                        current_task
+	                      + offset[GT_OFFSET_LINUX_TASK_STRUCT_PID],
+	                        0,
+	                       &tid);
 	if (VMI_SUCCESS != status) {
 		tid = 0;
 		goto done;
@@ -161,60 +176,33 @@ done:
 }
 
 static char *
-_gt_linux_get_process_name(vmi_instance_t vmi, gt_pid_t pid)
+_gt_linux_get_process_name(vmi_instance_t vmi, vmi_event_t *event)
 {
-	/* Gets the process name of the process with the input pid */
-	/* offsets from the LibVMI config file */
-	unsigned long task_offset = vmi_get_offset(vmi, "linux_tasks");
-	unsigned long pid_offset = vmi_get_offset(vmi, "linux_pid");
-	unsigned long name_offset = vmi_get_offset(vmi, "linux_name");
+	status_t status;
+	addr_t current_task;
+	char *comm = NULL;
 
 	g_assert(initialized);
 
-	/* addresses for the linux process list and current process */
-	addr_t list_head = 0;
-	addr_t list_curr = 0;
-	addr_t curr_proc = 0;
-
-	gt_pid_t curr_pid = 0;		/* pid of the processes task struct we are examining */
-	char *proc = NULL;		/* process name of the current process we are examining */
-
-	list_head = vmi_translate_ksym2v(vmi, "init_task") + task_offset; 	/* get the address to the head of the process list */
-
-	if (list_head == task_offset) {
-		fprintf(stderr, "failed to read address for init_task\n");
+	status = vmi_read_addr_va(vmi,
+	                          event->x86_regs->gs_base
+	                        + offset[GT_OFFSET_LINUX_CURRENT_TASK],
+	                          0,
+	                         &current_task);
+	if (VMI_SUCCESS != status) {
 		goto done;
 	}
 
-	list_curr = list_head;							/* set the current process to the head */
-
-	do{
-		curr_proc = list_curr - task_offset;						/* subtract the task offset to get to the start of the task_struct */
-		if (VMI_FAILURE == vmi_read_32_va(vmi, curr_proc + pid_offset, 0, (uint32_t*)&curr_pid)) {		/* read the current pid using the pid offset from the start of the task struct */
-			fprintf(stderr, "failed to get the pid of the process we are examining\n");
-			goto done;
-		}
-
-		if (pid == curr_pid) {
-			proc = vmi_read_str_va(vmi, curr_proc + name_offset, 0);		/* get the process name if the current pid is equal to the pis we are looking for */
-			goto done;								/* go to done to exit */
-		}
-
-		if (VMI_FAILURE == vmi_read_addr_va(vmi, list_curr, 0, &list_curr)) {				/* read the memory from the address of list_curr which will return a pointer to the */
-			fprintf(stderr, "failed to get the next task in the process list\n");
-			goto done;
-		}
-
-	} while (list_curr != list_head);							/* next task_struct. Continue the loop until we get back to the beginning as the  */
-/* process list is doubly linked and circular */
-
-done:
-	if (NULL == proc) {		/* if proc is NULL we don't know the process name */
-		return "unknown";
+	comm = vmi_read_str_va(vmi,
+	                       current_task
+	                     + offset[GT_OFFSET_LINUX_TASK_STRUCT_COMM],
+	                       0);
+	if (VMI_SUCCESS != status) {
+		goto done;
 	}
 
-	return proc;
-
+done:
+	return comm;
 }
 
 static gboolean

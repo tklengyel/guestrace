@@ -1061,9 +1061,10 @@ gt_guest_get_vmi_event(GtGuestState *state)
 }
 
 char *
-gt_guest_get_process_name(GtGuestState *state, gt_pid_t pid)
+gt_guest_get_process_name(GtGuestState *state)
 {
-	return state->loop->os_functions->get_process_name(state->vmi, pid);
+	return state->loop->os_functions->get_process_name(state->vmi,
+	                                                   state->event);
 }
 
 static gboolean

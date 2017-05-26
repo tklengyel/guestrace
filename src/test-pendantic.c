@@ -86,7 +86,7 @@ void *handle_open_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *us
 void handle_open_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
 	struct args_open *args = user_data;
 	int ret                = gt_guest_get_register(state, RAX);
-	char *proc             = gt_guest_get_process_name(state, pid);
+	char *proc             = gt_guest_get_process_name(state);
 	char *pathname         = gt_guest_get_string(state, args->pathaddr, pid);
 
 	g_assert(NULL != proc);
@@ -119,7 +119,7 @@ void *handle_clone_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *u
 }
 
 void handle_clone_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
-	char *proc = gt_guest_get_process_name(state, pid);
+	char *proc = gt_guest_get_process_name(state);
 
 	if (!g_utf8_validate(proc, -1, NULL)) {
 		fprintf(stderr, "Bad process name (clone): %d/%s.\n", pid, proc);
@@ -129,7 +129,7 @@ void handle_clone_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *
 void *handle_execve_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct args_execve *args;
-	char *proc = gt_guest_get_process_name(state, pid);
+	char *proc = gt_guest_get_process_name(state);
 
 	if (!g_utf8_validate(proc, -1, NULL)) {
 		fprintf(stderr, "Bad process name (execve): %d/%s.\n", pid, proc);
@@ -143,7 +143,7 @@ void *handle_execve_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *
 
 void handle_execve_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
 	int ret = gt_guest_get_register(state, RAX);
-	char *proc = gt_guest_get_process_name(state, pid);
+	char *proc = gt_guest_get_process_name(state);
 
 	g_assert(NULL != proc);
 

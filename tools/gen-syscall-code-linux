@@ -409,7 +409,7 @@ def create_syscall_functions(syscall_data):
 void gt_linux_print_syscall_{0}(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {{
 	struct {0}_args *args = user_data;
-	char *proc = gt_guest_get_process_name(state, pid);
+	char *proc = gt_guest_get_process_name(state);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 """.format(syscall_data.get_syscall_name())
         func_str += create_printf_statements(syscall_data.get_args_count(), syscall_data)
@@ -439,7 +439,7 @@ void *gt_linux_record_syscall_{0}_args(GtGuestState *state, gt_pid_t pid, gt_tid
 void gt_linux_print_syscall_{0}(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {{
 	struct {0}_args *args = user_data;
-	char *proc = gt_guest_get_process_name(state, pid);
+	char *proc = gt_guest_get_process_name(state);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 """.format(syscall_data.get_syscall_name())
         func_str += create_printf_statements(syscall_data.get_args_count(), syscall_data)
