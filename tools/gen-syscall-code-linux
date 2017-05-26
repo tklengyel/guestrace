@@ -21,13 +21,59 @@ ARG_TYPE_OVERRIDES = {
     "sys_execve": ( ( "char *", "%s" ),  ( "unsigned long", "%lu" ), ( "unsigned long", "%lu" ) ),
 }
 
-FUNCTION_OVERRIDES = {
-    "sys_execve": "stub_execve",
+FUNCTION_NAME_OVERRIDES = {
+#    "sys_execve": "stub_execve",
 }
 
 FUNCTION_NO_SYSRET = (
     "sys_exit", "sys_exit_group"
 )
+
+FUNCTION_OVERRIDES = {
+    "sys_execve": ( """
+struct sys_execve_args {
+	char *path;
+	char **argv;
+	char **env;
+	char *oldpath;
+};
+
+void *gt_linux_record_syscall_sys_execve_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
+{
+	struct sys_execve_args *args = g_new(struct sys_execve_args, 1);
+	args->path = gt_guest_get_string(state, gt_guest_get_vmi_event(state)->x86_regs->rdi, pid);
+	args->argv = gt_guest_get_argv  (state, gt_guest_get_vmi_event(state)->x86_regs->rsi, pid);
+	args->env  = gt_guest_get_argv  (state, gt_guest_get_vmi_event(state)->x86_regs->rdx, pid);
+	args->oldpath = gt_guest_get_process_name(state);
+	return args;
+}
+
+void gt_linux_print_argv(char **argv)
+{
+	fprintf(stderr, "[");
+	for (int i = 0; argv && argv[i]; i++) {
+		fprintf(stderr, "\\"%s\\"", argv[i]);
+		if (argv[i + 1]) {
+			fprintf(stderr, ", ");
+		}
+	}
+	fprintf(stderr, "]");
+}
+
+void gt_linux_print_syscall_sys_execve(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
+{
+	struct sys_execve_args *args = user_data;
+	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
+	args->path = args->path ? args->path : gt_guest_get_process_name(state);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(\\"%s\\", ", pid, tid, args->oldpath, "sys_execve", (char *) args->path);
+	gt_linux_print_argv(args->argv);
+	fprintf(stderr, ", ");
+	gt_linux_print_argv(args->env);
+	fprintf(stderr, ") = %ld\\n", ret);
+	g_free(args);
+}
+""" ),
+}
 
 class syscall_data:
     """This class stores the information of a single system call. The data
@@ -384,8 +430,8 @@ def create_struct_c(syscall_map, syscall_order, kernel_info):
     # generate the actual struct list
     for syscall_id in range(len(syscall_order)):
         function_name = syscall_order[syscall_id]
-        if function_name in FUNCTION_OVERRIDES:
-            function_name = FUNCTION_OVERRIDES[function_name]
+        if function_name in FUNCTION_NAME_OVERRIDES:
+            function_name = FUNCTION_NAME_OVERRIDES[function_name]
         if function_name in FUNCTION_NO_SYSRET:
             str += "\t{{ \"{0}\", gt_linux_record_syscall_{1}_args, NULL }},\n".format(function_name, syscall_order[syscall_id])
         else:
@@ -403,37 +449,40 @@ def create_struct_c(syscall_map, syscall_order, kernel_info):
 
 def create_syscall_functions(syscall_data):
     """Generate call and possibly return functions for a single syscall"""
-    func_str  = create_structure(syscall_data.get_args_count(), syscall_data)
-    if syscall_data.get_syscall_name() in FUNCTION_NO_SYSRET:
-        func_str += """
+    if syscall_data.get_syscall_name() in FUNCTION_OVERRIDES:
+        func_str  = FUNCTION_OVERRIDES[syscall_data.get_syscall_name()]
+    else:
+        func_str  = create_structure(syscall_data.get_args_count(), syscall_data)
+        if syscall_data.get_syscall_name() in FUNCTION_NO_SYSRET:
+            func_str += """
 void gt_linux_print_syscall_{0}(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {{
 	struct {0}_args *args = user_data;
 	char *proc = gt_guest_get_process_name(state);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 """.format(syscall_data.get_syscall_name())
-        func_str += create_printf_statements(syscall_data.get_args_count(), syscall_data)
-        func_str += """	g_free(args);
+            func_str += create_printf_statements(syscall_data.get_args_count(), syscall_data)
+            func_str += """	g_free(args);
 }}
 
 void *gt_linux_record_syscall_{0}_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {{
 	struct {0}_args *args = g_new(struct {0}_args, 1);
 """.format(syscall_data.get_syscall_name())
-        func_str += create_record_statements(syscall_data.get_args_count(), syscall_data)
-        func_str += """	gt_linux_print_syscall_{0}(state, pid, tid, args);
+            func_str += create_record_statements(syscall_data.get_args_count(), syscall_data)
+            func_str += """	gt_linux_print_syscall_{0}(state, pid, tid, args);
     return NULL;
 }}
 
 """.format(syscall_data.get_syscall_name())
-    else:
-        func_str += """
+        else:
+            func_str += """
 void *gt_linux_record_syscall_{0}_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {{
 	struct {0}_args *args = g_new(struct {0}_args, 1);
 """.format(syscall_data.get_syscall_name())
-        func_str += create_record_statements(syscall_data.get_args_count(), syscall_data)
-        func_str += """	return args;
+            func_str += create_record_statements(syscall_data.get_args_count(), syscall_data)
+            func_str += """	return args;
 }}
 
 void gt_linux_print_syscall_{0}(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
@@ -442,8 +491,8 @@ void gt_linux_print_syscall_{0}(GtGuestState *state, gt_pid_t pid, gt_tid_t tid,
 	char *proc = gt_guest_get_process_name(state);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
 """.format(syscall_data.get_syscall_name())
-        func_str += create_printf_statements(syscall_data.get_args_count(), syscall_data)
-        func_str += """	g_free(args);
+            func_str += create_printf_statements(syscall_data.get_args_count(), syscall_data)
+            func_str += """	g_free(args);
 }
 
 """

@@ -1,4 +1,4 @@
-/* Generated on Linux_4.10.16-200.fc25.x86_64 on 26 May 2017 09:32:58*/
+/* Generated on Linux_4.10.16-200.fc25.x86_64 on 26 May 2017 12:49:29*/
 
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
@@ -1564,33 +1564,48 @@ void gt_linux_print_syscall_sys_vfork(GtGuestState *state, gt_pid_t pid, gt_tid_
 	g_free(args);
 }
 
+
 struct sys_execve_args {
-	reg_t arg0;
-	reg_t arg1;
-	reg_t arg2;
+	char *path;
+	char **argv;
+	char **env;
+	char *oldpath;
 };
 
 void *gt_linux_record_syscall_sys_execve_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_execve_args *args = g_new(struct sys_execve_args, 1);
-	args->arg0 = gt_guest_get_vmi_event(state)->x86_regs->rdi;
-	args->arg1 = gt_guest_get_vmi_event(state)->x86_regs->rsi;
-	args->arg2 = gt_guest_get_vmi_event(state)->x86_regs->rdx;
+	args->path = gt_guest_get_string(state, gt_guest_get_vmi_event(state)->x86_regs->rdi, pid);
+	args->argv = gt_guest_get_argv  (state, gt_guest_get_vmi_event(state)->x86_regs->rsi, pid);
+	args->env  = gt_guest_get_argv  (state, gt_guest_get_vmi_event(state)->x86_regs->rdx, pid);
+	args->oldpath = gt_guest_get_process_name(state);
 	return args;
+}
+
+void gt_linux_print_argv(char **argv)
+{
+	fprintf(stderr, "[");
+	for (int i = 0; argv && argv[i]; i++) {
+		fprintf(stderr, "\"%s\"", argv[i]);
+		if (argv[i + 1]) {
+			fprintf(stderr, ", ");
+		}
+	}
+	fprintf(stderr, "]");
 }
 
 void gt_linux_print_syscall_sys_execve(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_execve_args *args = user_data;
-	char *proc = gt_guest_get_process_name(state);
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
-	char *arg0 = gt_guest_get_string(state, args->arg0, pid);
-	reg_t arg1 = args->arg1;
-	reg_t arg2 = args->arg2;
-	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(\"%s\", %lu, %lu) = %ld\n", pid, tid, proc, "sys_execve", (char *) arg0, (unsigned long) arg1, (unsigned long) arg2, ret);
+	args->path = args->path ? args->path : gt_guest_get_process_name(state);
+	fprintf(stderr, "pid: %u/0x%"PRIx64" (%s) syscall: %s(\"%s\", ", pid, tid, args->oldpath, "sys_execve", (char *) args->path);
+	gt_linux_print_argv(args->argv);
+	fprintf(stderr, ", ");
+	gt_linux_print_argv(args->env);
+	fprintf(stderr, ") = %ld\n", ret);
 	g_free(args);
 }
-
 struct sys_exit_args {
 	reg_t arg0;
 };
@@ -8664,7 +8679,7 @@ const GtCallbackRegistry GT_LINUX_SYSCALLS[] = {
 	{ "sys_clone", gt_linux_record_syscall_sys_clone_args, gt_linux_print_syscall_sys_clone },
 	{ "sys_fork", gt_linux_record_syscall_sys_fork_args, gt_linux_print_syscall_sys_fork },
 	{ "sys_vfork", gt_linux_record_syscall_sys_vfork_args, gt_linux_print_syscall_sys_vfork },
-	{ "stub_execve", gt_linux_record_syscall_sys_execve_args, gt_linux_print_syscall_sys_execve },
+	{ "sys_execve", gt_linux_record_syscall_sys_execve_args, gt_linux_print_syscall_sys_execve },
 	{ "sys_exit", gt_linux_record_syscall_sys_exit_args, NULL },
 	{ "sys_wait4", gt_linux_record_syscall_sys_wait4_args, gt_linux_print_syscall_sys_wait4 },
 	{ "sys_kill", gt_linux_record_syscall_sys_kill_args, gt_linux_print_syscall_sys_kill },
