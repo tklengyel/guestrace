@@ -22,6 +22,7 @@ static offset_definition_t offset_def[] = {
 	{ GT_OFFSET_WINDOWS_KPCR_PRCB,                                 "_KPCR", "Prcb" },
 	{ GT_OFFSET_WINDOWS_KPRCB_CURRENTTHREAD,                       "_KPRCB",  "CurrentThread" },
 	{ GT_OFFSET_WINDOWS_KTHREAD_PREVIOUSMODE,                      "_KTHREAD",  "PreviousMode" },
+	{ GT_OFFSET_WINDOWS_KTHREAD_PROCESS,                           "_KTHREAD",  "Process" },
 	{ GT_OFFSET_WINDOWS_NT_TIB64_SELF,                             "_NT_TIB64",  "Self" },
 	{ GT_OFFSET_WINDOWS_TEB_CLIENTID,                              "_TEB",  "ClientId" },
 	{ GT_OFFSET_WINDOWS_EPROCESS_UNIQUEPROCESSID,                  "_EPROCESS", "UniqueProcessId" },
@@ -29,6 +30,8 @@ static offset_definition_t offset_def[] = {
 	{ GT_OFFSET_WINDOWS_PEB_PROCESSPARAMETERS,                     "_PEB", "ProcessParameters" },
 	{ GT_OFFSET_WINDOWS_RTL_USER_PROCESS_PARAMETERS_IMAGEPATHNAME, "_RTL_USER_PROCESS_PARAMETERS", "ImagePathName" },
 	{ GT_OFFSET_WINDOWS_UNICODE_STRING_BUFFER,                     "_UNICODE_STRING", "Buffer" },
+	{ GT_OFFSET_WINDOWS_ETHREAD_CID,                               "_ETHREAD", "Cid" },
+	{ GT_OFFSET_WINDOWS_CLIENT_ID_UNIQUETHREAD,                    "_CLIENT_ID", "UniqueThread" },
 	{ GT_OFFSET_WINDOWS_BAD, NULL, NULL }
 };
 
@@ -160,25 +163,36 @@ static gt_pid_t
 _windows_get_pid(GtLoop *loop, vmi_event_t *event)
 {
 	status_t status;
-	size_t count;
-	addr_t self;
-	access_context_t ctx;
+	addr_t thread, process;
 	gt_pid_t pid = 0;
-	reg_t gs = event->x86_regs->gs_base;
 
 	g_assert(initialized);
 
-	status = vmi_read_addr_va(loop->vmi, gs + offset[GT_OFFSET_WINDOWS_NT_TIB64_SELF], 0, &self);
+	status = vmi_read_addr_va(loop->vmi,
+	                          event->x86_regs->gs_base
+	                        + offset[GT_OFFSET_WINDOWS_KPCR_PRCB]
+	                        + offset[GT_OFFSET_WINDOWS_KPRCB_CURRENTTHREAD],
+	                          0,
+	                         &thread);
 	if (VMI_SUCCESS != status) {
-		pid = 0;
 		goto done;
 	}
 
-	ctx.translate_mechanism = VMI_TM_PROCESS_DTB;
-	ctx.dtb = event->x86_regs->cr3;
-	ctx.addr = self + offset[GT_OFFSET_WINDOWS_TEB_CLIENTID];
-	count = vmi_read(loop->vmi, &ctx, &pid, sizeof pid);
-	if (sizeof pid != count) {
+	status = vmi_read_addr_va(loop->vmi,
+	                          thread
+	                        + offset[GT_OFFSET_WINDOWS_KTHREAD_PROCESS],
+	                          0,
+	                         &process);
+	if (VMI_SUCCESS != status) {
+		goto done;
+	}
+
+	status = vmi_read_32_va(loop->vmi,
+	                        process
+	                      + offset[GT_OFFSET_WINDOWS_EPROCESS_UNIQUEPROCESSID],
+	                        0,
+	                       &pid);
+	if (VMI_SUCCESS != status) {
 		pid = 0;
 		goto done;
 	}
@@ -191,25 +205,28 @@ static gt_tid_t
 _windows_get_tid(GtLoop *loop, vmi_event_t *event)
 {
 	status_t status;
-	size_t count;
-	addr_t self;
-	access_context_t ctx;
-	gt_pid_t tid = 0;
-	reg_t gs = event->x86_regs->gs_base;
+	addr_t thread;
+	gt_tid_t tid = 0;
 
 	g_assert(initialized);
 
-	status = vmi_read_addr_va(loop->vmi, gs + offset[GT_OFFSET_WINDOWS_NT_TIB64_SELF], 0, &self);
+	status = vmi_read_addr_va(loop->vmi,
+	                          event->x86_regs->gs_base
+	                        + offset[GT_OFFSET_WINDOWS_KPCR_PRCB]
+	                        + offset[GT_OFFSET_WINDOWS_KPRCB_CURRENTTHREAD],
+	                          0,
+	                         &thread);
 	if (VMI_SUCCESS != status) {
-		tid = 0;
 		goto done;
 	}
 
-	ctx.translate_mechanism = VMI_TM_PROCESS_DTB;
-	ctx.dtb = event->x86_regs->cr3;
-	ctx.addr = self + offset[GT_OFFSET_WINDOWS_TEB_CLIENTID] + vmi_get_address_width(loop->vmi);
-	count = vmi_read(loop->vmi, &ctx, &tid, sizeof tid);
-	if (sizeof tid != count) {
+	status = vmi_read_addr_va(loop->vmi,
+	                        thread
+	                      + offset[GT_OFFSET_WINDOWS_ETHREAD_CID]
+	                      + offset[GT_OFFSET_WINDOWS_CLIENT_ID_UNIQUETHREAD],
+	                        0,
+	                       &tid);
+	if (VMI_SUCCESS != status) {
 		tid = 0;
 		goto done;
 	}
