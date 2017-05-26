@@ -448,13 +448,13 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 			goto done;
 		}
 
-		gt_pid_t pid = loop->os_functions->get_pid(loop, event);
+		gt_pid_t pid = loop->os_functions->get_pid(loop->vmi, event);
 		if (0 == pid) {
 			fprintf(stderr, "failed to read process ID (syscall)\n");
 			goto done;
 		}
 
-		thread_id  = loop->os_functions->get_tid(loop, event);
+		thread_id  = loop->os_functions->get_tid(loop->vmi, event);
 		if (0 == thread_id) {
 			fprintf(stderr, "failed to read thread ID (syscall)\n");
 			goto done;
@@ -539,13 +539,13 @@ skip_syscall_cb:
 	} else {
 		/* Type-two breakpoint (system return). */
 		gt_syscall_state *state;
-		addr_t thread_id = loop->os_functions->get_tid(loop, event);
+		addr_t thread_id = loop->os_functions->get_tid(loop->vmi, event);
 		if (0 == thread_id) {
 			fprintf(stderr, "failed to read thread ID (sysret)\n");
 			goto done;
 		}
 
-		gt_pid_t pid = loop->os_functions->get_pid(loop, event);
+		gt_pid_t pid = loop->os_functions->get_pid(loop->vmi, event);
 		if (0 == pid) {
 			fprintf(stderr, "failed to read process ID (sysret)\n");
 			goto done;

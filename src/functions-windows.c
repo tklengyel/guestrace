@@ -161,7 +161,7 @@ done:
 }
 
 static gt_pid_t
-_windows_get_pid(GtLoop *loop, vmi_event_t *event)
+_windows_get_pid(vmi_instance_t vmi, vmi_event_t *event)
 {
 	status_t status;
 	addr_t thread, process;
@@ -169,7 +169,7 @@ _windows_get_pid(GtLoop *loop, vmi_event_t *event)
 
 	g_assert(initialized);
 
-	status = vmi_read_addr_va(loop->vmi,
+	status = vmi_read_addr_va(vmi,
 	                          event->x86_regs->gs_base
 	                        + offset[GT_OFFSET_WINDOWS_KPCR_PRCB]
 	                        + offset[GT_OFFSET_WINDOWS_KPRCB_CURRENTTHREAD],
@@ -179,7 +179,7 @@ _windows_get_pid(GtLoop *loop, vmi_event_t *event)
 		goto done;
 	}
 
-	status = vmi_read_addr_va(loop->vmi,
+	status = vmi_read_addr_va(vmi,
 	                          thread
 	                        + offset[GT_OFFSET_WINDOWS_KTHREAD_PROCESS],
 	                          0,
@@ -188,7 +188,7 @@ _windows_get_pid(GtLoop *loop, vmi_event_t *event)
 		goto done;
 	}
 
-	status = vmi_read_32_va(loop->vmi,
+	status = vmi_read_32_va(vmi,
 	                        process
 	                      + offset[GT_OFFSET_WINDOWS_EPROCESS_UNIQUEPROCESSID],
 	                        0,
@@ -203,7 +203,7 @@ done:
 }
 
 static gt_tid_t
-_windows_get_tid(GtLoop *loop, vmi_event_t *event)
+_windows_get_tid(vmi_instance_t vmi, vmi_event_t *event)
 {
 	status_t status;
 	addr_t thread;
@@ -211,7 +211,7 @@ _windows_get_tid(GtLoop *loop, vmi_event_t *event)
 
 	g_assert(initialized);
 
-	status = vmi_read_addr_va(loop->vmi,
+	status = vmi_read_addr_va(vmi,
 	                          event->x86_regs->gs_base
 	                        + offset[GT_OFFSET_WINDOWS_KPCR_PRCB]
 	                        + offset[GT_OFFSET_WINDOWS_KPRCB_CURRENTTHREAD],
@@ -221,7 +221,7 @@ _windows_get_tid(GtLoop *loop, vmi_event_t *event)
 		goto done;
 	}
 
-	status = vmi_read_addr_va(loop->vmi,
+	status = vmi_read_addr_va(vmi,
 	                        thread
 	                      + offset[GT_OFFSET_WINDOWS_ETHREAD_CID]
 	                      + offset[GT_OFFSET_WINDOWS_CLIENT_ID_UNIQUETHREAD],

@@ -114,7 +114,7 @@ done:
 }
 
 static gt_pid_t
-_linux_get_pid(GtLoop *loop, vmi_event_t *event)
+_linux_get_pid(vmi_instance_t vmi, vmi_event_t *event)
 {
 	status_t status;
 	addr_t current_task;
@@ -122,7 +122,7 @@ _linux_get_pid(GtLoop *loop, vmi_event_t *event)
 
 	g_assert(initialized);
 
-	status = vmi_read_addr_va(loop->vmi,
+	status = vmi_read_addr_va(vmi,
 	                          event->x86_regs->gs_base
 	                        + offset[GT_OFFSET_LINUX_CURRENT_TASK],
 	                          0,
@@ -131,7 +131,7 @@ _linux_get_pid(GtLoop *loop, vmi_event_t *event)
 		goto done;
 	}
 
-	status = vmi_read_32_va(loop->vmi,
+	status = vmi_read_32_va(vmi,
 	                        current_task
 	                      + offset[GT_OFFSET_LINUX_TASK_STRUCT_TGID],
 	                        0,
@@ -146,13 +146,13 @@ done:
 }
 
 static gt_tid_t
-_linux_get_tid(GtLoop *loop, vmi_event_t *event)
+_linux_get_tid(vmi_instance_t vmi, vmi_event_t *event)
 {
 	status_t status;
 	addr_t current_task;
 	uint32_t tid = 0;
 
-	status = vmi_read_addr_va(loop->vmi,
+	status = vmi_read_addr_va(vmi,
 	                          event->x86_regs->gs_base
 	                        + offset[GT_OFFSET_LINUX_CURRENT_TASK],
 	                          0,
@@ -161,7 +161,7 @@ _linux_get_tid(GtLoop *loop, vmi_event_t *event)
 		goto done;
 	}
 
-	status = vmi_read_32_va(loop->vmi,
+	status = vmi_read_32_va(vmi,
 	                        current_task
 	                      + offset[GT_OFFSET_LINUX_TASK_STRUCT_PID],
 	                        0,
