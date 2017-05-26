@@ -133,10 +133,10 @@ gt_restore_return_addr(gpointer data, gpointer user_data)
 	gt_syscall_state *sys_state = data;
 	GtLoop *loop = sys_state->syscall_paddr_record->parent->loop;
 
-	status = vmi_read_64_va(loop->vmi,
-	                        sys_state->return_loc,
-	                        0,
-	                       &current_return_addr);
+	status = vmi_read_addr_va(loop->vmi,
+	                          sys_state->return_loc,
+	                          0,
+	                         &current_return_addr);
 	if (VMI_SUCCESS != status) {
 		/* Couldn't get return pointer off of stack */
 		fprintf(stderr, "error checking stack; guest might "
@@ -159,10 +159,10 @@ gt_restore_return_addr(gpointer data, gpointer user_data)
 		goto done;
 	}
 
-	status = vmi_write_64_va(loop->vmi,
-				 sys_state->return_loc,
-				 0,
-				&sys_state->return_addr);
+	status = vmi_write_addr_va(loop->vmi,
+	                           sys_state->return_loc,
+	                           0,
+	                          &sys_state->return_addr);
 	if (VMI_SUCCESS != status) {
 		fprintf(stderr, "error restoring stack; guest will"
 				"likely fail if running\n");
@@ -461,7 +461,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		}
 
 		return_loc = event->x86_regs->rsp;
-		status = vmi_read_64_va(vmi, return_loc, 0, &return_addr);
+		status = vmi_read_addr_va(vmi, return_loc, 0, &return_addr);
 		if (VMI_SUCCESS != status) {
 			fprintf(stderr, "count not read return pointer off stack\n");
 			goto done;
@@ -519,7 +519,7 @@ skip_syscall_cb:
 			state_stacks_tid_push(loop->state_stacks, thread_id, state);
 
 			/* Overwrite stack to return to trampoline. */
-			vmi_write_64_va(vmi, return_loc, 0, &loop->trampoline_addr);
+			vmi_write_addr_va(vmi, return_loc, 0, &loop->trampoline_addr);
 		} else {
 			/*
 			 * Sysret callback not registered or application called
@@ -1005,8 +1005,8 @@ gt_guest_get_argv(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid)
 	argv = g_new0(char *, length);
 
 	do {
-		uint64_t vaddr2;
-		status = vmi_read_64_va(vmi, vaddr + (i * sizeof(char *)), pid, &vaddr2);
+		addr_t vaddr2;
+		status = vmi_read_addr_va(vmi, vaddr + (i * sizeof(char *)), pid, &vaddr2);
 		if (VMI_SUCCESS != status) {
 			goto done;
 		}
