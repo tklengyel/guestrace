@@ -481,15 +481,17 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 			goto skip_syscall_cb;
 		}
 
-		/* Invoke system-call callback in record. */
-		in_syscall_cb = TRUE;
-		loop->count++;
-		sys_state = (GtGuestState) { loop, vmi, event, FALSE, FALSE, 0 };
-		state->data = record->syscall_cb(&sys_state,
-		                                  pid,
-		                                  thread_id,
-		                                  record->data);
-		in_syscall_cb = FALSE;
+		if (NULL != record->syscall_cb) {
+			/* Invoke system-call callback in record. */
+			in_syscall_cb = TRUE;
+			loop->count++;
+			sys_state = (GtGuestState) { loop, vmi, event, FALSE, FALSE, 0 };
+			state->data = record->syscall_cb(&sys_state,
+							  pid,
+							  thread_id,
+							  record->data);
+			in_syscall_cb = FALSE;
+		}
 
 skip_syscall_cb:
 		memset(loop->jmpbuf[event->vcpu_id], 0x00, sizeof loop->jmpbuf[event->vcpu_id]);
@@ -978,6 +980,21 @@ char *
 gt_guest_get_string(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid)
 {
 	return vmi_read_str_va(gt_guest_get_vmi_instance(state), vaddr, pid);
+}
+
+/**
+ * gt_guest_get_uint32:
+ * @state: a pointer to a #GtGuestState.
+ * @vaddr: a virtual address from the guest's address space.
+ * @pid: PID of the virtual address space (0 for kernel).
+ * @value: address of location to which function will write value.
+ *
+ * Returns VMI_SUCCESS or some error code.
+ */
+status_t
+gt_guest_get_uint32(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid, uint32_t *value)
+{
+	return vmi_read_32_va(gt_guest_get_vmi_instance(state), vaddr, pid, value);
 }
 
 /**
