@@ -157,6 +157,7 @@ char         **gt_guest_get_argv(GtGuestState *state, gt_addr_t vaddr, gt_pid_t 
 vmi_instance_t gt_guest_get_vmi_instance(GtGuestState *state);
 vmi_event_t   *gt_guest_get_vmi_event(GtGuestState *state);
 char          *gt_guest_get_process_name(GtGuestState *state);
+gt_pid_t       gt_guest_get_parent_pid(GtGuestState *state, gt_pid_t pid);
 gboolean       gt_guest_hijack_return(GtGuestState *state, reg_t retval);
 gboolean       gt_guest_drop_return_breakpoint(GtGuestState *state);
 gboolean       gt_guest_clear_return_state(GtGuestState *state);

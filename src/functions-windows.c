@@ -278,6 +278,12 @@ done:
 
 }
 
+static gt_pid_t
+_gt_linux_get_parent_pid(vmi_instance_t vmi, gt_pid_t pid)
+{
+	g_assert_not_reached();
+}
+
 static gboolean
 _gt_windows_is_user_call(GtLoop *loop, vmi_event_t *event)
 {
@@ -308,6 +314,7 @@ struct os_functions os_functions_windows = {
 	.get_pid = _windows_get_pid,
 	.get_tid = _windows_get_tid,
 	.get_process_name = _gt_windows_get_process_name,
+	.get_parent_pid = _gt_windows_get_parent_pid,
 	.is_user_call = _gt_windows_is_user_call,
 	.get_offset = _gt_windows_get_offset,
 };

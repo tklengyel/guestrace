@@ -1067,6 +1067,12 @@ gt_guest_get_process_name(GtGuestState *state)
 	                                                   state->event);
 }
 
+gt_pid_t
+gt_guest_get_parent_pid(GtGuestState *state, gt_pid_t pid)
+{
+	return state->loop->os_functions->get_parent_pid(state->vmi, pid);
+}
+
 static gboolean
 gt_handle_vmi_event(GIOChannel *chan, GIOCondition condition, gpointer user_data)
 {
