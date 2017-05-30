@@ -365,12 +365,8 @@ gt_paddr_record_from_va(GtLoop *loop, addr_t va) {
 gboolean
 gt_guest_hijack_return(GtGuestState *state, reg_t retval)
 {
-	if (VMI_OS_LINUX == state->loop->os) {
-		fprintf(stderr, "FIXME: gt_guest_hijack_return on Linux\n");
-	} else {
-		state->hijack = true;
-		state->hijack_return = retval;
-	}
+	state->hijack = true;
+	state->hijack_return = retval;
 
 	return TRUE;
 }
@@ -502,8 +498,14 @@ skip_syscall_cb:
 			 */
 			g_assert(NULL == state->data);
 
+			/* Set syscal return to value set by syscall_cb. */
 			event->x86_regs->rax = sys_state.hijack_return;
+
+			/* Skip the body of the system call. */
 			event->x86_regs->rip = state->return_addr;
+
+			/* Adjust stack; will not execute body's RET. */
+			event->x86_regs->rsp += loop->return_addr_width;
 
 			/*
 			 * Avoid changing SLAT and setting singlestep. We are
