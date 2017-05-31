@@ -9,7 +9,7 @@ struct os_functions {
 	gt_pid_t (*get_pid) (vmi_instance_t vmi, vmi_event_t *event);
 	gt_tid_t (*get_tid) (vmi_instance_t vmi, vmi_event_t *event);
 	char *(*get_process_name) (vmi_instance_t vmi, vmi_event_t *event);
-	gt_pid_t (*get_parent_pid) (vmi_instance_t vmi, gt_pid_t pid);
+	gt_pid_t (*get_parent_pid) (vmi_instance_t vmi, gt_pid_t pid, gboolean *is_userspace);
 	gboolean (*is_user_call) (GtLoop *loop, vmi_event_t *event);
 	addr_t (*get_offset) (int offset_id);
 };

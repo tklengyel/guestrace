@@ -1087,9 +1087,9 @@ gt_guest_get_process_name(GtGuestState *state)
 }
 
 gt_pid_t
-gt_guest_get_parent_pid(GtGuestState *state, gt_pid_t pid)
+gt_guest_get_parent_pid(GtGuestState *state, gt_pid_t pid, gboolean *is_userspace)
 {
-	return state->loop->os_functions->get_parent_pid(state->vmi, pid);
+	return state->loop->os_functions->get_parent_pid(state->vmi, pid, is_userspace);
 }
 
 static gboolean

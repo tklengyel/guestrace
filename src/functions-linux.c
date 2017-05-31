@@ -18,6 +18,7 @@ static offset_definition_t offset_def[] = {
 	{ GT_OFFSET_LINUX_TASK_STRUCT_PID,  "task_struct",  "pid" },
 	{ GT_OFFSET_LINUX_TASK_STRUCT_COMM,  "task_struct",  "comm" },
 	{ GT_OFFSET_LINUX_TASK_STRUCT_REAL_PARENT,  "task_struct",  "real_parent" },
+	{ GT_OFFSET_LINUX_TASK_STRUCT_MM,  "task_struct",  "mm" },
 	{ GT_OFFSET_LINUX_BAD, NULL, NULL }
 };
 
@@ -207,10 +208,10 @@ done:
 }
 
 static gt_pid_t
-_gt_linux_get_parent_pid(vmi_instance_t vmi, gt_pid_t pid)
+_gt_linux_get_parent_pid(vmi_instance_t vmi, gt_pid_t pid, gboolean *is_userspace)
 {
 	status_t status;
-	addr_t list_head = 0, list_curr = 0, current_task = 0, parent_task = 0;
+	addr_t list_head = 0, list_curr = 0, current_task = 0, parent_task = 0, mm = 0;
 	gt_pid_t curr_pid = 0, parent_pid = 0;
 	unsigned long task_offset = vmi_get_offset(vmi, "linux_tasks");
 	unsigned long pid_offset  = vmi_get_offset(vmi, "linux_pid");
@@ -267,6 +268,20 @@ _gt_linux_get_parent_pid(vmi_instance_t vmi, gt_pid_t pid)
 	if (VMI_SUCCESS != status) {
 		pid = 0;
 		goto done;
+	}
+
+	if (NULL != is_userspace) {
+		status = vmi_read_addr_va(vmi,
+					  parent_task
+					+ offset[GT_OFFSET_LINUX_TASK_STRUCT_MM],
+					  0,
+					 &mm);
+		if (VMI_SUCCESS != status) {
+			pid = 0;
+			goto done;
+		}
+
+		*is_userspace = mm != NULL;
 	}
 
 done:

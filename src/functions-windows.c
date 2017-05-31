@@ -279,7 +279,7 @@ done:
 }
 
 static gt_pid_t
-_gt_windows_get_parent_pid(vmi_instance_t vmi, gt_pid_t pid)
+_gt_windows_get_parent_pid(vmi_instance_t vmi, gt_pid_t pid, gboolean *is_userspace)
 {
 	g_assert_not_reached();
 }
