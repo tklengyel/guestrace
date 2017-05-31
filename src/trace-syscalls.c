@@ -1100,7 +1100,7 @@ gt_handle_vmi_event(GIOChannel *chan, GIOCondition condition, gpointer user_data
 
 	switch (condition) {
 	case G_IO_IN:
-		status = vmi_events_listen(loop->vmi, 0);
+		status = vmi_events_listen(loop->vmi, 1);
 		if (status != VMI_SUCCESS) {
 			fprintf(stderr, "error waiting for events\n");
 			loop->running = FALSE;
