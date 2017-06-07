@@ -153,30 +153,38 @@ static measurement_t measurement[1024 * 1024];
 
 #define MEASUREMENT_FINISH(name) measurement[measurement_count].name += rdtsc() - count
 
-#define FPRINT_MEAN(fp, name) do { \
+#define FPRINT_SUMMARY(fp, name) do { \
 	uint64_t total = 0; \
-	for(int i = 0; i < measurement_count; i++) { \
+	/* Skip first measurement; "outside" will be garbage. */ \
+	uint64_t min = measurement[1].name, max = 0; \
+	for(int i = 1; i < measurement_count; i++) { \
+		if (measurement[i].name < min) { \
+			min = measurement[i].name; \
+		} \
+		if (measurement[i].name > max) { \
+			max = measurement[i].name; \
+		} \
 		total += measurement[i].name; \
 	} \
-	fprintf(fp, #name " %lu\n", total > 0 ? total / measurement_count : 0); \
+	fprintf(fp, #name " %lu (%lu/%lu)\n", total > 0 ? total / measurement_count : 0, min, max); \
 } while (false)
 
 static void
 _print_measurements(void)
 {
-	FPRINT_MEAN(stdout, outside);
-	FPRINT_MEAN(stdout, is_user_call);
-	FPRINT_MEAN(stdout, setup);
-	FPRINT_MEAN(stdout, get_pid_call);
-	FPRINT_MEAN(stdout, get_tid_call);
-	FPRINT_MEAN(stdout, get_pid_ret);
-	FPRINT_MEAN(stdout, get_tid_ret);
-	FPRINT_MEAN(stdout, read_stack);
-	FPRINT_MEAN(stdout, write_stack);
-	FPRINT_MEAN(stdout, push_state);
-	FPRINT_MEAN(stdout, pop_state);
-	FPRINT_MEAN(stdout, syscall_cb);
-	FPRINT_MEAN(stdout, sysret_cb);
+	FPRINT_SUMMARY(stdout, outside);
+	FPRINT_SUMMARY(stdout, is_user_call);
+	FPRINT_SUMMARY(stdout, setup);
+	FPRINT_SUMMARY(stdout, get_pid_call);
+	FPRINT_SUMMARY(stdout, get_tid_call);
+	FPRINT_SUMMARY(stdout, get_pid_ret);
+	FPRINT_SUMMARY(stdout, get_tid_ret);
+	FPRINT_SUMMARY(stdout, read_stack);
+	FPRINT_SUMMARY(stdout, write_stack);
+	FPRINT_SUMMARY(stdout, push_state);
+	FPRINT_SUMMARY(stdout, pop_state);
+	FPRINT_SUMMARY(stdout, syscall_cb);
+	FPRINT_SUMMARY(stdout, sysret_cb);
 	fprintf(stdout, "\n");
 }
 
@@ -477,6 +485,8 @@ static event_response_t
 gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	static uint64_t count;
 
+	MEASUREMENT_FINISH(outside);
+
 	GtGuestState sys_state;
 	event_response_t response = VMI_EVENT_RESPONSE_NONE;
 
@@ -694,6 +704,8 @@ skip_sysret_cb:
 
 done:
 	measurement_count++;
+
+	MEASUREMENT_START(outside);
 
 	return response;
 }
