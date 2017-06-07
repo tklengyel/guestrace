@@ -130,6 +130,7 @@ rdtsc(void)
 
 typedef struct measurement_t {
 	uint64_t outside;
+	uint64_t inside;
 	uint64_t is_user_call;
 	uint64_t setup;
 	uint64_t get_pid_call;
@@ -144,20 +145,38 @@ typedef struct measurement_t {
 	uint64_t sysret_cb;
 } measurement_t;
 
+uint64_t outside_count;
+uint64_t inside_count;
+uint64_t is_user_call_count;
+uint64_t setup_count;
+uint64_t get_pid_call_count;
+uint64_t get_tid_call_count;
+uint64_t get_pid_ret_count;
+uint64_t get_tid_ret_count;
+uint64_t read_stack_count;
+uint64_t write_stack_count;
+uint64_t push_state_count;
+uint64_t pop_state_count;
+uint64_t syscall_cb_count;
+uint64_t sysret_cb_count;
+
 static int measurement_count = 0;
 static measurement_t measurement[1024 * 1024];
 
 #define MEASUREMENT_LIMIT (sizeof(measurements) / sizeof(measurement_t))
 
-#define MEASUREMENT_START(name) count = rdtsc()
+#define MEASUREMENT_START(name, count) count = rdtsc()
 
-#define MEASUREMENT_FINISH(name) measurement[measurement_count].name += rdtsc() - count
+#define MEASUREMENT_FINISH(name, count) do { \
+	measurement[name ## _count].name += rdtsc() - count; \
+	name ## _count++; \
+} while (false)
 
 #define FPRINT_SUMMARY(fp, name) do { \
 	uint64_t total = 0; \
 	/* Skip first measurement; "outside" will be garbage. */ \
 	uint64_t min = measurement[1].name, max = 0; \
-	for(int i = 1; i < measurement_count; i++) { \
+	for(int i = 1; i < name ## _count; i++) { \
 		if (measurement[i].name < min) { \
 			min = measurement[i].name; \
 		} \
@@ -166,25 +185,26 @@ static measurement_t measurement[1024 * 1024];
 		} \
 		total += measurement[i].name; \
 	} \
-	fprintf(fp, #name " %lu (%lu/%lu)\n", total > 0 ? total / measurement_count : 0, min, max); \
+	fprintf(fp, #name " %lu (%lu/%lu)\n", total > 0 ? total / name ## _count: 0, min, max); \
 } while (false)
 
 static void
 _print_measurements(void)
 {
-	FPRINT_SUMMARY(stdout, outside);
+	FPRINT_SUMMARY(stdout, inside);
 	FPRINT_SUMMARY(stdout, is_user_call);
 	FPRINT_SUMMARY(stdout, setup);
-	FPRINT_SUMMARY(stdout, get_pid_call);
 	FPRINT_SUMMARY(stdout, get_tid_call);
-	FPRINT_SUMMARY(stdout, get_pid_ret);
-	FPRINT_SUMMARY(stdout, get_tid_ret);
+	FPRINT_SUMMARY(stdout, get_pid_call);
 	FPRINT_SUMMARY(stdout, read_stack);
 	FPRINT_SUMMARY(stdout, write_stack);
 	FPRINT_SUMMARY(stdout, push_state);
-	FPRINT_SUMMARY(stdout, pop_state);
 	FPRINT_SUMMARY(stdout, syscall_cb);
+	FPRINT_SUMMARY(stdout, get_tid_ret);
+	FPRINT_SUMMARY(stdout, get_pid_ret);
+	FPRINT_SUMMARY(stdout, pop_state);
 	FPRINT_SUMMARY(stdout, sysret_cb);
+	FPRINT_SUMMARY(stdout, outside);
 	fprintf(stdout, "\n");
 }
 
@@ -483,9 +503,10 @@ gt_original_slat_singlestep(vmi_event_t *event)
  */
 static event_response_t
 gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
-	static uint64_t count;
+	static uint64_t count, count2;
 
-	MEASUREMENT_FINISH(outside);
+	MEASUREMENT_FINISH(outside, count);
+	MEASUREMENT_START(inside, count2);
 
 	GtGuestState sys_state;
 	event_response_t response = VMI_EVENT_RESPONSE_NONE;
@@ -493,16 +514,16 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	GtLoop *loop = event->data;
 	event->interrupt_event.reinject = 0;
 
-	MEASUREMENT_START(is_user_call);
+	MEASUREMENT_START(is_user_call, count);
 	if (!loop->os_functions->is_user_call(loop, event)) {
 		response = gt_original_slat_singlestep(event);
 		goto done;
 	}
-	MEASUREMENT_FINISH(is_user_call);
+	MEASUREMENT_FINISH(is_user_call, count);
 
 	if (event->interrupt_event.gla != loop->trampoline_addr) {
 		/* Type-one breakpoint (system call). */
-		MEASUREMENT_START(setup);
+		MEASUREMENT_START(setup, count);
 
 		status_t status;
 		addr_t thread_id, return_loc, return_addr = 0;
@@ -521,8 +542,8 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 			goto done;
 		}
 
-		MEASUREMENT_FINISH(setup);
-		MEASUREMENT_START(get_pid_call);
+		MEASUREMENT_FINISH(setup, count);
+		MEASUREMENT_START(get_pid_call, count);
 
 		gt_pid_t pid = loop->os_functions->get_pid(loop->vmi, event);
 		if (0 == pid) {
@@ -530,8 +551,8 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 			goto done;
 		}
 
-		MEASUREMENT_FINISH(get_pid_call);
-		MEASUREMENT_START(get_tid_call);
+		MEASUREMENT_FINISH(get_pid_call, count);
+		MEASUREMENT_START(get_tid_call, count);
 
 		thread_id  = loop->os_functions->get_tid(loop->vmi, event);
 		if (0 == thread_id) {
@@ -539,8 +560,8 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 			goto done;
 		}
 
-		MEASUREMENT_FINISH(get_tid_call);
-		MEASUREMENT_START(read_stack);
+		MEASUREMENT_FINISH(get_tid_call, count);
+		MEASUREMENT_START(read_stack, count);
 
 		return_loc = event->x86_regs->rsp;
 		status = vmi_read_addr_va(vmi, return_loc, 0, &return_addr);
@@ -549,8 +570,8 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 			goto done;
 		}
 
-		MEASUREMENT_FINISH(read_stack);
-		MEASUREMENT_START(syscall_cb);
+		MEASUREMENT_FINISH(read_stack, count);
+		MEASUREMENT_START(syscall_cb, count);
 
 		state                       = g_new0(gt_syscall_state, 1);
 		state->syscall_paddr_record = record;
@@ -578,7 +599,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 			in_syscall_cb = FALSE;
 		}
 
-		MEASUREMENT_FINISH(syscall_cb);
+		MEASUREMENT_FINISH(syscall_cb, count);
 
 skip_syscall_cb:
 		memset(loop->jmpbuf[event->vcpu_id], 0x00, sizeof loop->jmpbuf[event->vcpu_id]);
@@ -610,18 +631,18 @@ skip_syscall_cb:
 		        && NULL != record->sysret_cb) {
 			/* Normal code path. */
 
-			MEASUREMENT_START(push_state);
+			MEASUREMENT_START(push_state, count);
 
 			/* Record system-call state. */
 			state_stacks_tid_push(loop->state_stacks, thread_id, state);
 
-			MEASUREMENT_FINISH(push_state);
-			MEASUREMENT_START(write_stack);
+			MEASUREMENT_FINISH(push_state, count);
+			MEASUREMENT_START(write_stack, count);
 
 			/* Overwrite stack to return to trampoline. */
 			vmi_write_addr_va(vmi, return_loc, 0, &loop->trampoline_addr);
 
-			MEASUREMENT_FINISH(write_stack);
+			MEASUREMENT_FINISH(write_stack, count);
 		} else {
 			/*
 			 * Sysret callback not registered or application called
@@ -642,7 +663,7 @@ skip_syscall_cb:
 		/* Type-two breakpoint (system return). */
 		gt_syscall_state *state;
 
-		MEASUREMENT_START(get_tid_ret);
+		MEASUREMENT_START(get_tid_ret, count);
 
 		addr_t thread_id = loop->os_functions->get_tid(loop->vmi, event);
 		if (0 == thread_id) {
@@ -650,8 +671,8 @@ skip_syscall_cb:
 			goto done;
 		}
 
-		MEASUREMENT_FINISH(get_tid_ret);
-		MEASUREMENT_START(get_pid_ret);
+		MEASUREMENT_FINISH(get_tid_ret, count);
+		MEASUREMENT_START(get_pid_ret, count);
 
 		gt_pid_t pid = loop->os_functions->get_pid(loop->vmi, event);
 		if (0 == pid) {
@@ -659,8 +680,8 @@ skip_syscall_cb:
 			goto done;
 		}
 
-		MEASUREMENT_FINISH(get_pid_ret);
-		MEASUREMENT_START(pop_state);
+		MEASUREMENT_FINISH(get_pid_ret, count);
+		MEASUREMENT_START(pop_state, count);
 
 		state = state_stacks_tid_pop(loop->state_stacks, thread_id);
 		if (NULL == state) {
@@ -668,8 +689,8 @@ skip_syscall_cb:
 			goto done;
 		}
 
-		MEASUREMENT_FINISH(pop_state);
-		MEASUREMENT_START(sysret_cb);
+		MEASUREMENT_FINISH(pop_state, count);
+		MEASUREMENT_START(sysret_cb, count);
 
 		if (GT_EMERGENCY == setjmp(loop->jmpbuf[event->vcpu_id])) {
 			/*
@@ -686,7 +707,7 @@ skip_syscall_cb:
 						        thread_id,
 						        state->data);
 
-		MEASUREMENT_FINISH(sysret_cb);
+		MEASUREMENT_FINISH(sysret_cb, count);
 
 skip_sysret_cb:
 		memset(loop->jmpbuf[event->vcpu_id], 0x00, sizeof loop->jmpbuf[event->vcpu_id]);
@@ -705,7 +726,8 @@ skip_sysret_cb:
 done:
 	measurement_count++;
 
-	MEASUREMENT_START(outside);
+	MEASUREMENT_FINISH(inside, count);
+	MEASUREMENT_START(outside, count);
 
 	return response;
 }
