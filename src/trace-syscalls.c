@@ -119,6 +119,67 @@ static gboolean in_syscall_cb = FALSE;
 /* For SIGSEGV, etc. handling. */
 static const int GT_EMERGENCY = 1;
 
+/* Read the cycle count using the tdtsc instruction. */
+static __inline__ uint64_t
+rdtsc(void)
+{
+        unsigned hi, lo;
+        __asm__ __volatile__ ("rdtsc" : "=a"(lo), "=d"(hi));
+        return ((uint64_t) lo) | (((uint64_t) hi) << 32);
+}
+
+typedef struct measurement_t {
+	uint64_t outside;
+	uint64_t is_user_call;
+	uint64_t setup;
+	uint64_t get_pid_call;
+	uint64_t get_tid_call;
+	uint64_t get_pid_ret;
+	uint64_t get_tid_ret;
+	uint64_t read_stack;
+	uint64_t write_stack;
+	uint64_t push_state;
+	uint64_t pop_state;
+	uint64_t syscall_cb;
+	uint64_t sysret_cb;
+} measurement_t;
+
+static int measurement_count = 0;
+static measurement_t measurement[1024 * 1024];
+
+#define MEASUREMENT_LIMIT (sizeof(measurements) / sizeof(measurement_t))
+
+#define MEASUREMENT_START(name) count = rdtsc()
+
+#define MEASUREMENT_FINISH(name) measurement[measurement_count].name += rdtsc() - count
+
+#define FPRINT_MEAN(fp, name) do { \
+	uint64_t total = 0; \
+	for(int i = 0; i < measurement_count; i++) { \
+		total += measurement[i].name; \
+	} \
+	fprintf(fp, #name " %lu\n", total > 0 ? total / measurement_count : 0); \
+} while (false)
+
+static void
+_print_measurements(void)
+{
+	FPRINT_MEAN(stdout, outside);
+	FPRINT_MEAN(stdout, is_user_call);
+	FPRINT_MEAN(stdout, setup);
+	FPRINT_MEAN(stdout, get_pid_call);
+	FPRINT_MEAN(stdout, get_tid_call);
+	FPRINT_MEAN(stdout, get_pid_ret);
+	FPRINT_MEAN(stdout, get_tid_ret);
+	FPRINT_MEAN(stdout, read_stack);
+	FPRINT_MEAN(stdout, write_stack);
+	FPRINT_MEAN(stdout, push_state);
+	FPRINT_MEAN(stdout, pop_state);
+	FPRINT_MEAN(stdout, syscall_cb);
+	FPRINT_MEAN(stdout, sysret_cb);
+	fprintf(stdout, "\n");
+}
+
 /*
  * Restore a stack return pointer; useful to ensure the kernel continues to
  * run after guestrace exit. Otherwise, guestrace's stack manipulation might
@@ -414,19 +475,25 @@ gt_original_slat_singlestep(vmi_event_t *event)
  */
 static event_response_t
 gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
+	static uint64_t count;
+
 	GtGuestState sys_state;
 	event_response_t response = VMI_EVENT_RESPONSE_NONE;
 
 	GtLoop *loop = event->data;
 	event->interrupt_event.reinject = 0;
 
+	MEASUREMENT_START(is_user_call);
 	if (!loop->os_functions->is_user_call(loop, event)) {
 		response = gt_original_slat_singlestep(event);
 		goto done;
 	}
+	MEASUREMENT_FINISH(is_user_call);
 
 	if (event->interrupt_event.gla != loop->trampoline_addr) {
 		/* Type-one breakpoint (system call). */
+		MEASUREMENT_START(setup);
+
 		status_t status;
 		addr_t thread_id, return_loc, return_addr = 0;
 		gt_paddr_record *record;
@@ -444,11 +511,17 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 			goto done;
 		}
 
+		MEASUREMENT_FINISH(setup);
+		MEASUREMENT_START(get_pid_call);
+
 		gt_pid_t pid = loop->os_functions->get_pid(loop->vmi, event);
 		if (0 == pid) {
 			fprintf(stderr, "failed to read process ID (syscall)\n");
 			goto done;
 		}
+
+		MEASUREMENT_FINISH(get_pid_call);
+		MEASUREMENT_START(get_tid_call);
 
 		thread_id  = loop->os_functions->get_tid(loop->vmi, event);
 		if (0 == thread_id) {
@@ -456,12 +529,18 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 			goto done;
 		}
 
+		MEASUREMENT_FINISH(get_tid_call);
+		MEASUREMENT_START(read_stack);
+
 		return_loc = event->x86_regs->rsp;
 		status = vmi_read_addr_va(vmi, return_loc, 0, &return_addr);
 		if (VMI_SUCCESS != status) {
 			fprintf(stderr, "count not read return pointer off stack\n");
 			goto done;
 		}
+
+		MEASUREMENT_FINISH(read_stack);
+		MEASUREMENT_START(syscall_cb);
 
 		state                       = g_new0(gt_syscall_state, 1);
 		state->syscall_paddr_record = record;
@@ -488,6 +567,8 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 							  record->data);
 			in_syscall_cb = FALSE;
 		}
+
+		MEASUREMENT_FINISH(syscall_cb);
 
 skip_syscall_cb:
 		memset(loop->jmpbuf[event->vcpu_id], 0x00, sizeof loop->jmpbuf[event->vcpu_id]);
@@ -519,11 +600,18 @@ skip_syscall_cb:
 		        && NULL != record->sysret_cb) {
 			/* Normal code path. */
 
+			MEASUREMENT_START(push_state);
+
 			/* Record system-call state. */
 			state_stacks_tid_push(loop->state_stacks, thread_id, state);
 
+			MEASUREMENT_FINISH(push_state);
+			MEASUREMENT_START(write_stack);
+
 			/* Overwrite stack to return to trampoline. */
 			vmi_write_addr_va(vmi, return_loc, 0, &loop->trampoline_addr);
+
+			MEASUREMENT_FINISH(write_stack);
 		} else {
 			/*
 			 * Sysret callback not registered or application called
@@ -543,11 +631,17 @@ skip_syscall_cb:
 	} else {
 		/* Type-two breakpoint (system return). */
 		gt_syscall_state *state;
+
+		MEASUREMENT_START(get_tid_ret);
+
 		addr_t thread_id = loop->os_functions->get_tid(loop->vmi, event);
 		if (0 == thread_id) {
 			fprintf(stderr, "failed to read thread ID (sysret)\n");
 			goto done;
 		}
+
+		MEASUREMENT_FINISH(get_tid_ret);
+		MEASUREMENT_START(get_pid_ret);
 
 		gt_pid_t pid = loop->os_functions->get_pid(loop->vmi, event);
 		if (0 == pid) {
@@ -555,11 +649,17 @@ skip_syscall_cb:
 			goto done;
 		}
 
+		MEASUREMENT_FINISH(get_pid_ret);
+		MEASUREMENT_START(pop_state);
+
 		state = state_stacks_tid_pop(loop->state_stacks, thread_id);
 		if (NULL == state) {
 			fprintf(stderr, "no state for sysret %d:%ld; prepare for crash\n", pid, thread_id);
 			goto done;
 		}
+
+		MEASUREMENT_FINISH(pop_state);
+		MEASUREMENT_START(sysret_cb);
 
 		if (GT_EMERGENCY == setjmp(loop->jmpbuf[event->vcpu_id])) {
 			/*
@@ -576,6 +676,8 @@ skip_syscall_cb:
 						        thread_id,
 						        state->data);
 
+		MEASUREMENT_FINISH(sysret_cb);
+
 skip_sysret_cb:
 		memset(loop->jmpbuf[event->vcpu_id], 0x00, sizeof loop->jmpbuf[event->vcpu_id]);
 
@@ -591,6 +693,8 @@ skip_sysret_cb:
 	}
 
 done:
+	measurement_count++;
+
 	return response;
 }
 
@@ -1159,6 +1263,8 @@ void gt_loop_free(GtLoop *loop)
 	}
 
 	vmi_pause_vm(loop->vmi);
+
+	_print_measurements();
 
 	fprintf(stderr, "finished instrumenting %lu syscalls; good bye\n", loop->count);
 
