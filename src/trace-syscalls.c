@@ -130,7 +130,7 @@ rdtsc(void)
 
 typedef struct measurement_t {
 	uint64_t outside;
-	uint64_t inside;
+	uint64_t inside_call;
 	uint64_t is_user_call;
 	uint64_t setup;
 	uint64_t get_pid_call;
@@ -140,13 +140,14 @@ typedef struct measurement_t {
 	uint64_t read_stack;
 	uint64_t write_stack;
 	uint64_t push_state;
+	uint64_t inside_ret;
 	uint64_t pop_state;
 	uint64_t syscall_cb;
 	uint64_t sysret_cb;
 } measurement_t;
 
 uint64_t outside_count;
-uint64_t inside_count;
+uint64_t inside_call_count;
 uint64_t is_user_call_count;
 uint64_t setup_count;
 uint64_t get_pid_call_count;
@@ -156,6 +157,7 @@ uint64_t get_tid_ret_count;
 uint64_t read_stack_count;
 uint64_t write_stack_count;
 uint64_t push_state_count;
+uint64_t inside_ret_count;
 uint64_t pop_state_count;
 uint64_t syscall_cb_count;
 uint64_t sysret_cb_count;
@@ -191,8 +193,8 @@ static measurement_t measurement[1024 * 1024];
 static void
 _print_measurements(void)
 {
-	FPRINT_SUMMARY(stdout, inside);
 	FPRINT_SUMMARY(stdout, is_user_call);
+	FPRINT_SUMMARY(stdout, inside_call);
 	FPRINT_SUMMARY(stdout, setup);
 	FPRINT_SUMMARY(stdout, get_tid_call);
 	FPRINT_SUMMARY(stdout, get_pid_call);
@@ -202,6 +204,7 @@ _print_measurements(void)
 	FPRINT_SUMMARY(stdout, syscall_cb);
 	FPRINT_SUMMARY(stdout, get_tid_ret);
 	FPRINT_SUMMARY(stdout, get_pid_ret);
+	FPRINT_SUMMARY(stdout, inside_ret);
 	FPRINT_SUMMARY(stdout, pop_state);
 	FPRINT_SUMMARY(stdout, sysret_cb);
 	FPRINT_SUMMARY(stdout, outside);
@@ -506,7 +509,6 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	static uint64_t count, count2;
 
 	MEASUREMENT_FINISH(outside, count);
-	MEASUREMENT_START(inside, count2);
 
 	GtGuestState sys_state;
 	event_response_t response = VMI_EVENT_RESPONSE_NONE;
@@ -523,6 +525,7 @@ gt_breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 
 	if (event->interrupt_event.gla != loop->trampoline_addr) {
 		/* Type-one breakpoint (system call). */
+		MEASUREMENT_START(inside_call, count2);
 		MEASUREMENT_START(setup, count);
 
 		status_t status;
@@ -658,11 +661,15 @@ skip_syscall_cb:
 
 			g_assert(NULL == state->data);
 			g_free(state);
+
 		}
+
+		MEASUREMENT_FINISH(inside_call, count2);
 	} else {
 		/* Type-two breakpoint (system return). */
 		gt_syscall_state *state;
 
+		MEASUREMENT_START(inside_ret, count2);
 		MEASUREMENT_START(get_tid_ret, count);
 
 		addr_t thread_id = loop->os_functions->get_tid(loop->vmi, event);
@@ -721,12 +728,12 @@ skip_sysret_cb:
 		 * sysret_cb must have freed state->data.
 		 */
 		g_free(state);
+
+		MEASUREMENT_FINISH(inside_ret, count2);
 	}
 
 done:
 	measurement_count++;
-
-	MEASUREMENT_FINISH(inside, count);
 	MEASUREMENT_START(outside, count);
 
 	return response;
