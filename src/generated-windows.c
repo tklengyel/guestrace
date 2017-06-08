@@ -99,42 +99,60 @@ _get_simple_permissions(uint32_t permissions)
 		strcpy(buff, "CONTRIBUTOR");
 		goto done;
 	}
-	if (permissions & FILE_READ_DATA)
+	if (permissions & FILE_READ_DATA) {
 		strcat(buff, "FILE_READ_DATA|");
-	if (permissions & FILE_LIST_DIRECTORY)
+	}
+	if (permissions & FILE_LIST_DIRECTORY) {
 		strcat(buff, "FILE_LIST_DIRECTORY|");
-	if (permissions & FILE_WRITE_DATA)
+	}
+	if (permissions & FILE_WRITE_DATA) {
 		strcat(buff, "FILE_WRITE_DATA|");
-	if (permissions & FILE_ADD_FILE)
+	}
+	if (permissions & FILE_ADD_FILE) {
 		strcat(buff, "FILE_ADD_FILE|");
-	if (permissions & FILE_APPEND_DATA)
+	}
+	if (permissions & FILE_APPEND_DATA) {
 		strcat(buff, "FILE_APPEND_DATA|");
-	if (permissions & FILE_ADD_SUBDIRECTORY)
+	}
+	if (permissions & FILE_ADD_SUBDIRECTORY) {
 		strcat(buff, "FILE_ADD_SUBDIRECTORY|");
-	if (permissions & FILE_READ_EA)
+	}
+	if (permissions & FILE_READ_EA) {
 		strcat(buff, "FILE_READ_EA|");
-	if (permissions & FILE_WRITE_EA)
+	}
+	if (permissions & FILE_WRITE_EA) {
 		strcat(buff, "FILE_WRITE_EA|");
-	if (permissions & FILE_EXECUTE)
+	}
+	if (permissions & FILE_EXECUTE) {
 		strcat(buff, "FILE_EXECUTE|");
-	if (permissions & FILE_TRAVERSE)
+	}
+	if (permissions & FILE_TRAVERSE) {
 		strcat(buff, "FILE_TRAVERSE|");
-	if (permissions & FILE_DELETE_CHILD)
+	}
+	if (permissions & FILE_DELETE_CHILD) {
 		strcat(buff, "FILE_DELETE_CHILD|");
-	if (permissions & FILE_READ_ATTRIBUTES)
+	}
+	if (permissions & FILE_READ_ATTRIBUTES) {
 		strcat(buff, "FILE_READ_ATTRIBUTES|");
-	if (permissions & FILE_WRITE_ATTRIBUTES)
+	}
+	if (permissions & FILE_WRITE_ATTRIBUTES) {
 		strcat(buff, "FILE_WRITE_ATTRIBUTES|");
-	if (permissions & DELETE)
+	}
+	if (permissions & DELETE) {
 		strcat(buff, "DELETE|");
-	if (permissions & READ_CONTROL)
+	}
+	if (permissions & READ_CONTROL) {
 		strcat(buff, "READ_CONTROL|");
-	if (permissions & WRITE_DAC)
+	}
+	if (permissions & WRITE_DAC) {
 		strcat(buff, "WRITE_DAC|");
-	if (permissions & WRITE_OWNER)
+	}
+	if (permissions & WRITE_OWNER) {
 		strcat(buff, "WRITE_OWNER|");
-	if (permissions & SYNCHRONIZE)
+	}
+	if (permissions & SYNCHRONIZE) {
 		strcat(buff, "SYNCHRONIZE|");
+	}
 	if (strlen(buff) > 0) {
 		buff[strlen(buff)-1] = 0;
 	} else {
