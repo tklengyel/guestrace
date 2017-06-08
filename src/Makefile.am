@@ -28,7 +28,7 @@ libguestrace_0_0_la_SOURCES = \
 	gt-rekall.c \
 	gt-rekall-private.c \
 	state-stacks.c \
-	trace-syscalls.c
+	gt.c
 
 libguestraceincludedir = \
 	$(includedir)/libguestrace-@API_VERSION@/libguestrace
@@ -44,7 +44,7 @@ generated-windows.c: ../tools/gen-syscall-code-windows
 	../tools/gen-syscall-code-windows
 
 guestrace_SOURCES = \
-	gt.c \
+	guestrace.c \
 	generated-linux.c \
 	generated-windows.c
 
@@ -71,5 +71,4 @@ noinst_HEADERS = \
 	generated-linux.h \
 	gt-private.h \
 	gt-rekall-private.h \
-	state-stacks.h \
-	trace-syscalls.h
+	state-stacks.h

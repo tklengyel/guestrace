@@ -4,7 +4,6 @@
 #include "gt-private.h"
 #include "gt-rekall.h"
 #include "gt-rekall-private.h"
-#include "trace-syscalls.h"
 
 typedef enum privilege_mode {
 	KERNEL_MODE,

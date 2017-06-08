@@ -2,7 +2,7 @@
 #define _GENERATED_WINDOWS_H
 
 #include "gt.h"
-#include "trace-syscalls.h"
+#include "gt-private.h"
 
 extern const GtCallbackRegistry GENERATED_WINDOWS_SYSCALLS[];
 

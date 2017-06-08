@@ -4,7 +4,6 @@
 #include "gt-private.h"
 #include "gt-rekall.h"
 #include "gt-rekall-private.h"
-#include "trace-syscalls.h"
 
 typedef struct offset_definition_t {
 	int   id;

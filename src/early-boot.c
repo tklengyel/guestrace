@@ -1,8 +1,8 @@
 #include <libvmi/libvmi.h>
 
 #include "early-boot.h"
+#include "gt-private.h"
 #include "gt-rekall.h"
-#include "trace-syscalls.h"
 
 /* This code handles detecting when a kernel is ready to be instrumented.
  * For example, we do not want to instrument GRUB instead of the kernel---
