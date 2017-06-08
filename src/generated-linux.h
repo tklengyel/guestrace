@@ -4,7 +4,7 @@
 #include "guestrace.h"
 #include "trace-syscalls.h"
 
-extern const GtCallbackRegistry GT_LINUX_SYSCALLS[];
-extern const GtCallbackRegistry GT_LINUX_SILENT_SYSCALLS[];
+extern const GtCallbackRegistry GENERATED_LINUX_SYSCALLS[];
+extern const GtCallbackRegistry GENERATED_LINUX_SILENT_SYSCALLS[];
 
 #endif

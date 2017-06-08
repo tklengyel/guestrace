@@ -242,10 +242,10 @@ main (int argc, char **argv) {
 
 	switch (os) {
 	case GT_OS_LINUX:
-		orig_registry = GT_LINUX_SYSCALLS;
+		orig_registry = GENERATED_LINUX_SYSCALLS;
 		break;
 	case GT_OS_WINDOWS:
-		orig_registry = GT_WINDOWS_SYSCALLS;
+		orig_registry = GENERATED_WINDOWS_SYSCALLS;
 		break;
 	default:
 		fprintf(stderr, "unknown guest operating system\n");

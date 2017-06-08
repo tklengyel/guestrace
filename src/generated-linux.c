@@ -1,4 +1,4 @@
-/* Generated on Linux_4.11.3-200.fc25.x86_64 on 08 Jun 2017 13:37:26*/
+/* Generated on Linux_4.11.3-200.fc25.x86_64 on 08 Jun 2017 13:44:27*/
 
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
@@ -8634,7 +8634,7 @@ void generated_linux_print_syscall_sys_statx(GtGuestState *state, gt_pid_t pid, 
 	g_free(args);
 }
 
-const GtCallbackRegistry GT_LINUX_SYSCALLS[] = {
+const GtCallbackRegistry GENERATED_LINUX_SYSCALLS[] = {
 	{ "sys_read", generated_linux_record_syscall_sys_read_args, generated_linux_print_syscall_sys_read },
 	{ "sys_write", generated_linux_record_syscall_sys_write_args, generated_linux_print_syscall_sys_write },
 	{ "sys_open", generated_linux_record_syscall_sys_open_args, generated_linux_print_syscall_sys_open },

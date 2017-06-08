@@ -4,6 +4,6 @@
 #include "guestrace.h"
 #include "trace-syscalls.h"
 
-extern const GtCallbackRegistry GT_WINDOWS_SYSCALLS[];
+extern const GtCallbackRegistry GENERATED_WINDOWS_SYSCALLS[];
 
 #endif

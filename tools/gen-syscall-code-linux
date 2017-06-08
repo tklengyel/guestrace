@@ -424,7 +424,7 @@ def create_struct_c(syscall_map, syscall_order, kernel_info):
         str += create_syscall_functions(syscall_map[syscall])
 
     # Generate SYSCALLS table.
-    str += """const GtCallbackRegistry GT_LINUX_SYSCALLS[] = {
+    str += """const GtCallbackRegistry GENERATED_LINUX_SYSCALLS[] = {
 """
     
     # generate the actual struct list

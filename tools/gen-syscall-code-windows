@@ -711,7 +711,7 @@ for syscall in parsed:
 	write_syscall(syscall)
 	write_sysret(syscall)
 
-save_loc.write("const GtCallbackRegistry GT_WINDOWS_SYSCALLS[] = {\n")
+save_loc.write("const GtCallbackRegistry GENERATED_WINDOWS_SYSCALLS[] = {\n")
 for syscall in parsed:
 	save_loc.write("\t{ \"%s\", gt_windows_print_syscall_%s, gt_windows_print_sysret_%s, NULL },\n" % (syscall['decl']['name'], syscall['decl']['name'].lower(), syscall['decl']['name'].lower()))
 
