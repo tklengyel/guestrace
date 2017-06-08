@@ -89,15 +89,15 @@ _get_simple_permissions(uint32_t permissions)
 	char *buff = calloc(1, 1024);
 	if (OWNER == permissions) {
 		strcpy(buff, "OWNER");
-		return buff;
+		goto done;
 	}
 	if (READ_ONLY == permissions) {
 		strcpy(buff, "READ_ONLY");
-		return buff;
+		goto done;
 	}
 	if (CONTRIBUTOR == permissions) {
 		strcpy(buff, "CONTRIBUTOR");
-		return buff;
+		goto done;
 	}
 	if (permissions & FILE_READ_DATA)
 		strcat(buff, "FILE_READ_DATA|");
@@ -140,6 +140,8 @@ _get_simple_permissions(uint32_t permissions)
 	} else {
 		strcpy(buff, "NONE");
 	}
+
+done:
 	return buff;
 }
 
