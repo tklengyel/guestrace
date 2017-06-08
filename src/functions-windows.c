@@ -1,9 +1,9 @@
 #include <libvmi/libvmi.h>
 
-#include "guestrace.h"
-#include "guestrace-private.h"
-#include "rekall.h"
-#include "rekall-private.h"
+#include "gt.h"
+#include "gt-private.h"
+#include "gt-rekall.h"
+#include "gt-rekall-private.h"
 #include "trace-syscalls.h"
 
 typedef enum privilege_mode {

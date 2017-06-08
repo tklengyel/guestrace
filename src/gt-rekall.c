@@ -2,8 +2,8 @@
 
 #include <json-c/json.h>
 
-#include "guestrace-private.h"
-#include "rekall.h"
+#include "gt-private.h"
+#include "gt-rekall.h"
 
 gboolean
 gt_rekall_symbol_to_rva(const char *rekall_profile,

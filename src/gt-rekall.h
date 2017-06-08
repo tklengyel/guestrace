@@ -4,7 +4,7 @@
 #include <libvmi/libvmi.h>
 #include <glib.h>
 
-#include "guestrace.h"
+#include "gt.h"
 
 enum {
 	GT_OFFSET_WINDOWS_KPCR_PRCB = 0,

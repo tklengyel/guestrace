@@ -1,4 +1,4 @@
-AC_INIT(src/guestrace.c)
+AC_INIT(src/gt.c)
 
 MAJOR_VERSION=0
 MINOR_VERSION=0

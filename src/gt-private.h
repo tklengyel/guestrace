@@ -5,7 +5,7 @@
 #include <libxl.h>
 #include <xenctrl.h>
 
-#include "guestrace.h"
+#include "gt.h"
 #include "trace-syscalls.h"
 #include "state-stacks.h"
 

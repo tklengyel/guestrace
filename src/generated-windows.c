@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "guestrace.h"
+#include "gt.h"
 #include "functions-windows.h"
 #include "generated-windows.h"
 

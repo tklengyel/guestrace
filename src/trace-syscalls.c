@@ -9,12 +9,12 @@
 #include <stdlib.h>
 
 #include "early-boot.h"
-#include "guestrace.h"
-#include "guestrace-private.h"
+#include "gt.h"
+#include "gt-private.h"
 #include "functions-linux.h"
 #include "functions-windows.h"
 #include "trace-syscalls.h"
-#include "rekall.h"
+#include "gt-rekall.h"
 #include "state-stacks.h"
 
 /*

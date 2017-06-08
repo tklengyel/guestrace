@@ -3,7 +3,7 @@
 
 #include <glib.h>
 
-#include "guestrace.h"
+#include "gt.h"
 
 /*
  * A record which describes a frame. The children of these records (themselves

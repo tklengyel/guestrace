@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "guestrace.h"
+#include "gt.h"
 #include "generated-linux.h"
 
 GtLoop *loop = NULL;

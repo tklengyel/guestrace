@@ -1,7 +1,7 @@
 #ifndef _GENERATED_LINUX_H
 #define _GENERATED_LINUX_H
 
-#include "guestrace.h"
+#include "gt.h"
 #include "trace-syscalls.h"
 
 extern const GtCallbackRegistry GENERATED_LINUX_SYSCALLS[];

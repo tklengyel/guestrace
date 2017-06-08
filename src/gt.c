@@ -3,22 +3,22 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "guestrace.h"
+#include "gt.h"
 #include "generated-windows.h"
 #include "generated-linux.h"
 
-GtLoop *loop = NULL;
+GtLoop *gt_loop = NULL;
 
 /* Variables to hold command-line options and arguments. */
-char *name            = NULL;
-char *instrument_list = NULL;
-gboolean silent       = FALSE;
-gboolean verbose      = FALSE;
+char *gt_name            = NULL;
+char *gt_instrument_list = NULL;
+gboolean gt_silent       = FALSE;
+gboolean gt_verbose      = FALSE;
 
 static void
 _close_handler (int sig)
 {
-	gt_loop_quit(loop);
+	gt_loop_quit(gt_loop);
 }
 
 static int
@@ -76,7 +76,7 @@ _message(const char *format, ...)
 	int rc = 0;
 	va_list ap;
 
-	if (verbose) {
+	if (gt_verbose) {
 		va_start(ap, format);
 
 		rc = vfprintf(stderr, format, ap);
@@ -87,7 +87,8 @@ _message(const char *format, ...)
 	return rc;
 }
 
-void *silent_syscall(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
+static void *
+_silent_syscall(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 
 	static long count = 1;
@@ -101,7 +102,8 @@ void *silent_syscall(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user
 	return NULL;
 }
 
-void silent_sysret(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
+static void
+_silent_sysret(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
 }
 
 static GtCallbackRegistry *
@@ -171,10 +173,10 @@ _registry_build(const GtCallbackRegistry *registry, char *instrument_list)
 		}
 	}
 
-	if (silent) {
+	if (gt_silent) {
 		for (i = 0; NULL != new[i].name; i++) {
-			new[i].syscall_cb = silent_syscall;
-			new[i].sysret_cb  = silent_sysret;
+			new[i].syscall_cb = _silent_syscall;
+			new[i].sysret_cb  = _silent_sysret;
 		}
 	}
 
@@ -193,16 +195,16 @@ main (int argc, char **argv) {
 	while ((opt = getopt(argc, argv, "hi:n:sv")) != -1) {
 		switch (opt) {
 		case 'i':
-			instrument_list = optarg;
+			gt_instrument_list = optarg;
 			break;
 		case 'n':
-			name = optarg;
+			gt_name = optarg;
 			break;
 		case 's':
-			silent = TRUE;
+			gt_silent = TRUE;
 			break;
 		case 'v':
-			verbose = TRUE;
+			gt_verbose = TRUE;
 			break;
 		case 'h':
 		default:
@@ -211,12 +213,12 @@ main (int argc, char **argv) {
 		}
 	}
 
-	if (NULL == name) {
+	if (NULL == gt_name) {
 		_usage();
 		goto done;
 	}
 
-	if (NULL != instrument_list && 0 == strlen(instrument_list)) {
+	if (NULL != gt_instrument_list && 0 == strlen(gt_instrument_list)) {
 		_usage();
 		goto done;
 	}
@@ -230,15 +232,15 @@ main (int argc, char **argv) {
 
 	_message("creating event loop\n");
 
-	loop = gt_loop_new(name);
-	if (NULL == loop) {
+	gt_loop = gt_loop_new(gt_name);
+	if (NULL == gt_loop) {
 		fprintf(stderr, "could not initialize guestrace\n");
 		goto done;
 	}
 
 	_message("identifying OS type ... ");
 
-	GtOSType os = gt_loop_get_ostype(loop);
+	GtOSType os = gt_loop_get_ostype(gt_loop);
 
 	switch (os) {
 	case GT_OS_LINUX:
@@ -254,7 +256,7 @@ main (int argc, char **argv) {
 
 	_message("%s\n", GT_OS_LINUX == os ? "linux" : "windows");
 
-	registry = _registry_build(orig_registry, instrument_list);
+	registry = _registry_build(orig_registry, gt_instrument_list);
 	if (NULL == registry) {
 		fprintf(stderr, "error building system call registry\n");
 		goto done;
@@ -262,7 +264,7 @@ main (int argc, char **argv) {
 
 	_message("establishing callbacks (might take a few seconds) ... ");
 
-	count = gt_loop_set_cbs(loop, registry);
+	count = gt_loop_set_cbs(gt_loop, registry);
 	if (0 == count) {
 		fprintf(stderr, "unable to instrument any system calls\n");
 		goto done;
@@ -273,12 +275,12 @@ main (int argc, char **argv) {
 	_message("running event loop ...\n");
 
 	status = VMI_SUCCESS;
-	gt_loop_run(loop);
+	gt_loop_run(gt_loop);
 
 done:
 	_message("freeing event loop\n");
 
-	gt_loop_free(loop);
+	gt_loop_free(gt_loop);
 	g_free(registry);
 
 	exit(VMI_SUCCESS == status ? EXIT_SUCCESS : EXIT_FAILURE);
