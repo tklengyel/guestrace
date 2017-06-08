@@ -1,5 +1,5 @@
-#ifndef _GUESTRACE_PRIVATE_H
-#define _GUESTRACE_PRIVATE_H
+#ifndef _GT_PRIVATE_H
+#define _GT_PRIVATE_H
 
 #include <glib.h>
 #include <libxl.h>
