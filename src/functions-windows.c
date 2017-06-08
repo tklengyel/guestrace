@@ -53,10 +53,10 @@ _gt_windows_initialize(GtLoop *loop)
 	}
 
 	for (int i = 0; i < GT_OFFSET_WINDOWS_BAD; i++) {
-		ok = gt_rekall_symbol_to_rva(rekall_profile,
-		                            _offset_def[i].struct_name,
-		                            _offset_def[i].field_name,
-		                           &_offset[i]);
+		ok = gt_rekall_private_symbol_to_rva(rekall_profile,
+		                                    _offset_def[i].struct_name,
+		                                    _offset_def[i].field_name,
+		                                   &_offset[i]);
 		if (!ok) {
 			goto done;
 		}

@@ -26,6 +26,7 @@ libguestrace_0_0_la_SOURCES = \
 	functions-linux.c \
 	functions-windows.c \
 	gt-rekall.c \
+	gt-rekall-private.c \
 	state-stacks.c \
 	trace-syscalls.c
 
