@@ -280,7 +280,7 @@ _gt_linux_get_parent_pid(vmi_instance_t vmi, gt_pid_t pid, gboolean *is_userspac
 			goto done;
 		}
 
-		*is_userspace = mm != NULL;
+		*is_userspace = mm != 0;
 	}
 
 done:
