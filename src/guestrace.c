@@ -16,17 +16,17 @@ gboolean silent       = FALSE;
 gboolean verbose      = FALSE;
 
 static void
-gt_close_handler (int sig)
+_close_handler (int sig)
 {
 	gt_loop_quit(loop);
 }
 
 static int
-gt_set_up_signal_handler (struct sigaction act)
+_set_up_signal_handler (struct sigaction act)
 {
 	int rc = 0;
 
-	act.sa_handler = gt_close_handler;
+	act.sa_handler = _close_handler;
 	act.sa_flags = 0;
 
 	rc = sigemptyset(&act.sa_mask);
@@ -59,7 +59,7 @@ done:
 }
 
 static void
-usage()
+_usage()
 {
 	fprintf(stderr, "usage: guestrace [-i syscall1,syscall2] [-s] [-v] "
 	                "-n <VM name>\n"
@@ -71,7 +71,7 @@ usage()
 }
 
 static int
-message(const char *format, ...)
+_message(const char *format, ...)
 {
 	int rc = 0;
 	va_list ap;
@@ -105,7 +105,7 @@ void silent_sysret(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_d
 }
 
 static GtCallbackRegistry *
-registry_dup(const GtCallbackRegistry *registry)
+_registry_dup(const GtCallbackRegistry *registry)
 {
 	GtCallbackRegistry *copy;
 	int count = 0;
@@ -126,13 +126,13 @@ registry_dup(const GtCallbackRegistry *registry)
 }
 
 static GtCallbackRegistry *
-registry_build(const GtCallbackRegistry *registry, char *instrument_list)
+_registry_build(const GtCallbackRegistry *registry, char *instrument_list)
 {
 	int i;
 	GtCallbackRegistry *new = NULL;
 
 	if (NULL == instrument_list) {
-		new = registry_dup(registry);
+		new = _registry_dup(registry);
 	} else if (0 == strlen(instrument_list)) {
 		new = g_new0(GtCallbackRegistry, 1);
 		new[0] = (GtCallbackRegistry) { NULL };
@@ -206,29 +206,29 @@ main (int argc, char **argv) {
 			break;
 		case 'h':
 		default:
-			usage();
+			_usage();
 			goto done;
 		}
 	}
 
 	if (NULL == name) {
-		usage();
+		_usage();
 		goto done;
 	}
 
 	if (NULL != instrument_list && 0 == strlen(instrument_list)) {
-		usage();
+		_usage();
 		goto done;
 	}
 
-	message("setting up signal handlers\n");
+	_message("setting up signal handlers\n");
 
-	if (-1 == gt_set_up_signal_handler(act)) {
+	if (-1 == _set_up_signal_handler(act)) {
 		perror("failed to setup signal handler.\n");
 		goto done;
 	}
 
-	message("creating event loop\n");
+	_message("creating event loop\n");
 
 	loop = gt_loop_new(name);
 	if (NULL == loop) {
@@ -236,7 +236,7 @@ main (int argc, char **argv) {
 		goto done;
 	}
 
-	message("identifying OS type ... ");
+	_message("identifying OS type ... ");
 
 	GtOSType os = gt_loop_get_ostype(loop);
 
@@ -252,15 +252,15 @@ main (int argc, char **argv) {
 		goto done;
 	}
 
-	message("%s\n", GT_OS_LINUX == os ? "linux" : "windows");
+	_message("%s\n", GT_OS_LINUX == os ? "linux" : "windows");
 
-	registry = registry_build(orig_registry, instrument_list);
+	registry = _registry_build(orig_registry, instrument_list);
 	if (NULL == registry) {
 		fprintf(stderr, "error building system call registry\n");
 		goto done;
 	}
 
-	message("establishing callbacks (might take a few seconds) ... ");
+	_message("establishing callbacks (might take a few seconds) ... ");
 
 	count = gt_loop_set_cbs(loop, registry);
 	if (0 == count) {
@@ -268,15 +268,15 @@ main (int argc, char **argv) {
 		goto done;
 	}
 
-	message("%d system calls instrumented\n", count);
+	_message("%d system calls instrumented\n", count);
 
-	message("running event loop ...\n");
+	_message("running event loop ...\n");
 
 	status = VMI_SUCCESS;
 	gt_loop_run(loop);
 
 done:
-	message("freeing event loop\n");
+	_message("freeing event loop\n");
 
 	gt_loop_free(loop);
 	g_free(registry);
