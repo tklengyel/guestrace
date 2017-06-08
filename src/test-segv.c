@@ -7,9 +7,9 @@
 #include "gt.h"
 #include "generated-linux.h"
 
-GtLoop *loop         = NULL;
-char *name           = NULL;
-gboolean test_return = FALSE;
+static GtLoop *_loop         = NULL;
+static char *_name           = NULL;
+static gboolean _test_return = FALSE;
 
 struct args_open {
 	addr_t pathaddr;
@@ -23,27 +23,27 @@ struct args_execve {
 };
 
 static void
-gt_close_handler (int sig)
+_close_handler (int sig)
 {
-	gt_loop_quit(loop);
+	gt_loop_quit(_loop);
 }
 
 static void
-gt_close_handler_emergency (int sig)
+_close_handler_emergency (int sig)
 {
 	fprintf(stderr, "received emergency signal %d\n", sig);
 
-	gt_loop_quit(loop);
+	gt_loop_quit(_loop);
 
-	gt_loop_jmp_past_cb(loop);
+	gt_loop_jmp_past_cb(_loop);
 }
 
 static int
-gt_set_up_signal_handler (struct sigaction act)
+_set_up_signal_handler (struct sigaction act)
 {
 	int rc = 0;
 
-	act.sa_handler = gt_close_handler;
+	act.sa_handler = _close_handler;
 	act.sa_flags = 0;
 
 	rc = sigemptyset(&act.sa_mask);
@@ -75,7 +75,7 @@ gt_set_up_signal_handler (struct sigaction act)
 	 * Some runtime error would otherwise crash VisorFlow, leaving the
 	 * guest in a corrupt state. Handle these to attempt a graceful exit.
 	 */
-	act.sa_handler = gt_close_handler_emergency;
+	act.sa_handler = _close_handler_emergency;
 	act.sa_flags = 0;
 
 	rc = sigaction(SIGSEGV, &act, NULL);
@@ -88,17 +88,17 @@ done:
 }
 
 static void
-usage()
+_usage()
 {
 	fprintf(stderr, "usage: guestrace -n <VM name> [-r]\n"
 	                "\n"
 	                "-n  name of guest to instrument\n");
 }
 
-void *
-handle_open_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
+static void *
+_handle_open_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
-	if (!test_return) {
+	if (!_test_return) {
 		kill(0, SIGSEGV);
 		g_assert_not_reached();
 	}
@@ -106,9 +106,9 @@ handle_open_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_dat
 	return NULL;
 }
 
-void
-handle_open_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
-	if (test_return) {
+static void
+_handle_open_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
+	if (_test_return) {
 		kill(0, SIGSEGV);
 		g_assert_not_reached();
 	}
@@ -121,44 +121,44 @@ main (int argc, char **argv) {
 	status_t status = VMI_FAILURE;
 
 	const GtCallbackRegistry registry[] = {
-		{ "sys_open", handle_open_args, handle_open_return },
+		{ "sys_open", _handle_open_args, _handle_open_return },
 		{ NULL, NULL, NULL },
 	};
 
 	while ((opt = getopt(argc, argv, "hn:r")) != -1) {
 		switch (opt) {
 		case 'n':
-			name = optarg;
+			_name = optarg;
 			break;
 		case 'r':
-			test_return = TRUE;
+			_test_return = TRUE;
 			break;
 		case 'h':
 		default:
-			usage();
+			_usage();
 			goto done;
 		}
 	}
 
-	if (NULL == name) {
-		usage();
+	if (NULL == _name) {
+		_usage();
 		goto done;
 	}
 
-	if (-1 == gt_set_up_signal_handler(act)) {
+	if (-1 == _set_up_signal_handler(act)) {
 		perror("failed to setup signal handler.\n");
 		goto done;
 	}
 
-	loop = gt_loop_new(name);
-	if (NULL == loop) {
+	_loop = gt_loop_new(_name);
+	if (NULL == _loop) {
 		fprintf(stderr, "could not initialize guestrace\n");
 		goto done;
 	}
 
 	fprintf(stderr, "set up callbacks\n");
 
-	count = gt_loop_set_cbs(loop, registry);
+	count = gt_loop_set_cbs(_loop, registry);
 	if (0 == count) {
 		fprintf(stderr, "unable to instrument any system calls\n");
 		goto done;
@@ -168,12 +168,12 @@ main (int argc, char **argv) {
 
 	status = VMI_SUCCESS;
 
-	gt_loop_run(loop);
+	gt_loop_run(_loop);
 
 done:
 	fprintf(stderr, "done\n");
 
-	gt_loop_free(loop);
+	gt_loop_free(_loop);
 
 	fprintf(stderr, "exiting\n");
 

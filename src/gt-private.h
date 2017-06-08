@@ -33,9 +33,6 @@ struct os_functions {
 /* Zero out last 12 bits of addr */
 #define GT_PAGE_ADDR(addr) ((addr >> GT_PAGE_OFFSET_BITS) << GT_PAGE_OFFSET_BITS)
 
-/* Intel breakpoint interrupt (INT 3) instruction. */
-extern uint8_t GT_BREAKPOINT_INST;
-
 /* Includes collection of global state for callbacks.
  *
  * Guestrace maintains three collections:

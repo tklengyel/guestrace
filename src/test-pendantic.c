@@ -6,8 +6,8 @@
 #include "gt.h"
 #include "generated-linux.h"
 
-GtLoop *loop = NULL;
-char *name   = NULL;
+static GtLoop *_loop = NULL;
+static char *_name   = NULL;
 
 struct args_open {
 	addr_t pathaddr;
@@ -21,17 +21,17 @@ struct args_execve {
 };
 
 static void
-gt_close_handler (int sig)
+_close_handler (int sig)
 {
-	gt_loop_quit(loop);
+	gt_loop_quit(_loop);
 }
 
 static int
-gt_set_up_signal_handler (struct sigaction act)
+_set_up_signal_handler (struct sigaction act)
 {
 	int rc = 0;
 
-	act.sa_handler = gt_close_handler;
+	act.sa_handler = _close_handler;
 	act.sa_flags = 0;
 
 	rc = sigemptyset(&act.sa_mask);
@@ -64,15 +64,15 @@ done:
 }
 
 static void
-usage()
+_usage()
 {
 	fprintf(stderr, "usage: guestrace -n <VM name>\n"
 	                "\n"
 	                "-n  name of guest to instrument\n");
 }
 
-void *
-handle_open_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
+static void *
+_handle_open_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct args_open *args;
 
@@ -84,8 +84,8 @@ handle_open_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_dat
 	return args;
 }
 
-void
-handle_open_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
+static void
+_handle_open_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
 	struct args_open *args = user_data;
 	int ret                = gt_guest_get_register(state, RAX);
 	char *proc             = gt_guest_get_process_name(state);
@@ -115,14 +115,14 @@ done:
 	g_free(args);
 }
 
-void *
-handle_clone_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
+static void *
+_handle_clone_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	return NULL;
 }
 
-void
-handle_clone_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
+static void
+_handle_clone_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
 	char *proc = gt_guest_get_process_name(state);
 
 	if (!g_utf8_validate(proc, -1, NULL)) {
@@ -130,8 +130,8 @@ handle_clone_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_
 	}
 }
 
-void *
-handle_execve_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
+static void *
+_handle_execve_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct args_execve *args;
 	char *proc = gt_guest_get_process_name(state);
@@ -146,8 +146,8 @@ handle_execve_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_d
 	return args;
 }
 
-void
-handle_execve_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
+static void
+_handle_execve_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
 	int ret = gt_guest_get_register(state, RAX);
 	char *proc = gt_guest_get_process_name(state);
 
@@ -169,43 +169,43 @@ main (int argc, char **argv) {
 	status_t status = VMI_FAILURE;
 
 	const GtCallbackRegistry registry[] = {
-		{ "sys_open", handle_open_args, handle_open_return },
-		{ "sys_clone", handle_clone_args, handle_clone_return },
-		{ "stub_execve", handle_execve_args, handle_execve_return },
+		{ "sys_open", _handle_open_args, _handle_open_return },
+		{ "sys_clone", _handle_clone_args, _handle_clone_return },
+		{ "stub_execve", _handle_execve_args, _handle_execve_return },
 		{ NULL, NULL, NULL },
 	};
 
 	while ((opt = getopt(argc, argv, "hn:")) != -1) {
 		switch (opt) {
 		case 'n':
-			name = optarg;
+			_name = optarg;
 			break;
 		case 'h':
 		default:
-			usage();
+			_usage();
 			goto done;
 		}
 	}
 
-	if (NULL == name) {
-		usage();
+	if (NULL == _name) {
+		_usage();
 		goto done;
 	}
 
-	if (-1 == gt_set_up_signal_handler(act)) {
+	if (-1 == _set_up_signal_handler(act)) {
 		perror("failed to setup signal handler.\n");
 		goto done;
 	}
 
-	loop = gt_loop_new(name);
-	if (NULL == loop) {
+	_loop = gt_loop_new(_name);
+	if (NULL == _loop) {
 		fprintf(stderr, "could not initialize guestrace\n");
 		goto done;
 	}
 
 	fprintf(stderr, "set up callbacks\n");
 
-	count = gt_loop_set_cbs(loop, registry);
+	count = gt_loop_set_cbs(_loop, registry);
 	if (0 == count) {
 		fprintf(stderr, "unable to instrument any system calls\n");
 		goto done;
@@ -214,10 +214,10 @@ main (int argc, char **argv) {
 	fprintf(stderr, "run loop\n");
 
 	status = VMI_SUCCESS;
-	gt_loop_run(loop);
+	gt_loop_run(_loop);
 
 done:
-	gt_loop_free(loop);
+	gt_loop_free(_loop);
 
 	exit(VMI_SUCCESS == status ? EXIT_SUCCESS : EXIT_FAILURE);
 }
