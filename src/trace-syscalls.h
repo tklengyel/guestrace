@@ -1,6 +1,8 @@
 #ifndef _TRACE_SYSCALLS_H
 #define _TRACE_SYSCALLS_H
 
+#include "gt.h"
+
 /* Operating-system-specific operations. */
 struct os_functions {
 	/* <private> */
