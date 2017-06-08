@@ -470,7 +470,7 @@ struct win64_client_id {
  * Get ObjectAttributes struct from virtual address
  */
 static struct win64_obj_attr *
-_generated_windows_obj_attr_from_va(vmi_instance_t vmi, addr_t vaddr, gt_pid_t pid) {
+_obj_attr_from_va(vmi_instance_t vmi, addr_t vaddr, gt_pid_t pid) {
 	struct win64_obj_attr * buff = NULL;
 
 	uint32_t struct_size = 0;
@@ -494,7 +494,7 @@ done:
 }
 
 static char *
-generated_windows_get_simple_permissions(uint32_t permissions)
+_get_simple_permissions(uint32_t permissions)
 {
 	char *buff = calloc(1, 1024);
 	if (OWNER == permissions) {
@@ -554,7 +554,7 @@ generated_windows_get_simple_permissions(uint32_t permissions)
 }
 
 static uint8_t *
-unicode_str_from_va(vmi_instance_t vmi, addr_t va, gt_pid_t pid) {
+_unicode_str_from_va(vmi_instance_t vmi, addr_t va, gt_pid_t pid) {
 	uint8_t *res = NULL;
 	unicode_string_t * unicode_str = vmi_read_unicode_str_va(vmi, va, pid);
 
@@ -576,7 +576,7 @@ done:
 }
 
 static uint64_t *
-vf_get_args(GtGuestState *state, gt_pid_t pid) {
+_get_args(GtGuestState *state, gt_pid_t pid) {
 	uint64_t *args = calloc(NUM_SYSCALL_ARGS, sizeof(uint64_t));
 	args[0] = gt_guest_get_register(state, RCX);
 	args[1] = gt_guest_get_register(state, RDX);
@@ -592,9 +592,9 @@ def print_obj_attr(arg, arg_num):
 	return ('''\tuint8_t *unicode_str_%d = NULL;
 	uint64_t root_dir_%d = 0;
 	uint64_t attributes_%d = 0;
-	struct win64_obj_attr *obj_attr_%d = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[%d], pid);
+	struct win64_obj_attr *obj_attr_%d = _obj_attr_from_va(gt_guest_get_vmi_instance(state), args[%d], pid);
 	if (NULL != obj_attr_%d) {
-		unicode_str_%d = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_%d->object_name, pid);
+		unicode_str_%d = _unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_%d->object_name, pid);
 		root_dir_%d = obj_attr_%d->root_directory;
 		attributes_%d = obj_attr_%d->attributes;
 	}''' % (arg_num, arg_num, arg_num, arg_num, arg_num, arg_num, arg_num, arg_num, arg_num, arg_num, arg_num, arg_num),
@@ -611,13 +611,13 @@ def print_phandle(arg, arg_num):
 	vmi_read_64_va(gt_guest_get_vmi_instance(state), args[%d], pid, &phandle_%d);''' % (arg_num, arg_num, arg_num), "%s: 0x%%lx" % arg['name'], "phandle_%d" % arg_num, ""
 
 def print_access_mask(arg, arg_num):
-	return '''\tchar *permissions_%d = generated_windows_get_simple_permissions(args[%d]);''' % (arg_num, arg_num), "%s: %%s [0x%%lx]" % arg['name'], "permissions_%d, args[%d]" % (arg_num, arg_num), '''\tfree(permissions_%d);''' % arg_num
+	return '''\tchar *permissions_%d = _get_simple_permissions(args[%d]);''' % (arg_num, arg_num), "%s: %%s [0x%%lx]" % arg['name'], "permissions_%d, args[%d]" % (arg_num, arg_num), '''\tfree(permissions_%d);''' % arg_num
 
 def print_boolean(arg, arg_num):
 	return '''\tchar *bool_%d = args[%d] ? "TRUE" : "FALSE";''' % (arg_num, arg_num), "%s: %%s" % arg['name'], "bool_%d" % arg_num, ""
 
 def print_string(arg, arg_num):
-	return '''\tuint8_t *unicode_str_%d = unicode_str_from_va(gt_guest_get_vmi_instance(state), args[%d], pid);''' % (arg_num, arg_num), "%s: %%s" % arg['name'], "unicode_str_%d" % arg_num, '''\tfree(unicode_str_%d);''' % arg_num
+	return '''\tuint8_t *unicode_str_%d = _unicode_str_from_va(gt_guest_get_vmi_instance(state), args[%d], pid);''' % (arg_num, arg_num), "%s: %%s" % arg['name'], "unicode_str_%d" % arg_num, '''\tfree(unicode_str_%d);''' % arg_num
 
 print_types = {
 	"pobject_attributes": print_obj_attr,
@@ -662,9 +662,9 @@ for line in syscalls.split("\n"):
 	parsed.append(parse)
 
 def write_syscall(syscall):
-	save_loc.write("void *gt_windows_print_syscall_%s(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)\n{\n" % syscall['decl']['name'].lower())
+	save_loc.write("void *generated_windows_print_syscall_%s(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)\n{\n" % syscall['decl']['name'].lower())
 	save_loc.write("\tchar *proc = gt_guest_get_process_name(state);\n")
-	save_loc.write("\tuint64_t *args = vf_get_args(state, pid);\n")
+	save_loc.write("\tuint64_t *args = _get_args(state, pid);\n")
 	format_vars = []
 	format_strings = []
 	format_args = [""]
@@ -685,7 +685,7 @@ def write_syscall(syscall):
 	save_loc.write("}\n\n")
 
 def write_sysret(syscall):
-	save_loc.write("void gt_windows_print_sysret_%s(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)\n{\n" % syscall['decl']['name'].lower())
+	save_loc.write("void generated_windows_print_sysret_%s(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)\n{\n" % syscall['decl']['name'].lower())
 	save_loc.write("\tuint64_t *args = (uint64_t*)data;\n")
 	save_loc.write("\tchar *proc = gt_guest_get_process_name(state);\n")
 	format_vars = []
@@ -713,7 +713,7 @@ for syscall in parsed:
 
 save_loc.write("const GtCallbackRegistry GENERATED_WINDOWS_SYSCALLS[] = {\n")
 for syscall in parsed:
-	save_loc.write("\t{ \"%s\", gt_windows_print_syscall_%s, gt_windows_print_sysret_%s, NULL },\n" % (syscall['decl']['name'], syscall['decl']['name'].lower(), syscall['decl']['name'].lower()))
+	save_loc.write("\t{ \"%s\", generated_windows_print_syscall_%s, generated_windows_print_sysret_%s, NULL },\n" % (syscall['decl']['name'], syscall['decl']['name'].lower(), syscall['decl']['name'].lower()))
 
 save_loc.write("\t{ NULL, NULL, NULL },\n")
 save_loc.write("};")
