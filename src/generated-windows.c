@@ -60,7 +60,7 @@ struct win64_client_id {
  * Get ObjectAttributes struct from virtual address
  */
 static struct win64_obj_attr *
-obj_attr_from_va(vmi_instance_t vmi, addr_t vaddr, gt_pid_t pid) {
+_generated_windows_obj_attr_from_va(vmi_instance_t vmi, addr_t vaddr, gt_pid_t pid) {
 	struct win64_obj_attr * buff = NULL;
 
 	uint32_t struct_size = 0;
@@ -84,7 +84,7 @@ done:
 }
 
 static char *
-vf_get_simple_permissions(uint32_t permissions)
+generated_windows_get_simple_permissions(uint32_t permissions)
 {
 	char *buff = calloc(1, 1024);
 	if (OWNER == permissions) {
@@ -202,7 +202,7 @@ void *gt_windows_print_syscall_ntaccesscheckandauditalarm(GtGuestState *state, g
 	uint8_t *unicode_str_0 = unicode_str_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
 	uint8_t *unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	uint8_t *unicode_str_3 = unicode_str_from_va(gt_guest_get_vmi_instance(state), args[3], pid);
-	char *permissions_5 = vf_get_simple_permissions(args[5]);
+	char *permissions_5 = generated_windows_get_simple_permissions(args[5]);
 	char *bool_7 = args[7] ? "TRUE" : "FALSE";
 	fprintf(stderr, "pid: %u/0x%lx (%s) syscall: NtAccessCheckAndAuditAlarm(SubsystemName: %s, HandleId: 0x%lx, ObjectTypeName: %s, ObjectName: %s, SecurityDescriptor: 0x%lx, DesiredAccess: %s [0x%lx], GenericMapping: 0x%lx, ObjectCreation: %s)\n", pid, tid, proc, unicode_str_0, args[1], unicode_str_2, unicode_str_3, args[4], permissions_5, args[5], args[6], bool_7);
 	free(unicode_str_0);
@@ -227,7 +227,7 @@ void *gt_windows_print_syscall_ntaccesscheckbytypeandauditalarm(GtGuestState *st
 	uint8_t *unicode_str_0 = unicode_str_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
 	uint8_t *unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	uint8_t *unicode_str_3 = unicode_str_from_va(gt_guest_get_vmi_instance(state), args[3], pid);
-	char *permissions_6 = vf_get_simple_permissions(args[6]);
+	char *permissions_6 = generated_windows_get_simple_permissions(args[6]);
 	char *bool_12 = args[12] ? "TRUE" : "FALSE";
 	fprintf(stderr, "pid: %u/0x%lx (%s) syscall: NtAccessCheckByTypeAndAuditAlarm(SubsystemName: %s, HandleId: 0x%lx, ObjectTypeName: %s, ObjectName: %s, SecurityDescriptor: 0x%lx, PrincipalSelfSid: 0x%lx, DesiredAccess: %s [0x%lx], AuditType: 0x%lx, Flags: 0x%lx, ObjectTypeListLength: 0x%lx, GenericMapping: 0x%lx, ObjectCreation: %s)\n", pid, tid, proc, unicode_str_0, args[1], unicode_str_2, unicode_str_3, args[4], args[5], permissions_6, args[6], args[7], args[8], args[10], args[11], bool_12);
 	free(unicode_str_0);
@@ -249,7 +249,7 @@ void *gt_windows_print_syscall_ntaccesscheckbytype(GtGuestState *state, gt_pid_t
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_3 = vf_get_simple_permissions(args[3]);
+	char *permissions_3 = generated_windows_get_simple_permissions(args[3]);
 	uint64_t pulong_8 = 0;
 	vmi_read_64_va(gt_guest_get_vmi_instance(state), args[8], pid, &pulong_8);
 	fprintf(stderr, "pid: %u/0x%lx (%s) syscall: NtAccessCheckByType(SecurityDescriptor: 0x%lx, PrincipalSelfSid: 0x%lx, ClientToken: 0x%lx, DesiredAccess: %s [0x%lx], ObjectTypeListLength: 0x%lx, GenericMapping: 0x%lx, PrivilegeSetLength: 0x%lx)\n", pid, tid, proc, args[0], args[1], args[2], permissions_3, args[3], args[5], args[6], pulong_8);
@@ -273,7 +273,7 @@ void *gt_windows_print_syscall_ntaccesscheckbytyperesultlistandauditalarmbyhandl
 	uint8_t *unicode_str_0 = unicode_str_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
 	uint8_t *unicode_str_3 = unicode_str_from_va(gt_guest_get_vmi_instance(state), args[3], pid);
 	uint8_t *unicode_str_4 = unicode_str_from_va(gt_guest_get_vmi_instance(state), args[4], pid);
-	char *permissions_7 = vf_get_simple_permissions(args[7]);
+	char *permissions_7 = generated_windows_get_simple_permissions(args[7]);
 	char *bool_13 = args[13] ? "TRUE" : "FALSE";
 	fprintf(stderr, "pid: %u/0x%lx (%s) syscall: NtAccessCheckByTypeResultListAndAuditAlarmByHandle(SubsystemName: %s, HandleId: 0x%lx, ClientToken: 0x%lx, ObjectTypeName: %s, ObjectName: %s, SecurityDescriptor: 0x%lx, PrincipalSelfSid: 0x%lx, DesiredAccess: %s [0x%lx], AuditType: 0x%lx, Flags: 0x%lx, ObjectTypeListLength: 0x%lx, GenericMapping: 0x%lx, ObjectCreation: %s)\n", pid, tid, proc, unicode_str_0, args[1], args[2], unicode_str_3, unicode_str_4, args[5], args[6], permissions_7, args[7], args[8], args[9], args[11], args[12], bool_13);
 	free(unicode_str_0);
@@ -298,7 +298,7 @@ void *gt_windows_print_syscall_ntaccesscheckbytyperesultlistandauditalarm(GtGues
 	uint8_t *unicode_str_0 = unicode_str_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
 	uint8_t *unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	uint8_t *unicode_str_3 = unicode_str_from_va(gt_guest_get_vmi_instance(state), args[3], pid);
-	char *permissions_6 = vf_get_simple_permissions(args[6]);
+	char *permissions_6 = generated_windows_get_simple_permissions(args[6]);
 	char *bool_12 = args[12] ? "TRUE" : "FALSE";
 	fprintf(stderr, "pid: %u/0x%lx (%s) syscall: NtAccessCheckByTypeResultListAndAuditAlarm(SubsystemName: %s, HandleId: 0x%lx, ObjectTypeName: %s, ObjectName: %s, SecurityDescriptor: 0x%lx, PrincipalSelfSid: 0x%lx, DesiredAccess: %s [0x%lx], AuditType: 0x%lx, Flags: 0x%lx, ObjectTypeListLength: 0x%lx, GenericMapping: 0x%lx, ObjectCreation: %s)\n", pid, tid, proc, unicode_str_0, args[1], unicode_str_2, unicode_str_3, args[4], args[5], permissions_6, args[6], args[7], args[8], args[10], args[11], bool_12);
 	free(unicode_str_0);
@@ -320,7 +320,7 @@ void *gt_windows_print_syscall_ntaccesscheckbytyperesultlist(GtGuestState *state
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_3 = vf_get_simple_permissions(args[3]);
+	char *permissions_3 = generated_windows_get_simple_permissions(args[3]);
 	uint64_t pulong_8 = 0;
 	vmi_read_64_va(gt_guest_get_vmi_instance(state), args[8], pid, &pulong_8);
 	fprintf(stderr, "pid: %u/0x%lx (%s) syscall: NtAccessCheckByTypeResultList(SecurityDescriptor: 0x%lx, PrincipalSelfSid: 0x%lx, ClientToken: 0x%lx, DesiredAccess: %s [0x%lx], ObjectTypeListLength: 0x%lx, GenericMapping: 0x%lx, PrivilegeSetLength: 0x%lx)\n", pid, tid, proc, args[0], args[1], args[2], permissions_3, args[3], args[5], args[6], pulong_8);
@@ -341,7 +341,7 @@ void *gt_windows_print_syscall_ntaccesscheck(GtGuestState *state, gt_pid_t pid, 
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_2 = vf_get_simple_permissions(args[2]);
+	char *permissions_2 = generated_windows_get_simple_permissions(args[2]);
 	uint64_t pulong_5 = 0;
 	vmi_read_64_va(gt_guest_get_vmi_instance(state), args[5], pid, &pulong_5);
 	fprintf(stderr, "pid: %u/0x%lx (%s) syscall: NtAccessCheck(SecurityDescriptor: 0x%lx, ClientToken: 0x%lx, DesiredAccess: %s [0x%lx], GenericMapping: 0x%lx, PrivilegeSetLength: 0x%lx)\n", pid, tid, proc, args[0], args[1], permissions_2, args[2], args[3], pulong_5);
@@ -514,7 +514,7 @@ void *gt_windows_print_syscall_ntallocatereserveobject(GtGuestState *state, gt_p
 	uint8_t *unicode_str_1 = NULL;
 	uint64_t root_dir_1 = 0;
 	uint64_t attributes_1 = 0;
-	struct win64_obj_attr *obj_attr_1 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[1], pid);
+	struct win64_obj_attr *obj_attr_1 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[1], pid);
 	if (NULL != obj_attr_1) {
 		unicode_str_1 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_1->object_name, pid);
 		root_dir_1 = obj_attr_1->root_directory;
@@ -599,7 +599,7 @@ void *gt_windows_print_syscall_ntalpcacceptconnectport(GtGuestState *state, gt_p
 	uint8_t *unicode_str_3 = NULL;
 	uint64_t root_dir_3 = 0;
 	uint64_t attributes_3 = 0;
-	struct win64_obj_attr *obj_attr_3 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[3], pid);
+	struct win64_obj_attr *obj_attr_3 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[3], pid);
 	if (NULL != obj_attr_3) {
 		unicode_str_3 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_3->object_name, pid);
 		root_dir_3 = obj_attr_3->root_directory;
@@ -647,7 +647,7 @@ void *gt_windows_print_syscall_ntalpcconnectport(GtGuestState *state, gt_pid_t p
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -680,7 +680,7 @@ void *gt_windows_print_syscall_ntalpccreateport(GtGuestState *state, gt_pid_t pi
 	uint8_t *unicode_str_1 = NULL;
 	uint64_t root_dir_1 = 0;
 	uint64_t attributes_1 = 0;
-	struct win64_obj_attr *obj_attr_1 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[1], pid);
+	struct win64_obj_attr *obj_attr_1 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[1], pid);
 	if (NULL != obj_attr_1) {
 		unicode_str_1 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_1->object_name, pid);
 		root_dir_1 = obj_attr_1->root_directory;
@@ -885,11 +885,11 @@ void *gt_windows_print_syscall_ntalpcopensenderprocess(GtGuestState *state, gt_p
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_4 = vf_get_simple_permissions(args[4]);
+	char *permissions_4 = generated_windows_get_simple_permissions(args[4]);
 	uint8_t *unicode_str_5 = NULL;
 	uint64_t root_dir_5 = 0;
 	uint64_t attributes_5 = 0;
-	struct win64_obj_attr *obj_attr_5 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[5], pid);
+	struct win64_obj_attr *obj_attr_5 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[5], pid);
 	if (NULL != obj_attr_5) {
 		unicode_str_5 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_5->object_name, pid);
 		root_dir_5 = obj_attr_5->root_directory;
@@ -915,11 +915,11 @@ void *gt_windows_print_syscall_ntalpcopensenderthread(GtGuestState *state, gt_pi
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_4 = vf_get_simple_permissions(args[4]);
+	char *permissions_4 = generated_windows_get_simple_permissions(args[4]);
 	uint8_t *unicode_str_5 = NULL;
 	uint64_t root_dir_5 = 0;
 	uint64_t attributes_5 = 0;
-	struct win64_obj_attr *obj_attr_5 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[5], pid);
+	struct win64_obj_attr *obj_attr_5 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[5], pid);
 	if (NULL != obj_attr_5) {
 		unicode_str_5 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_5->object_name, pid);
 		root_dir_5 = obj_attr_5->root_directory;
@@ -1418,11 +1418,11 @@ void gt_windows_print_sysret_ntcreatedebugobject(GtGuestState *state, gt_pid_t p
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t phandle_0 = 0;
 	vmi_read_64_va(gt_guest_get_vmi_instance(state), args[0], pid, &phandle_0);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -1438,11 +1438,11 @@ void *gt_windows_print_syscall_ntcreatedirectoryobject(GtGuestState *state, gt_p
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -1468,11 +1468,11 @@ void *gt_windows_print_syscall_ntcreateenlistment(GtGuestState *state, gt_pid_t 
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_4 = NULL;
 	uint64_t root_dir_4 = 0;
 	uint64_t attributes_4 = 0;
-	struct win64_obj_attr *obj_attr_4 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[4], pid);
+	struct win64_obj_attr *obj_attr_4 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[4], pid);
 	if (NULL != obj_attr_4) {
 		unicode_str_4 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_4->object_name, pid);
 		root_dir_4 = obj_attr_4->root_directory;
@@ -1498,11 +1498,11 @@ void *gt_windows_print_syscall_ntcreateevent(GtGuestState *state, gt_pid_t pid, 
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -1529,11 +1529,11 @@ void *gt_windows_print_syscall_ntcreateeventpair(GtGuestState *state, gt_pid_t p
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -1559,11 +1559,11 @@ void *gt_windows_print_syscall_ntcreatefile(GtGuestState *state, gt_pid_t pid, g
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -1589,11 +1589,11 @@ void *gt_windows_print_syscall_ntcreateiocompletion(GtGuestState *state, gt_pid_
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -1619,11 +1619,11 @@ void *gt_windows_print_syscall_ntcreatejobobject(GtGuestState *state, gt_pid_t p
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -1667,11 +1667,11 @@ void *gt_windows_print_syscall_ntcreatekeyedevent(GtGuestState *state, gt_pid_t 
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -1697,11 +1697,11 @@ void *gt_windows_print_syscall_ntcreatekey(GtGuestState *state, gt_pid_t pid, gt
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -1731,11 +1731,11 @@ void *gt_windows_print_syscall_ntcreatekeytransacted(GtGuestState *state, gt_pid
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -1768,7 +1768,7 @@ void *gt_windows_print_syscall_ntcreatemailslotfile(GtGuestState *state, gt_pid_
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -1793,11 +1793,11 @@ void *gt_windows_print_syscall_ntcreatemutant(GtGuestState *state, gt_pid_t pid,
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -1827,7 +1827,7 @@ void *gt_windows_print_syscall_ntcreatenamedpipefile(GtGuestState *state, gt_pid
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -1873,7 +1873,7 @@ void *gt_windows_print_syscall_ntcreateport(GtGuestState *state, gt_pid_t pid, g
 	uint8_t *unicode_str_1 = NULL;
 	uint64_t root_dir_1 = 0;
 	uint64_t attributes_1 = 0;
-	struct win64_obj_attr *obj_attr_1 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[1], pid);
+	struct win64_obj_attr *obj_attr_1 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[1], pid);
 	if (NULL != obj_attr_1) {
 		unicode_str_1 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_1->object_name, pid);
 		root_dir_1 = obj_attr_1->root_directory;
@@ -1898,11 +1898,11 @@ void *gt_windows_print_syscall_ntcreateprivatenamespace(GtGuestState *state, gt_
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -1928,11 +1928,11 @@ void *gt_windows_print_syscall_ntcreateprocessex(GtGuestState *state, gt_pid_t p
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -1958,11 +1958,11 @@ void *gt_windows_print_syscall_ntcreateprocess(GtGuestState *state, gt_pid_t pid
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -2029,11 +2029,11 @@ void *gt_windows_print_syscall_ntcreateresourcemanager(GtGuestState *state, gt_p
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_4 = NULL;
 	uint64_t root_dir_4 = 0;
 	uint64_t attributes_4 = 0;
-	struct win64_obj_attr *obj_attr_4 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[4], pid);
+	struct win64_obj_attr *obj_attr_4 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[4], pid);
 	if (NULL != obj_attr_4) {
 		unicode_str_4 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_4->object_name, pid);
 		root_dir_4 = obj_attr_4->root_directory;
@@ -2061,11 +2061,11 @@ void *gt_windows_print_syscall_ntcreatesection(GtGuestState *state, gt_pid_t pid
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -2091,11 +2091,11 @@ void *gt_windows_print_syscall_ntcreatesemaphore(GtGuestState *state, gt_pid_t p
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -2121,11 +2121,11 @@ void *gt_windows_print_syscall_ntcreatesymboliclinkobject(GtGuestState *state, g
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -2153,11 +2153,11 @@ void *gt_windows_print_syscall_ntcreatethreadex(GtGuestState *state, gt_pid_t pi
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -2183,11 +2183,11 @@ void *gt_windows_print_syscall_ntcreatethread(GtGuestState *state, gt_pid_t pid,
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -2214,11 +2214,11 @@ void *gt_windows_print_syscall_ntcreatetimer(GtGuestState *state, gt_pid_t pid, 
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -2244,11 +2244,11 @@ void *gt_windows_print_syscall_ntcreatetoken(GtGuestState *state, gt_pid_t pid, 
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -2274,11 +2274,11 @@ void *gt_windows_print_syscall_ntcreatetransactionmanager(GtGuestState *state, g
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -2306,11 +2306,11 @@ void *gt_windows_print_syscall_ntcreatetransaction(GtGuestState *state, gt_pid_t
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -2338,12 +2338,12 @@ void *gt_windows_print_syscall_ntcreateuserprocess(GtGuestState *state, gt_pid_t
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_2 = vf_get_simple_permissions(args[2]);
-	char *permissions_3 = vf_get_simple_permissions(args[3]);
+	char *permissions_2 = generated_windows_get_simple_permissions(args[2]);
+	char *permissions_3 = generated_windows_get_simple_permissions(args[3]);
 	uint8_t *unicode_str_4 = NULL;
 	uint64_t root_dir_4 = 0;
 	uint64_t attributes_4 = 0;
-	struct win64_obj_attr *obj_attr_4 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[4], pid);
+	struct win64_obj_attr *obj_attr_4 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[4], pid);
 	if (NULL != obj_attr_4) {
 		unicode_str_4 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_4->object_name, pid);
 		root_dir_4 = obj_attr_4->root_directory;
@@ -2352,7 +2352,7 @@ void *gt_windows_print_syscall_ntcreateuserprocess(GtGuestState *state, gt_pid_t
 	uint8_t *unicode_str_5 = NULL;
 	uint64_t root_dir_5 = 0;
 	uint64_t attributes_5 = 0;
-	struct win64_obj_attr *obj_attr_5 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[5], pid);
+	struct win64_obj_attr *obj_attr_5 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[5], pid);
 	if (NULL != obj_attr_5) {
 		unicode_str_5 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_5->object_name, pid);
 		root_dir_5 = obj_attr_5->root_directory;
@@ -2386,7 +2386,7 @@ void *gt_windows_print_syscall_ntcreatewaitableport(GtGuestState *state, gt_pid_
 	uint8_t *unicode_str_1 = NULL;
 	uint64_t root_dir_1 = 0;
 	uint64_t attributes_1 = 0;
-	struct win64_obj_attr *obj_attr_1 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[1], pid);
+	struct win64_obj_attr *obj_attr_1 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[1], pid);
 	if (NULL != obj_attr_1) {
 		unicode_str_1 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_1->object_name, pid);
 		root_dir_1 = obj_attr_1->root_directory;
@@ -2411,11 +2411,11 @@ void *gt_windows_print_syscall_ntcreateworkerfactory(GtGuestState *state, gt_pid
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -2552,7 +2552,7 @@ void *gt_windows_print_syscall_ntdeletefile(GtGuestState *state, gt_pid_t pid, g
 	uint8_t *unicode_str_0 = NULL;
 	uint64_t root_dir_0 = 0;
 	uint64_t attributes_0 = 0;
-	struct win64_obj_attr *obj_attr_0 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
+	struct win64_obj_attr *obj_attr_0 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
 	if (NULL != obj_attr_0) {
 		unicode_str_0 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_0->object_name, pid);
 		root_dir_0 = obj_attr_0->root_directory;
@@ -2721,7 +2721,7 @@ void *gt_windows_print_syscall_ntduplicateobject(GtGuestState *state, gt_pid_t p
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_4 = vf_get_simple_permissions(args[4]);
+	char *permissions_4 = generated_windows_get_simple_permissions(args[4]);
 	fprintf(stderr, "pid: %u/0x%lx (%s) syscall: NtDuplicateObject(SourceProcessHandle: 0x%lx, SourceHandle: 0x%lx, TargetProcessHandle: 0x%lx, DesiredAccess: %s [0x%lx], HandleAttributes: 0x%lx, Options: 0x%lx)\n", pid, tid, proc, args[0], args[1], args[2], permissions_4, args[4], args[5], args[6]);
 	free(permissions_4);	return args;
 }
@@ -2740,11 +2740,11 @@ void *gt_windows_print_syscall_ntduplicatetoken(GtGuestState *state, gt_pid_t pi
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -3251,7 +3251,7 @@ void *gt_windows_print_syscall_ntgetnextprocess(GtGuestState *state, gt_pid_t pi
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	fprintf(stderr, "pid: %u/0x%lx (%s) syscall: NtGetNextProcess(ProcessHandle: 0x%lx, DesiredAccess: %s [0x%lx], HandleAttributes: 0x%lx, Flags: 0x%lx)\n", pid, tid, proc, args[0], permissions_1, args[1], args[2], args[3]);
 	free(permissions_1);	return args;
 }
@@ -3270,7 +3270,7 @@ void *gt_windows_print_syscall_ntgetnextthread(GtGuestState *state, gt_pid_t pid
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_2 = vf_get_simple_permissions(args[2]);
+	char *permissions_2 = generated_windows_get_simple_permissions(args[2]);
 	fprintf(stderr, "pid: %u/0x%lx (%s) syscall: NtGetNextThread(ProcessHandle: 0x%lx, ThreadHandle: 0x%lx, DesiredAccess: %s [0x%lx], HandleAttributes: 0x%lx, Flags: 0x%lx)\n", pid, tid, proc, args[0], args[1], permissions_2, args[2], args[3], args[4]);
 	free(permissions_2);	return args;
 }
@@ -3565,7 +3565,7 @@ void *gt_windows_print_syscall_ntloadkey2(GtGuestState *state, gt_pid_t pid, gt_
 	uint8_t *unicode_str_0 = NULL;
 	uint64_t root_dir_0 = 0;
 	uint64_t attributes_0 = 0;
-	struct win64_obj_attr *obj_attr_0 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
+	struct win64_obj_attr *obj_attr_0 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
 	if (NULL != obj_attr_0) {
 		unicode_str_0 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_0->object_name, pid);
 		root_dir_0 = obj_attr_0->root_directory;
@@ -3574,7 +3574,7 @@ void *gt_windows_print_syscall_ntloadkey2(GtGuestState *state, gt_pid_t pid, gt_
 	uint8_t *unicode_str_1 = NULL;
 	uint64_t root_dir_1 = 0;
 	uint64_t attributes_1 = 0;
-	struct win64_obj_attr *obj_attr_1 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[1], pid);
+	struct win64_obj_attr *obj_attr_1 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[1], pid);
 	if (NULL != obj_attr_1) {
 		unicode_str_1 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_1->object_name, pid);
 		root_dir_1 = obj_attr_1->root_directory;
@@ -3603,7 +3603,7 @@ void *gt_windows_print_syscall_ntloadkeyex(GtGuestState *state, gt_pid_t pid, gt
 	uint8_t *unicode_str_0 = NULL;
 	uint64_t root_dir_0 = 0;
 	uint64_t attributes_0 = 0;
-	struct win64_obj_attr *obj_attr_0 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
+	struct win64_obj_attr *obj_attr_0 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
 	if (NULL != obj_attr_0) {
 		unicode_str_0 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_0->object_name, pid);
 		root_dir_0 = obj_attr_0->root_directory;
@@ -3612,7 +3612,7 @@ void *gt_windows_print_syscall_ntloadkeyex(GtGuestState *state, gt_pid_t pid, gt
 	uint8_t *unicode_str_1 = NULL;
 	uint64_t root_dir_1 = 0;
 	uint64_t attributes_1 = 0;
-	struct win64_obj_attr *obj_attr_1 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[1], pid);
+	struct win64_obj_attr *obj_attr_1 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[1], pid);
 	if (NULL != obj_attr_1) {
 		unicode_str_1 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_1->object_name, pid);
 		root_dir_1 = obj_attr_1->root_directory;
@@ -3641,7 +3641,7 @@ void *gt_windows_print_syscall_ntloadkey(GtGuestState *state, gt_pid_t pid, gt_t
 	uint8_t *unicode_str_0 = NULL;
 	uint64_t root_dir_0 = 0;
 	uint64_t attributes_0 = 0;
-	struct win64_obj_attr *obj_attr_0 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
+	struct win64_obj_attr *obj_attr_0 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
 	if (NULL != obj_attr_0) {
 		unicode_str_0 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_0->object_name, pid);
 		root_dir_0 = obj_attr_0->root_directory;
@@ -3650,7 +3650,7 @@ void *gt_windows_print_syscall_ntloadkey(GtGuestState *state, gt_pid_t pid, gt_t
 	uint8_t *unicode_str_1 = NULL;
 	uint64_t root_dir_1 = 0;
 	uint64_t attributes_1 = 0;
-	struct win64_obj_attr *obj_attr_1 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[1], pid);
+	struct win64_obj_attr *obj_attr_1 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[1], pid);
 	if (NULL != obj_attr_1) {
 		unicode_str_1 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_1->object_name, pid);
 		root_dir_1 = obj_attr_1->root_directory;
@@ -3972,11 +3972,11 @@ void *gt_windows_print_syscall_ntopendirectoryobject(GtGuestState *state, gt_pid
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -4002,11 +4002,11 @@ void *gt_windows_print_syscall_ntopenenlistment(GtGuestState *state, gt_pid_t pi
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_4 = NULL;
 	uint64_t root_dir_4 = 0;
 	uint64_t attributes_4 = 0;
-	struct win64_obj_attr *obj_attr_4 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[4], pid);
+	struct win64_obj_attr *obj_attr_4 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[4], pid);
 	if (NULL != obj_attr_4) {
 		unicode_str_4 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_4->object_name, pid);
 		root_dir_4 = obj_attr_4->root_directory;
@@ -4032,11 +4032,11 @@ void *gt_windows_print_syscall_ntopenevent(GtGuestState *state, gt_pid_t pid, gt
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -4062,11 +4062,11 @@ void *gt_windows_print_syscall_ntopeneventpair(GtGuestState *state, gt_pid_t pid
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -4092,11 +4092,11 @@ void *gt_windows_print_syscall_ntopenfile(GtGuestState *state, gt_pid_t pid, gt_
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -4122,11 +4122,11 @@ void *gt_windows_print_syscall_ntopeniocompletion(GtGuestState *state, gt_pid_t 
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -4152,11 +4152,11 @@ void *gt_windows_print_syscall_ntopenjobobject(GtGuestState *state, gt_pid_t pid
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -4182,11 +4182,11 @@ void *gt_windows_print_syscall_ntopenkeyedevent(GtGuestState *state, gt_pid_t pi
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -4212,11 +4212,11 @@ void *gt_windows_print_syscall_ntopenkeyex(GtGuestState *state, gt_pid_t pid, gt
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -4242,11 +4242,11 @@ void *gt_windows_print_syscall_ntopenkey(GtGuestState *state, gt_pid_t pid, gt_t
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -4272,11 +4272,11 @@ void *gt_windows_print_syscall_ntopenkeytransactedex(GtGuestState *state, gt_pid
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -4302,11 +4302,11 @@ void *gt_windows_print_syscall_ntopenkeytransacted(GtGuestState *state, gt_pid_t
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -4332,11 +4332,11 @@ void *gt_windows_print_syscall_ntopenmutant(GtGuestState *state, gt_pid_t pid, g
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -4365,8 +4365,8 @@ void *gt_windows_print_syscall_ntopenobjectauditalarm(GtGuestState *state, gt_pi
 	uint8_t *unicode_str_0 = unicode_str_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
 	uint8_t *unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	uint8_t *unicode_str_3 = unicode_str_from_va(gt_guest_get_vmi_instance(state), args[3], pid);
-	char *permissions_6 = vf_get_simple_permissions(args[6]);
-	char *permissions_7 = vf_get_simple_permissions(args[7]);
+	char *permissions_6 = generated_windows_get_simple_permissions(args[6]);
+	char *permissions_7 = generated_windows_get_simple_permissions(args[7]);
 	char *bool_9 = args[9] ? "TRUE" : "FALSE";
 	char *bool_10 = args[10] ? "TRUE" : "FALSE";
 	fprintf(stderr, "pid: %u/0x%lx (%s) syscall: NtOpenObjectAuditAlarm(SubsystemName: %s, HandleId: 0x%lx, ObjectTypeName: %s, ObjectName: %s, SecurityDescriptor: 0x%lx, ClientToken: 0x%lx, DesiredAccess: %s [0x%lx], GrantedAccess: %s [0x%lx], Privileges: 0x%lx, ObjectCreation: %s, AccessGranted: %s)\n", pid, tid, proc, unicode_str_0, args[1], unicode_str_2, unicode_str_3, args[4], args[5], permissions_6, args[6], permissions_7, args[7], args[8], bool_9, bool_10);
@@ -4390,11 +4390,11 @@ void *gt_windows_print_syscall_ntopenprivatenamespace(GtGuestState *state, gt_pi
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -4420,11 +4420,11 @@ void *gt_windows_print_syscall_ntopenprocess(GtGuestState *state, gt_pid_t pid, 
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -4450,7 +4450,7 @@ void *gt_windows_print_syscall_ntopenprocesstokenex(GtGuestState *state, gt_pid_
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	fprintf(stderr, "pid: %u/0x%lx (%s) syscall: NtOpenProcessTokenEx(ProcessHandle: 0x%lx, DesiredAccess: %s [0x%lx], HandleAttributes: 0x%lx)\n", pid, tid, proc, args[0], permissions_1, args[1], args[2]);
 	free(permissions_1);	return args;
 }
@@ -4469,7 +4469,7 @@ void *gt_windows_print_syscall_ntopenprocesstoken(GtGuestState *state, gt_pid_t 
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	fprintf(stderr, "pid: %u/0x%lx (%s) syscall: NtOpenProcessToken(ProcessHandle: 0x%lx, DesiredAccess: %s [0x%lx])\n", pid, tid, proc, args[0], permissions_1, args[1]);
 	free(permissions_1);	return args;
 }
@@ -4488,11 +4488,11 @@ void *gt_windows_print_syscall_ntopenresourcemanager(GtGuestState *state, gt_pid
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_4 = NULL;
 	uint64_t root_dir_4 = 0;
 	uint64_t attributes_4 = 0;
-	struct win64_obj_attr *obj_attr_4 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[4], pid);
+	struct win64_obj_attr *obj_attr_4 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[4], pid);
 	if (NULL != obj_attr_4) {
 		unicode_str_4 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_4->object_name, pid);
 		root_dir_4 = obj_attr_4->root_directory;
@@ -4518,11 +4518,11 @@ void *gt_windows_print_syscall_ntopensection(GtGuestState *state, gt_pid_t pid, 
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -4548,11 +4548,11 @@ void *gt_windows_print_syscall_ntopensemaphore(GtGuestState *state, gt_pid_t pid
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -4578,11 +4578,11 @@ void *gt_windows_print_syscall_ntopensession(GtGuestState *state, gt_pid_t pid, 
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -4608,11 +4608,11 @@ void *gt_windows_print_syscall_ntopensymboliclinkobject(GtGuestState *state, gt_
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -4638,11 +4638,11 @@ void *gt_windows_print_syscall_ntopenthread(GtGuestState *state, gt_pid_t pid, g
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -4668,7 +4668,7 @@ void *gt_windows_print_syscall_ntopenthreadtokenex(GtGuestState *state, gt_pid_t
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	char *bool_2 = args[2] ? "TRUE" : "FALSE";
 	fprintf(stderr, "pid: %u/0x%lx (%s) syscall: NtOpenThreadTokenEx(ThreadHandle: 0x%lx, DesiredAccess: %s [0x%lx], OpenAsSelf: %s, HandleAttributes: 0x%lx)\n", pid, tid, proc, args[0], permissions_1, args[1], bool_2, args[3]);
 	free(permissions_1);	return args;
@@ -4688,7 +4688,7 @@ void *gt_windows_print_syscall_ntopenthreadtoken(GtGuestState *state, gt_pid_t p
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	char *bool_2 = args[2] ? "TRUE" : "FALSE";
 	fprintf(stderr, "pid: %u/0x%lx (%s) syscall: NtOpenThreadToken(ThreadHandle: 0x%lx, DesiredAccess: %s [0x%lx], OpenAsSelf: %s)\n", pid, tid, proc, args[0], permissions_1, args[1], bool_2);
 	free(permissions_1);	return args;
@@ -4708,11 +4708,11 @@ void *gt_windows_print_syscall_ntopentimer(GtGuestState *state, gt_pid_t pid, gt
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -4738,11 +4738,11 @@ void *gt_windows_print_syscall_ntopentransactionmanager(GtGuestState *state, gt_
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -4770,11 +4770,11 @@ void *gt_windows_print_syscall_ntopentransaction(GtGuestState *state, gt_pid_t p
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
-	char *permissions_1 = vf_get_simple_permissions(args[1]);
+	char *permissions_1 = generated_windows_get_simple_permissions(args[1]);
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -4948,7 +4948,7 @@ void *gt_windows_print_syscall_ntprivilegeobjectauditalarm(GtGuestState *state, 
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = vf_get_args(state, pid);
 	uint8_t *unicode_str_0 = unicode_str_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
-	char *permissions_3 = vf_get_simple_permissions(args[3]);
+	char *permissions_3 = generated_windows_get_simple_permissions(args[3]);
 	char *bool_5 = args[5] ? "TRUE" : "FALSE";
 	fprintf(stderr, "pid: %u/0x%lx (%s) syscall: NtPrivilegeObjectAuditAlarm(SubsystemName: %s, HandleId: 0x%lx, ClientToken: 0x%lx, DesiredAccess: %s [0x%lx], Privileges: 0x%lx, AccessGranted: %s)\n", pid, tid, proc, unicode_str_0, args[1], args[2], permissions_3, args[3], args[4], bool_5);
 	free(unicode_str_0);
@@ -5044,7 +5044,7 @@ void *gt_windows_print_syscall_ntqueryattributesfile(GtGuestState *state, gt_pid
 	uint8_t *unicode_str_0 = NULL;
 	uint64_t root_dir_0 = 0;
 	uint64_t attributes_0 = 0;
-	struct win64_obj_attr *obj_attr_0 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
+	struct win64_obj_attr *obj_attr_0 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
 	if (NULL != obj_attr_0) {
 		unicode_str_0 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_0->object_name, pid);
 		root_dir_0 = obj_attr_0->root_directory;
@@ -5269,7 +5269,7 @@ void *gt_windows_print_syscall_ntqueryfullattributesfile(GtGuestState *state, gt
 	uint8_t *unicode_str_0 = NULL;
 	uint64_t root_dir_0 = 0;
 	uint64_t attributes_0 = 0;
-	struct win64_obj_attr *obj_attr_0 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
+	struct win64_obj_attr *obj_attr_0 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
 	if (NULL != obj_attr_0) {
 		unicode_str_0 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_0->object_name, pid);
 		root_dir_0 = obj_attr_0->root_directory;
@@ -5679,7 +5679,7 @@ void *gt_windows_print_syscall_ntqueryopensubkeysex(GtGuestState *state, gt_pid_
 	uint8_t *unicode_str_0 = NULL;
 	uint64_t root_dir_0 = 0;
 	uint64_t attributes_0 = 0;
-	struct win64_obj_attr *obj_attr_0 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
+	struct win64_obj_attr *obj_attr_0 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
 	if (NULL != obj_attr_0) {
 		unicode_str_0 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_0->object_name, pid);
 		root_dir_0 = obj_attr_0->root_directory;
@@ -5707,7 +5707,7 @@ void *gt_windows_print_syscall_ntqueryopensubkeys(GtGuestState *state, gt_pid_t 
 	uint8_t *unicode_str_0 = NULL;
 	uint64_t root_dir_0 = 0;
 	uint64_t attributes_0 = 0;
-	struct win64_obj_attr *obj_attr_0 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
+	struct win64_obj_attr *obj_attr_0 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
 	if (NULL != obj_attr_0) {
 		unicode_str_0 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_0->object_name, pid);
 		root_dir_0 = obj_attr_0->root_directory;
@@ -6499,7 +6499,7 @@ void *gt_windows_print_syscall_ntreplacekey(GtGuestState *state, gt_pid_t pid, g
 	uint8_t *unicode_str_0 = NULL;
 	uint64_t root_dir_0 = 0;
 	uint64_t attributes_0 = 0;
-	struct win64_obj_attr *obj_attr_0 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
+	struct win64_obj_attr *obj_attr_0 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
 	if (NULL != obj_attr_0) {
 		unicode_str_0 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_0->object_name, pid);
 		root_dir_0 = obj_attr_0->root_directory;
@@ -6508,7 +6508,7 @@ void *gt_windows_print_syscall_ntreplacekey(GtGuestState *state, gt_pid_t pid, g
 	uint8_t *unicode_str_2 = NULL;
 	uint64_t root_dir_2 = 0;
 	uint64_t attributes_2 = 0;
-	struct win64_obj_attr *obj_attr_2 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
+	struct win64_obj_attr *obj_attr_2 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[2], pid);
 	if (NULL != obj_attr_2) {
 		unicode_str_2 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_2->object_name, pid);
 		root_dir_2 = obj_attr_2->root_directory;
@@ -8122,7 +8122,7 @@ void *gt_windows_print_syscall_ntunloadkey2(GtGuestState *state, gt_pid_t pid, g
 	uint8_t *unicode_str_0 = NULL;
 	uint64_t root_dir_0 = 0;
 	uint64_t attributes_0 = 0;
-	struct win64_obj_attr *obj_attr_0 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
+	struct win64_obj_attr *obj_attr_0 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
 	if (NULL != obj_attr_0) {
 		unicode_str_0 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_0->object_name, pid);
 		root_dir_0 = obj_attr_0->root_directory;
@@ -8149,7 +8149,7 @@ void *gt_windows_print_syscall_ntunloadkeyex(GtGuestState *state, gt_pid_t pid, 
 	uint8_t *unicode_str_0 = NULL;
 	uint64_t root_dir_0 = 0;
 	uint64_t attributes_0 = 0;
-	struct win64_obj_attr *obj_attr_0 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
+	struct win64_obj_attr *obj_attr_0 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
 	if (NULL != obj_attr_0) {
 		unicode_str_0 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_0->object_name, pid);
 		root_dir_0 = obj_attr_0->root_directory;
@@ -8176,7 +8176,7 @@ void *gt_windows_print_syscall_ntunloadkey(GtGuestState *state, gt_pid_t pid, gt
 	uint8_t *unicode_str_0 = NULL;
 	uint64_t root_dir_0 = 0;
 	uint64_t attributes_0 = 0;
-	struct win64_obj_attr *obj_attr_0 = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
+	struct win64_obj_attr *obj_attr_0 = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[0], pid);
 	if (NULL != obj_attr_0) {
 		unicode_str_0 = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_0->object_name, pid);
 		root_dir_0 = obj_attr_0->root_directory;

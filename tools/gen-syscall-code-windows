@@ -470,7 +470,7 @@ struct win64_client_id {
  * Get ObjectAttributes struct from virtual address
  */
 static struct win64_obj_attr *
-obj_attr_from_va(vmi_instance_t vmi, addr_t vaddr, gt_pid_t pid) {
+_generated_windows_obj_attr_from_va(vmi_instance_t vmi, addr_t vaddr, gt_pid_t pid) {
 	struct win64_obj_attr * buff = NULL;
 
 	uint32_t struct_size = 0;
@@ -494,7 +494,7 @@ done:
 }
 
 static char *
-vf_get_simple_permissions(uint32_t permissions)
+generated_windows_get_simple_permissions(uint32_t permissions)
 {
 	char *buff = calloc(1, 1024);
 	if (OWNER == permissions) {
@@ -592,7 +592,7 @@ def print_obj_attr(arg, arg_num):
 	return ('''\tuint8_t *unicode_str_%d = NULL;
 	uint64_t root_dir_%d = 0;
 	uint64_t attributes_%d = 0;
-	struct win64_obj_attr *obj_attr_%d = obj_attr_from_va(gt_guest_get_vmi_instance(state), args[%d], pid);
+	struct win64_obj_attr *obj_attr_%d = _generated_windows_obj_attr_from_va(gt_guest_get_vmi_instance(state), args[%d], pid);
 	if (NULL != obj_attr_%d) {
 		unicode_str_%d = unicode_str_from_va(gt_guest_get_vmi_instance(state), obj_attr_%d->object_name, pid);
 		root_dir_%d = obj_attr_%d->root_directory;
@@ -611,7 +611,7 @@ def print_phandle(arg, arg_num):
 	vmi_read_64_va(gt_guest_get_vmi_instance(state), args[%d], pid, &phandle_%d);''' % (arg_num, arg_num, arg_num), "%s: 0x%%lx" % arg['name'], "phandle_%d" % arg_num, ""
 
 def print_access_mask(arg, arg_num):
-	return '''\tchar *permissions_%d = vf_get_simple_permissions(args[%d]);''' % (arg_num, arg_num), "%s: %%s [0x%%lx]" % arg['name'], "permissions_%d, args[%d]" % (arg_num, arg_num), '''\tfree(permissions_%d);''' % arg_num
+	return '''\tchar *permissions_%d = generated_windows_get_simple_permissions(args[%d]);''' % (arg_num, arg_num), "%s: %%s [0x%%lx]" % arg['name'], "permissions_%d, args[%d]" % (arg_num, arg_num), '''\tfree(permissions_%d);''' % arg_num
 
 def print_boolean(arg, arg_num):
 	return '''\tchar *bool_%d = args[%d] ? "TRUE" : "FALSE";''' % (arg_num, arg_num), "%s: %%s" % arg['name'], "bool_%d" % arg_num, ""
