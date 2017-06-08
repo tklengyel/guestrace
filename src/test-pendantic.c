@@ -71,7 +71,8 @@ usage()
 	                "-n  name of guest to instrument\n");
 }
 
-void *handle_open_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
+void *
+handle_open_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct args_open *args;
 
@@ -83,7 +84,8 @@ void *handle_open_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *us
 	return args;
 }
 
-void handle_open_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
+void
+handle_open_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
 	struct args_open *args = user_data;
 	int ret                = gt_guest_get_register(state, RAX);
 	char *proc             = gt_guest_get_process_name(state);
@@ -113,12 +115,14 @@ done:
 	g_free(args);
 }
 
-void *handle_clone_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
+void *
+handle_clone_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	return NULL;
 }
 
-void handle_clone_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
+void
+handle_clone_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
 	char *proc = gt_guest_get_process_name(state);
 
 	if (!g_utf8_validate(proc, -1, NULL)) {
@@ -126,7 +130,8 @@ void handle_clone_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *
 	}
 }
 
-void *handle_execve_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
+void *
+handle_execve_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct args_execve *args;
 	char *proc = gt_guest_get_process_name(state);
@@ -141,7 +146,8 @@ void *handle_execve_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *
 	return args;
 }
 
-void handle_execve_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
+void
+handle_execve_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
 	int ret = gt_guest_get_register(state, RAX);
 	char *proc = gt_guest_get_process_name(state);
 

@@ -664,7 +664,7 @@ for line in syscalls.split("\n"):
 	parsed.append(parse)
 
 def write_syscall(syscall):
-	save_loc.write("void *generated_windows_print_syscall_%s(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)\n{\n" % syscall['decl']['name'].lower())
+	save_loc.write("void *\ngenerated_windows_print_syscall_%s(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)\n{\n" % syscall['decl']['name'].lower())
 	save_loc.write("\tchar *proc = gt_guest_get_process_name(state);\n")
 	save_loc.write("\tuint64_t *args = _get_args(state, pid);\n")
 	format_vars = []
@@ -687,7 +687,7 @@ def write_syscall(syscall):
 	save_loc.write("}\n\n")
 
 def write_sysret(syscall):
-	save_loc.write("void generated_windows_print_sysret_%s(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)\n{\n" % syscall['decl']['name'].lower())
+	save_loc.write("void\ngenerated_windows_print_sysret_%s(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)\n{\n" % syscall['decl']['name'].lower())
 	save_loc.write("\tuint64_t *args = (uint64_t*)data;\n")
 	save_loc.write("\tchar *proc = gt_guest_get_process_name(state);\n")
 	format_vars = []

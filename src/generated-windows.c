@@ -178,7 +178,8 @@ _get_args(GtGuestState *state, gt_pid_t pid) {
 	vmi_read_va(gt_guest_get_vmi_instance(state), gt_guest_get_register(state, RSP) + vmi_get_address_width(gt_guest_get_vmi_instance(state)) * 5, pid, &args[4], sizeof(uint64_t) * (NUM_SYSCALL_ARGS - 4));
 	return args;
 }
-void *generated_windows_print_syscall_ntacceptconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntacceptconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -187,7 +188,8 @@ void *generated_windows_print_syscall_ntacceptconnectport(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntacceptconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntacceptconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -197,7 +199,8 @@ void generated_windows_print_sysret_ntacceptconnectport(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntaccesscheckandauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntaccesscheckandauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -213,7 +216,8 @@ void *generated_windows_print_syscall_ntaccesscheckandauditalarm(GtGuestState *s
 	free(permissions_5);	return args;
 }
 
-void generated_windows_print_sysret_ntaccesscheckandauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntaccesscheckandauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -222,7 +226,8 @@ void generated_windows_print_sysret_ntaccesscheckandauditalarm(GtGuestState *sta
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntaccesscheckbytypeandauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntaccesscheckbytypeandauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -238,7 +243,8 @@ void *generated_windows_print_syscall_ntaccesscheckbytypeandauditalarm(GtGuestSt
 	free(permissions_6);	return args;
 }
 
-void generated_windows_print_sysret_ntaccesscheckbytypeandauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntaccesscheckbytypeandauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -247,7 +253,8 @@ void generated_windows_print_sysret_ntaccesscheckbytypeandauditalarm(GtGuestStat
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntaccesscheckbytype(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntaccesscheckbytype(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -258,7 +265,8 @@ void *generated_windows_print_syscall_ntaccesscheckbytype(GtGuestState *state, g
 	free(permissions_3);	return args;
 }
 
-void generated_windows_print_sysret_ntaccesscheckbytype(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntaccesscheckbytype(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -268,7 +276,8 @@ void generated_windows_print_sysret_ntaccesscheckbytype(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntaccesscheckbytyperesultlistandauditalarmbyhandle(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntaccesscheckbytyperesultlistandauditalarmbyhandle(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -284,7 +293,8 @@ void *generated_windows_print_syscall_ntaccesscheckbytyperesultlistandauditalarm
 	free(permissions_7);	return args;
 }
 
-void generated_windows_print_sysret_ntaccesscheckbytyperesultlistandauditalarmbyhandle(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntaccesscheckbytyperesultlistandauditalarmbyhandle(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -293,7 +303,8 @@ void generated_windows_print_sysret_ntaccesscheckbytyperesultlistandauditalarmby
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntaccesscheckbytyperesultlistandauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntaccesscheckbytyperesultlistandauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -309,7 +320,8 @@ void *generated_windows_print_syscall_ntaccesscheckbytyperesultlistandauditalarm
 	free(permissions_6);	return args;
 }
 
-void generated_windows_print_sysret_ntaccesscheckbytyperesultlistandauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntaccesscheckbytyperesultlistandauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -318,7 +330,8 @@ void generated_windows_print_sysret_ntaccesscheckbytyperesultlistandauditalarm(G
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntaccesscheckbytyperesultlist(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntaccesscheckbytyperesultlist(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -329,7 +342,8 @@ void *generated_windows_print_syscall_ntaccesscheckbytyperesultlist(GtGuestState
 	free(permissions_3);	return args;
 }
 
-void generated_windows_print_sysret_ntaccesscheckbytyperesultlist(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntaccesscheckbytyperesultlist(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -339,7 +353,8 @@ void generated_windows_print_sysret_ntaccesscheckbytyperesultlist(GtGuestState *
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntaccesscheck(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntaccesscheck(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -350,7 +365,8 @@ void *generated_windows_print_syscall_ntaccesscheck(GtGuestState *state, gt_pid_
 	free(permissions_2);	return args;
 }
 
-void generated_windows_print_sysret_ntaccesscheck(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntaccesscheck(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -360,7 +376,8 @@ void generated_windows_print_sysret_ntaccesscheck(GtGuestState *state, gt_pid_t 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntaddatom(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntaddatom(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -369,7 +386,8 @@ void *generated_windows_print_syscall_ntaddatom(GtGuestState *state, gt_pid_t pi
 	return args;
 }
 
-void generated_windows_print_sysret_ntaddatom(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntaddatom(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -378,7 +396,8 @@ void generated_windows_print_sysret_ntaddatom(GtGuestState *state, gt_pid_t pid,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntaddbootentry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntaddbootentry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -387,7 +406,8 @@ void *generated_windows_print_syscall_ntaddbootentry(GtGuestState *state, gt_pid
 	return args;
 }
 
-void generated_windows_print_sysret_ntaddbootentry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntaddbootentry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -397,7 +417,8 @@ void generated_windows_print_sysret_ntaddbootentry(GtGuestState *state, gt_pid_t
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntadddriverentry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntadddriverentry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -406,7 +427,8 @@ void *generated_windows_print_syscall_ntadddriverentry(GtGuestState *state, gt_p
 	return args;
 }
 
-void generated_windows_print_sysret_ntadddriverentry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntadddriverentry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -416,7 +438,8 @@ void generated_windows_print_sysret_ntadddriverentry(GtGuestState *state, gt_pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntadjustgroupstoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntadjustgroupstoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -425,7 +448,8 @@ void *generated_windows_print_syscall_ntadjustgroupstoken(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntadjustgroupstoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntadjustgroupstoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -435,7 +459,8 @@ void generated_windows_print_sysret_ntadjustgroupstoken(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntadjustprivilegestoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntadjustprivilegestoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -444,7 +469,8 @@ void *generated_windows_print_syscall_ntadjustprivilegestoken(GtGuestState *stat
 	return args;
 }
 
-void generated_windows_print_sysret_ntadjustprivilegestoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntadjustprivilegestoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -454,7 +480,8 @@ void generated_windows_print_sysret_ntadjustprivilegestoken(GtGuestState *state,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntalertresumethread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntalertresumethread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -463,7 +490,8 @@ void *generated_windows_print_syscall_ntalertresumethread(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntalertresumethread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntalertresumethread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -473,7 +501,8 @@ void generated_windows_print_sysret_ntalertresumethread(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntalertthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntalertthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -482,7 +511,8 @@ void *generated_windows_print_syscall_ntalertthread(GtGuestState *state, gt_pid_
 	return args;
 }
 
-void generated_windows_print_sysret_ntalertthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntalertthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -491,7 +521,8 @@ void generated_windows_print_sysret_ntalertthread(GtGuestState *state, gt_pid_t 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntallocatelocallyuniqueid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntallocatelocallyuniqueid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -500,7 +531,8 @@ void *generated_windows_print_syscall_ntallocatelocallyuniqueid(GtGuestState *st
 	return args;
 }
 
-void generated_windows_print_sysret_ntallocatelocallyuniqueid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntallocatelocallyuniqueid(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -509,7 +541,8 @@ void generated_windows_print_sysret_ntallocatelocallyuniqueid(GtGuestState *stat
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntallocatereserveobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntallocatereserveobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -527,7 +560,8 @@ void *generated_windows_print_syscall_ntallocatereserveobject(GtGuestState *stat
 	free(obj_attr_1);	return args;
 }
 
-void generated_windows_print_sysret_ntallocatereserveobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntallocatereserveobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -537,7 +571,8 @@ void generated_windows_print_sysret_ntallocatereserveobject(GtGuestState *state,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntallocateuserphysicalpages(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntallocateuserphysicalpages(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -546,7 +581,8 @@ void *generated_windows_print_syscall_ntallocateuserphysicalpages(GtGuestState *
 	return args;
 }
 
-void generated_windows_print_sysret_ntallocateuserphysicalpages(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntallocateuserphysicalpages(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -555,7 +591,8 @@ void generated_windows_print_sysret_ntallocateuserphysicalpages(GtGuestState *st
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntallocateuuids(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntallocateuuids(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -564,7 +601,8 @@ void *generated_windows_print_syscall_ntallocateuuids(GtGuestState *state, gt_pi
 	return args;
 }
 
-void generated_windows_print_sysret_ntallocateuuids(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntallocateuuids(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -576,7 +614,8 @@ void generated_windows_print_sysret_ntallocateuuids(GtGuestState *state, gt_pid_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntallocatevirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntallocatevirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -585,7 +624,8 @@ void *generated_windows_print_syscall_ntallocatevirtualmemory(GtGuestState *stat
 	return args;
 }
 
-void generated_windows_print_sysret_ntallocatevirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntallocatevirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -594,7 +634,8 @@ void generated_windows_print_sysret_ntallocatevirtualmemory(GtGuestState *state,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntalpcacceptconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntalpcacceptconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -613,7 +654,8 @@ void *generated_windows_print_syscall_ntalpcacceptconnectport(GtGuestState *stat
 	free(obj_attr_3);	return args;
 }
 
-void generated_windows_print_sysret_ntalpcacceptconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntalpcacceptconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -623,7 +665,8 @@ void generated_windows_print_sysret_ntalpcacceptconnectport(GtGuestState *state,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntalpccancelmessage(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntalpccancelmessage(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -632,7 +675,8 @@ void *generated_windows_print_syscall_ntalpccancelmessage(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntalpccancelmessage(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntalpccancelmessage(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -641,7 +685,8 @@ void generated_windows_print_sysret_ntalpccancelmessage(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntalpcconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntalpcconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -663,7 +708,8 @@ void *generated_windows_print_syscall_ntalpcconnectport(GtGuestState *state, gt_
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntalpcconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntalpcconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -675,7 +721,8 @@ void generated_windows_print_sysret_ntalpcconnectport(GtGuestState *state, gt_pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntalpccreateport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntalpccreateport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -693,7 +740,8 @@ void *generated_windows_print_syscall_ntalpccreateport(GtGuestState *state, gt_p
 	free(obj_attr_1);	return args;
 }
 
-void generated_windows_print_sysret_ntalpccreateport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntalpccreateport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -703,7 +751,8 @@ void generated_windows_print_sysret_ntalpccreateport(GtGuestState *state, gt_pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntalpccreateportsection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntalpccreateportsection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -712,7 +761,8 @@ void *generated_windows_print_syscall_ntalpccreateportsection(GtGuestState *stat
 	return args;
 }
 
-void generated_windows_print_sysret_ntalpccreateportsection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntalpccreateportsection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -721,7 +771,8 @@ void generated_windows_print_sysret_ntalpccreateportsection(GtGuestState *state,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntalpccreateresourcereserve(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntalpccreateresourcereserve(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -730,7 +781,8 @@ void *generated_windows_print_syscall_ntalpccreateresourcereserve(GtGuestState *
 	return args;
 }
 
-void generated_windows_print_sysret_ntalpccreateresourcereserve(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntalpccreateresourcereserve(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -739,7 +791,8 @@ void generated_windows_print_sysret_ntalpccreateresourcereserve(GtGuestState *st
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntalpccreatesectionview(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntalpccreatesectionview(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -748,7 +801,8 @@ void *generated_windows_print_syscall_ntalpccreatesectionview(GtGuestState *stat
 	return args;
 }
 
-void generated_windows_print_sysret_ntalpccreatesectionview(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntalpccreatesectionview(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -757,7 +811,8 @@ void generated_windows_print_sysret_ntalpccreatesectionview(GtGuestState *state,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntalpccreatesecuritycontext(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntalpccreatesecuritycontext(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -766,7 +821,8 @@ void *generated_windows_print_syscall_ntalpccreatesecuritycontext(GtGuestState *
 	return args;
 }
 
-void generated_windows_print_sysret_ntalpccreatesecuritycontext(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntalpccreatesecuritycontext(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -775,7 +831,8 @@ void generated_windows_print_sysret_ntalpccreatesecuritycontext(GtGuestState *st
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntalpcdeleteportsection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntalpcdeleteportsection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -784,7 +841,8 @@ void *generated_windows_print_syscall_ntalpcdeleteportsection(GtGuestState *stat
 	return args;
 }
 
-void generated_windows_print_sysret_ntalpcdeleteportsection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntalpcdeleteportsection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -793,7 +851,8 @@ void generated_windows_print_sysret_ntalpcdeleteportsection(GtGuestState *state,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntalpcdeleteresourcereserve(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntalpcdeleteresourcereserve(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -802,7 +861,8 @@ void *generated_windows_print_syscall_ntalpcdeleteresourcereserve(GtGuestState *
 	return args;
 }
 
-void generated_windows_print_sysret_ntalpcdeleteresourcereserve(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntalpcdeleteresourcereserve(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -811,7 +871,8 @@ void generated_windows_print_sysret_ntalpcdeleteresourcereserve(GtGuestState *st
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntalpcdeletesectionview(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntalpcdeletesectionview(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -820,7 +881,8 @@ void *generated_windows_print_syscall_ntalpcdeletesectionview(GtGuestState *stat
 	return args;
 }
 
-void generated_windows_print_sysret_ntalpcdeletesectionview(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntalpcdeletesectionview(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -829,7 +891,8 @@ void generated_windows_print_sysret_ntalpcdeletesectionview(GtGuestState *state,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntalpcdeletesecuritycontext(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntalpcdeletesecuritycontext(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -838,7 +901,8 @@ void *generated_windows_print_syscall_ntalpcdeletesecuritycontext(GtGuestState *
 	return args;
 }
 
-void generated_windows_print_sysret_ntalpcdeletesecuritycontext(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntalpcdeletesecuritycontext(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -847,7 +911,8 @@ void generated_windows_print_sysret_ntalpcdeletesecuritycontext(GtGuestState *st
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntalpcdisconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntalpcdisconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -856,7 +921,8 @@ void *generated_windows_print_syscall_ntalpcdisconnectport(GtGuestState *state, 
 	return args;
 }
 
-void generated_windows_print_sysret_ntalpcdisconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntalpcdisconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -865,7 +931,8 @@ void generated_windows_print_sysret_ntalpcdisconnectport(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntalpcimpersonateclientofport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntalpcimpersonateclientofport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -874,7 +941,8 @@ void *generated_windows_print_syscall_ntalpcimpersonateclientofport(GtGuestState
 	return args;
 }
 
-void generated_windows_print_sysret_ntalpcimpersonateclientofport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntalpcimpersonateclientofport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -883,7 +951,8 @@ void generated_windows_print_sysret_ntalpcimpersonateclientofport(GtGuestState *
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntalpcopensenderprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntalpcopensenderprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -903,7 +972,8 @@ void *generated_windows_print_syscall_ntalpcopensenderprocess(GtGuestState *stat
 	free(obj_attr_5);	return args;
 }
 
-void generated_windows_print_sysret_ntalpcopensenderprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntalpcopensenderprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -913,7 +983,8 @@ void generated_windows_print_sysret_ntalpcopensenderprocess(GtGuestState *state,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntalpcopensenderthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntalpcopensenderthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -933,7 +1004,8 @@ void *generated_windows_print_syscall_ntalpcopensenderthread(GtGuestState *state
 	free(obj_attr_5);	return args;
 }
 
-void generated_windows_print_sysret_ntalpcopensenderthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntalpcopensenderthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -943,7 +1015,8 @@ void generated_windows_print_sysret_ntalpcopensenderthread(GtGuestState *state, 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntalpcqueryinformation(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntalpcqueryinformation(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -952,7 +1025,8 @@ void *generated_windows_print_syscall_ntalpcqueryinformation(GtGuestState *state
 	return args;
 }
 
-void generated_windows_print_sysret_ntalpcqueryinformation(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntalpcqueryinformation(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -962,7 +1036,8 @@ void generated_windows_print_sysret_ntalpcqueryinformation(GtGuestState *state, 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntalpcqueryinformationmessage(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntalpcqueryinformationmessage(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -971,7 +1046,8 @@ void *generated_windows_print_syscall_ntalpcqueryinformationmessage(GtGuestState
 	return args;
 }
 
-void generated_windows_print_sysret_ntalpcqueryinformationmessage(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntalpcqueryinformationmessage(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -981,7 +1057,8 @@ void generated_windows_print_sysret_ntalpcqueryinformationmessage(GtGuestState *
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntalpcrevokesecuritycontext(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntalpcrevokesecuritycontext(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -990,7 +1067,8 @@ void *generated_windows_print_syscall_ntalpcrevokesecuritycontext(GtGuestState *
 	return args;
 }
 
-void generated_windows_print_sysret_ntalpcrevokesecuritycontext(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntalpcrevokesecuritycontext(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -999,7 +1077,8 @@ void generated_windows_print_sysret_ntalpcrevokesecuritycontext(GtGuestState *st
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntalpcsendwaitreceiveport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntalpcsendwaitreceiveport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1009,7 +1088,8 @@ void *generated_windows_print_syscall_ntalpcsendwaitreceiveport(GtGuestState *st
 	return args;
 }
 
-void generated_windows_print_sysret_ntalpcsendwaitreceiveport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntalpcsendwaitreceiveport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1019,7 +1099,8 @@ void generated_windows_print_sysret_ntalpcsendwaitreceiveport(GtGuestState *stat
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntalpcsetinformation(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntalpcsetinformation(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1028,7 +1109,8 @@ void *generated_windows_print_syscall_ntalpcsetinformation(GtGuestState *state, 
 	return args;
 }
 
-void generated_windows_print_sysret_ntalpcsetinformation(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntalpcsetinformation(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1037,7 +1119,8 @@ void generated_windows_print_sysret_ntalpcsetinformation(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntapphelpcachecontrol(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntapphelpcachecontrol(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1046,7 +1129,8 @@ void *generated_windows_print_syscall_ntapphelpcachecontrol(GtGuestState *state,
 	return args;
 }
 
-void generated_windows_print_sysret_ntapphelpcachecontrol(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntapphelpcachecontrol(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1055,7 +1139,8 @@ void generated_windows_print_sysret_ntapphelpcachecontrol(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntaremappedfilesthesame(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntaremappedfilesthesame(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1064,7 +1149,8 @@ void *generated_windows_print_syscall_ntaremappedfilesthesame(GtGuestState *stat
 	return args;
 }
 
-void generated_windows_print_sysret_ntaremappedfilesthesame(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntaremappedfilesthesame(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1073,7 +1159,8 @@ void generated_windows_print_sysret_ntaremappedfilesthesame(GtGuestState *state,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntassignprocesstojobobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntassignprocesstojobobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1082,7 +1169,8 @@ void *generated_windows_print_syscall_ntassignprocesstojobobject(GtGuestState *s
 	return args;
 }
 
-void generated_windows_print_sysret_ntassignprocesstojobobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntassignprocesstojobobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1091,7 +1179,8 @@ void generated_windows_print_sysret_ntassignprocesstojobobject(GtGuestState *sta
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcallbackreturn(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcallbackreturn(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1100,7 +1189,8 @@ void *generated_windows_print_syscall_ntcallbackreturn(GtGuestState *state, gt_p
 	return args;
 }
 
-void generated_windows_print_sysret_ntcallbackreturn(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcallbackreturn(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1109,7 +1199,8 @@ void generated_windows_print_sysret_ntcallbackreturn(GtGuestState *state, gt_pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcanceliofileex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcanceliofileex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1118,7 +1209,8 @@ void *generated_windows_print_syscall_ntcanceliofileex(GtGuestState *state, gt_p
 	return args;
 }
 
-void generated_windows_print_sysret_ntcanceliofileex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcanceliofileex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1127,7 +1219,8 @@ void generated_windows_print_sysret_ntcanceliofileex(GtGuestState *state, gt_pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcanceliofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcanceliofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1136,7 +1229,8 @@ void *generated_windows_print_syscall_ntcanceliofile(GtGuestState *state, gt_pid
 	return args;
 }
 
-void generated_windows_print_sysret_ntcanceliofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcanceliofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1145,7 +1239,8 @@ void generated_windows_print_sysret_ntcanceliofile(GtGuestState *state, gt_pid_t
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcancelsynchronousiofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcancelsynchronousiofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1154,7 +1249,8 @@ void *generated_windows_print_syscall_ntcancelsynchronousiofile(GtGuestState *st
 	return args;
 }
 
-void generated_windows_print_sysret_ntcancelsynchronousiofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcancelsynchronousiofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1163,7 +1259,8 @@ void generated_windows_print_sysret_ntcancelsynchronousiofile(GtGuestState *stat
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcanceltimer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcanceltimer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1172,7 +1269,8 @@ void *generated_windows_print_syscall_ntcanceltimer(GtGuestState *state, gt_pid_
 	return args;
 }
 
-void generated_windows_print_sysret_ntcanceltimer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcanceltimer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1181,7 +1279,8 @@ void generated_windows_print_sysret_ntcanceltimer(GtGuestState *state, gt_pid_t 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntclearevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntclearevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1190,7 +1289,8 @@ void *generated_windows_print_syscall_ntclearevent(GtGuestState *state, gt_pid_t
 	return args;
 }
 
-void generated_windows_print_sysret_ntclearevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntclearevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1199,7 +1299,8 @@ void generated_windows_print_sysret_ntclearevent(GtGuestState *state, gt_pid_t p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntclose(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntclose(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1208,7 +1309,8 @@ void *generated_windows_print_syscall_ntclose(GtGuestState *state, gt_pid_t pid,
 	return args;
 }
 
-void generated_windows_print_sysret_ntclose(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntclose(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1217,7 +1319,8 @@ void generated_windows_print_sysret_ntclose(GtGuestState *state, gt_pid_t pid, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcloseobjectauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcloseobjectauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1227,7 +1330,8 @@ void *generated_windows_print_syscall_ntcloseobjectauditalarm(GtGuestState *stat
 	free(unicode_str_0);	return args;
 }
 
-void generated_windows_print_sysret_ntcloseobjectauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcloseobjectauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1236,7 +1340,8 @@ void generated_windows_print_sysret_ntcloseobjectauditalarm(GtGuestState *state,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcommitcomplete(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcommitcomplete(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1245,7 +1350,8 @@ void *generated_windows_print_syscall_ntcommitcomplete(GtGuestState *state, gt_p
 	return args;
 }
 
-void generated_windows_print_sysret_ntcommitcomplete(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcommitcomplete(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1254,7 +1360,8 @@ void generated_windows_print_sysret_ntcommitcomplete(GtGuestState *state, gt_pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcommitenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcommitenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1263,7 +1370,8 @@ void *generated_windows_print_syscall_ntcommitenlistment(GtGuestState *state, gt
 	return args;
 }
 
-void generated_windows_print_sysret_ntcommitenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcommitenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1272,7 +1380,8 @@ void generated_windows_print_sysret_ntcommitenlistment(GtGuestState *state, gt_p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcommittransaction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcommittransaction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1281,7 +1390,8 @@ void *generated_windows_print_syscall_ntcommittransaction(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntcommittransaction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcommittransaction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1290,7 +1400,8 @@ void generated_windows_print_sysret_ntcommittransaction(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcompactkeys(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcompactkeys(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1299,7 +1410,8 @@ void *generated_windows_print_syscall_ntcompactkeys(GtGuestState *state, gt_pid_
 	return args;
 }
 
-void generated_windows_print_sysret_ntcompactkeys(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcompactkeys(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1308,7 +1420,8 @@ void generated_windows_print_sysret_ntcompactkeys(GtGuestState *state, gt_pid_t 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcomparetokens(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcomparetokens(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1317,7 +1430,8 @@ void *generated_windows_print_syscall_ntcomparetokens(GtGuestState *state, gt_pi
 	return args;
 }
 
-void generated_windows_print_sysret_ntcomparetokens(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcomparetokens(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1326,7 +1440,8 @@ void generated_windows_print_sysret_ntcomparetokens(GtGuestState *state, gt_pid_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcompleteconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcompleteconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1335,7 +1450,8 @@ void *generated_windows_print_syscall_ntcompleteconnectport(GtGuestState *state,
 	return args;
 }
 
-void generated_windows_print_sysret_ntcompleteconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcompleteconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1344,7 +1460,8 @@ void generated_windows_print_sysret_ntcompleteconnectport(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcompresskey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcompresskey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1353,7 +1470,8 @@ void *generated_windows_print_syscall_ntcompresskey(GtGuestState *state, gt_pid_
 	return args;
 }
 
-void generated_windows_print_sysret_ntcompresskey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcompresskey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1362,7 +1480,8 @@ void generated_windows_print_sysret_ntcompresskey(GtGuestState *state, gt_pid_t 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1373,7 +1492,8 @@ void *generated_windows_print_syscall_ntconnectport(GtGuestState *state, gt_pid_
 	free(unicode_str_1);	return args;
 }
 
-void generated_windows_print_sysret_ntconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1387,7 +1507,8 @@ void generated_windows_print_sysret_ntconnectport(GtGuestState *state, gt_pid_t 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcontinue(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcontinue(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1396,7 +1517,8 @@ void *generated_windows_print_syscall_ntcontinue(GtGuestState *state, gt_pid_t p
 	return args;
 }
 
-void generated_windows_print_sysret_ntcontinue(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcontinue(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1405,7 +1527,8 @@ void generated_windows_print_sysret_ntcontinue(GtGuestState *state, gt_pid_t pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreatedebugobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreatedebugobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1414,7 +1537,8 @@ void *generated_windows_print_syscall_ntcreatedebugobject(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntcreatedebugobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreatedebugobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1436,7 +1560,8 @@ void generated_windows_print_sysret_ntcreatedebugobject(GtGuestState *state, gt_
 	free(obj_attr_2);	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreatedirectoryobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreatedirectoryobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1456,7 +1581,8 @@ void *generated_windows_print_syscall_ntcreatedirectoryobject(GtGuestState *stat
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntcreatedirectoryobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreatedirectoryobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1466,7 +1592,8 @@ void generated_windows_print_sysret_ntcreatedirectoryobject(GtGuestState *state,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreateenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreateenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1486,7 +1613,8 @@ void *generated_windows_print_syscall_ntcreateenlistment(GtGuestState *state, gt
 	free(obj_attr_4);	return args;
 }
 
-void generated_windows_print_sysret_ntcreateenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreateenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1496,7 +1624,8 @@ void generated_windows_print_sysret_ntcreateenlistment(GtGuestState *state, gt_p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreateevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreateevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1517,7 +1646,8 @@ void *generated_windows_print_syscall_ntcreateevent(GtGuestState *state, gt_pid_
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntcreateevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreateevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1527,7 +1657,8 @@ void generated_windows_print_sysret_ntcreateevent(GtGuestState *state, gt_pid_t 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreateeventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreateeventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1547,7 +1678,8 @@ void *generated_windows_print_syscall_ntcreateeventpair(GtGuestState *state, gt_
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntcreateeventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreateeventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1557,7 +1689,8 @@ void generated_windows_print_sysret_ntcreateeventpair(GtGuestState *state, gt_pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreatefile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreatefile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1577,7 +1710,8 @@ void *generated_windows_print_syscall_ntcreatefile(GtGuestState *state, gt_pid_t
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntcreatefile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreatefile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1587,7 +1721,8 @@ void generated_windows_print_sysret_ntcreatefile(GtGuestState *state, gt_pid_t p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreateiocompletion(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreateiocompletion(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1607,7 +1742,8 @@ void *generated_windows_print_syscall_ntcreateiocompletion(GtGuestState *state, 
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntcreateiocompletion(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreateiocompletion(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1617,7 +1753,8 @@ void generated_windows_print_sysret_ntcreateiocompletion(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreatejobobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreatejobobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1637,7 +1774,8 @@ void *generated_windows_print_syscall_ntcreatejobobject(GtGuestState *state, gt_
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntcreatejobobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreatejobobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1647,7 +1785,8 @@ void generated_windows_print_sysret_ntcreatejobobject(GtGuestState *state, gt_pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreatejobset(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreatejobset(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1656,7 +1795,8 @@ void *generated_windows_print_syscall_ntcreatejobset(GtGuestState *state, gt_pid
 	return args;
 }
 
-void generated_windows_print_sysret_ntcreatejobset(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreatejobset(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1665,7 +1805,8 @@ void generated_windows_print_sysret_ntcreatejobset(GtGuestState *state, gt_pid_t
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreatekeyedevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreatekeyedevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1685,7 +1826,8 @@ void *generated_windows_print_syscall_ntcreatekeyedevent(GtGuestState *state, gt
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntcreatekeyedevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreatekeyedevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1695,7 +1837,8 @@ void generated_windows_print_sysret_ntcreatekeyedevent(GtGuestState *state, gt_p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreatekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreatekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1717,7 +1860,8 @@ void *generated_windows_print_syscall_ntcreatekey(GtGuestState *state, gt_pid_t 
 	free(unicode_str_4);	return args;
 }
 
-void generated_windows_print_sysret_ntcreatekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreatekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1729,7 +1873,8 @@ void generated_windows_print_sysret_ntcreatekey(GtGuestState *state, gt_pid_t pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreatekeytransacted(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreatekeytransacted(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1751,7 +1896,8 @@ void *generated_windows_print_syscall_ntcreatekeytransacted(GtGuestState *state,
 	free(unicode_str_4);	return args;
 }
 
-void generated_windows_print_sysret_ntcreatekeytransacted(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreatekeytransacted(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1763,7 +1909,8 @@ void generated_windows_print_sysret_ntcreatekeytransacted(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreatemailslotfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreatemailslotfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1781,7 +1928,8 @@ void *generated_windows_print_syscall_ntcreatemailslotfile(GtGuestState *state, 
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntcreatemailslotfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreatemailslotfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1791,7 +1939,8 @@ void generated_windows_print_sysret_ntcreatemailslotfile(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreatemutant(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreatemutant(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1812,7 +1961,8 @@ void *generated_windows_print_syscall_ntcreatemutant(GtGuestState *state, gt_pid
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntcreatemutant(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreatemutant(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1822,7 +1972,8 @@ void generated_windows_print_sysret_ntcreatemutant(GtGuestState *state, gt_pid_t
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreatenamedpipefile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreatenamedpipefile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1840,7 +1991,8 @@ void *generated_windows_print_syscall_ntcreatenamedpipefile(GtGuestState *state,
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntcreatenamedpipefile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreatenamedpipefile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1850,7 +2002,8 @@ void generated_windows_print_sysret_ntcreatenamedpipefile(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreatepagingfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreatepagingfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1859,7 +2012,8 @@ void *generated_windows_print_syscall_ntcreatepagingfile(GtGuestState *state, gt
 	free(unicode_str_0);	return args;
 }
 
-void generated_windows_print_sysret_ntcreatepagingfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreatepagingfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1868,7 +2022,8 @@ void generated_windows_print_sysret_ntcreatepagingfile(GtGuestState *state, gt_p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreateport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreateport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1886,7 +2041,8 @@ void *generated_windows_print_syscall_ntcreateport(GtGuestState *state, gt_pid_t
 	free(obj_attr_1);	return args;
 }
 
-void generated_windows_print_sysret_ntcreateport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreateport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1896,7 +2052,8 @@ void generated_windows_print_sysret_ntcreateport(GtGuestState *state, gt_pid_t p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreateprivatenamespace(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreateprivatenamespace(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1916,7 +2073,8 @@ void *generated_windows_print_syscall_ntcreateprivatenamespace(GtGuestState *sta
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntcreateprivatenamespace(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreateprivatenamespace(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1926,7 +2084,8 @@ void generated_windows_print_sysret_ntcreateprivatenamespace(GtGuestState *state
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreateprocessex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreateprocessex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1946,7 +2105,8 @@ void *generated_windows_print_syscall_ntcreateprocessex(GtGuestState *state, gt_
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntcreateprocessex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreateprocessex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1956,7 +2116,8 @@ void generated_windows_print_sysret_ntcreateprocessex(GtGuestState *state, gt_pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreateprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreateprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1977,7 +2138,8 @@ void *generated_windows_print_syscall_ntcreateprocess(GtGuestState *state, gt_pi
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntcreateprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreateprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -1987,7 +2149,8 @@ void generated_windows_print_sysret_ntcreateprocess(GtGuestState *state, gt_pid_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreateprofileex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreateprofileex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -1997,7 +2160,8 @@ void *generated_windows_print_syscall_ntcreateprofileex(GtGuestState *state, gt_
 	return args;
 }
 
-void generated_windows_print_sysret_ntcreateprofileex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreateprofileex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2007,7 +2171,8 @@ void generated_windows_print_sysret_ntcreateprofileex(GtGuestState *state, gt_pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreateprofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreateprofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2017,7 +2182,8 @@ void *generated_windows_print_syscall_ntcreateprofile(GtGuestState *state, gt_pi
 	return args;
 }
 
-void generated_windows_print_sysret_ntcreateprofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreateprofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2027,7 +2193,8 @@ void generated_windows_print_sysret_ntcreateprofile(GtGuestState *state, gt_pid_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreateresourcemanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreateresourcemanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2049,7 +2216,8 @@ void *generated_windows_print_syscall_ntcreateresourcemanager(GtGuestState *stat
 	free(unicode_str_6);	return args;
 }
 
-void generated_windows_print_sysret_ntcreateresourcemanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreateresourcemanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2059,7 +2227,8 @@ void generated_windows_print_sysret_ntcreateresourcemanager(GtGuestState *state,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreatesection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreatesection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2079,7 +2248,8 @@ void *generated_windows_print_syscall_ntcreatesection(GtGuestState *state, gt_pi
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntcreatesection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreatesection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2089,7 +2259,8 @@ void generated_windows_print_sysret_ntcreatesection(GtGuestState *state, gt_pid_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreatesemaphore(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreatesemaphore(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2109,7 +2280,8 @@ void *generated_windows_print_syscall_ntcreatesemaphore(GtGuestState *state, gt_
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntcreatesemaphore(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreatesemaphore(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2119,7 +2291,8 @@ void generated_windows_print_sysret_ntcreatesemaphore(GtGuestState *state, gt_pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreatesymboliclinkobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreatesymboliclinkobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2141,7 +2314,8 @@ void *generated_windows_print_syscall_ntcreatesymboliclinkobject(GtGuestState *s
 	free(unicode_str_3);	return args;
 }
 
-void generated_windows_print_sysret_ntcreatesymboliclinkobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreatesymboliclinkobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2151,7 +2325,8 @@ void generated_windows_print_sysret_ntcreatesymboliclinkobject(GtGuestState *sta
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreatethreadex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreatethreadex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2171,7 +2346,8 @@ void *generated_windows_print_syscall_ntcreatethreadex(GtGuestState *state, gt_p
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntcreatethreadex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreatethreadex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2181,7 +2357,8 @@ void generated_windows_print_sysret_ntcreatethreadex(GtGuestState *state, gt_pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreatethread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreatethread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2202,7 +2379,8 @@ void *generated_windows_print_syscall_ntcreatethread(GtGuestState *state, gt_pid
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntcreatethread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreatethread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2212,7 +2390,8 @@ void generated_windows_print_sysret_ntcreatethread(GtGuestState *state, gt_pid_t
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreatetimer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreatetimer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2232,7 +2411,8 @@ void *generated_windows_print_syscall_ntcreatetimer(GtGuestState *state, gt_pid_
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntcreatetimer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreatetimer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2242,7 +2422,8 @@ void generated_windows_print_sysret_ntcreatetimer(GtGuestState *state, gt_pid_t 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreatetoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreatetoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2262,7 +2443,8 @@ void *generated_windows_print_syscall_ntcreatetoken(GtGuestState *state, gt_pid_
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntcreatetoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreatetoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2272,7 +2454,8 @@ void generated_windows_print_sysret_ntcreatetoken(GtGuestState *state, gt_pid_t 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreatetransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreatetransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2294,7 +2477,8 @@ void *generated_windows_print_syscall_ntcreatetransactionmanager(GtGuestState *s
 	free(unicode_str_3);	return args;
 }
 
-void generated_windows_print_sysret_ntcreatetransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreatetransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2304,7 +2488,8 @@ void generated_windows_print_sysret_ntcreatetransactionmanager(GtGuestState *sta
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreatetransaction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreatetransaction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2326,7 +2511,8 @@ void *generated_windows_print_syscall_ntcreatetransaction(GtGuestState *state, g
 	free(unicode_str_9);	return args;
 }
 
-void generated_windows_print_sysret_ntcreatetransaction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreatetransaction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2336,7 +2522,8 @@ void generated_windows_print_sysret_ntcreatetransaction(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreateuserprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreateuserprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2369,7 +2556,8 @@ void *generated_windows_print_syscall_ntcreateuserprocess(GtGuestState *state, g
 	free(obj_attr_5);	return args;
 }
 
-void generated_windows_print_sysret_ntcreateuserprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreateuserprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2381,7 +2569,8 @@ void generated_windows_print_sysret_ntcreateuserprocess(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreatewaitableport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreatewaitableport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2399,7 +2588,8 @@ void *generated_windows_print_syscall_ntcreatewaitableport(GtGuestState *state, 
 	free(obj_attr_1);	return args;
 }
 
-void generated_windows_print_sysret_ntcreatewaitableport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreatewaitableport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2409,7 +2599,8 @@ void generated_windows_print_sysret_ntcreatewaitableport(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntcreateworkerfactory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntcreateworkerfactory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2429,7 +2620,8 @@ void *generated_windows_print_syscall_ntcreateworkerfactory(GtGuestState *state,
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntcreateworkerfactory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntcreateworkerfactory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2439,7 +2631,8 @@ void generated_windows_print_sysret_ntcreateworkerfactory(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntdebugactiveprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntdebugactiveprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2448,7 +2641,8 @@ void *generated_windows_print_syscall_ntdebugactiveprocess(GtGuestState *state, 
 	return args;
 }
 
-void generated_windows_print_sysret_ntdebugactiveprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntdebugactiveprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2457,7 +2651,8 @@ void generated_windows_print_sysret_ntdebugactiveprocess(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntdebugcontinue(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntdebugcontinue(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2466,7 +2661,8 @@ void *generated_windows_print_syscall_ntdebugcontinue(GtGuestState *state, gt_pi
 	return args;
 }
 
-void generated_windows_print_sysret_ntdebugcontinue(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntdebugcontinue(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2475,7 +2671,8 @@ void generated_windows_print_sysret_ntdebugcontinue(GtGuestState *state, gt_pid_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntdelayexecution(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntdelayexecution(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2484,7 +2681,8 @@ void *generated_windows_print_syscall_ntdelayexecution(GtGuestState *state, gt_p
 	return args;
 }
 
-void generated_windows_print_sysret_ntdelayexecution(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntdelayexecution(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2493,7 +2691,8 @@ void generated_windows_print_sysret_ntdelayexecution(GtGuestState *state, gt_pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntdeleteatom(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntdeleteatom(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2502,7 +2701,8 @@ void *generated_windows_print_syscall_ntdeleteatom(GtGuestState *state, gt_pid_t
 	return args;
 }
 
-void generated_windows_print_sysret_ntdeleteatom(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntdeleteatom(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2511,7 +2711,8 @@ void generated_windows_print_sysret_ntdeleteatom(GtGuestState *state, gt_pid_t p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntdeletebootentry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntdeletebootentry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2520,7 +2721,8 @@ void *generated_windows_print_syscall_ntdeletebootentry(GtGuestState *state, gt_
 	return args;
 }
 
-void generated_windows_print_sysret_ntdeletebootentry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntdeletebootentry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2529,7 +2731,8 @@ void generated_windows_print_sysret_ntdeletebootentry(GtGuestState *state, gt_pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntdeletedriverentry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntdeletedriverentry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2538,7 +2741,8 @@ void *generated_windows_print_syscall_ntdeletedriverentry(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntdeletedriverentry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntdeletedriverentry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2547,7 +2751,8 @@ void generated_windows_print_sysret_ntdeletedriverentry(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntdeletefile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntdeletefile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2565,7 +2770,8 @@ void *generated_windows_print_syscall_ntdeletefile(GtGuestState *state, gt_pid_t
 	free(obj_attr_0);	return args;
 }
 
-void generated_windows_print_sysret_ntdeletefile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntdeletefile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2574,7 +2780,8 @@ void generated_windows_print_sysret_ntdeletefile(GtGuestState *state, gt_pid_t p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntdeletekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntdeletekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2583,7 +2790,8 @@ void *generated_windows_print_syscall_ntdeletekey(GtGuestState *state, gt_pid_t 
 	return args;
 }
 
-void generated_windows_print_sysret_ntdeletekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntdeletekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2592,7 +2800,8 @@ void generated_windows_print_sysret_ntdeletekey(GtGuestState *state, gt_pid_t pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntdeleteobjectauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntdeleteobjectauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2602,7 +2811,8 @@ void *generated_windows_print_syscall_ntdeleteobjectauditalarm(GtGuestState *sta
 	free(unicode_str_0);	return args;
 }
 
-void generated_windows_print_sysret_ntdeleteobjectauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntdeleteobjectauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2611,7 +2821,8 @@ void generated_windows_print_sysret_ntdeleteobjectauditalarm(GtGuestState *state
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntdeleteprivatenamespace(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntdeleteprivatenamespace(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2620,7 +2831,8 @@ void *generated_windows_print_syscall_ntdeleteprivatenamespace(GtGuestState *sta
 	return args;
 }
 
-void generated_windows_print_sysret_ntdeleteprivatenamespace(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntdeleteprivatenamespace(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2629,7 +2841,8 @@ void generated_windows_print_sysret_ntdeleteprivatenamespace(GtGuestState *state
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntdeletevaluekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntdeletevaluekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2638,7 +2851,8 @@ void *generated_windows_print_syscall_ntdeletevaluekey(GtGuestState *state, gt_p
 	free(unicode_str_1);	return args;
 }
 
-void generated_windows_print_sysret_ntdeletevaluekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntdeletevaluekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2647,7 +2861,8 @@ void generated_windows_print_sysret_ntdeletevaluekey(GtGuestState *state, gt_pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntdeviceiocontrolfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntdeviceiocontrolfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2656,7 +2871,8 @@ void *generated_windows_print_syscall_ntdeviceiocontrolfile(GtGuestState *state,
 	return args;
 }
 
-void generated_windows_print_sysret_ntdeviceiocontrolfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntdeviceiocontrolfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2665,7 +2881,8 @@ void generated_windows_print_sysret_ntdeviceiocontrolfile(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntdisablelastknowngood(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntdisablelastknowngood(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2674,7 +2891,8 @@ void *generated_windows_print_syscall_ntdisablelastknowngood(GtGuestState *state
 	return args;
 }
 
-void generated_windows_print_sysret_ntdisablelastknowngood(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntdisablelastknowngood(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2683,7 +2901,8 @@ void generated_windows_print_sysret_ntdisablelastknowngood(GtGuestState *state, 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntdisplaystring(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntdisplaystring(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2692,7 +2911,8 @@ void *generated_windows_print_syscall_ntdisplaystring(GtGuestState *state, gt_pi
 	free(unicode_str_0);	return args;
 }
 
-void generated_windows_print_sysret_ntdisplaystring(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntdisplaystring(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2701,7 +2921,8 @@ void generated_windows_print_sysret_ntdisplaystring(GtGuestState *state, gt_pid_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntdrawtext(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntdrawtext(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2710,7 +2931,8 @@ void *generated_windows_print_syscall_ntdrawtext(GtGuestState *state, gt_pid_t p
 	free(unicode_str_0);	return args;
 }
 
-void generated_windows_print_sysret_ntdrawtext(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntdrawtext(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2719,7 +2941,8 @@ void generated_windows_print_sysret_ntdrawtext(GtGuestState *state, gt_pid_t pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntduplicateobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntduplicateobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2728,7 +2951,8 @@ void *generated_windows_print_syscall_ntduplicateobject(GtGuestState *state, gt_
 	free(permissions_4);	return args;
 }
 
-void generated_windows_print_sysret_ntduplicateobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntduplicateobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2738,7 +2962,8 @@ void generated_windows_print_sysret_ntduplicateobject(GtGuestState *state, gt_pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntduplicatetoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntduplicatetoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2759,7 +2984,8 @@ void *generated_windows_print_syscall_ntduplicatetoken(GtGuestState *state, gt_p
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntduplicatetoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntduplicatetoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2769,7 +2995,8 @@ void generated_windows_print_sysret_ntduplicatetoken(GtGuestState *state, gt_pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntenablelastknowngood(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntenablelastknowngood(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2778,7 +3005,8 @@ void *generated_windows_print_syscall_ntenablelastknowngood(GtGuestState *state,
 	return args;
 }
 
-void generated_windows_print_sysret_ntenablelastknowngood(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntenablelastknowngood(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2787,7 +3015,8 @@ void generated_windows_print_sysret_ntenablelastknowngood(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntenumeratebootentries(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntenumeratebootentries(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2797,7 +3026,8 @@ void *generated_windows_print_syscall_ntenumeratebootentries(GtGuestState *state
 	return args;
 }
 
-void generated_windows_print_sysret_ntenumeratebootentries(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntenumeratebootentries(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2807,7 +3037,8 @@ void generated_windows_print_sysret_ntenumeratebootentries(GtGuestState *state, 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntenumeratedriverentries(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntenumeratedriverentries(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2817,7 +3048,8 @@ void *generated_windows_print_syscall_ntenumeratedriverentries(GtGuestState *sta
 	return args;
 }
 
-void generated_windows_print_sysret_ntenumeratedriverentries(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntenumeratedriverentries(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2827,7 +3059,8 @@ void generated_windows_print_sysret_ntenumeratedriverentries(GtGuestState *state
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntenumeratekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntenumeratekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2836,7 +3069,8 @@ void *generated_windows_print_syscall_ntenumeratekey(GtGuestState *state, gt_pid
 	return args;
 }
 
-void generated_windows_print_sysret_ntenumeratekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntenumeratekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2846,7 +3080,8 @@ void generated_windows_print_sysret_ntenumeratekey(GtGuestState *state, gt_pid_t
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntenumeratesystemenvironmentvaluesex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntenumeratesystemenvironmentvaluesex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2856,7 +3091,8 @@ void *generated_windows_print_syscall_ntenumeratesystemenvironmentvaluesex(GtGue
 	return args;
 }
 
-void generated_windows_print_sysret_ntenumeratesystemenvironmentvaluesex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntenumeratesystemenvironmentvaluesex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2866,7 +3102,8 @@ void generated_windows_print_sysret_ntenumeratesystemenvironmentvaluesex(GtGuest
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntenumeratetransactionobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntenumeratetransactionobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2875,7 +3112,8 @@ void *generated_windows_print_syscall_ntenumeratetransactionobject(GtGuestState 
 	return args;
 }
 
-void generated_windows_print_sysret_ntenumeratetransactionobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntenumeratetransactionobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2885,7 +3123,8 @@ void generated_windows_print_sysret_ntenumeratetransactionobject(GtGuestState *s
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntenumeratevaluekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntenumeratevaluekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2894,7 +3133,8 @@ void *generated_windows_print_syscall_ntenumeratevaluekey(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntenumeratevaluekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntenumeratevaluekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2904,7 +3144,8 @@ void generated_windows_print_sysret_ntenumeratevaluekey(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntextendsection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntextendsection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2913,7 +3154,8 @@ void *generated_windows_print_syscall_ntextendsection(GtGuestState *state, gt_pi
 	return args;
 }
 
-void generated_windows_print_sysret_ntextendsection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntextendsection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2922,7 +3164,8 @@ void generated_windows_print_sysret_ntextendsection(GtGuestState *state, gt_pid_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntfiltertoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntfiltertoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2931,7 +3174,8 @@ void *generated_windows_print_syscall_ntfiltertoken(GtGuestState *state, gt_pid_
 	return args;
 }
 
-void generated_windows_print_sysret_ntfiltertoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntfiltertoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2941,7 +3185,8 @@ void generated_windows_print_sysret_ntfiltertoken(GtGuestState *state, gt_pid_t 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntfindatom(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntfindatom(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2950,7 +3195,8 @@ void *generated_windows_print_syscall_ntfindatom(GtGuestState *state, gt_pid_t p
 	return args;
 }
 
-void generated_windows_print_sysret_ntfindatom(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntfindatom(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2959,7 +3205,8 @@ void generated_windows_print_sysret_ntfindatom(GtGuestState *state, gt_pid_t pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntflushbuffersfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntflushbuffersfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2968,7 +3215,8 @@ void *generated_windows_print_syscall_ntflushbuffersfile(GtGuestState *state, gt
 	return args;
 }
 
-void generated_windows_print_sysret_ntflushbuffersfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntflushbuffersfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2977,7 +3225,8 @@ void generated_windows_print_sysret_ntflushbuffersfile(GtGuestState *state, gt_p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntflushinstalluilanguage(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntflushinstalluilanguage(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -2986,7 +3235,8 @@ void *generated_windows_print_syscall_ntflushinstalluilanguage(GtGuestState *sta
 	return args;
 }
 
-void generated_windows_print_sysret_ntflushinstalluilanguage(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntflushinstalluilanguage(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -2995,7 +3245,8 @@ void generated_windows_print_sysret_ntflushinstalluilanguage(GtGuestState *state
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntflushinstructioncache(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntflushinstructioncache(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3004,7 +3255,8 @@ void *generated_windows_print_syscall_ntflushinstructioncache(GtGuestState *stat
 	return args;
 }
 
-void generated_windows_print_sysret_ntflushinstructioncache(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntflushinstructioncache(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3013,7 +3265,8 @@ void generated_windows_print_sysret_ntflushinstructioncache(GtGuestState *state,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntflushkey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntflushkey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3022,7 +3275,8 @@ void *generated_windows_print_syscall_ntflushkey(GtGuestState *state, gt_pid_t p
 	return args;
 }
 
-void generated_windows_print_sysret_ntflushkey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntflushkey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3031,7 +3285,8 @@ void generated_windows_print_sysret_ntflushkey(GtGuestState *state, gt_pid_t pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntflushprocesswritebuffers(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntflushprocesswritebuffers(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3040,7 +3295,8 @@ void *generated_windows_print_syscall_ntflushprocesswritebuffers(GtGuestState *s
 	return args;
 }
 
-void generated_windows_print_sysret_ntflushprocesswritebuffers(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntflushprocesswritebuffers(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3049,7 +3305,8 @@ void generated_windows_print_sysret_ntflushprocesswritebuffers(GtGuestState *sta
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntflushvirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntflushvirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3058,7 +3315,8 @@ void *generated_windows_print_syscall_ntflushvirtualmemory(GtGuestState *state, 
 	return args;
 }
 
-void generated_windows_print_sysret_ntflushvirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntflushvirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3067,7 +3325,8 @@ void generated_windows_print_sysret_ntflushvirtualmemory(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntflushwritebuffer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntflushwritebuffer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3076,7 +3335,8 @@ void *generated_windows_print_syscall_ntflushwritebuffer(GtGuestState *state, gt
 	return args;
 }
 
-void generated_windows_print_sysret_ntflushwritebuffer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntflushwritebuffer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3085,7 +3345,8 @@ void generated_windows_print_sysret_ntflushwritebuffer(GtGuestState *state, gt_p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntfreeuserphysicalpages(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntfreeuserphysicalpages(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3094,7 +3355,8 @@ void *generated_windows_print_syscall_ntfreeuserphysicalpages(GtGuestState *stat
 	return args;
 }
 
-void generated_windows_print_sysret_ntfreeuserphysicalpages(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntfreeuserphysicalpages(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3103,7 +3365,8 @@ void generated_windows_print_sysret_ntfreeuserphysicalpages(GtGuestState *state,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntfreevirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntfreevirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3112,7 +3375,8 @@ void *generated_windows_print_syscall_ntfreevirtualmemory(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntfreevirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntfreevirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3121,7 +3385,8 @@ void generated_windows_print_sysret_ntfreevirtualmemory(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntfreezeregistry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntfreezeregistry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3130,7 +3395,8 @@ void *generated_windows_print_syscall_ntfreezeregistry(GtGuestState *state, gt_p
 	return args;
 }
 
-void generated_windows_print_sysret_ntfreezeregistry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntfreezeregistry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3139,7 +3405,8 @@ void generated_windows_print_sysret_ntfreezeregistry(GtGuestState *state, gt_pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntfreezetransactions(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntfreezetransactions(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3148,7 +3415,8 @@ void *generated_windows_print_syscall_ntfreezetransactions(GtGuestState *state, 
 	return args;
 }
 
-void generated_windows_print_sysret_ntfreezetransactions(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntfreezetransactions(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3157,7 +3425,8 @@ void generated_windows_print_sysret_ntfreezetransactions(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntfscontrolfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntfscontrolfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3166,7 +3435,8 @@ void *generated_windows_print_syscall_ntfscontrolfile(GtGuestState *state, gt_pi
 	return args;
 }
 
-void generated_windows_print_sysret_ntfscontrolfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntfscontrolfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3175,7 +3445,8 @@ void generated_windows_print_sysret_ntfscontrolfile(GtGuestState *state, gt_pid_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntgetcontextthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntgetcontextthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3184,7 +3455,8 @@ void *generated_windows_print_syscall_ntgetcontextthread(GtGuestState *state, gt
 	return args;
 }
 
-void generated_windows_print_sysret_ntgetcontextthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntgetcontextthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3193,7 +3465,8 @@ void generated_windows_print_sysret_ntgetcontextthread(GtGuestState *state, gt_p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntgetcurrentprocessornumber(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntgetcurrentprocessornumber(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3202,7 +3475,8 @@ void *generated_windows_print_syscall_ntgetcurrentprocessornumber(GtGuestState *
 	return args;
 }
 
-void generated_windows_print_sysret_ntgetcurrentprocessornumber(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntgetcurrentprocessornumber(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3211,7 +3485,8 @@ void generated_windows_print_sysret_ntgetcurrentprocessornumber(GtGuestState *st
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntgetdevicepowerstate(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntgetdevicepowerstate(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3220,7 +3495,8 @@ void *generated_windows_print_syscall_ntgetdevicepowerstate(GtGuestState *state,
 	return args;
 }
 
-void generated_windows_print_sysret_ntgetdevicepowerstate(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntgetdevicepowerstate(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3229,7 +3505,8 @@ void generated_windows_print_sysret_ntgetdevicepowerstate(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntgetmuiregistryinfo(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntgetmuiregistryinfo(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3239,7 +3516,8 @@ void *generated_windows_print_syscall_ntgetmuiregistryinfo(GtGuestState *state, 
 	return args;
 }
 
-void generated_windows_print_sysret_ntgetmuiregistryinfo(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntgetmuiregistryinfo(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3249,7 +3527,8 @@ void generated_windows_print_sysret_ntgetmuiregistryinfo(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntgetnextprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntgetnextprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3258,7 +3537,8 @@ void *generated_windows_print_syscall_ntgetnextprocess(GtGuestState *state, gt_p
 	free(permissions_1);	return args;
 }
 
-void generated_windows_print_sysret_ntgetnextprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntgetnextprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3268,7 +3548,8 @@ void generated_windows_print_sysret_ntgetnextprocess(GtGuestState *state, gt_pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntgetnextthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntgetnextthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3277,7 +3558,8 @@ void *generated_windows_print_syscall_ntgetnextthread(GtGuestState *state, gt_pi
 	free(permissions_2);	return args;
 }
 
-void generated_windows_print_sysret_ntgetnextthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntgetnextthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3287,7 +3569,8 @@ void generated_windows_print_sysret_ntgetnextthread(GtGuestState *state, gt_pid_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntgetnlssectionptr(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntgetnlssectionptr(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3296,7 +3579,8 @@ void *generated_windows_print_syscall_ntgetnlssectionptr(GtGuestState *state, gt
 	return args;
 }
 
-void generated_windows_print_sysret_ntgetnlssectionptr(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntgetnlssectionptr(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3306,7 +3590,8 @@ void generated_windows_print_sysret_ntgetnlssectionptr(GtGuestState *state, gt_p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntgetnotificationresourcemanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntgetnotificationresourcemanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3315,7 +3600,8 @@ void *generated_windows_print_syscall_ntgetnotificationresourcemanager(GtGuestSt
 	return args;
 }
 
-void generated_windows_print_sysret_ntgetnotificationresourcemanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntgetnotificationresourcemanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3325,7 +3611,8 @@ void generated_windows_print_sysret_ntgetnotificationresourcemanager(GtGuestStat
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntgetplugplayevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntgetplugplayevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3334,7 +3621,8 @@ void *generated_windows_print_syscall_ntgetplugplayevent(GtGuestState *state, gt
 	return args;
 }
 
-void generated_windows_print_sysret_ntgetplugplayevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntgetplugplayevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3343,7 +3631,8 @@ void generated_windows_print_sysret_ntgetplugplayevent(GtGuestState *state, gt_p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntgetwritewatch(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntgetwritewatch(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3352,7 +3641,8 @@ void *generated_windows_print_syscall_ntgetwritewatch(GtGuestState *state, gt_pi
 	return args;
 }
 
-void generated_windows_print_sysret_ntgetwritewatch(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntgetwritewatch(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3362,7 +3652,8 @@ void generated_windows_print_sysret_ntgetwritewatch(GtGuestState *state, gt_pid_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntimpersonateanonymoustoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntimpersonateanonymoustoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3371,7 +3662,8 @@ void *generated_windows_print_syscall_ntimpersonateanonymoustoken(GtGuestState *
 	return args;
 }
 
-void generated_windows_print_sysret_ntimpersonateanonymoustoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntimpersonateanonymoustoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3380,7 +3672,8 @@ void generated_windows_print_sysret_ntimpersonateanonymoustoken(GtGuestState *st
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntimpersonateclientofport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntimpersonateclientofport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3389,7 +3682,8 @@ void *generated_windows_print_syscall_ntimpersonateclientofport(GtGuestState *st
 	return args;
 }
 
-void generated_windows_print_sysret_ntimpersonateclientofport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntimpersonateclientofport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3398,7 +3692,8 @@ void generated_windows_print_sysret_ntimpersonateclientofport(GtGuestState *stat
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntimpersonatethread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntimpersonatethread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3407,7 +3702,8 @@ void *generated_windows_print_syscall_ntimpersonatethread(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntimpersonatethread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntimpersonatethread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3416,7 +3712,8 @@ void generated_windows_print_sysret_ntimpersonatethread(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntinitializenlsfiles(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntinitializenlsfiles(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3425,7 +3722,8 @@ void *generated_windows_print_syscall_ntinitializenlsfiles(GtGuestState *state, 
 	return args;
 }
 
-void generated_windows_print_sysret_ntinitializenlsfiles(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntinitializenlsfiles(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3434,7 +3732,8 @@ void generated_windows_print_sysret_ntinitializenlsfiles(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntinitializeregistry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntinitializeregistry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3443,7 +3742,8 @@ void *generated_windows_print_syscall_ntinitializeregistry(GtGuestState *state, 
 	return args;
 }
 
-void generated_windows_print_sysret_ntinitializeregistry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntinitializeregistry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3452,7 +3752,8 @@ void generated_windows_print_sysret_ntinitializeregistry(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntinitiatepoweraction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntinitiatepoweraction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3461,7 +3762,8 @@ void *generated_windows_print_syscall_ntinitiatepoweraction(GtGuestState *state,
 	return args;
 }
 
-void generated_windows_print_sysret_ntinitiatepoweraction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntinitiatepoweraction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3470,7 +3772,8 @@ void generated_windows_print_sysret_ntinitiatepoweraction(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntisprocessinjob(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntisprocessinjob(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3479,7 +3782,8 @@ void *generated_windows_print_syscall_ntisprocessinjob(GtGuestState *state, gt_p
 	return args;
 }
 
-void generated_windows_print_sysret_ntisprocessinjob(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntisprocessinjob(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3488,7 +3792,8 @@ void generated_windows_print_sysret_ntisprocessinjob(GtGuestState *state, gt_pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntissystemresumeautomatic(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntissystemresumeautomatic(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3497,7 +3802,8 @@ void *generated_windows_print_syscall_ntissystemresumeautomatic(GtGuestState *st
 	return args;
 }
 
-void generated_windows_print_sysret_ntissystemresumeautomatic(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntissystemresumeautomatic(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3506,7 +3812,8 @@ void generated_windows_print_sysret_ntissystemresumeautomatic(GtGuestState *stat
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntisuilanguagecomitted(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntisuilanguagecomitted(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3515,7 +3822,8 @@ void *generated_windows_print_syscall_ntisuilanguagecomitted(GtGuestState *state
 	return args;
 }
 
-void generated_windows_print_sysret_ntisuilanguagecomitted(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntisuilanguagecomitted(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3524,7 +3832,8 @@ void generated_windows_print_sysret_ntisuilanguagecomitted(GtGuestState *state, 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntlistenport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntlistenport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3533,7 +3842,8 @@ void *generated_windows_print_syscall_ntlistenport(GtGuestState *state, gt_pid_t
 	return args;
 }
 
-void generated_windows_print_sysret_ntlistenport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntlistenport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3542,7 +3852,8 @@ void generated_windows_print_sysret_ntlistenport(GtGuestState *state, gt_pid_t p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntloaddriver(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntloaddriver(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3551,7 +3862,8 @@ void *generated_windows_print_syscall_ntloaddriver(GtGuestState *state, gt_pid_t
 	free(unicode_str_0);	return args;
 }
 
-void generated_windows_print_sysret_ntloaddriver(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntloaddriver(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3560,7 +3872,8 @@ void generated_windows_print_sysret_ntloaddriver(GtGuestState *state, gt_pid_t p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntloadkey2(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntloadkey2(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3589,7 +3902,8 @@ void *generated_windows_print_syscall_ntloadkey2(GtGuestState *state, gt_pid_t p
 	free(obj_attr_1);	return args;
 }
 
-void generated_windows_print_sysret_ntloadkey2(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntloadkey2(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3598,7 +3912,8 @@ void generated_windows_print_sysret_ntloadkey2(GtGuestState *state, gt_pid_t pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntloadkeyex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntloadkeyex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3627,7 +3942,8 @@ void *generated_windows_print_syscall_ntloadkeyex(GtGuestState *state, gt_pid_t 
 	free(obj_attr_1);	return args;
 }
 
-void generated_windows_print_sysret_ntloadkeyex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntloadkeyex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3636,7 +3952,8 @@ void generated_windows_print_sysret_ntloadkeyex(GtGuestState *state, gt_pid_t pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntloadkey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntloadkey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3665,7 +3982,8 @@ void *generated_windows_print_syscall_ntloadkey(GtGuestState *state, gt_pid_t pi
 	free(obj_attr_1);	return args;
 }
 
-void generated_windows_print_sysret_ntloadkey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntloadkey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3674,7 +3992,8 @@ void generated_windows_print_sysret_ntloadkey(GtGuestState *state, gt_pid_t pid,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntlockfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntlockfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3684,7 +4003,8 @@ void *generated_windows_print_syscall_ntlockfile(GtGuestState *state, gt_pid_t p
 	return args;
 }
 
-void generated_windows_print_sysret_ntlockfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntlockfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3693,7 +4013,8 @@ void generated_windows_print_sysret_ntlockfile(GtGuestState *state, gt_pid_t pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntlockproductactivationkeys(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntlockproductactivationkeys(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3702,7 +4023,8 @@ void *generated_windows_print_syscall_ntlockproductactivationkeys(GtGuestState *
 	return args;
 }
 
-void generated_windows_print_sysret_ntlockproductactivationkeys(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntlockproductactivationkeys(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3711,7 +4033,8 @@ void generated_windows_print_sysret_ntlockproductactivationkeys(GtGuestState *st
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntlockregistrykey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntlockregistrykey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3720,7 +4043,8 @@ void *generated_windows_print_syscall_ntlockregistrykey(GtGuestState *state, gt_
 	return args;
 }
 
-void generated_windows_print_sysret_ntlockregistrykey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntlockregistrykey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3729,7 +4053,8 @@ void generated_windows_print_sysret_ntlockregistrykey(GtGuestState *state, gt_pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntlockvirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntlockvirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3738,7 +4063,8 @@ void *generated_windows_print_syscall_ntlockvirtualmemory(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntlockvirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntlockvirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3747,7 +4073,8 @@ void generated_windows_print_sysret_ntlockvirtualmemory(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntmakepermanentobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntmakepermanentobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3756,7 +4083,8 @@ void *generated_windows_print_syscall_ntmakepermanentobject(GtGuestState *state,
 	return args;
 }
 
-void generated_windows_print_sysret_ntmakepermanentobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntmakepermanentobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3765,7 +4093,8 @@ void generated_windows_print_sysret_ntmakepermanentobject(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntmaketemporaryobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntmaketemporaryobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3774,7 +4103,8 @@ void *generated_windows_print_syscall_ntmaketemporaryobject(GtGuestState *state,
 	return args;
 }
 
-void generated_windows_print_sysret_ntmaketemporaryobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntmaketemporaryobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3783,7 +4113,8 @@ void generated_windows_print_sysret_ntmaketemporaryobject(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntmapcmfmodule(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntmapcmfmodule(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3792,7 +4123,8 @@ void *generated_windows_print_syscall_ntmapcmfmodule(GtGuestState *state, gt_pid
 	return args;
 }
 
-void generated_windows_print_sysret_ntmapcmfmodule(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntmapcmfmodule(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3806,7 +4138,8 @@ void generated_windows_print_sysret_ntmapcmfmodule(GtGuestState *state, gt_pid_t
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntmapuserphysicalpages(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntmapuserphysicalpages(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3815,7 +4148,8 @@ void *generated_windows_print_syscall_ntmapuserphysicalpages(GtGuestState *state
 	return args;
 }
 
-void generated_windows_print_sysret_ntmapuserphysicalpages(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntmapuserphysicalpages(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3824,7 +4158,8 @@ void generated_windows_print_sysret_ntmapuserphysicalpages(GtGuestState *state, 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntmapuserphysicalpagesscatter(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntmapuserphysicalpagesscatter(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3833,7 +4168,8 @@ void *generated_windows_print_syscall_ntmapuserphysicalpagesscatter(GtGuestState
 	return args;
 }
 
-void generated_windows_print_sysret_ntmapuserphysicalpagesscatter(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntmapuserphysicalpagesscatter(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3842,7 +4178,8 @@ void generated_windows_print_sysret_ntmapuserphysicalpagesscatter(GtGuestState *
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntmapviewofsection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntmapviewofsection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3851,7 +4188,8 @@ void *generated_windows_print_syscall_ntmapviewofsection(GtGuestState *state, gt
 	return args;
 }
 
-void generated_windows_print_sysret_ntmapviewofsection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntmapviewofsection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3860,7 +4198,8 @@ void generated_windows_print_sysret_ntmapviewofsection(GtGuestState *state, gt_p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntmodifybootentry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntmodifybootentry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3869,7 +4208,8 @@ void *generated_windows_print_syscall_ntmodifybootentry(GtGuestState *state, gt_
 	return args;
 }
 
-void generated_windows_print_sysret_ntmodifybootentry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntmodifybootentry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3878,7 +4218,8 @@ void generated_windows_print_sysret_ntmodifybootentry(GtGuestState *state, gt_pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntmodifydriverentry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntmodifydriverentry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3887,7 +4228,8 @@ void *generated_windows_print_syscall_ntmodifydriverentry(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntmodifydriverentry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntmodifydriverentry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3896,7 +4238,8 @@ void generated_windows_print_sysret_ntmodifydriverentry(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntnotifychangedirectoryfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntnotifychangedirectoryfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3905,7 +4248,8 @@ void *generated_windows_print_syscall_ntnotifychangedirectoryfile(GtGuestState *
 	return args;
 }
 
-void generated_windows_print_sysret_ntnotifychangedirectoryfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntnotifychangedirectoryfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3914,7 +4258,8 @@ void generated_windows_print_sysret_ntnotifychangedirectoryfile(GtGuestState *st
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntnotifychangekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntnotifychangekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3924,7 +4269,8 @@ void *generated_windows_print_syscall_ntnotifychangekey(GtGuestState *state, gt_
 	return args;
 }
 
-void generated_windows_print_sysret_ntnotifychangekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntnotifychangekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3933,7 +4279,8 @@ void generated_windows_print_sysret_ntnotifychangekey(GtGuestState *state, gt_pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntnotifychangemultiplekeys(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntnotifychangemultiplekeys(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3943,7 +4290,8 @@ void *generated_windows_print_syscall_ntnotifychangemultiplekeys(GtGuestState *s
 	return args;
 }
 
-void generated_windows_print_sysret_ntnotifychangemultiplekeys(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntnotifychangemultiplekeys(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3952,7 +4300,8 @@ void generated_windows_print_sysret_ntnotifychangemultiplekeys(GtGuestState *sta
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntnotifychangesession(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntnotifychangesession(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3961,7 +4310,8 @@ void *generated_windows_print_syscall_ntnotifychangesession(GtGuestState *state,
 	return args;
 }
 
-void generated_windows_print_sysret_ntnotifychangesession(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntnotifychangesession(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -3970,7 +4320,8 @@ void generated_windows_print_sysret_ntnotifychangesession(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopendirectoryobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopendirectoryobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -3990,7 +4341,8 @@ void *generated_windows_print_syscall_ntopendirectoryobject(GtGuestState *state,
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntopendirectoryobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopendirectoryobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4000,7 +4352,8 @@ void generated_windows_print_sysret_ntopendirectoryobject(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopenenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopenenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4020,7 +4373,8 @@ void *generated_windows_print_syscall_ntopenenlistment(GtGuestState *state, gt_p
 	free(obj_attr_4);	return args;
 }
 
-void generated_windows_print_sysret_ntopenenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopenenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4030,7 +4384,8 @@ void generated_windows_print_sysret_ntopenenlistment(GtGuestState *state, gt_pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopenevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopenevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4050,7 +4405,8 @@ void *generated_windows_print_syscall_ntopenevent(GtGuestState *state, gt_pid_t 
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntopenevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopenevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4060,7 +4416,8 @@ void generated_windows_print_sysret_ntopenevent(GtGuestState *state, gt_pid_t pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopeneventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopeneventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4080,7 +4437,8 @@ void *generated_windows_print_syscall_ntopeneventpair(GtGuestState *state, gt_pi
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntopeneventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopeneventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4090,7 +4448,8 @@ void generated_windows_print_sysret_ntopeneventpair(GtGuestState *state, gt_pid_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopenfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopenfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4110,7 +4469,8 @@ void *generated_windows_print_syscall_ntopenfile(GtGuestState *state, gt_pid_t p
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntopenfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopenfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4120,7 +4480,8 @@ void generated_windows_print_sysret_ntopenfile(GtGuestState *state, gt_pid_t pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopeniocompletion(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopeniocompletion(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4140,7 +4501,8 @@ void *generated_windows_print_syscall_ntopeniocompletion(GtGuestState *state, gt
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntopeniocompletion(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopeniocompletion(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4150,7 +4512,8 @@ void generated_windows_print_sysret_ntopeniocompletion(GtGuestState *state, gt_p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopenjobobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopenjobobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4170,7 +4533,8 @@ void *generated_windows_print_syscall_ntopenjobobject(GtGuestState *state, gt_pi
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntopenjobobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopenjobobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4180,7 +4544,8 @@ void generated_windows_print_sysret_ntopenjobobject(GtGuestState *state, gt_pid_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopenkeyedevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopenkeyedevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4200,7 +4565,8 @@ void *generated_windows_print_syscall_ntopenkeyedevent(GtGuestState *state, gt_p
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntopenkeyedevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopenkeyedevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4210,7 +4576,8 @@ void generated_windows_print_sysret_ntopenkeyedevent(GtGuestState *state, gt_pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopenkeyex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopenkeyex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4230,7 +4597,8 @@ void *generated_windows_print_syscall_ntopenkeyex(GtGuestState *state, gt_pid_t 
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntopenkeyex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopenkeyex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4240,7 +4608,8 @@ void generated_windows_print_sysret_ntopenkeyex(GtGuestState *state, gt_pid_t pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopenkey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopenkey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4260,7 +4629,8 @@ void *generated_windows_print_syscall_ntopenkey(GtGuestState *state, gt_pid_t pi
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntopenkey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopenkey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4270,7 +4640,8 @@ void generated_windows_print_sysret_ntopenkey(GtGuestState *state, gt_pid_t pid,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopenkeytransactedex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopenkeytransactedex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4290,7 +4661,8 @@ void *generated_windows_print_syscall_ntopenkeytransactedex(GtGuestState *state,
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntopenkeytransactedex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopenkeytransactedex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4300,7 +4672,8 @@ void generated_windows_print_sysret_ntopenkeytransactedex(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopenkeytransacted(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopenkeytransacted(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4320,7 +4693,8 @@ void *generated_windows_print_syscall_ntopenkeytransacted(GtGuestState *state, g
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntopenkeytransacted(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopenkeytransacted(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4330,7 +4704,8 @@ void generated_windows_print_sysret_ntopenkeytransacted(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopenmutant(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopenmutant(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4350,7 +4725,8 @@ void *generated_windows_print_syscall_ntopenmutant(GtGuestState *state, gt_pid_t
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntopenmutant(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopenmutant(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4360,7 +4736,8 @@ void generated_windows_print_sysret_ntopenmutant(GtGuestState *state, gt_pid_t p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopenobjectauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopenobjectauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4379,7 +4756,8 @@ void *generated_windows_print_syscall_ntopenobjectauditalarm(GtGuestState *state
 	free(permissions_7);	return args;
 }
 
-void generated_windows_print_sysret_ntopenobjectauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopenobjectauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4388,7 +4766,8 @@ void generated_windows_print_sysret_ntopenobjectauditalarm(GtGuestState *state, 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopenprivatenamespace(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopenprivatenamespace(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4408,7 +4787,8 @@ void *generated_windows_print_syscall_ntopenprivatenamespace(GtGuestState *state
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntopenprivatenamespace(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopenprivatenamespace(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4418,7 +4798,8 @@ void generated_windows_print_sysret_ntopenprivatenamespace(GtGuestState *state, 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopenprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopenprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4438,7 +4819,8 @@ void *generated_windows_print_syscall_ntopenprocess(GtGuestState *state, gt_pid_
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntopenprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopenprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4448,7 +4830,8 @@ void generated_windows_print_sysret_ntopenprocess(GtGuestState *state, gt_pid_t 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopenprocesstokenex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopenprocesstokenex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4457,7 +4840,8 @@ void *generated_windows_print_syscall_ntopenprocesstokenex(GtGuestState *state, 
 	free(permissions_1);	return args;
 }
 
-void generated_windows_print_sysret_ntopenprocesstokenex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopenprocesstokenex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4467,7 +4851,8 @@ void generated_windows_print_sysret_ntopenprocesstokenex(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopenprocesstoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopenprocesstoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4476,7 +4861,8 @@ void *generated_windows_print_syscall_ntopenprocesstoken(GtGuestState *state, gt
 	free(permissions_1);	return args;
 }
 
-void generated_windows_print_sysret_ntopenprocesstoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopenprocesstoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4486,7 +4872,8 @@ void generated_windows_print_sysret_ntopenprocesstoken(GtGuestState *state, gt_p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopenresourcemanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopenresourcemanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4506,7 +4893,8 @@ void *generated_windows_print_syscall_ntopenresourcemanager(GtGuestState *state,
 	free(obj_attr_4);	return args;
 }
 
-void generated_windows_print_sysret_ntopenresourcemanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopenresourcemanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4516,7 +4904,8 @@ void generated_windows_print_sysret_ntopenresourcemanager(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopensection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopensection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4536,7 +4925,8 @@ void *generated_windows_print_syscall_ntopensection(GtGuestState *state, gt_pid_
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntopensection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopensection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4546,7 +4936,8 @@ void generated_windows_print_sysret_ntopensection(GtGuestState *state, gt_pid_t 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopensemaphore(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopensemaphore(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4566,7 +4957,8 @@ void *generated_windows_print_syscall_ntopensemaphore(GtGuestState *state, gt_pi
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntopensemaphore(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopensemaphore(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4576,7 +4968,8 @@ void generated_windows_print_sysret_ntopensemaphore(GtGuestState *state, gt_pid_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopensession(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopensession(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4596,7 +4989,8 @@ void *generated_windows_print_syscall_ntopensession(GtGuestState *state, gt_pid_
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntopensession(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopensession(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4606,7 +5000,8 @@ void generated_windows_print_sysret_ntopensession(GtGuestState *state, gt_pid_t 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopensymboliclinkobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopensymboliclinkobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4626,7 +5021,8 @@ void *generated_windows_print_syscall_ntopensymboliclinkobject(GtGuestState *sta
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntopensymboliclinkobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopensymboliclinkobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4636,7 +5032,8 @@ void generated_windows_print_sysret_ntopensymboliclinkobject(GtGuestState *state
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopenthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopenthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4656,7 +5053,8 @@ void *generated_windows_print_syscall_ntopenthread(GtGuestState *state, gt_pid_t
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntopenthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopenthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4666,7 +5064,8 @@ void generated_windows_print_sysret_ntopenthread(GtGuestState *state, gt_pid_t p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopenthreadtokenex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopenthreadtokenex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4676,7 +5075,8 @@ void *generated_windows_print_syscall_ntopenthreadtokenex(GtGuestState *state, g
 	free(permissions_1);	return args;
 }
 
-void generated_windows_print_sysret_ntopenthreadtokenex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopenthreadtokenex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4686,7 +5086,8 @@ void generated_windows_print_sysret_ntopenthreadtokenex(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopenthreadtoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopenthreadtoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4696,7 +5097,8 @@ void *generated_windows_print_syscall_ntopenthreadtoken(GtGuestState *state, gt_
 	free(permissions_1);	return args;
 }
 
-void generated_windows_print_sysret_ntopenthreadtoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopenthreadtoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4706,7 +5108,8 @@ void generated_windows_print_sysret_ntopenthreadtoken(GtGuestState *state, gt_pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopentimer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopentimer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4726,7 +5129,8 @@ void *generated_windows_print_syscall_ntopentimer(GtGuestState *state, gt_pid_t 
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntopentimer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopentimer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4736,7 +5140,8 @@ void generated_windows_print_sysret_ntopentimer(GtGuestState *state, gt_pid_t pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopentransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopentransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4758,7 +5163,8 @@ void *generated_windows_print_syscall_ntopentransactionmanager(GtGuestState *sta
 	free(unicode_str_3);	return args;
 }
 
-void generated_windows_print_sysret_ntopentransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopentransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4768,7 +5174,8 @@ void generated_windows_print_sysret_ntopentransactionmanager(GtGuestState *state
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntopentransaction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntopentransaction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4788,7 +5195,8 @@ void *generated_windows_print_syscall_ntopentransaction(GtGuestState *state, gt_
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntopentransaction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntopentransaction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4798,7 +5206,8 @@ void generated_windows_print_sysret_ntopentransaction(GtGuestState *state, gt_pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntplugplaycontrol(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntplugplaycontrol(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4807,7 +5216,8 @@ void *generated_windows_print_syscall_ntplugplaycontrol(GtGuestState *state, gt_
 	return args;
 }
 
-void generated_windows_print_sysret_ntplugplaycontrol(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntplugplaycontrol(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4816,7 +5226,8 @@ void generated_windows_print_sysret_ntplugplaycontrol(GtGuestState *state, gt_pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntpowerinformation(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntpowerinformation(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4825,7 +5236,8 @@ void *generated_windows_print_syscall_ntpowerinformation(GtGuestState *state, gt
 	return args;
 }
 
-void generated_windows_print_sysret_ntpowerinformation(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntpowerinformation(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4834,7 +5246,8 @@ void generated_windows_print_sysret_ntpowerinformation(GtGuestState *state, gt_p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntpreparecomplete(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntpreparecomplete(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4843,7 +5256,8 @@ void *generated_windows_print_syscall_ntpreparecomplete(GtGuestState *state, gt_
 	return args;
 }
 
-void generated_windows_print_sysret_ntpreparecomplete(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntpreparecomplete(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4852,7 +5266,8 @@ void generated_windows_print_sysret_ntpreparecomplete(GtGuestState *state, gt_pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntprepareenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntprepareenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4861,7 +5276,8 @@ void *generated_windows_print_syscall_ntprepareenlistment(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntprepareenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntprepareenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4870,7 +5286,8 @@ void generated_windows_print_sysret_ntprepareenlistment(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntprepreparecomplete(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntprepreparecomplete(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4879,7 +5296,8 @@ void *generated_windows_print_syscall_ntprepreparecomplete(GtGuestState *state, 
 	return args;
 }
 
-void generated_windows_print_sysret_ntprepreparecomplete(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntprepreparecomplete(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4888,7 +5306,8 @@ void generated_windows_print_sysret_ntprepreparecomplete(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntpreprepareenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntpreprepareenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4897,7 +5316,8 @@ void *generated_windows_print_syscall_ntpreprepareenlistment(GtGuestState *state
 	return args;
 }
 
-void generated_windows_print_sysret_ntpreprepareenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntpreprepareenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4906,7 +5326,8 @@ void generated_windows_print_sysret_ntpreprepareenlistment(GtGuestState *state, 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntprivilegecheck(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntprivilegecheck(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4915,7 +5336,8 @@ void *generated_windows_print_syscall_ntprivilegecheck(GtGuestState *state, gt_p
 	return args;
 }
 
-void generated_windows_print_sysret_ntprivilegecheck(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntprivilegecheck(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4924,7 +5346,8 @@ void generated_windows_print_sysret_ntprivilegecheck(GtGuestState *state, gt_pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntprivilegedserviceauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntprivilegedserviceauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4936,7 +5359,8 @@ void *generated_windows_print_syscall_ntprivilegedserviceauditalarm(GtGuestState
 	free(unicode_str_1);	return args;
 }
 
-void generated_windows_print_sysret_ntprivilegedserviceauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntprivilegedserviceauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4945,7 +5369,8 @@ void generated_windows_print_sysret_ntprivilegedserviceauditalarm(GtGuestState *
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntprivilegeobjectauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntprivilegeobjectauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4957,7 +5382,8 @@ void *generated_windows_print_syscall_ntprivilegeobjectauditalarm(GtGuestState *
 	free(permissions_3);	return args;
 }
 
-void generated_windows_print_sysret_ntprivilegeobjectauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntprivilegeobjectauditalarm(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4966,7 +5392,8 @@ void generated_windows_print_sysret_ntprivilegeobjectauditalarm(GtGuestState *st
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntpropagationcomplete(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntpropagationcomplete(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4975,7 +5402,8 @@ void *generated_windows_print_syscall_ntpropagationcomplete(GtGuestState *state,
 	return args;
 }
 
-void generated_windows_print_sysret_ntpropagationcomplete(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntpropagationcomplete(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -4984,7 +5412,8 @@ void generated_windows_print_sysret_ntpropagationcomplete(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntpropagationfailed(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntpropagationfailed(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -4993,7 +5422,8 @@ void *generated_windows_print_syscall_ntpropagationfailed(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntpropagationfailed(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntpropagationfailed(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5002,7 +5432,8 @@ void generated_windows_print_sysret_ntpropagationfailed(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntprotectvirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntprotectvirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5011,7 +5442,8 @@ void *generated_windows_print_syscall_ntprotectvirtualmemory(GtGuestState *state
 	return args;
 }
 
-void generated_windows_print_sysret_ntprotectvirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntprotectvirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5021,7 +5453,8 @@ void generated_windows_print_sysret_ntprotectvirtualmemory(GtGuestState *state, 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntpulseevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntpulseevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5030,7 +5463,8 @@ void *generated_windows_print_syscall_ntpulseevent(GtGuestState *state, gt_pid_t
 	return args;
 }
 
-void generated_windows_print_sysret_ntpulseevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntpulseevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5039,7 +5473,8 @@ void generated_windows_print_sysret_ntpulseevent(GtGuestState *state, gt_pid_t p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryattributesfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryattributesfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5057,7 +5492,8 @@ void *generated_windows_print_syscall_ntqueryattributesfile(GtGuestState *state,
 	free(obj_attr_0);	return args;
 }
 
-void generated_windows_print_sysret_ntqueryattributesfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryattributesfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5066,7 +5502,8 @@ void generated_windows_print_sysret_ntqueryattributesfile(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntquerybootentryorder(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntquerybootentryorder(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5076,7 +5513,8 @@ void *generated_windows_print_syscall_ntquerybootentryorder(GtGuestState *state,
 	return args;
 }
 
-void generated_windows_print_sysret_ntquerybootentryorder(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntquerybootentryorder(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5086,7 +5524,8 @@ void generated_windows_print_sysret_ntquerybootentryorder(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntquerybootoptions(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntquerybootoptions(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5096,7 +5535,8 @@ void *generated_windows_print_syscall_ntquerybootoptions(GtGuestState *state, gt
 	return args;
 }
 
-void generated_windows_print_sysret_ntquerybootoptions(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntquerybootoptions(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5106,7 +5546,8 @@ void generated_windows_print_sysret_ntquerybootoptions(GtGuestState *state, gt_p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntquerydebugfilterstate(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntquerydebugfilterstate(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5115,7 +5556,8 @@ void *generated_windows_print_syscall_ntquerydebugfilterstate(GtGuestState *stat
 	return args;
 }
 
-void generated_windows_print_sysret_ntquerydebugfilterstate(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntquerydebugfilterstate(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5124,7 +5566,8 @@ void generated_windows_print_sysret_ntquerydebugfilterstate(GtGuestState *state,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntquerydefaultlocale(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntquerydefaultlocale(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5133,7 +5576,8 @@ void *generated_windows_print_syscall_ntquerydefaultlocale(GtGuestState *state, 
 	return args;
 }
 
-void generated_windows_print_sysret_ntquerydefaultlocale(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntquerydefaultlocale(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5142,7 +5586,8 @@ void generated_windows_print_sysret_ntquerydefaultlocale(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntquerydefaultuilanguage(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntquerydefaultuilanguage(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5151,7 +5596,8 @@ void *generated_windows_print_syscall_ntquerydefaultuilanguage(GtGuestState *sta
 	return args;
 }
 
-void generated_windows_print_sysret_ntquerydefaultuilanguage(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntquerydefaultuilanguage(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5160,7 +5606,8 @@ void generated_windows_print_sysret_ntquerydefaultuilanguage(GtGuestState *state
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntquerydirectoryfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntquerydirectoryfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5171,7 +5618,8 @@ void *generated_windows_print_syscall_ntquerydirectoryfile(GtGuestState *state, 
 	free(unicode_str_9);	return args;
 }
 
-void generated_windows_print_sysret_ntquerydirectoryfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntquerydirectoryfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5180,7 +5628,8 @@ void generated_windows_print_sysret_ntquerydirectoryfile(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntquerydirectoryobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntquerydirectoryobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5192,7 +5641,8 @@ void *generated_windows_print_syscall_ntquerydirectoryobject(GtGuestState *state
 	return args;
 }
 
-void generated_windows_print_sysret_ntquerydirectoryobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntquerydirectoryobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5204,7 +5654,8 @@ void generated_windows_print_sysret_ntquerydirectoryobject(GtGuestState *state, 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntquerydriverentryorder(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntquerydriverentryorder(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5214,7 +5665,8 @@ void *generated_windows_print_syscall_ntquerydriverentryorder(GtGuestState *stat
 	return args;
 }
 
-void generated_windows_print_sysret_ntquerydriverentryorder(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntquerydriverentryorder(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5224,7 +5676,8 @@ void generated_windows_print_sysret_ntquerydriverentryorder(GtGuestState *state,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryeafile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryeafile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5236,7 +5689,8 @@ void *generated_windows_print_syscall_ntqueryeafile(GtGuestState *state, gt_pid_
 	return args;
 }
 
-void generated_windows_print_sysret_ntqueryeafile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryeafile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5245,7 +5699,8 @@ void generated_windows_print_sysret_ntqueryeafile(GtGuestState *state, gt_pid_t 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5254,7 +5709,8 @@ void *generated_windows_print_syscall_ntqueryevent(GtGuestState *state, gt_pid_t
 	return args;
 }
 
-void generated_windows_print_sysret_ntqueryevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5264,7 +5720,8 @@ void generated_windows_print_sysret_ntqueryevent(GtGuestState *state, gt_pid_t p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryfullattributesfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryfullattributesfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5282,7 +5739,8 @@ void *generated_windows_print_syscall_ntqueryfullattributesfile(GtGuestState *st
 	free(obj_attr_0);	return args;
 }
 
-void generated_windows_print_sysret_ntqueryfullattributesfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryfullattributesfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5291,7 +5749,8 @@ void generated_windows_print_sysret_ntqueryfullattributesfile(GtGuestState *stat
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryinformationatom(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryinformationatom(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5300,7 +5759,8 @@ void *generated_windows_print_syscall_ntqueryinformationatom(GtGuestState *state
 	return args;
 }
 
-void generated_windows_print_sysret_ntqueryinformationatom(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryinformationatom(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5310,7 +5770,8 @@ void generated_windows_print_sysret_ntqueryinformationatom(GtGuestState *state, 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryinformationenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryinformationenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5319,7 +5780,8 @@ void *generated_windows_print_syscall_ntqueryinformationenlistment(GtGuestState 
 	return args;
 }
 
-void generated_windows_print_sysret_ntqueryinformationenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryinformationenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5329,7 +5791,8 @@ void generated_windows_print_sysret_ntqueryinformationenlistment(GtGuestState *s
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryinformationfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryinformationfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5338,7 +5801,8 @@ void *generated_windows_print_syscall_ntqueryinformationfile(GtGuestState *state
 	return args;
 }
 
-void generated_windows_print_sysret_ntqueryinformationfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryinformationfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5347,7 +5811,8 @@ void generated_windows_print_sysret_ntqueryinformationfile(GtGuestState *state, 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryinformationjobobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryinformationjobobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5356,7 +5821,8 @@ void *generated_windows_print_syscall_ntqueryinformationjobobject(GtGuestState *
 	return args;
 }
 
-void generated_windows_print_sysret_ntqueryinformationjobobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryinformationjobobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5366,7 +5832,8 @@ void generated_windows_print_sysret_ntqueryinformationjobobject(GtGuestState *st
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryinformationport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryinformationport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5375,7 +5842,8 @@ void *generated_windows_print_syscall_ntqueryinformationport(GtGuestState *state
 	return args;
 }
 
-void generated_windows_print_sysret_ntqueryinformationport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryinformationport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5385,7 +5853,8 @@ void generated_windows_print_sysret_ntqueryinformationport(GtGuestState *state, 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryinformationprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryinformationprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5394,7 +5863,8 @@ void *generated_windows_print_syscall_ntqueryinformationprocess(GtGuestState *st
 	return args;
 }
 
-void generated_windows_print_sysret_ntqueryinformationprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryinformationprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5404,7 +5874,8 @@ void generated_windows_print_sysret_ntqueryinformationprocess(GtGuestState *stat
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryinformationresourcemanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryinformationresourcemanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5413,7 +5884,8 @@ void *generated_windows_print_syscall_ntqueryinformationresourcemanager(GtGuestS
 	return args;
 }
 
-void generated_windows_print_sysret_ntqueryinformationresourcemanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryinformationresourcemanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5423,7 +5895,8 @@ void generated_windows_print_sysret_ntqueryinformationresourcemanager(GtGuestSta
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryinformationthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryinformationthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5432,7 +5905,8 @@ void *generated_windows_print_syscall_ntqueryinformationthread(GtGuestState *sta
 	return args;
 }
 
-void generated_windows_print_sysret_ntqueryinformationthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryinformationthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5442,7 +5916,8 @@ void generated_windows_print_sysret_ntqueryinformationthread(GtGuestState *state
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryinformationtoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryinformationtoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5451,7 +5926,8 @@ void *generated_windows_print_syscall_ntqueryinformationtoken(GtGuestState *stat
 	return args;
 }
 
-void generated_windows_print_sysret_ntqueryinformationtoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryinformationtoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5461,7 +5937,8 @@ void generated_windows_print_sysret_ntqueryinformationtoken(GtGuestState *state,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryinformationtransaction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryinformationtransaction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5470,7 +5947,8 @@ void *generated_windows_print_syscall_ntqueryinformationtransaction(GtGuestState
 	return args;
 }
 
-void generated_windows_print_sysret_ntqueryinformationtransaction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryinformationtransaction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5480,7 +5958,8 @@ void generated_windows_print_sysret_ntqueryinformationtransaction(GtGuestState *
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryinformationtransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryinformationtransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5489,7 +5968,8 @@ void *generated_windows_print_syscall_ntqueryinformationtransactionmanager(GtGue
 	return args;
 }
 
-void generated_windows_print_sysret_ntqueryinformationtransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryinformationtransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5499,7 +5979,8 @@ void generated_windows_print_sysret_ntqueryinformationtransactionmanager(GtGuest
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryinformationworkerfactory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryinformationworkerfactory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5508,7 +5989,8 @@ void *generated_windows_print_syscall_ntqueryinformationworkerfactory(GtGuestSta
 	return args;
 }
 
-void generated_windows_print_sysret_ntqueryinformationworkerfactory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryinformationworkerfactory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5518,7 +6000,8 @@ void generated_windows_print_sysret_ntqueryinformationworkerfactory(GtGuestState
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryinstalluilanguage(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryinstalluilanguage(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5527,7 +6010,8 @@ void *generated_windows_print_syscall_ntqueryinstalluilanguage(GtGuestState *sta
 	return args;
 }
 
-void generated_windows_print_sysret_ntqueryinstalluilanguage(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryinstalluilanguage(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5536,7 +6020,8 @@ void generated_windows_print_sysret_ntqueryinstalluilanguage(GtGuestState *state
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryintervalprofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryintervalprofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5545,7 +6030,8 @@ void *generated_windows_print_syscall_ntqueryintervalprofile(GtGuestState *state
 	return args;
 }
 
-void generated_windows_print_sysret_ntqueryintervalprofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryintervalprofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5555,7 +6041,8 @@ void generated_windows_print_sysret_ntqueryintervalprofile(GtGuestState *state, 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryiocompletion(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryiocompletion(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5564,7 +6051,8 @@ void *generated_windows_print_syscall_ntqueryiocompletion(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntqueryiocompletion(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryiocompletion(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5574,7 +6062,8 @@ void generated_windows_print_sysret_ntqueryiocompletion(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntquerykey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntquerykey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5583,7 +6072,8 @@ void *generated_windows_print_syscall_ntquerykey(GtGuestState *state, gt_pid_t p
 	return args;
 }
 
-void generated_windows_print_sysret_ntquerykey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntquerykey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5593,7 +6083,8 @@ void generated_windows_print_sysret_ntquerykey(GtGuestState *state, gt_pid_t pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntquerylicensevalue(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntquerylicensevalue(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5602,7 +6093,8 @@ void *generated_windows_print_syscall_ntquerylicensevalue(GtGuestState *state, g
 	free(unicode_str_0);	return args;
 }
 
-void generated_windows_print_sysret_ntquerylicensevalue(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntquerylicensevalue(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5614,7 +6106,8 @@ void generated_windows_print_sysret_ntquerylicensevalue(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntquerymultiplevaluekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntquerymultiplevaluekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5624,7 +6117,8 @@ void *generated_windows_print_syscall_ntquerymultiplevaluekey(GtGuestState *stat
 	return args;
 }
 
-void generated_windows_print_sysret_ntquerymultiplevaluekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntquerymultiplevaluekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5636,7 +6130,8 @@ void generated_windows_print_sysret_ntquerymultiplevaluekey(GtGuestState *state,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntquerymutant(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntquerymutant(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5645,7 +6140,8 @@ void *generated_windows_print_syscall_ntquerymutant(GtGuestState *state, gt_pid_
 	return args;
 }
 
-void generated_windows_print_sysret_ntquerymutant(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntquerymutant(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5655,7 +6151,8 @@ void generated_windows_print_sysret_ntquerymutant(GtGuestState *state, gt_pid_t 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5664,7 +6161,8 @@ void *generated_windows_print_syscall_ntqueryobject(GtGuestState *state, gt_pid_
 	return args;
 }
 
-void generated_windows_print_sysret_ntqueryobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5674,7 +6172,8 @@ void generated_windows_print_sysret_ntqueryobject(GtGuestState *state, gt_pid_t 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryopensubkeysex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryopensubkeysex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5692,7 +6191,8 @@ void *generated_windows_print_syscall_ntqueryopensubkeysex(GtGuestState *state, 
 	free(obj_attr_0);	return args;
 }
 
-void generated_windows_print_sysret_ntqueryopensubkeysex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryopensubkeysex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5702,7 +6202,8 @@ void generated_windows_print_sysret_ntqueryopensubkeysex(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryopensubkeys(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryopensubkeys(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5720,7 +6221,8 @@ void *generated_windows_print_syscall_ntqueryopensubkeys(GtGuestState *state, gt
 	free(obj_attr_0);	return args;
 }
 
-void generated_windows_print_sysret_ntqueryopensubkeys(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryopensubkeys(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5730,7 +6232,8 @@ void generated_windows_print_sysret_ntqueryopensubkeys(GtGuestState *state, gt_p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryperformancecounter(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryperformancecounter(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5739,7 +6242,8 @@ void *generated_windows_print_syscall_ntqueryperformancecounter(GtGuestState *st
 	return args;
 }
 
-void generated_windows_print_sysret_ntqueryperformancecounter(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryperformancecounter(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5748,7 +6252,8 @@ void generated_windows_print_sysret_ntqueryperformancecounter(GtGuestState *stat
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryportinformationprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryportinformationprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5757,7 +6262,8 @@ void *generated_windows_print_syscall_ntqueryportinformationprocess(GtGuestState
 	return args;
 }
 
-void generated_windows_print_sysret_ntqueryportinformationprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryportinformationprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5766,7 +6272,8 @@ void generated_windows_print_sysret_ntqueryportinformationprocess(GtGuestState *
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryquotainformationfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryquotainformationfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5778,7 +6285,8 @@ void *generated_windows_print_syscall_ntqueryquotainformationfile(GtGuestState *
 	return args;
 }
 
-void generated_windows_print_sysret_ntqueryquotainformationfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryquotainformationfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5787,7 +6295,8 @@ void generated_windows_print_sysret_ntqueryquotainformationfile(GtGuestState *st
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntquerysection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntquerysection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5796,7 +6305,8 @@ void *generated_windows_print_syscall_ntquerysection(GtGuestState *state, gt_pid
 	return args;
 }
 
-void generated_windows_print_sysret_ntquerysection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntquerysection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5805,7 +6315,8 @@ void generated_windows_print_sysret_ntquerysection(GtGuestState *state, gt_pid_t
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntquerysecurityattributestoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntquerysecurityattributestoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5814,7 +6325,8 @@ void *generated_windows_print_syscall_ntquerysecurityattributestoken(GtGuestStat
 	return args;
 }
 
-void generated_windows_print_sysret_ntquerysecurityattributestoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntquerysecurityattributestoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5824,7 +6336,8 @@ void generated_windows_print_sysret_ntquerysecurityattributestoken(GtGuestState 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntquerysecurityobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntquerysecurityobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5833,7 +6346,8 @@ void *generated_windows_print_syscall_ntquerysecurityobject(GtGuestState *state,
 	return args;
 }
 
-void generated_windows_print_sysret_ntquerysecurityobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntquerysecurityobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5843,7 +6357,8 @@ void generated_windows_print_sysret_ntquerysecurityobject(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntquerysemaphore(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntquerysemaphore(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5852,7 +6367,8 @@ void *generated_windows_print_syscall_ntquerysemaphore(GtGuestState *state, gt_p
 	return args;
 }
 
-void generated_windows_print_sysret_ntquerysemaphore(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntquerysemaphore(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5862,7 +6378,8 @@ void generated_windows_print_sysret_ntquerysemaphore(GtGuestState *state, gt_pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntquerysymboliclinkobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntquerysymboliclinkobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5871,7 +6388,8 @@ void *generated_windows_print_syscall_ntquerysymboliclinkobject(GtGuestState *st
 	free(unicode_str_1);	return args;
 }
 
-void generated_windows_print_sysret_ntquerysymboliclinkobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntquerysymboliclinkobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5882,7 +6400,8 @@ void generated_windows_print_sysret_ntquerysymboliclinkobject(GtGuestState *stat
 	free(unicode_str_1);	free(args);
 }
 
-void *generated_windows_print_syscall_ntquerysystemenvironmentvalueex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntquerysystemenvironmentvalueex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5893,7 +6412,8 @@ void *generated_windows_print_syscall_ntquerysystemenvironmentvalueex(GtGuestSta
 	free(unicode_str_0);	return args;
 }
 
-void generated_windows_print_sysret_ntquerysystemenvironmentvalueex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntquerysystemenvironmentvalueex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5905,7 +6425,8 @@ void generated_windows_print_sysret_ntquerysystemenvironmentvalueex(GtGuestState
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntquerysystemenvironmentvalue(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntquerysystemenvironmentvalue(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5914,7 +6435,8 @@ void *generated_windows_print_syscall_ntquerysystemenvironmentvalue(GtGuestState
 	free(unicode_str_0);	return args;
 }
 
-void generated_windows_print_sysret_ntquerysystemenvironmentvalue(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntquerysystemenvironmentvalue(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5923,7 +6445,8 @@ void generated_windows_print_sysret_ntquerysystemenvironmentvalue(GtGuestState *
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntquerysysteminformationex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntquerysysteminformationex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5932,7 +6455,8 @@ void *generated_windows_print_syscall_ntquerysysteminformationex(GtGuestState *s
 	return args;
 }
 
-void generated_windows_print_sysret_ntquerysysteminformationex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntquerysysteminformationex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5942,7 +6466,8 @@ void generated_windows_print_sysret_ntquerysysteminformationex(GtGuestState *sta
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntquerysysteminformation(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntquerysysteminformation(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5951,7 +6476,8 @@ void *generated_windows_print_syscall_ntquerysysteminformation(GtGuestState *sta
 	return args;
 }
 
-void generated_windows_print_sysret_ntquerysysteminformation(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntquerysysteminformation(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5961,7 +6487,8 @@ void generated_windows_print_sysret_ntquerysysteminformation(GtGuestState *state
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntquerysystemtime(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntquerysystemtime(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5970,7 +6497,8 @@ void *generated_windows_print_syscall_ntquerysystemtime(GtGuestState *state, gt_
 	return args;
 }
 
-void generated_windows_print_sysret_ntquerysystemtime(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntquerysystemtime(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5979,7 +6507,8 @@ void generated_windows_print_sysret_ntquerysystemtime(GtGuestState *state, gt_pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntquerytimer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntquerytimer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -5988,7 +6517,8 @@ void *generated_windows_print_syscall_ntquerytimer(GtGuestState *state, gt_pid_t
 	return args;
 }
 
-void generated_windows_print_sysret_ntquerytimer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntquerytimer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -5998,7 +6528,8 @@ void generated_windows_print_sysret_ntquerytimer(GtGuestState *state, gt_pid_t p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntquerytimerresolution(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntquerytimerresolution(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6007,7 +6538,8 @@ void *generated_windows_print_syscall_ntquerytimerresolution(GtGuestState *state
 	return args;
 }
 
-void generated_windows_print_sysret_ntquerytimerresolution(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntquerytimerresolution(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6021,7 +6553,8 @@ void generated_windows_print_sysret_ntquerytimerresolution(GtGuestState *state, 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryvaluekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryvaluekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6030,7 +6563,8 @@ void *generated_windows_print_syscall_ntqueryvaluekey(GtGuestState *state, gt_pi
 	free(unicode_str_1);	return args;
 }
 
-void generated_windows_print_sysret_ntqueryvaluekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryvaluekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6040,7 +6574,8 @@ void generated_windows_print_sysret_ntqueryvaluekey(GtGuestState *state, gt_pid_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryvirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryvirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6049,7 +6584,8 @@ void *generated_windows_print_syscall_ntqueryvirtualmemory(GtGuestState *state, 
 	return args;
 }
 
-void generated_windows_print_sysret_ntqueryvirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryvirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6058,7 +6594,8 @@ void generated_windows_print_sysret_ntqueryvirtualmemory(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueryvolumeinformationfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueryvolumeinformationfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6067,7 +6604,8 @@ void *generated_windows_print_syscall_ntqueryvolumeinformationfile(GtGuestState 
 	return args;
 }
 
-void generated_windows_print_sysret_ntqueryvolumeinformationfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueryvolumeinformationfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6076,7 +6614,8 @@ void generated_windows_print_sysret_ntqueryvolumeinformationfile(GtGuestState *s
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueueapcthreadex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueueapcthreadex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6085,7 +6624,8 @@ void *generated_windows_print_syscall_ntqueueapcthreadex(GtGuestState *state, gt
 	return args;
 }
 
-void generated_windows_print_sysret_ntqueueapcthreadex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueueapcthreadex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6094,7 +6634,8 @@ void generated_windows_print_sysret_ntqueueapcthreadex(GtGuestState *state, gt_p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntqueueapcthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntqueueapcthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6103,7 +6644,8 @@ void *generated_windows_print_syscall_ntqueueapcthread(GtGuestState *state, gt_p
 	return args;
 }
 
-void generated_windows_print_sysret_ntqueueapcthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntqueueapcthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6112,7 +6654,8 @@ void generated_windows_print_sysret_ntqueueapcthread(GtGuestState *state, gt_pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntraiseexception(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntraiseexception(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6121,7 +6664,8 @@ void *generated_windows_print_syscall_ntraiseexception(GtGuestState *state, gt_p
 	return args;
 }
 
-void generated_windows_print_sysret_ntraiseexception(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntraiseexception(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6130,7 +6674,8 @@ void generated_windows_print_sysret_ntraiseexception(GtGuestState *state, gt_pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntraiseharderror(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntraiseharderror(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6139,7 +6684,8 @@ void *generated_windows_print_syscall_ntraiseharderror(GtGuestState *state, gt_p
 	return args;
 }
 
-void generated_windows_print_sysret_ntraiseharderror(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntraiseharderror(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6149,7 +6695,8 @@ void generated_windows_print_sysret_ntraiseharderror(GtGuestState *state, gt_pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntreadfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntreadfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6159,7 +6706,8 @@ void *generated_windows_print_syscall_ntreadfile(GtGuestState *state, gt_pid_t p
 	return args;
 }
 
-void generated_windows_print_sysret_ntreadfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntreadfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6168,7 +6716,8 @@ void generated_windows_print_sysret_ntreadfile(GtGuestState *state, gt_pid_t pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntreadfilescatter(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntreadfilescatter(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6178,7 +6727,8 @@ void *generated_windows_print_syscall_ntreadfilescatter(GtGuestState *state, gt_
 	return args;
 }
 
-void generated_windows_print_sysret_ntreadfilescatter(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntreadfilescatter(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6187,7 +6737,8 @@ void generated_windows_print_sysret_ntreadfilescatter(GtGuestState *state, gt_pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntreadonlyenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntreadonlyenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6196,7 +6747,8 @@ void *generated_windows_print_syscall_ntreadonlyenlistment(GtGuestState *state, 
 	return args;
 }
 
-void generated_windows_print_sysret_ntreadonlyenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntreadonlyenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6205,7 +6757,8 @@ void generated_windows_print_sysret_ntreadonlyenlistment(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntreadrequestdata(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntreadrequestdata(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6214,7 +6767,8 @@ void *generated_windows_print_syscall_ntreadrequestdata(GtGuestState *state, gt_
 	return args;
 }
 
-void generated_windows_print_sysret_ntreadrequestdata(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntreadrequestdata(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6223,7 +6777,8 @@ void generated_windows_print_sysret_ntreadrequestdata(GtGuestState *state, gt_pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntreadvirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntreadvirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6232,7 +6787,8 @@ void *generated_windows_print_syscall_ntreadvirtualmemory(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntreadvirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntreadvirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6241,7 +6797,8 @@ void generated_windows_print_sysret_ntreadvirtualmemory(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntrecoverenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntrecoverenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6250,7 +6807,8 @@ void *generated_windows_print_syscall_ntrecoverenlistment(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntrecoverenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntrecoverenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6259,7 +6817,8 @@ void generated_windows_print_sysret_ntrecoverenlistment(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntrecoverresourcemanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntrecoverresourcemanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6268,7 +6827,8 @@ void *generated_windows_print_syscall_ntrecoverresourcemanager(GtGuestState *sta
 	return args;
 }
 
-void generated_windows_print_sysret_ntrecoverresourcemanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntrecoverresourcemanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6277,7 +6837,8 @@ void generated_windows_print_sysret_ntrecoverresourcemanager(GtGuestState *state
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntrecovertransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntrecovertransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6286,7 +6847,8 @@ void *generated_windows_print_syscall_ntrecovertransactionmanager(GtGuestState *
 	return args;
 }
 
-void generated_windows_print_sysret_ntrecovertransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntrecovertransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6295,7 +6857,8 @@ void generated_windows_print_sysret_ntrecovertransactionmanager(GtGuestState *st
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntregisterprotocoladdressinformation(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntregisterprotocoladdressinformation(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6304,7 +6867,8 @@ void *generated_windows_print_syscall_ntregisterprotocoladdressinformation(GtGue
 	return args;
 }
 
-void generated_windows_print_sysret_ntregisterprotocoladdressinformation(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntregisterprotocoladdressinformation(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6313,7 +6877,8 @@ void generated_windows_print_sysret_ntregisterprotocoladdressinformation(GtGuest
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntregisterthreadterminateport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntregisterthreadterminateport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6322,7 +6887,8 @@ void *generated_windows_print_syscall_ntregisterthreadterminateport(GtGuestState
 	return args;
 }
 
-void generated_windows_print_sysret_ntregisterthreadterminateport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntregisterthreadterminateport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6331,7 +6897,8 @@ void generated_windows_print_sysret_ntregisterthreadterminateport(GtGuestState *
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntreleasekeyedevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntreleasekeyedevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6340,7 +6907,8 @@ void *generated_windows_print_syscall_ntreleasekeyedevent(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntreleasekeyedevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntreleasekeyedevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6349,7 +6917,8 @@ void generated_windows_print_sysret_ntreleasekeyedevent(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntreleasemutant(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntreleasemutant(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6358,7 +6927,8 @@ void *generated_windows_print_syscall_ntreleasemutant(GtGuestState *state, gt_pi
 	return args;
 }
 
-void generated_windows_print_sysret_ntreleasemutant(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntreleasemutant(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6367,7 +6937,8 @@ void generated_windows_print_sysret_ntreleasemutant(GtGuestState *state, gt_pid_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntreleasesemaphore(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntreleasesemaphore(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6376,7 +6947,8 @@ void *generated_windows_print_syscall_ntreleasesemaphore(GtGuestState *state, gt
 	return args;
 }
 
-void generated_windows_print_sysret_ntreleasesemaphore(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntreleasesemaphore(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6385,7 +6957,8 @@ void generated_windows_print_sysret_ntreleasesemaphore(GtGuestState *state, gt_p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntreleaseworkerfactoryworker(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntreleaseworkerfactoryworker(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6394,7 +6967,8 @@ void *generated_windows_print_syscall_ntreleaseworkerfactoryworker(GtGuestState 
 	return args;
 }
 
-void generated_windows_print_sysret_ntreleaseworkerfactoryworker(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntreleaseworkerfactoryworker(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6403,7 +6977,8 @@ void generated_windows_print_sysret_ntreleaseworkerfactoryworker(GtGuestState *s
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntremoveiocompletionex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntremoveiocompletionex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6412,7 +6987,8 @@ void *generated_windows_print_syscall_ntremoveiocompletionex(GtGuestState *state
 	return args;
 }
 
-void generated_windows_print_sysret_ntremoveiocompletionex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntremoveiocompletionex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6422,7 +6998,8 @@ void generated_windows_print_sysret_ntremoveiocompletionex(GtGuestState *state, 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntremoveiocompletion(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntremoveiocompletion(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6431,7 +7008,8 @@ void *generated_windows_print_syscall_ntremoveiocompletion(GtGuestState *state, 
 	return args;
 }
 
-void generated_windows_print_sysret_ntremoveiocompletion(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntremoveiocompletion(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6440,7 +7018,8 @@ void generated_windows_print_sysret_ntremoveiocompletion(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntremoveprocessdebug(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntremoveprocessdebug(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6449,7 +7028,8 @@ void *generated_windows_print_syscall_ntremoveprocessdebug(GtGuestState *state, 
 	return args;
 }
 
-void generated_windows_print_sysret_ntremoveprocessdebug(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntremoveprocessdebug(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6458,7 +7038,8 @@ void generated_windows_print_sysret_ntremoveprocessdebug(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntrenamekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntrenamekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6467,7 +7048,8 @@ void *generated_windows_print_syscall_ntrenamekey(GtGuestState *state, gt_pid_t 
 	free(unicode_str_1);	return args;
 }
 
-void generated_windows_print_sysret_ntrenamekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntrenamekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6476,7 +7058,8 @@ void generated_windows_print_sysret_ntrenamekey(GtGuestState *state, gt_pid_t pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntrenametransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntrenametransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6485,7 +7068,8 @@ void *generated_windows_print_syscall_ntrenametransactionmanager(GtGuestState *s
 	free(unicode_str_0);	return args;
 }
 
-void generated_windows_print_sysret_ntrenametransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntrenametransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6494,7 +7078,8 @@ void generated_windows_print_sysret_ntrenametransactionmanager(GtGuestState *sta
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntreplacekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntreplacekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6523,7 +7108,8 @@ void *generated_windows_print_syscall_ntreplacekey(GtGuestState *state, gt_pid_t
 	free(obj_attr_2);	return args;
 }
 
-void generated_windows_print_sysret_ntreplacekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntreplacekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6532,7 +7118,8 @@ void generated_windows_print_sysret_ntreplacekey(GtGuestState *state, gt_pid_t p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntreplacepartitionunit(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntreplacepartitionunit(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6543,7 +7130,8 @@ void *generated_windows_print_syscall_ntreplacepartitionunit(GtGuestState *state
 	free(unicode_str_1);	return args;
 }
 
-void generated_windows_print_sysret_ntreplacepartitionunit(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntreplacepartitionunit(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6552,7 +7140,8 @@ void generated_windows_print_sysret_ntreplacepartitionunit(GtGuestState *state, 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntreplyport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntreplyport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6561,7 +7150,8 @@ void *generated_windows_print_syscall_ntreplyport(GtGuestState *state, gt_pid_t 
 	return args;
 }
 
-void generated_windows_print_sysret_ntreplyport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntreplyport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6570,7 +7160,8 @@ void generated_windows_print_sysret_ntreplyport(GtGuestState *state, gt_pid_t pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntreplywaitreceiveportex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntreplywaitreceiveportex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6579,7 +7170,8 @@ void *generated_windows_print_syscall_ntreplywaitreceiveportex(GtGuestState *sta
 	return args;
 }
 
-void generated_windows_print_sysret_ntreplywaitreceiveportex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntreplywaitreceiveportex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6588,7 +7180,8 @@ void generated_windows_print_sysret_ntreplywaitreceiveportex(GtGuestState *state
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntreplywaitreceiveport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntreplywaitreceiveport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6597,7 +7190,8 @@ void *generated_windows_print_syscall_ntreplywaitreceiveport(GtGuestState *state
 	return args;
 }
 
-void generated_windows_print_sysret_ntreplywaitreceiveport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntreplywaitreceiveport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6606,7 +7200,8 @@ void generated_windows_print_sysret_ntreplywaitreceiveport(GtGuestState *state, 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntreplywaitreplyport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntreplywaitreplyport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6615,7 +7210,8 @@ void *generated_windows_print_syscall_ntreplywaitreplyport(GtGuestState *state, 
 	return args;
 }
 
-void generated_windows_print_sysret_ntreplywaitreplyport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntreplywaitreplyport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6624,7 +7220,8 @@ void generated_windows_print_sysret_ntreplywaitreplyport(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntrequestport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntrequestport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6633,7 +7230,8 @@ void *generated_windows_print_syscall_ntrequestport(GtGuestState *state, gt_pid_
 	return args;
 }
 
-void generated_windows_print_sysret_ntrequestport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntrequestport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6642,7 +7240,8 @@ void generated_windows_print_sysret_ntrequestport(GtGuestState *state, gt_pid_t 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntrequestwaitreplyport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntrequestwaitreplyport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6651,7 +7250,8 @@ void *generated_windows_print_syscall_ntrequestwaitreplyport(GtGuestState *state
 	return args;
 }
 
-void generated_windows_print_sysret_ntrequestwaitreplyport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntrequestwaitreplyport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6660,7 +7260,8 @@ void generated_windows_print_sysret_ntrequestwaitreplyport(GtGuestState *state, 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntresetevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntresetevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6669,7 +7270,8 @@ void *generated_windows_print_syscall_ntresetevent(GtGuestState *state, gt_pid_t
 	return args;
 }
 
-void generated_windows_print_sysret_ntresetevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntresetevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6678,7 +7280,8 @@ void generated_windows_print_sysret_ntresetevent(GtGuestState *state, gt_pid_t p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntresetwritewatch(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntresetwritewatch(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6687,7 +7290,8 @@ void *generated_windows_print_syscall_ntresetwritewatch(GtGuestState *state, gt_
 	return args;
 }
 
-void generated_windows_print_sysret_ntresetwritewatch(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntresetwritewatch(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6696,7 +7300,8 @@ void generated_windows_print_sysret_ntresetwritewatch(GtGuestState *state, gt_pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntrestorekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntrestorekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6705,7 +7310,8 @@ void *generated_windows_print_syscall_ntrestorekey(GtGuestState *state, gt_pid_t
 	return args;
 }
 
-void generated_windows_print_sysret_ntrestorekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntrestorekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6714,7 +7320,8 @@ void generated_windows_print_sysret_ntrestorekey(GtGuestState *state, gt_pid_t p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntresumeprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntresumeprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6723,7 +7330,8 @@ void *generated_windows_print_syscall_ntresumeprocess(GtGuestState *state, gt_pi
 	return args;
 }
 
-void generated_windows_print_sysret_ntresumeprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntresumeprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6732,7 +7340,8 @@ void generated_windows_print_sysret_ntresumeprocess(GtGuestState *state, gt_pid_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntresumethread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntresumethread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6741,7 +7350,8 @@ void *generated_windows_print_syscall_ntresumethread(GtGuestState *state, gt_pid
 	return args;
 }
 
-void generated_windows_print_sysret_ntresumethread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntresumethread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6751,7 +7361,8 @@ void generated_windows_print_sysret_ntresumethread(GtGuestState *state, gt_pid_t
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntrollbackcomplete(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntrollbackcomplete(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6760,7 +7371,8 @@ void *generated_windows_print_syscall_ntrollbackcomplete(GtGuestState *state, gt
 	return args;
 }
 
-void generated_windows_print_sysret_ntrollbackcomplete(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntrollbackcomplete(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6769,7 +7381,8 @@ void generated_windows_print_sysret_ntrollbackcomplete(GtGuestState *state, gt_p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntrollbackenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntrollbackenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6778,7 +7391,8 @@ void *generated_windows_print_syscall_ntrollbackenlistment(GtGuestState *state, 
 	return args;
 }
 
-void generated_windows_print_sysret_ntrollbackenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntrollbackenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6787,7 +7401,8 @@ void generated_windows_print_sysret_ntrollbackenlistment(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntrollbacktransaction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntrollbacktransaction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6796,7 +7411,8 @@ void *generated_windows_print_syscall_ntrollbacktransaction(GtGuestState *state,
 	return args;
 }
 
-void generated_windows_print_sysret_ntrollbacktransaction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntrollbacktransaction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6805,7 +7421,8 @@ void generated_windows_print_sysret_ntrollbacktransaction(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntrollforwardtransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntrollforwardtransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6814,7 +7431,8 @@ void *generated_windows_print_syscall_ntrollforwardtransactionmanager(GtGuestSta
 	return args;
 }
 
-void generated_windows_print_sysret_ntrollforwardtransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntrollforwardtransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6823,7 +7441,8 @@ void generated_windows_print_sysret_ntrollforwardtransactionmanager(GtGuestState
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsavekeyex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsavekeyex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6832,7 +7451,8 @@ void *generated_windows_print_syscall_ntsavekeyex(GtGuestState *state, gt_pid_t 
 	return args;
 }
 
-void generated_windows_print_sysret_ntsavekeyex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsavekeyex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6841,7 +7461,8 @@ void generated_windows_print_sysret_ntsavekeyex(GtGuestState *state, gt_pid_t pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsavekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsavekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6850,7 +7471,8 @@ void *generated_windows_print_syscall_ntsavekey(GtGuestState *state, gt_pid_t pi
 	return args;
 }
 
-void generated_windows_print_sysret_ntsavekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsavekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6859,7 +7481,8 @@ void generated_windows_print_sysret_ntsavekey(GtGuestState *state, gt_pid_t pid,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsavemergedkeys(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsavemergedkeys(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6868,7 +7491,8 @@ void *generated_windows_print_syscall_ntsavemergedkeys(GtGuestState *state, gt_p
 	return args;
 }
 
-void generated_windows_print_sysret_ntsavemergedkeys(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsavemergedkeys(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6877,7 +7501,8 @@ void generated_windows_print_sysret_ntsavemergedkeys(GtGuestState *state, gt_pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsecureconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsecureconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6888,7 +7513,8 @@ void *generated_windows_print_syscall_ntsecureconnectport(GtGuestState *state, g
 	free(unicode_str_1);	return args;
 }
 
-void generated_windows_print_sysret_ntsecureconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsecureconnectport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6902,7 +7528,8 @@ void generated_windows_print_sysret_ntsecureconnectport(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntserializeboot(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntserializeboot(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6911,7 +7538,8 @@ void *generated_windows_print_syscall_ntserializeboot(GtGuestState *state, gt_pi
 	return args;
 }
 
-void generated_windows_print_sysret_ntserializeboot(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntserializeboot(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6920,7 +7548,8 @@ void generated_windows_print_sysret_ntserializeboot(GtGuestState *state, gt_pid_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetbootentryorder(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetbootentryorder(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6929,7 +7558,8 @@ void *generated_windows_print_syscall_ntsetbootentryorder(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetbootentryorder(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetbootentryorder(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6938,7 +7568,8 @@ void generated_windows_print_sysret_ntsetbootentryorder(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetbootoptions(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetbootoptions(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6947,7 +7578,8 @@ void *generated_windows_print_syscall_ntsetbootoptions(GtGuestState *state, gt_p
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetbootoptions(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetbootoptions(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6956,7 +7588,8 @@ void generated_windows_print_sysret_ntsetbootoptions(GtGuestState *state, gt_pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetcontextthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetcontextthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6965,7 +7598,8 @@ void *generated_windows_print_syscall_ntsetcontextthread(GtGuestState *state, gt
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetcontextthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetcontextthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6974,7 +7608,8 @@ void generated_windows_print_sysret_ntsetcontextthread(GtGuestState *state, gt_p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetdebugfilterstate(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetdebugfilterstate(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -6983,7 +7618,8 @@ void *generated_windows_print_syscall_ntsetdebugfilterstate(GtGuestState *state,
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetdebugfilterstate(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetdebugfilterstate(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -6992,7 +7628,8 @@ void generated_windows_print_sysret_ntsetdebugfilterstate(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetdefaultharderrorport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetdefaultharderrorport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7001,7 +7638,8 @@ void *generated_windows_print_syscall_ntsetdefaultharderrorport(GtGuestState *st
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetdefaultharderrorport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetdefaultharderrorport(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7010,7 +7648,8 @@ void generated_windows_print_sysret_ntsetdefaultharderrorport(GtGuestState *stat
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetdefaultlocale(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetdefaultlocale(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7019,7 +7658,8 @@ void *generated_windows_print_syscall_ntsetdefaultlocale(GtGuestState *state, gt
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetdefaultlocale(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetdefaultlocale(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7028,7 +7668,8 @@ void generated_windows_print_sysret_ntsetdefaultlocale(GtGuestState *state, gt_p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetdefaultuilanguage(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetdefaultuilanguage(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7037,7 +7678,8 @@ void *generated_windows_print_syscall_ntsetdefaultuilanguage(GtGuestState *state
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetdefaultuilanguage(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetdefaultuilanguage(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7046,7 +7688,8 @@ void generated_windows_print_sysret_ntsetdefaultuilanguage(GtGuestState *state, 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetdriverentryorder(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetdriverentryorder(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7055,7 +7698,8 @@ void *generated_windows_print_syscall_ntsetdriverentryorder(GtGuestState *state,
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetdriverentryorder(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetdriverentryorder(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7064,7 +7708,8 @@ void generated_windows_print_sysret_ntsetdriverentryorder(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntseteafile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntseteafile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7073,7 +7718,8 @@ void *generated_windows_print_syscall_ntseteafile(GtGuestState *state, gt_pid_t 
 	return args;
 }
 
-void generated_windows_print_sysret_ntseteafile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntseteafile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7082,7 +7728,8 @@ void generated_windows_print_sysret_ntseteafile(GtGuestState *state, gt_pid_t pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntseteventboostpriority(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntseteventboostpriority(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7091,7 +7738,8 @@ void *generated_windows_print_syscall_ntseteventboostpriority(GtGuestState *stat
 	return args;
 }
 
-void generated_windows_print_sysret_ntseteventboostpriority(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntseteventboostpriority(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7100,7 +7748,8 @@ void generated_windows_print_sysret_ntseteventboostpriority(GtGuestState *state,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7109,7 +7758,8 @@ void *generated_windows_print_syscall_ntsetevent(GtGuestState *state, gt_pid_t p
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7118,7 +7768,8 @@ void generated_windows_print_sysret_ntsetevent(GtGuestState *state, gt_pid_t pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsethigheventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsethigheventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7127,7 +7778,8 @@ void *generated_windows_print_syscall_ntsethigheventpair(GtGuestState *state, gt
 	return args;
 }
 
-void generated_windows_print_sysret_ntsethigheventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsethigheventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7136,7 +7788,8 @@ void generated_windows_print_sysret_ntsethigheventpair(GtGuestState *state, gt_p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsethighwaitloweventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsethighwaitloweventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7145,7 +7798,8 @@ void *generated_windows_print_syscall_ntsethighwaitloweventpair(GtGuestState *st
 	return args;
 }
 
-void generated_windows_print_sysret_ntsethighwaitloweventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsethighwaitloweventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7154,7 +7808,8 @@ void generated_windows_print_sysret_ntsethighwaitloweventpair(GtGuestState *stat
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetinformationdebugobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetinformationdebugobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7163,7 +7818,8 @@ void *generated_windows_print_syscall_ntsetinformationdebugobject(GtGuestState *
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetinformationdebugobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetinformationdebugobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7173,7 +7829,8 @@ void generated_windows_print_sysret_ntsetinformationdebugobject(GtGuestState *st
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetinformationenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetinformationenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7182,7 +7839,8 @@ void *generated_windows_print_syscall_ntsetinformationenlistment(GtGuestState *s
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetinformationenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetinformationenlistment(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7191,7 +7849,8 @@ void generated_windows_print_sysret_ntsetinformationenlistment(GtGuestState *sta
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetinformationfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetinformationfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7200,7 +7859,8 @@ void *generated_windows_print_syscall_ntsetinformationfile(GtGuestState *state, 
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetinformationfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetinformationfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7209,7 +7869,8 @@ void generated_windows_print_sysret_ntsetinformationfile(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetinformationjobobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetinformationjobobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7218,7 +7879,8 @@ void *generated_windows_print_syscall_ntsetinformationjobobject(GtGuestState *st
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetinformationjobobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetinformationjobobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7227,7 +7889,8 @@ void generated_windows_print_sysret_ntsetinformationjobobject(GtGuestState *stat
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetinformationkey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetinformationkey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7236,7 +7899,8 @@ void *generated_windows_print_syscall_ntsetinformationkey(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetinformationkey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetinformationkey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7245,7 +7909,8 @@ void generated_windows_print_sysret_ntsetinformationkey(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetinformationobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetinformationobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7254,7 +7919,8 @@ void *generated_windows_print_syscall_ntsetinformationobject(GtGuestState *state
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetinformationobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetinformationobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7263,7 +7929,8 @@ void generated_windows_print_sysret_ntsetinformationobject(GtGuestState *state, 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetinformationprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetinformationprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7272,7 +7939,8 @@ void *generated_windows_print_syscall_ntsetinformationprocess(GtGuestState *stat
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetinformationprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetinformationprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7281,7 +7949,8 @@ void generated_windows_print_sysret_ntsetinformationprocess(GtGuestState *state,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetinformationresourcemanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetinformationresourcemanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7290,7 +7959,8 @@ void *generated_windows_print_syscall_ntsetinformationresourcemanager(GtGuestSta
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetinformationresourcemanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetinformationresourcemanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7299,7 +7969,8 @@ void generated_windows_print_sysret_ntsetinformationresourcemanager(GtGuestState
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetinformationthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetinformationthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7308,7 +7979,8 @@ void *generated_windows_print_syscall_ntsetinformationthread(GtGuestState *state
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetinformationthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetinformationthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7317,7 +7989,8 @@ void generated_windows_print_sysret_ntsetinformationthread(GtGuestState *state, 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetinformationtoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetinformationtoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7326,7 +7999,8 @@ void *generated_windows_print_syscall_ntsetinformationtoken(GtGuestState *state,
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetinformationtoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetinformationtoken(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7335,7 +8009,8 @@ void generated_windows_print_sysret_ntsetinformationtoken(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetinformationtransaction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetinformationtransaction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7344,7 +8019,8 @@ void *generated_windows_print_syscall_ntsetinformationtransaction(GtGuestState *
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetinformationtransaction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetinformationtransaction(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7353,7 +8029,8 @@ void generated_windows_print_sysret_ntsetinformationtransaction(GtGuestState *st
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetinformationtransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetinformationtransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7362,7 +8039,8 @@ void *generated_windows_print_syscall_ntsetinformationtransactionmanager(GtGuest
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetinformationtransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetinformationtransactionmanager(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7371,7 +8049,8 @@ void generated_windows_print_sysret_ntsetinformationtransactionmanager(GtGuestSt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetinformationworkerfactory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetinformationworkerfactory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7380,7 +8059,8 @@ void *generated_windows_print_syscall_ntsetinformationworkerfactory(GtGuestState
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetinformationworkerfactory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetinformationworkerfactory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7389,7 +8069,8 @@ void generated_windows_print_sysret_ntsetinformationworkerfactory(GtGuestState *
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetintervalprofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetintervalprofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7398,7 +8079,8 @@ void *generated_windows_print_syscall_ntsetintervalprofile(GtGuestState *state, 
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetintervalprofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetintervalprofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7407,7 +8089,8 @@ void generated_windows_print_sysret_ntsetintervalprofile(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetiocompletionex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetiocompletionex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7416,7 +8099,8 @@ void *generated_windows_print_syscall_ntsetiocompletionex(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetiocompletionex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetiocompletionex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7425,7 +8109,8 @@ void generated_windows_print_sysret_ntsetiocompletionex(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetiocompletion(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetiocompletion(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7434,7 +8119,8 @@ void *generated_windows_print_syscall_ntsetiocompletion(GtGuestState *state, gt_
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetiocompletion(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetiocompletion(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7443,7 +8129,8 @@ void generated_windows_print_sysret_ntsetiocompletion(GtGuestState *state, gt_pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetldtentries(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetldtentries(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7452,7 +8139,8 @@ void *generated_windows_print_syscall_ntsetldtentries(GtGuestState *state, gt_pi
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetldtentries(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetldtentries(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7461,7 +8149,8 @@ void generated_windows_print_sysret_ntsetldtentries(GtGuestState *state, gt_pid_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetloweventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetloweventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7470,7 +8159,8 @@ void *generated_windows_print_syscall_ntsetloweventpair(GtGuestState *state, gt_
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetloweventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetloweventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7479,7 +8169,8 @@ void generated_windows_print_sysret_ntsetloweventpair(GtGuestState *state, gt_pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetlowwaithigheventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetlowwaithigheventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7488,7 +8179,8 @@ void *generated_windows_print_syscall_ntsetlowwaithigheventpair(GtGuestState *st
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetlowwaithigheventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetlowwaithigheventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7497,7 +8189,8 @@ void generated_windows_print_sysret_ntsetlowwaithigheventpair(GtGuestState *stat
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetquotainformationfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetquotainformationfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7506,7 +8199,8 @@ void *generated_windows_print_syscall_ntsetquotainformationfile(GtGuestState *st
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetquotainformationfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetquotainformationfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7515,7 +8209,8 @@ void generated_windows_print_sysret_ntsetquotainformationfile(GtGuestState *stat
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetsecurityobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetsecurityobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7524,7 +8219,8 @@ void *generated_windows_print_syscall_ntsetsecurityobject(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetsecurityobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetsecurityobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7533,7 +8229,8 @@ void generated_windows_print_sysret_ntsetsecurityobject(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetsystemenvironmentvalueex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetsystemenvironmentvalueex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7542,7 +8239,8 @@ void *generated_windows_print_syscall_ntsetsystemenvironmentvalueex(GtGuestState
 	free(unicode_str_0);	return args;
 }
 
-void generated_windows_print_sysret_ntsetsystemenvironmentvalueex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetsystemenvironmentvalueex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7551,7 +8249,8 @@ void generated_windows_print_sysret_ntsetsystemenvironmentvalueex(GtGuestState *
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetsystemenvironmentvalue(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetsystemenvironmentvalue(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7562,7 +8261,8 @@ void *generated_windows_print_syscall_ntsetsystemenvironmentvalue(GtGuestState *
 	free(unicode_str_1);	return args;
 }
 
-void generated_windows_print_sysret_ntsetsystemenvironmentvalue(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetsystemenvironmentvalue(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7571,7 +8271,8 @@ void generated_windows_print_sysret_ntsetsystemenvironmentvalue(GtGuestState *st
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetsysteminformation(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetsysteminformation(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7580,7 +8281,8 @@ void *generated_windows_print_syscall_ntsetsysteminformation(GtGuestState *state
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetsysteminformation(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetsysteminformation(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7589,7 +8291,8 @@ void generated_windows_print_sysret_ntsetsysteminformation(GtGuestState *state, 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetsystempowerstate(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetsystempowerstate(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7598,7 +8301,8 @@ void *generated_windows_print_syscall_ntsetsystempowerstate(GtGuestState *state,
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetsystempowerstate(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetsystempowerstate(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7607,7 +8311,8 @@ void generated_windows_print_sysret_ntsetsystempowerstate(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetsystemtime(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetsystemtime(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7616,7 +8321,8 @@ void *generated_windows_print_syscall_ntsetsystemtime(GtGuestState *state, gt_pi
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetsystemtime(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetsystemtime(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7625,7 +8331,8 @@ void generated_windows_print_sysret_ntsetsystemtime(GtGuestState *state, gt_pid_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetthreadexecutionstate(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetthreadexecutionstate(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7634,7 +8341,8 @@ void *generated_windows_print_syscall_ntsetthreadexecutionstate(GtGuestState *st
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetthreadexecutionstate(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetthreadexecutionstate(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7643,7 +8351,8 @@ void generated_windows_print_sysret_ntsetthreadexecutionstate(GtGuestState *stat
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsettimerex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsettimerex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7652,7 +8361,8 @@ void *generated_windows_print_syscall_ntsettimerex(GtGuestState *state, gt_pid_t
 	return args;
 }
 
-void generated_windows_print_sysret_ntsettimerex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsettimerex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7661,7 +8371,8 @@ void generated_windows_print_sysret_ntsettimerex(GtGuestState *state, gt_pid_t p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsettimer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsettimer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7670,7 +8381,8 @@ void *generated_windows_print_syscall_ntsettimer(GtGuestState *state, gt_pid_t p
 	return args;
 }
 
-void generated_windows_print_sysret_ntsettimer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsettimer(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7679,7 +8391,8 @@ void generated_windows_print_sysret_ntsettimer(GtGuestState *state, gt_pid_t pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsettimerresolution(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsettimerresolution(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7688,7 +8401,8 @@ void *generated_windows_print_syscall_ntsettimerresolution(GtGuestState *state, 
 	return args;
 }
 
-void generated_windows_print_sysret_ntsettimerresolution(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsettimerresolution(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7698,7 +8412,8 @@ void generated_windows_print_sysret_ntsettimerresolution(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetuuidseed(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetuuidseed(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7707,7 +8422,8 @@ void *generated_windows_print_syscall_ntsetuuidseed(GtGuestState *state, gt_pid_
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetuuidseed(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetuuidseed(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7716,7 +8432,8 @@ void generated_windows_print_sysret_ntsetuuidseed(GtGuestState *state, gt_pid_t 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetvaluekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetvaluekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7725,7 +8442,8 @@ void *generated_windows_print_syscall_ntsetvaluekey(GtGuestState *state, gt_pid_
 	free(unicode_str_1);	return args;
 }
 
-void generated_windows_print_sysret_ntsetvaluekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetvaluekey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7734,7 +8452,8 @@ void generated_windows_print_sysret_ntsetvaluekey(GtGuestState *state, gt_pid_t 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsetvolumeinformationfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsetvolumeinformationfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7743,7 +8462,8 @@ void *generated_windows_print_syscall_ntsetvolumeinformationfile(GtGuestState *s
 	return args;
 }
 
-void generated_windows_print_sysret_ntsetvolumeinformationfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsetvolumeinformationfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7752,7 +8472,8 @@ void generated_windows_print_sysret_ntsetvolumeinformationfile(GtGuestState *sta
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntshutdownsystem(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntshutdownsystem(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7761,7 +8482,8 @@ void *generated_windows_print_syscall_ntshutdownsystem(GtGuestState *state, gt_p
 	return args;
 }
 
-void generated_windows_print_sysret_ntshutdownsystem(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntshutdownsystem(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7770,7 +8492,8 @@ void generated_windows_print_sysret_ntshutdownsystem(GtGuestState *state, gt_pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntshutdownworkerfactory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntshutdownworkerfactory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7779,7 +8502,8 @@ void *generated_windows_print_syscall_ntshutdownworkerfactory(GtGuestState *stat
 	return args;
 }
 
-void generated_windows_print_sysret_ntshutdownworkerfactory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntshutdownworkerfactory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7788,7 +8512,8 @@ void generated_windows_print_sysret_ntshutdownworkerfactory(GtGuestState *state,
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsignalandwaitforsingleobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsignalandwaitforsingleobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7797,7 +8522,8 @@ void *generated_windows_print_syscall_ntsignalandwaitforsingleobject(GtGuestStat
 	return args;
 }
 
-void generated_windows_print_sysret_ntsignalandwaitforsingleobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsignalandwaitforsingleobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7806,7 +8532,8 @@ void generated_windows_print_sysret_ntsignalandwaitforsingleobject(GtGuestState 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsinglephasereject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsinglephasereject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7815,7 +8542,8 @@ void *generated_windows_print_syscall_ntsinglephasereject(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntsinglephasereject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsinglephasereject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7824,7 +8552,8 @@ void generated_windows_print_sysret_ntsinglephasereject(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntstartprofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntstartprofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7833,7 +8562,8 @@ void *generated_windows_print_syscall_ntstartprofile(GtGuestState *state, gt_pid
 	return args;
 }
 
-void generated_windows_print_sysret_ntstartprofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntstartprofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7842,7 +8572,8 @@ void generated_windows_print_sysret_ntstartprofile(GtGuestState *state, gt_pid_t
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntstopprofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntstopprofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7851,7 +8582,8 @@ void *generated_windows_print_syscall_ntstopprofile(GtGuestState *state, gt_pid_
 	return args;
 }
 
-void generated_windows_print_sysret_ntstopprofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntstopprofile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7860,7 +8592,8 @@ void generated_windows_print_sysret_ntstopprofile(GtGuestState *state, gt_pid_t 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsuspendprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsuspendprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7869,7 +8602,8 @@ void *generated_windows_print_syscall_ntsuspendprocess(GtGuestState *state, gt_p
 	return args;
 }
 
-void generated_windows_print_sysret_ntsuspendprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsuspendprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7878,7 +8612,8 @@ void generated_windows_print_sysret_ntsuspendprocess(GtGuestState *state, gt_pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsuspendthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsuspendthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7887,7 +8622,8 @@ void *generated_windows_print_syscall_ntsuspendthread(GtGuestState *state, gt_pi
 	return args;
 }
 
-void generated_windows_print_sysret_ntsuspendthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsuspendthread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7897,7 +8633,8 @@ void generated_windows_print_sysret_ntsuspendthread(GtGuestState *state, gt_pid_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntsystemdebugcontrol(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntsystemdebugcontrol(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7906,7 +8643,8 @@ void *generated_windows_print_syscall_ntsystemdebugcontrol(GtGuestState *state, 
 	return args;
 }
 
-void generated_windows_print_sysret_ntsystemdebugcontrol(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntsystemdebugcontrol(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7916,7 +8654,8 @@ void generated_windows_print_sysret_ntsystemdebugcontrol(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntterminatejobobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntterminatejobobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7925,7 +8664,8 @@ void *generated_windows_print_syscall_ntterminatejobobject(GtGuestState *state, 
 	return args;
 }
 
-void generated_windows_print_sysret_ntterminatejobobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntterminatejobobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7934,7 +8674,8 @@ void generated_windows_print_sysret_ntterminatejobobject(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntterminateprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntterminateprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7943,7 +8684,8 @@ void *generated_windows_print_syscall_ntterminateprocess(GtGuestState *state, gt
 	return args;
 }
 
-void generated_windows_print_sysret_ntterminateprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntterminateprocess(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7952,7 +8694,8 @@ void generated_windows_print_sysret_ntterminateprocess(GtGuestState *state, gt_p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntterminatethread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntterminatethread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7961,7 +8704,8 @@ void *generated_windows_print_syscall_ntterminatethread(GtGuestState *state, gt_
 	return args;
 }
 
-void generated_windows_print_sysret_ntterminatethread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntterminatethread(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7970,7 +8714,8 @@ void generated_windows_print_sysret_ntterminatethread(GtGuestState *state, gt_pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_nttestalert(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_nttestalert(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7979,7 +8724,8 @@ void *generated_windows_print_syscall_nttestalert(GtGuestState *state, gt_pid_t 
 	return args;
 }
 
-void generated_windows_print_sysret_nttestalert(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_nttestalert(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -7988,7 +8734,8 @@ void generated_windows_print_sysret_nttestalert(GtGuestState *state, gt_pid_t pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntthawregistry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntthawregistry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -7997,7 +8744,8 @@ void *generated_windows_print_syscall_ntthawregistry(GtGuestState *state, gt_pid
 	return args;
 }
 
-void generated_windows_print_sysret_ntthawregistry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntthawregistry(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8006,7 +8754,8 @@ void generated_windows_print_sysret_ntthawregistry(GtGuestState *state, gt_pid_t
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntthawtransactions(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntthawtransactions(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8015,7 +8764,8 @@ void *generated_windows_print_syscall_ntthawtransactions(GtGuestState *state, gt
 	return args;
 }
 
-void generated_windows_print_sysret_ntthawtransactions(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntthawtransactions(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8024,7 +8774,8 @@ void generated_windows_print_sysret_ntthawtransactions(GtGuestState *state, gt_p
 	free(args);
 }
 
-void *generated_windows_print_syscall_nttracecontrol(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_nttracecontrol(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8033,7 +8784,8 @@ void *generated_windows_print_syscall_nttracecontrol(GtGuestState *state, gt_pid
 	return args;
 }
 
-void generated_windows_print_sysret_nttracecontrol(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_nttracecontrol(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8043,7 +8795,8 @@ void generated_windows_print_sysret_nttracecontrol(GtGuestState *state, gt_pid_t
 	free(args);
 }
 
-void *generated_windows_print_syscall_nttraceevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_nttraceevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8052,7 +8805,8 @@ void *generated_windows_print_syscall_nttraceevent(GtGuestState *state, gt_pid_t
 	return args;
 }
 
-void generated_windows_print_sysret_nttraceevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_nttraceevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8061,7 +8815,8 @@ void generated_windows_print_sysret_nttraceevent(GtGuestState *state, gt_pid_t p
 	free(args);
 }
 
-void *generated_windows_print_syscall_nttranslatefilepath(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_nttranslatefilepath(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8071,7 +8826,8 @@ void *generated_windows_print_syscall_nttranslatefilepath(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_nttranslatefilepath(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_nttranslatefilepath(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8081,7 +8837,8 @@ void generated_windows_print_sysret_nttranslatefilepath(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntumsthreadyield(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntumsthreadyield(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8090,7 +8847,8 @@ void *generated_windows_print_syscall_ntumsthreadyield(GtGuestState *state, gt_p
 	return args;
 }
 
-void generated_windows_print_sysret_ntumsthreadyield(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntumsthreadyield(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8099,7 +8857,8 @@ void generated_windows_print_sysret_ntumsthreadyield(GtGuestState *state, gt_pid
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntunloaddriver(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntunloaddriver(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8108,7 +8867,8 @@ void *generated_windows_print_syscall_ntunloaddriver(GtGuestState *state, gt_pid
 	free(unicode_str_0);	return args;
 }
 
-void generated_windows_print_sysret_ntunloaddriver(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntunloaddriver(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8117,7 +8877,8 @@ void generated_windows_print_sysret_ntunloaddriver(GtGuestState *state, gt_pid_t
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntunloadkey2(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntunloadkey2(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8135,7 +8896,8 @@ void *generated_windows_print_syscall_ntunloadkey2(GtGuestState *state, gt_pid_t
 	free(obj_attr_0);	return args;
 }
 
-void generated_windows_print_sysret_ntunloadkey2(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntunloadkey2(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8144,7 +8906,8 @@ void generated_windows_print_sysret_ntunloadkey2(GtGuestState *state, gt_pid_t p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntunloadkeyex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntunloadkeyex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8162,7 +8925,8 @@ void *generated_windows_print_syscall_ntunloadkeyex(GtGuestState *state, gt_pid_
 	free(obj_attr_0);	return args;
 }
 
-void generated_windows_print_sysret_ntunloadkeyex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntunloadkeyex(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8171,7 +8935,8 @@ void generated_windows_print_sysret_ntunloadkeyex(GtGuestState *state, gt_pid_t 
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntunloadkey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntunloadkey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8189,7 +8954,8 @@ void *generated_windows_print_syscall_ntunloadkey(GtGuestState *state, gt_pid_t 
 	free(obj_attr_0);	return args;
 }
 
-void generated_windows_print_sysret_ntunloadkey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntunloadkey(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8198,7 +8964,8 @@ void generated_windows_print_sysret_ntunloadkey(GtGuestState *state, gt_pid_t pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntunlockfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntunlockfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8207,7 +8974,8 @@ void *generated_windows_print_syscall_ntunlockfile(GtGuestState *state, gt_pid_t
 	return args;
 }
 
-void generated_windows_print_sysret_ntunlockfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntunlockfile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8216,7 +8984,8 @@ void generated_windows_print_sysret_ntunlockfile(GtGuestState *state, gt_pid_t p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntunlockvirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntunlockvirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8225,7 +8994,8 @@ void *generated_windows_print_syscall_ntunlockvirtualmemory(GtGuestState *state,
 	return args;
 }
 
-void generated_windows_print_sysret_ntunlockvirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntunlockvirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8234,7 +9004,8 @@ void generated_windows_print_sysret_ntunlockvirtualmemory(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntunmapviewofsection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntunmapviewofsection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8243,7 +9014,8 @@ void *generated_windows_print_syscall_ntunmapviewofsection(GtGuestState *state, 
 	return args;
 }
 
-void generated_windows_print_sysret_ntunmapviewofsection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntunmapviewofsection(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8252,7 +9024,8 @@ void generated_windows_print_sysret_ntunmapviewofsection(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntvdmcontrol(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntvdmcontrol(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8261,7 +9034,8 @@ void *generated_windows_print_syscall_ntvdmcontrol(GtGuestState *state, gt_pid_t
 	return args;
 }
 
-void generated_windows_print_sysret_ntvdmcontrol(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntvdmcontrol(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8270,7 +9044,8 @@ void generated_windows_print_sysret_ntvdmcontrol(GtGuestState *state, gt_pid_t p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntwaitfordebugevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntwaitfordebugevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8279,7 +9054,8 @@ void *generated_windows_print_syscall_ntwaitfordebugevent(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntwaitfordebugevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntwaitfordebugevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8288,7 +9064,8 @@ void generated_windows_print_sysret_ntwaitfordebugevent(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntwaitforkeyedevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntwaitforkeyedevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8297,7 +9074,8 @@ void *generated_windows_print_syscall_ntwaitforkeyedevent(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntwaitforkeyedevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntwaitforkeyedevent(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8306,7 +9084,8 @@ void generated_windows_print_sysret_ntwaitforkeyedevent(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntwaitformultipleobjects32(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntwaitformultipleobjects32(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8315,7 +9094,8 @@ void *generated_windows_print_syscall_ntwaitformultipleobjects32(GtGuestState *s
 	return args;
 }
 
-void generated_windows_print_sysret_ntwaitformultipleobjects32(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntwaitformultipleobjects32(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8324,7 +9104,8 @@ void generated_windows_print_sysret_ntwaitformultipleobjects32(GtGuestState *sta
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntwaitformultipleobjects(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntwaitformultipleobjects(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8333,7 +9114,8 @@ void *generated_windows_print_syscall_ntwaitformultipleobjects(GtGuestState *sta
 	return args;
 }
 
-void generated_windows_print_sysret_ntwaitformultipleobjects(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntwaitformultipleobjects(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8342,7 +9124,8 @@ void generated_windows_print_sysret_ntwaitformultipleobjects(GtGuestState *state
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntwaitforsingleobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntwaitforsingleobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8351,7 +9134,8 @@ void *generated_windows_print_syscall_ntwaitforsingleobject(GtGuestState *state,
 	return args;
 }
 
-void generated_windows_print_sysret_ntwaitforsingleobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntwaitforsingleobject(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8360,7 +9144,8 @@ void generated_windows_print_sysret_ntwaitforsingleobject(GtGuestState *state, g
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntwaitforworkviaworkerfactory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntwaitforworkviaworkerfactory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8369,7 +9154,8 @@ void *generated_windows_print_syscall_ntwaitforworkviaworkerfactory(GtGuestState
 	return args;
 }
 
-void generated_windows_print_sysret_ntwaitforworkviaworkerfactory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntwaitforworkviaworkerfactory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8378,7 +9164,8 @@ void generated_windows_print_sysret_ntwaitforworkviaworkerfactory(GtGuestState *
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntwaithigheventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntwaithigheventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8387,7 +9174,8 @@ void *generated_windows_print_syscall_ntwaithigheventpair(GtGuestState *state, g
 	return args;
 }
 
-void generated_windows_print_sysret_ntwaithigheventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntwaithigheventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8396,7 +9184,8 @@ void generated_windows_print_sysret_ntwaithigheventpair(GtGuestState *state, gt_
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntwaitloweventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntwaitloweventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8405,7 +9194,8 @@ void *generated_windows_print_syscall_ntwaitloweventpair(GtGuestState *state, gt
 	return args;
 }
 
-void generated_windows_print_sysret_ntwaitloweventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntwaitloweventpair(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8414,7 +9204,8 @@ void generated_windows_print_sysret_ntwaitloweventpair(GtGuestState *state, gt_p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntworkerfactoryworkerready(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntworkerfactoryworkerready(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8423,7 +9214,8 @@ void *generated_windows_print_syscall_ntworkerfactoryworkerready(GtGuestState *s
 	return args;
 }
 
-void generated_windows_print_sysret_ntworkerfactoryworkerready(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntworkerfactoryworkerready(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8432,7 +9224,8 @@ void generated_windows_print_sysret_ntworkerfactoryworkerready(GtGuestState *sta
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntwritefilegather(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntwritefilegather(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8442,7 +9235,8 @@ void *generated_windows_print_syscall_ntwritefilegather(GtGuestState *state, gt_
 	return args;
 }
 
-void generated_windows_print_sysret_ntwritefilegather(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntwritefilegather(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8451,7 +9245,8 @@ void generated_windows_print_sysret_ntwritefilegather(GtGuestState *state, gt_pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntwritefile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntwritefile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8461,7 +9256,8 @@ void *generated_windows_print_syscall_ntwritefile(GtGuestState *state, gt_pid_t 
 	return args;
 }
 
-void generated_windows_print_sysret_ntwritefile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntwritefile(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8470,7 +9266,8 @@ void generated_windows_print_sysret_ntwritefile(GtGuestState *state, gt_pid_t pi
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntwriterequestdata(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntwriterequestdata(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8479,7 +9276,8 @@ void *generated_windows_print_syscall_ntwriterequestdata(GtGuestState *state, gt
 	return args;
 }
 
-void generated_windows_print_sysret_ntwriterequestdata(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntwriterequestdata(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8488,7 +9286,8 @@ void generated_windows_print_sysret_ntwriterequestdata(GtGuestState *state, gt_p
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntwritevirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntwritevirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8497,7 +9296,8 @@ void *generated_windows_print_syscall_ntwritevirtualmemory(GtGuestState *state, 
 	return args;
 }
 
-void generated_windows_print_sysret_ntwritevirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntwritevirtualmemory(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);
@@ -8506,7 +9306,8 @@ void generated_windows_print_sysret_ntwritevirtualmemory(GtGuestState *state, gt
 	free(args);
 }
 
-void *generated_windows_print_syscall_ntyieldexecution(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void *
+generated_windows_print_syscall_ntyieldexecution(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	char *proc = gt_guest_get_process_name(state);
 	uint64_t *args = _get_args(state, pid);
@@ -8515,7 +9316,8 @@ void *generated_windows_print_syscall_ntyieldexecution(GtGuestState *state, gt_p
 	return args;
 }
 
-void generated_windows_print_sysret_ntyieldexecution(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
+void
+generated_windows_print_sysret_ntyieldexecution(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *data)
 {
 	uint64_t *args = (uint64_t*)data;
 	char *proc = gt_guest_get_process_name(state);

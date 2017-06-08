@@ -880,7 +880,8 @@ done:
  *
  * Returns: a new #GtLoop.
  **/
-GtLoop *gt_loop_new(const char *guest_name)
+GtLoop *
+gt_loop_new(const char *guest_name)
 {
 	int i;
 	GtLoop *loop;
@@ -1280,7 +1281,8 @@ gt_handle_vmi_event(GIOChannel *chan, GIOCondition condition, gpointer user_data
  * This removes any modifications to the guest's memory and allows the guest
  * to run without instrumentation.
  */
-void gt_loop_quit(GtLoop *loop)
+void
+gt_loop_quit(GtLoop *loop)
 {
 	loop->running = FALSE;
 }
@@ -1293,7 +1295,8 @@ void gt_loop_quit(GtLoop *loop)
  * gt_loop_quit() must first terminate the loop and remove the guest
  * instrumentation.
  */
-void gt_loop_free(GtLoop *loop)
+void
+gt_loop_free(GtLoop *loop)
 {
 	if (NULL == loop) {
 		goto done;
@@ -1396,7 +1399,8 @@ done:
  * Uses libvmi to complete the preparations necessary to trace a guest's system
  * calls. Runs @loop until gt_loop_quit() is called on @loop.
  */
-void gt_loop_run(GtLoop *loop)
+void
+gt_loop_run(GtLoop *loop)
 {
 	status_t status;
 	int vmi_fd;
@@ -1678,11 +1682,12 @@ done:
  * Returns: %TRUE on success, %FALSE on failure; an invalid @kernel_func
  * will cause the callback registration to fail.
  **/
-gboolean gt_loop_set_cb(GtLoop *loop,
-                        const char *kernel_func,
-                        GtSyscallFunc syscall_cb,
-                        GtSysretFunc sysret_cb,
-                        void *user_data)
+gboolean
+gt_loop_set_cb(GtLoop *loop,
+               const char *kernel_func,
+               GtSyscallFunc syscall_cb,
+               GtSysretFunc sysret_cb,
+               void *user_data)
 {
 	gboolean fnval = FALSE;
 

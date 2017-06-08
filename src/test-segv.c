@@ -95,7 +95,8 @@ usage()
 	                "-n  name of guest to instrument\n");
 }
 
-void *handle_open_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
+void *
+handle_open_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	if (!test_return) {
 		kill(0, SIGSEGV);
@@ -105,7 +106,8 @@ void *handle_open_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *us
 	return NULL;
 }
 
-void handle_open_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
+void
+handle_open_return(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data) {
 	if (test_return) {
 		kill(0, SIGSEGV);
 		g_assert_not_reached();

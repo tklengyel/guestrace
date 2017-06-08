@@ -38,7 +38,8 @@ struct sys_execve_args {
 	char *oldpath;
 };
 
-void *generated_linux_record_syscall_sys_execve_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
+void *
+generated_linux_record_syscall_sys_execve_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_execve_args *args = g_new(struct sys_execve_args, 1);
 	args->path = gt_guest_get_string(state, gt_guest_get_vmi_event(state)->x86_regs->rdi, pid);
@@ -48,7 +49,8 @@ void *generated_linux_record_syscall_sys_execve_args(GtGuestState *state, gt_pid
 	return args;
 }
 
-void generated_linux_print_argv(char **argv)
+void
+generated_linux_print_argv(char **argv)
 {
 	fprintf(stderr, "[");
 	for (int i = 0; argv && argv[i]; i++) {
@@ -60,7 +62,8 @@ void generated_linux_print_argv(char **argv)
 	fprintf(stderr, "]");
 }
 
-void generated_linux_print_syscall_sys_execve(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
+void
+generated_linux_print_syscall_sys_execve(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {
 	struct sys_execve_args *args = user_data;
 	reg_t ret = gt_guest_get_vmi_event(state)->x86_regs->rax;
@@ -455,7 +458,8 @@ def create_syscall_functions(syscall_data):
         func_str  = create_structure(syscall_data.get_args_count(), syscall_data)
         if syscall_data.get_syscall_name() in FUNCTION_NO_SYSRET:
             func_str += """
-void generated_linux_print_syscall_{0}(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
+void
+generated_linux_print_syscall_{0}(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {{
 	struct {0}_args *args = user_data;
 	char *proc = gt_guest_get_process_name(state);
@@ -465,7 +469,8 @@ void generated_linux_print_syscall_{0}(GtGuestState *state, gt_pid_t pid, gt_tid
             func_str += """	g_free(args);
 }}
 
-void *generated_linux_record_syscall_{0}_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
+void *
+generated_linux_record_syscall_{0}_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {{
 	struct {0}_args *args = g_new(struct {0}_args, 1);
 """.format(syscall_data.get_syscall_name())
@@ -477,7 +482,8 @@ void *generated_linux_record_syscall_{0}_args(GtGuestState *state, gt_pid_t pid,
 """.format(syscall_data.get_syscall_name())
         else:
             func_str += """
-void *generated_linux_record_syscall_{0}_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
+void *
+generated_linux_record_syscall_{0}_args(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {{
 	struct {0}_args *args = g_new(struct {0}_args, 1);
 """.format(syscall_data.get_syscall_name())
@@ -485,7 +491,8 @@ void *generated_linux_record_syscall_{0}_args(GtGuestState *state, gt_pid_t pid,
             func_str += """	return args;
 }}
 
-void generated_linux_print_syscall_{0}(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
+void
+generated_linux_print_syscall_{0}(GtGuestState *state, gt_pid_t pid, gt_tid_t tid, void *user_data)
 {{
 	struct {0}_args *args = user_data;
 	char *proc = gt_guest_get_process_name(state);
