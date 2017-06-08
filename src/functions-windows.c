@@ -307,7 +307,7 @@ _gt_windows_get_offset(int offset_id)
 	return offset_id > GT_OFFSET_WINDOWS_BAD ? 0 : _offset[offset_id];
 }
 
-struct os_functions os_functions_windows = {
+struct os_functions functions_windows = {
 	.initialize = _gt_windows_initialize,
 	.wait_for_first_process = _gt_windows_wait_for_first_process,
 	.get_pid = _windows_get_pid,

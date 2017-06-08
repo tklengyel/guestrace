@@ -3,6 +3,6 @@
 
 #include "gt-private.h"
 
-extern struct os_functions os_functions_windows;
+extern struct os_functions functions_windows;
 
 #endif

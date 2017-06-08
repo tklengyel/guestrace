@@ -924,10 +924,10 @@ gt_loop_new(const char *guest_name)
 	loop->os = vmi_get_ostype(loop->vmi);
 	switch (loop->os) {
 	case VMI_OS_LINUX:
-		loop->os_functions = &os_functions_linux;
+		loop->os_functions = &functions_linux;
 		break;
 	case VMI_OS_WINDOWS:
-		loop->os_functions = &os_functions_windows;
+		loop->os_functions = &functions_windows;
 		if (VMI_PM_UNKNOWN == vmi_init_paging(loop->vmi, (1u << 0))) {
 			fprintf(stderr, "couldn't init windows paging\n");
 			status = VMI_FAILURE;
