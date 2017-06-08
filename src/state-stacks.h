@@ -1,5 +1,5 @@
-#ifndef STATE_STACKS_H
-#define STATE_STACKS_H
+#ifndef _STATE_STACKS_H
+#define _STATE_STACKS_H
 
 #include <glib.h>
 

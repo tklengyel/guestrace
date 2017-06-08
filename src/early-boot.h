@@ -1,5 +1,5 @@
-#ifndef EARLY_BOOT_H
-#define EARLY_BOOT_H
+#ifndef _EARLY_BOOT_H
+#define _EARLY_BOOT_H
 
 #include "guestrace.h"
 #include "guestrace-private.h"

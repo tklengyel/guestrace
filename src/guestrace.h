@@ -1,5 +1,5 @@
-#ifndef GUESTRACE_H
-#define GUESTRACE_H
+#ifndef _GUESTRACE_H
+#define _GUESTRACE_H
 
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>

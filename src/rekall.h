@@ -1,5 +1,5 @@
-#ifndef REKALL_H
-#define REKALL_H
+#ifndef _REKALL_H
+#define _REKALL_H
 
 #include <libvmi/libvmi.h>
 #include <glib.h>

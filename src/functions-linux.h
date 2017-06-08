@@ -1,5 +1,5 @@
-#ifndef FUNCTIONS_LINUX_H
-#define FUNCTIONS_LINUX_H
+#ifndef _FUNCTIONS_LINUX_H
+#define _FUNCTIONS_LINUX_H
 
 #include "guestrace-private.h"
 

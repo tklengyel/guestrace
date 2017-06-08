@@ -1,5 +1,5 @@
-#ifndef REKALL_PRIVATE_H
-#define REKALL_PRIVATE_H
+#ifndef _REKALL_PRIVATE_H
+#define _REKALL_PRIVATE_H
 
 #include <libvmi/libvmi.h>
 #include <glib.h>

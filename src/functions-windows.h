@@ -1,5 +1,5 @@
-#ifndef FUNCTIONS_WINDOWS_H
-#define FUNCTIONS_WINDOWS_H
+#ifndef _FUNCTIONS_WINDOWS_H
+#define _FUNCTIONS_WINDOWS_H
 
 #include "guestrace-private.h"
 

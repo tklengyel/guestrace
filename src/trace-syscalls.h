@@ -1,5 +1,5 @@
-#ifndef TRACE_SYSCALLS_H
-#define TRACE_SYSCALLS_H
+#ifndef _TRACE_SYSCALLS_H
+#define _TRACE_SYSCALLS_H
 
 /* Operating-system-specific operations. */
 struct os_functions {
