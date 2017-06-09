@@ -8,6 +8,17 @@
  * For example, we do not want to instrument GRUB instead of the kernel---
  * we want to wait until GRUB loads the kernel.
  *
+ * We are thus interested in recognizing when the first user-space process
+ * runs. In the case of Linux, the bootloader loads the kernel, but then
+ * the kernel decompresses itself. Breakpoints set too early will be overwritten
+ * by this process. Thus we watch for the value in CR3 to change.
+ * 
+ * Windows seems to be easier. Its bootloader, NTLDR, does all of the real-
+ * mode work and even transitions the processor into protected (long?) mode.
+ * We still want to wait for a user-space process there because Windows seems
+ * to make system calls from the kernel when booting, and this confuses
+ * vmi_dtb_to_pid() until a user-space process exists.
+ *
  * The idea is that a value other than zero in LSTAR indicates that the kernel
  * has begun to set up 64-bit mode. Once this is the case, we wait for CR3 to
  * change, as this indicates that a user-space process is running. Once this

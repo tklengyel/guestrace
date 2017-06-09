@@ -5,6 +5,7 @@
 #include "gt-rekall.h"
 #include "gt-rekall-private.h"
 
+/* Strings here match symbol and structure field names in linux kernel. */
 static offset_definition_t _offset_def[] = {
 	{ GT_OFFSET_LINUX_CURRENT_TASK,     "current_task",  NULL },
 	{ GT_OFFSET_LINUX_TASK_STRUCT_TGID, "task_struct",  "tgid" },
@@ -31,19 +32,6 @@ _initialize(GtLoop *loop)
 	return _initialized;
 }
 
-/*
- * The libvmi dispatcher invokes this function each time the guest writes to
- * CR3. We are interested in recognizing when the first user-space process
- * runs. In the case of Linux, the bootloader loads the kernel, but then the
- * kernel then decompresses itself. Breakpoints set too early will be
- * overwritten by this process. Thus we watch for the value in CR3 to change.
- *
- * Windows seems to be easier. Its bootloader, NTLDR, does all of the real-
- * mode work and even transitions the processor into protected (long?) mode.
- * We still want to wait for a user-space process there because Windows seems
- * to make system calls from the kernel when booting, and this confuses
- * vmi_dtb_to_pid() until a user-space process exists.
- */
 static event_response_t
 _detect_process_cb(vmi_instance_t vmi, vmi_event_t *event) {
         GtLoop *loop = event->data;
@@ -60,6 +48,26 @@ _detect_process_cb(vmi_instance_t vmi, vmi_event_t *event) {
         return VMI_EVENT_RESPONSE_NONE;
 }
 
+static addr_t
+_get_current_task(vmi_instance_t vmi, vmi_event_t *event)
+{
+	status_t status;
+	addr_t current_task = 0;
+
+	status = vmi_read_addr_va(vmi,
+	                          event->x86_regs->gs_base
+	                       + _offset[GT_OFFSET_LINUX_CURRENT_TASK],
+	                          0,
+	                         &current_task);
+	if (VMI_SUCCESS != status) {
+		current_task = 0;
+		goto done;
+	}
+
+done:
+	return current_task;
+}
+
 static gt_pid_t
 _get_pid(vmi_instance_t vmi, vmi_event_t *event)
 {
@@ -69,12 +77,8 @@ _get_pid(vmi_instance_t vmi, vmi_event_t *event)
 
 	g_assert(_initialized);
 
-	status = vmi_read_addr_va(vmi,
-	                          event->x86_regs->gs_base
-	                       + _offset[GT_OFFSET_LINUX_CURRENT_TASK],
-	                          0,
-	                         &current_task);
-	if (VMI_SUCCESS != status) {
+	current_task = _get_current_task(vmi, event);
+	if (0 == current_task) {
 		goto done;
 	}
 
@@ -99,12 +103,8 @@ _get_tid(vmi_instance_t vmi, vmi_event_t *event)
 	addr_t current_task;
 	uint32_t tid = 0;
 
-	status = vmi_read_addr_va(vmi,
-	                          event->x86_regs->gs_base
-	                       + _offset[GT_OFFSET_LINUX_CURRENT_TASK],
-	                          0,
-	                         &current_task);
-	if (VMI_SUCCESS != status) {
+	current_task = _get_current_task(vmi, event);
+	if (0 == current_task) {
 		goto done;
 	}
 
@@ -131,12 +131,8 @@ _get_process_name(vmi_instance_t vmi, vmi_event_t *event)
 
 	g_assert(_initialized);
 
-	status = vmi_read_addr_va(vmi,
-	                          event->x86_regs->gs_base
-	                       + _offset[GT_OFFSET_LINUX_CURRENT_TASK],
-	                          0,
-	                         &current_task);
-	if (VMI_SUCCESS != status) {
+	current_task = _get_current_task(vmi, event);
+	if (0 == current_task) {
 		goto done;
 	}
 

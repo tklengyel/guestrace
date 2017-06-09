@@ -6,11 +6,16 @@
 #include "gt-rekall-private.h"
 
 typedef enum privilege_mode {
-	KERNEL_MODE,
+	KERNEL_MODE = 0,
 	USER_MODE,
 	MAXIMUM_MODE,
 } privilege_mode_t;
 
+/*
+ * References:
+ * http://www.geoffchappell.com/studies/windows/win32/ntdll/
+ * Windows Internals, Part 1 by Russinovich and Solomon
+ */
 static offset_definition_t _offset_def[] = {
 	{ GT_OFFSET_WINDOWS_KPCR_PRCB,                                 "_KPCR", "Prcb" },
 	{ GT_OFFSET_WINDOWS_KPRCB_CURRENTTHREAD,                       "_KPRCB",  "CurrentThread" },
@@ -45,6 +50,55 @@ _initialize(GtLoop *loop)
 	return _initialized;
 }
 
+static addr_t
+_get_current_thread(vmi_instance_t vmi, vmi_event_t *event)
+{
+	status_t status;
+	addr_t thread = 0;
+
+	g_assert(_initialized);
+
+	status = vmi_read_addr_va(vmi,
+	                          event->x86_regs->gs_base
+	                       + _offset[GT_OFFSET_WINDOWS_KPCR_PRCB]
+	                       + _offset[GT_OFFSET_WINDOWS_KPRCB_CURRENTTHREAD],
+	                          0,
+	                         &thread);
+	if (VMI_SUCCESS != status) {
+		thread = 0;
+		goto done;
+	}
+
+done:
+	return thread;
+}
+
+static addr_t
+_get_current_process(vmi_instance_t vmi, vmi_event_t *event)
+{
+	status_t status;
+	addr_t thread, process = 0;
+
+	g_assert(_initialized);
+
+	thread = _get_current_thread(vmi, event);
+	if (0 == thread) {
+		goto done;
+	}
+
+	status = vmi_read_addr_va(vmi,
+	                          thread
+	                       + _offset[GT_OFFSET_WINDOWS_KTHREAD_PROCESS],
+	                          0,
+	                         &process);
+	if (VMI_SUCCESS != status) {
+		goto done;
+	}
+
+done:
+	return process;
+}
+
 static privilege_mode_t
 _get_privilege_mode(vmi_instance_t vmi, vmi_event_t *event, gboolean do_flush)
 {
@@ -66,13 +120,8 @@ _get_privilege_mode(vmi_instance_t vmi, vmi_event_t *event, gboolean do_flush)
 		vmi_rvacache_flush(vmi);
 	}
 
-	status = vmi_read_addr_va(loop->vmi,
-	                          event->x86_regs->gs_base
-	                       + _offset[GT_OFFSET_WINDOWS_KPCR_PRCB]
-	                       + _offset[GT_OFFSET_WINDOWS_KPRCB_CURRENTTHREAD],
-	                          0,
-	                         &thread);
-	if (VMI_SUCCESS != status) {
+	thread = _get_current_thread(vmi, event);
+	if (0 == thread) {
 		goto done;
 	}
 
@@ -108,27 +157,13 @@ static gt_pid_t
 _get_pid(vmi_instance_t vmi, vmi_event_t *event)
 {
 	status_t status;
-	addr_t thread, process;
+	addr_t process;
 	gt_pid_t pid = 0;
 
 	g_assert(_initialized);
 
-	status = vmi_read_addr_va(vmi,
-	                          event->x86_regs->gs_base
-	                       + _offset[GT_OFFSET_WINDOWS_KPCR_PRCB]
-	                       + _offset[GT_OFFSET_WINDOWS_KPRCB_CURRENTTHREAD],
-	                          0,
-	                         &thread);
-	if (VMI_SUCCESS != status) {
-		goto done;
-	}
-
-	status = vmi_read_addr_va(vmi,
-	                          thread
-	                       + _offset[GT_OFFSET_WINDOWS_KTHREAD_PROCESS],
-	                          0,
-	                         &process);
-	if (VMI_SUCCESS != status) {
+	process = _get_current_process(vmi, event);
+	if (0 == process) {
 		goto done;
 	}
 
@@ -155,13 +190,8 @@ _get_tid(vmi_instance_t vmi, vmi_event_t *event)
 
 	g_assert(_initialized);
 
-	status = vmi_read_addr_va(vmi,
-	                          event->x86_regs->gs_base
-	                       + _offset[GT_OFFSET_WINDOWS_KPCR_PRCB]
-	                       + _offset[GT_OFFSET_WINDOWS_KPRCB_CURRENTTHREAD],
-	                          0,
-	                         &thread);
-	if (VMI_SUCCESS != status) {
+	thread = _get_current_thread(vmi, event);
+	if (0 == thread) {
 		goto done;
 	}
 
@@ -184,28 +214,13 @@ done:
 static char *
 _get_process_name(vmi_instance_t vmi, vmi_event_t *event)
 {
-	status_t status;
-	addr_t thread, process;
+	addr_t process;
 	char *proc = NULL;
 
 	g_assert(_initialized);
 
-	status = vmi_read_addr_va(vmi,
-	                          event->x86_regs->gs_base
-	                       + _offset[GT_OFFSET_WINDOWS_KPCR_PRCB]
-	                       + _offset[GT_OFFSET_WINDOWS_KPRCB_CURRENTTHREAD],
-	                          0,
-	                         &thread);
-	if (VMI_SUCCESS != status) {
-		goto done;
-	}
-
-	status = vmi_read_addr_va(vmi,
-	                          thread
-	                       + _offset[GT_OFFSET_WINDOWS_KTHREAD_PROCESS],
-	                          0,
-	                         &process);
-	if (VMI_SUCCESS != status) {
+	process = _get_current_process(vmi, event);
+	if (0 == process) {
 		goto done;
 	}
 
