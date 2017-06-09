@@ -69,11 +69,11 @@
  */
 
 /**
- * SECTION: guestrace
+ * SECTION: gt
  * @title: libguestrace
  * @short_description: a library which allows programs to monitor the system
  * calls serviced by a kernel running as a Xen guest.
- * @include: libguestrace/guestrace.h
+ * @include: libguestrace/gt.h
  *
  * A program using libguestrace registers callbacks which the guestrace event
  * loop invokes when a system call occurs in the monitored guest operating system.
@@ -164,11 +164,14 @@ static uint64_t _sysret_cb_count;
 static int _measurement_count = 0;
 static measurement_t _measurement[1024 * 1024];
 
-#define MEASUREMENT_LIMIT (sizeof(measurements) / sizeof(measurement_t))
+#define MEASUREMENT_LIMIT (sizeof(_measurement) / sizeof(measurement_t))
 
 #define MEASUREMENT_START(name, count) count = _rdtsc()
 
 #define MEASUREMENT_FINISH(name, count) do { \
+	if (name ## _count == MEASUREMENT_LIMIT - 1) { \
+		break; \
+	} \
 	_measurement[name ## _count].name += _rdtsc() - count; \
 	name ## _count++; \
 } while (false)
@@ -447,37 +450,49 @@ _paddr_record_from_va(GtLoop *loop, addr_t va) {
  * This function manipulates the guest to hijack the current system call such
  * that the system call does not execute and instead immediately returns @retval.
  * This function can only be called from within a #GtSyscallFunc.
- *
- * Returns: %TRUE on success, %FALSE on failure. A failure indicates that the
- * function could not identify the portion of instructions in the system call
- * which restores registers, restores the stack, and returns. In this case, the
- * function does not change any state within the guest processor.
  **/
-gboolean
+void
 gt_guest_hijack_return(GtGuestState *state, reg_t retval)
 {
+	g_assert(_in_syscall_cb);
+
 	state->hijack = true;
 	state->hijack_return = retval;
-
-	return TRUE;
 }
 
-gboolean
+/**
+ * gt_guest_drop_return_breakpoint:
+ * @state: a #GtGuestState.
+ *
+ * Drop the return breakpoint associated with this system call. Applications
+ * should call this in special cases, such as with clone/CLONE_VM on Linux.
+ * This function can only be called from within a #GtSyscallFunc.
+ */
+void
+gt_guest_drop_return_breakpoint(GtGuestState *state)
+{
+	g_assert(_in_syscall_cb);
+
+	state->skip_return = TRUE;
+}
+
+/**
+ * gt_guest_clear_return_state:
+ * @state: a #GtGuestState.
+ *
+ * Free this and any other states associated with the process. Applications
+ * should call this when they know the instrumented function will never return,
+ * such as with pspexitthread on Windows.
+ * This function can only be called from within a #GtSyscallFunc.
+ */
+void
 gt_guest_clear_return_state(GtGuestState *state)
 {
+	g_assert(_in_syscall_cb);
+
 	state->clear_state = TRUE;
 
 	gt_guest_drop_return_breakpoint(state);
-
-	return TRUE;
-}
-
-gboolean
-gt_guest_drop_return_breakpoint(GtGuestState *state)
-{
-	state->skip_return = TRUE;
-
-	return TRUE;
 }
 
 static event_response_t
@@ -1143,6 +1158,9 @@ gt_guest_get_string(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid)
  * @pid: PID of the virtual address space (0 for kernel).
  * @value: address of location to which function will write value.
  *
+ * Copies the 32-bit value at @vaddr in the address space of @pid to the address
+ * @value.
+ *
  * Returns VMI_SUCCESS or some error code.
  */
 status_t
@@ -1231,6 +1249,13 @@ gt_guest_get_vmi_event(GtGuestState *state)
 	return state->event;
 }
 
+/**
+ * gt_guest_get_process_name:
+ * @state: a pointer to a #GtGuestState.
+ *
+ * Returns the process name associated with @state. The returned string must
+ * be freed by the caller.
+ */
 char *
 gt_guest_get_process_name(GtGuestState *state)
 {
@@ -1238,6 +1263,12 @@ gt_guest_get_process_name(GtGuestState *state)
 	                                                   state->event);
 }
 
+/**
+ * gt_guest_get_parent_pid:
+ * @state: a pointer to a #GtGuestState.
+ *
+ * Returns the PID of the parent of the process associated with @state.
+ */
 gt_pid_t
 gt_guest_get_parent_pid(GtGuestState *state, gt_pid_t pid, gboolean *is_userspace)
 {
@@ -1674,10 +1705,11 @@ done:
  * system call, or NULL if the system call never returns.
  * @user_data: optional data which the guestrace event loop will pass to each call of @syscall_cb
  *
- * Sets the callback functions associated with @kernel_func. Each time
- * processing a system call in the guest kernel calls @kernel_func,
- * The loop will invoke @syscall_cb with the parameters associated with the
- * call. When @kernel_func returns, the loop will invoke @sysret_cb.
+ * Sets the callback functions associated with @kernel_func. Each time the
+ * guest kernel calls @kernel_func to process a system call, the loop will
+ * invoke @syscall_cb. When @kernel_func returns, the loop will invoke
+ * @sysret_cb. The loop passes @user_data to @syscall_cb, and it passes
+ * the return value from @syscall_cb to @sysret_cb.
  *
  * Returns: %TRUE on success, %FALSE on failure; an invalid @kernel_func
  * will cause the callback registration to fail.
@@ -1721,9 +1753,9 @@ done:
  * @syscalls: an array of #GtCallbackRegistry values, where each contains a
  * function name and corresponding #GtSyscallFunc and #GtSysretFunc.
  *
- * A convenience function which repeatedly invoke gt_loop_set_cb for each
+ * A convenience function which repeatedly invokes gt_loop_set_cb for each
  * callback defined in @syscalls. The @syscalls array must be terminated with
- * an #GtCallbackRegistry with each field set to NULL.
+ * a #GtCallbackRegistry with each field set to NULL.
  *
  * Returns: an integer which represents the number of callbacks
  * successfully set; an invalid function name in @syscalls will
@@ -1752,7 +1784,7 @@ gt_loop_set_cbs(GtLoop *loop, const GtCallbackRegistry callbacks[])
  * gt_loop_get_syscall_count:
  * @loop: a #GtLoop.
  *
- * Returns: the number of system calls observed.
+ * Returns: the number of system calls observed since attaching to the guest.
  **/
 unsigned long
 gt_loop_get_syscall_count(GtLoop *loop)
@@ -1766,6 +1798,11 @@ gt_loop_get_syscall_count(GtLoop *loop)
  * @condition: the condition to watch for.
  * @func: the function to call when the condition is satisfied.
  * @user_data: user data to pass to @func.
+ *
+ * Adds a #GIOChannel to the loop. The loop will call @func each time
+ * one of the conditions specified in @condition exists on @channel, and
+ * it will pass @user_data to @func. This is useful for adding keyboard
+ * and other handlers to the loop.
  *
  * Returns: the event source ID.
  **/
@@ -1783,7 +1820,8 @@ gt_loop_add_watch(GIOChannel *channel,
  * @loop: a pointer to a #GtLoop.
  *
  * Skip over the syscall/sysret handler, usually to gracefully exit after
- * SIGSEGV.
+ * receiving a fatal signal. A typical use is to call @gt_loop_quit() and
+ * @gt_loop_jmp_past_cb() from a program's SIGSEGV handler.
  */
 void
 gt_loop_jmp_past_cb(GtLoop *loop)
