@@ -5,12 +5,6 @@
 #include "gt-rekall.h"
 #include "gt-rekall-private.h"
 
-typedef struct offset_definition_t {
-	int   id;
-	char *struct_name;
-	char *field_name;
-} offset_definition_t;
-
 static offset_definition_t _offset_def[] = {
 	{ GT_OFFSET_LINUX_CURRENT_TASK,     "current_task",  NULL },
 	{ GT_OFFSET_LINUX_TASK_STRUCT_TGID, "task_struct",  "tgid" },
@@ -27,29 +21,13 @@ static gboolean _initialized = FALSE;
 static gboolean
 _initialize(GtLoop *loop)
 {
-	const char *rekall_profile;
-	gboolean ok;
-
 	g_assert(!_initialized);
 
-	rekall_profile = vmi_get_rekall_path(loop->vmi);
-	if (NULL == rekall_profile) {
-		goto done;
-	}
+	_initialized = gt_rekall_private_initialize(loop,
+	                                           _offset,
+	                                           _offset_def,
+	                                            GT_OFFSET_WINDOWS_BAD);
 
-	for (int i = 0; i < GT_OFFSET_LINUX_BAD; i++) {
-		ok = gt_rekall_private_symbol_to_rva(rekall_profile,
-		                                    _offset_def[i].struct_name,
-		                                    _offset_def[i].field_name,
-		                                   &_offset[i]);
-		if (!ok) {
-			goto done;
-		}
-	}
-
-	_initialized = TRUE;
-
-done:
 	return _initialized;
 }
 

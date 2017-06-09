@@ -4,6 +4,7 @@
 
 #include "gt-private.h"
 #include "gt-rekall.h"
+#include "gt-rekall-private.h"
 
 gboolean
 gt_rekall_private_symbol_to_rva(const char *rekall_profile,
@@ -77,5 +78,33 @@ gt_rekall_private_symbol_to_rva(const char *rekall_profile,
 
 done:
 	json_object_put(root);
+	return ok;
+}
+
+gboolean
+gt_rekall_private_initialize(GtLoop *loop,
+                             addr_t *offset,
+                             offset_definition_t *def,
+                             size_t def_size)
+{
+	gboolean ok = FALSE;
+	const char *rekall_profile;
+
+	rekall_profile = vmi_get_rekall_path(loop->vmi);
+	if (NULL == rekall_profile) {
+		goto done;
+	}
+
+	for (int i = 0; i < def_size; i++) {
+		ok = gt_rekall_private_symbol_to_rva(rekall_profile,
+		                                     def[i].struct_name,
+		                                     def[i].field_name,
+		                                    &offset[i]);
+		if (!ok) {
+			goto done;
+		}
+	}
+
+done:
 	return ok;
 }
