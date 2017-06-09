@@ -263,9 +263,9 @@ _gt_linux_get_parent_pid(vmi_instance_t vmi, gt_pid_t pid, gboolean *is_userspac
 	                        parent_task
 	                     + _offset[GT_OFFSET_LINUX_TASK_STRUCT_TGID],
 	                        0,
-	                       &parent_pid);
+	          (uint32_t *) &parent_pid);
 	if (VMI_SUCCESS != status) {
-		pid = 0;
+		parent_pid = 0;
 		goto done;
 	}
 
@@ -276,7 +276,7 @@ _gt_linux_get_parent_pid(vmi_instance_t vmi, gt_pid_t pid, gboolean *is_userspac
 					  0,
 					 &mm);
 		if (VMI_SUCCESS != status) {
-			pid = 0;
+			parent_pid = 0;
 			goto done;
 		}
 

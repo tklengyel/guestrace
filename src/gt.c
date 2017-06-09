@@ -522,6 +522,8 @@ _breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 	}
 	MEASUREMENT_FINISH(_is_user_call, count);
 
+	sys_state = (GtGuestState) { loop, vmi, event, FALSE, FALSE, 0 };
+
 	if (event->interrupt_event.gla != loop->trampoline_addr) {
 		/* Type-one breakpoint (system call). */
 		MEASUREMENT_START(inside_call, count2);
@@ -593,7 +595,6 @@ _breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 			/* Invoke system-call callback in record. */
 			_in_syscall_cb = TRUE;
 			loop->count++;
-			sys_state = (GtGuestState) { loop, vmi, event, FALSE, FALSE, 0 };
 			state->data = record->syscall_cb(&sys_state,
 							  pid,
 							  thread_id,
@@ -707,7 +708,6 @@ skip_syscall_cb:
 			goto skip_sysret_cb;
 		}
 
-		sys_state = (GtGuestState) { loop, vmi, event, FALSE, FALSE, 0 };
 		state->syscall_paddr_record->sysret_cb(&sys_state,
 						        pid,
 						        thread_id,
@@ -1017,10 +1017,13 @@ gt_loop_get_ostype(GtLoop *loop)
 	switch (loop->os) {
 	case VMI_OS_LINUX:
 		type = GT_OS_LINUX;
+		break;
 	case VMI_OS_WINDOWS:
 		type = GT_OS_WINDOWS;
+		break;
 	default:
 		type = GT_OS_UNKNOWN;
+		break;
 	}
 
 	return type;

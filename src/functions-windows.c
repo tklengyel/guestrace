@@ -191,7 +191,7 @@ _windows_get_pid(vmi_instance_t vmi, vmi_event_t *event)
 	                        process
 	                     + _offset[GT_OFFSET_WINDOWS_EPROCESS_UNIQUEPROCESSID],
 	                        0,
-	                       &pid);
+	          (uint32_t *) &pid);
 	if (VMI_SUCCESS != status) {
 		pid = 0;
 		goto done;
