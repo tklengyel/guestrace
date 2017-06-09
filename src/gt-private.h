@@ -12,7 +12,7 @@
 struct os_functions {
 	/* <private> */
 	gboolean (*initialize) (GtLoop *loop);
-	status_t (*wait_for_first_process) (GtLoop *loop);
+	status_t (*detect_process_cb) (vmi_instance_t vmi, vmi_event_t *event);
 	gt_pid_t (*get_pid) (vmi_instance_t vmi, vmi_event_t *event);
 	gt_tid_t (*get_tid) (vmi_instance_t vmi, vmi_event_t *event);
 	char *(*get_process_name) (vmi_instance_t vmi, vmi_event_t *event);

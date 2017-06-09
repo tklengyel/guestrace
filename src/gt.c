@@ -1417,12 +1417,6 @@ gt_loop_run(GtLoop *loop)
 		goto done;
 	}
 
-	status = loop->os_functions->wait_for_first_process(loop);
-	if (VMI_SUCCESS != status) {
-		fprintf(stderr, "failed to wait for initialization\n");
-		goto done;
-	}
-
 	vmi_pause_vm(loop->vmi);
 
 	if (!_set_up_generic_events(loop)) {
