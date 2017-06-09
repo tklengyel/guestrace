@@ -96,6 +96,9 @@ gt_rekall_private_initialize(GtLoop *loop,
 	}
 
 	for (int i = 0; i < def_size; i++) {
+		/* Order of enum must match offset_definition_t. */
+		g_assert(i == def[i].id);
+
 		ok = gt_rekall_private_symbol_to_rva(rekall_profile,
 		                                     def[i].struct_name,
 		                                     def[i].field_name,
