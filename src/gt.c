@@ -1049,8 +1049,8 @@ gt_loop_get_ostype(GtLoop *loop)
  * @loop: a #GtLoop.
  *
  * Returns: the name of the guest to which #GtLoop has attached. The #GtLoop
- * maintains ownership of the string. Thus the returned string must not be
- * freed by the caller.
+ * maintains ownership of the string. Thus the caller must not free the returned
+ * string.
  **/
 const char *
 gt_loop_get_guest_name(GtLoop *loop)
@@ -1143,7 +1143,7 @@ gt_guest_get_bytes(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid, void *buf
  * @pid: PID of the virtual address space (0 for kernel).
  *
  * Returns the NULL-terminated string which starts at @vaddr or NULL on error.
- * The returned string must be freed by the caller.
+ * The caller must free the returned string.
  */
 char *
 gt_guest_get_string(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid)
@@ -1177,7 +1177,7 @@ gt_guest_get_uint32(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid, uint32_t
  *
  * Returns the NULL-terminated argv-style array which starts at @vaddr
  * or NULL on error. Each item in the array is a string.
- * The array and each string in the array must be freed by the caller.
+ * The caller must free the array and each string in the array.
  */
 char **
 gt_guest_get_argv(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid)
@@ -1253,8 +1253,8 @@ gt_guest_get_vmi_event(GtGuestState *state)
  * gt_guest_get_process_name:
  * @state: a pointer to a #GtGuestState.
  *
- * Returns the process name associated with @state. The returned string must
- * be freed by the caller.
+ * Returns the process name associated with @state. The caller must free the
+ * returned string.
  */
 char *
 gt_guest_get_process_name(GtGuestState *state)
