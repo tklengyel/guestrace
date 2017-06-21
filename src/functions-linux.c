@@ -27,7 +27,7 @@ _initialize(GtLoop *loop)
 	_initialized = gt_rekall_private_initialize(loop,
 	                                           _offset,
 	                                           _offset_def,
-	                                            GT_OFFSET_WINDOWS_BAD);
+	                                            GT_OFFSET_LINUX_BAD);
 
 	return _initialized;
 }
@@ -240,7 +240,7 @@ _is_user_call(GtLoop *loop, vmi_event_t *event)
 static addr_t
 _get_offset(int offset_id)
 {
-	return offset_id > GT_OFFSET_WINDOWS_BAD ? 0 : _offset[offset_id];
+	return offset_id > GT_OFFSET_LINUX_BAD ? 0 : _offset[offset_id];
 }
 
 struct os_functions functions_linux = {
