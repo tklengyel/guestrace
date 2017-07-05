@@ -1,3 +1,5 @@
+#define XC_WANT_COMPAT_EVTCHN_API
+
 #include <setjmp.h>
 #include <stdio.h>
 #include <signal.h>

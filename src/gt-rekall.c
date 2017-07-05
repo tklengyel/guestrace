@@ -1,5 +1,7 @@
 /* This code comes from libvmi. Should they export this function? */
 
+#define XC_WANT_COMPAT_EVTCHN_API
+
 #include <json-c/json.h>
 
 #include "gt-private.h"

@@ -1,4 +1,6 @@
-/* Generated on Linux_4.11.3-200.fc25.x86_64 on 08 Jun 2017 14:40:32*/
+/* Generated on Linux_4.11.8-200.fc25.x86_64 on 05 Jul 2017 13:38:15*/
+
+#define XC_WANT_COMPAT_EVTCHN_API
 
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>

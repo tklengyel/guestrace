@@ -1,6 +1,8 @@
 #ifndef _EARLY_BOOT_H
 #define _EARLY_BOOT_H
 
+#define XC_WANT_COMPAT_EVTCHN_API
+
 #include "gt.h"
 #include "gt-private.h"
 

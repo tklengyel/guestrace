@@ -1,4 +1,6 @@
 #include <libvmi/libvmi.h>
+#define XC_WANT_COMPAT_EVTCHN_API
+
 #include <libvmi/events.h>
 #include <inttypes.h>
 #include <stdio.h>

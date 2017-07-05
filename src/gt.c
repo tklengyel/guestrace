@@ -1,3 +1,5 @@
+#define XC_WANT_COMPAT_EVTCHN_API
+
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
 #include <libvmi/slat.h>
@@ -7,6 +9,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <xenctrl.h>
 
 #include "early-boot.h"
 #include "gt.h"
@@ -901,6 +904,7 @@ gt_loop_new(const char *guest_name)
 	GtLoop *loop;
 	int rc;
 	gboolean ok;
+	vmi_init_data_t init_data;
 	status_t status = VMI_FAILURE;
 
 	loop = g_new0(GtLoop, 1);
@@ -908,11 +912,26 @@ gt_loop_new(const char *guest_name)
 	loop->g_main_loop = g_main_loop_new(NULL, true);
 	loop->guest_name = guest_name;
 
+	/* Open Xen event channel which get passed to libvmi. */
+	loop->xc = xc_evtchn_open(NULL, 0);
+	if (NULL == loop->xc) {
+		fprintf(stderr, "failed to open Xen event channel.\n");
+		goto done;
+	}
+
+	init_data.xce_handle = loop->xc;
+
 	/* Initialize the libvmi library. */
 	for (i = 0; i < 300; i++) {
-		status = vmi_init(&loop->vmi,
-				   VMI_XEN | VMI_INIT_COMPLETE | VMI_INIT_EVENTS,
-				   guest_name);
+		status = vmi_init_complete(&loop->vmi,
+				            guest_name,
+		                            VMI_INIT_DOMAINNAME
+		                          | VMI_INIT_EVENTS
+		                          | VMI_INIT_XEN_EVTCHN,
+		                           &init_data,
+		                            VMI_CONFIG_GLOBAL_FILE_ENTRY,
+		                            NULL,
+		                            NULL);
 
 		if (VMI_SUCCESS == status) {
 			break;
@@ -1470,7 +1489,7 @@ gt_loop_run(GtLoop *loop)
 		goto done;
 	}
 
-	vmi_fd = vmi_event_get_fd(loop->vmi);
+	vmi_fd = xc_evtchn_fd(loop->xc);
 	loop->channel_vmi = g_io_channel_unix_new(vmi_fd);
 	gt_loop_add_watch(loop->channel_vmi,
 	                  G_IO_IN | G_IO_ERR | G_IO_HUP | G_IO_NVAL,

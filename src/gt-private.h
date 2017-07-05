@@ -89,6 +89,7 @@ struct _GtLoop {
 
 	/* Fields used to interact directly with Xen driver. */
 	xc_interface *xch;
+	xc_evtchn *xc;
 	libxl_ctx *ctx;
 	uint32_t domid;
 	uint64_t init_mem_size;

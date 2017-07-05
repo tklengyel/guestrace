@@ -410,6 +410,8 @@ def create_struct_c(syscall_map, syscall_order, kernel_info):
     # generate beginning of source file 
     str = "/* Generated on {0} on {1}*/\n".format(kernel_info.get_kernel_version(), time.strftime("%d %b %Y %H:%M:%S", time.localtime()))
     str += """
+#define XC_WANT_COMPAT_EVTCHN_API
+
 #include <libvmi/libvmi.h>
 #include <libvmi/events.h>
 #include <stdlib.h>
