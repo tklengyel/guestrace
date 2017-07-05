@@ -155,6 +155,7 @@ size_t         gt_guest_get_bytes(GtGuestState *state, gt_addr_t vaddr, gt_pid_t
 char          *gt_guest_get_string(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid);
 char         **gt_guest_get_argv(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid);
 status_t       gt_guest_get_uint32(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid, uint32_t *value);
+int            gt_guest_get_page_size(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid);
 vmi_instance_t gt_guest_get_vmi_instance(GtGuestState *state);
 vmi_event_t   *gt_guest_get_vmi_event(GtGuestState *state);
 char          *gt_guest_get_process_name(GtGuestState *state);
