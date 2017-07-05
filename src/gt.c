@@ -1243,6 +1243,35 @@ done:
 }
 
 /**
+ * gt_guest_get_page_size:
+ * @state: a pointer to a #GtGuestState.
+ * @vaddr: a virtual address from the guest's address space.
+ * @pid: PID of the virtual address space (0 for kernel).
+ *
+ * Returns the size in bytes of the page which contains vaddr or 0 on error.
+ */
+int
+gt_guest_get_page_size(GtGuestState *state, gt_addr_t vaddr, gt_pid_t pid)
+{
+	int page_size = 0;
+	status_t status;
+	page_info_t pinfo = { 0 };
+
+	status = vmi_pagetable_lookup_extended(state->loop->vmi,
+	                                       vmi_pid_to_dtb(state->loop->vmi, pid),
+	                                       vaddr,
+	                                      &pinfo);
+	if (VMI_SUCCESS != status) {
+		goto done;
+	}
+
+	page_size = pinfo.size;
+
+done:
+	return page_size;
+}
+
+/**
  * gt_guest_get_vmi_instance:
  * @state: a pointer to a #GtGuestState.
  *
