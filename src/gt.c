@@ -904,7 +904,6 @@ gt_loop_new(const char *guest_name)
 	GtLoop *loop;
 	int rc;
 	gboolean ok;
-	vmi_init_data_t init_data;
 	status_t status = VMI_FAILURE;
 
 	loop = g_new0(GtLoop, 1);
@@ -919,8 +918,6 @@ gt_loop_new(const char *guest_name)
 		goto done;
 	}
 
-	init_data.xce_handle = loop->xc;
-
 	/* Initialize the libvmi library. */
 	for (i = 0; i < 300; i++) {
 		status = vmi_init_complete(&loop->vmi,
@@ -928,7 +925,7 @@ gt_loop_new(const char *guest_name)
 		                            VMI_INIT_DOMAINNAME
 		                          | VMI_INIT_EVENTS
 		                          | VMI_INIT_XEN_EVTCHN,
-		                           &init_data,
+		                            loop->xc,
 		                            VMI_CONFIG_GLOBAL_FILE_ENTRY,
 		                            NULL,
 		                            NULL);
