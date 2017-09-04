@@ -558,12 +558,21 @@ _breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 
 		pid = loop->os_functions->get_pid(loop->vmi, event);
 		if (0 != _FS_LOCK && pid != _FS_LOCK) {
-			/* FIXME: only check on "dangerous" system calls. */
+			/*
+			 * FIXME: only check on "dangerous" system calls:
+			 * export this as an API which can be system by
+			 * syscall_cb functions.
+			 */
 			/* Lock contention: Hit interrupt again (busy wait). */
 			fprintf(stderr, "contention: PID wants lock: %d\n", pid);
 			goto done;
 		}
 
+		/*
+		 * FIXME: only lock on "dangerous" system calls:
+		 * export this as an API which can be system by
+		 * syscall_cb functions.
+		 */
 		if (2 == event->x86_regs->rax || 85 == event->x86_regs->rax) {
 			/* open or creat. */
 			_FS_LOCK = pid;
@@ -748,6 +757,11 @@ skip_syscall_cb:
 						        thread_id,
 						        state->data);
 
+		/*
+		 * FIXME: only lock on "dangerous" system calls:
+		 * export this as an API which can be system by
+		 * syscall_cb functions.
+		 */
 		if (pid == _FS_LOCK) {
 			_FS_LOCK = 0;
 		}
