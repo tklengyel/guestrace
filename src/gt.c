@@ -121,6 +121,9 @@ static gboolean _in_syscall_cb = FALSE;
 /* For SIGSEGV, etc. handling. */
 static const int _GT_EMERGENCY = 1;
 
+/* Lock the filesystem to prevent some race conditions. */
+static int _FS_LOCK = 0;
+
 /* Read the cycle count using the tdtsc instruction. */
 static __inline__ uint64_t
 _rdtsc(void)
@@ -547,10 +550,24 @@ _breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		MEASUREMENT_START(inside_call, count2);
 		MEASUREMENT_START(setup, count);
 
+		gt_pid_t pid;
 		status_t status;
 		addr_t thread_id, return_loc, return_addr = 0;
 		gt_paddr_record *record;
 		gt_syscall_state *state;
+
+		pid = loop->os_functions->get_pid(loop->vmi, event);
+		if (0 != _FS_LOCK && pid != _FS_LOCK) {
+			/* FIXME: only check on "dangerous" system calls. */
+			/* Lock contention: Hit interrupt again (busy wait). */
+			fprintf(stderr, "contention: PID wants lock: %d\n", pid);
+			goto done;
+		}
+
+		if (2 == event->x86_regs->rax || 85 == event->x86_regs->rax) {
+			/* open or creat. */
+			_FS_LOCK = pid;
+		}
 
 		/* Set VCPUs SLAT to use original for one step. */
 		response = _original_slat_singlestep(event);
@@ -567,7 +584,7 @@ _breakpoint_cb(vmi_instance_t vmi, vmi_event_t *event) {
 		MEASUREMENT_FINISH(_setup, count);
 		MEASUREMENT_START(_get_pid_call, count);
 
-		gt_pid_t pid = loop->os_functions->get_pid(loop->vmi, event);
+		pid = loop->os_functions->get_pid(loop->vmi, event);
 		if (0 == pid) {
 			fprintf(stderr, "failed to read process ID (syscall)\n");
 			goto done;
@@ -730,6 +747,10 @@ skip_syscall_cb:
 						        pid,
 						        thread_id,
 						        state->data);
+
+		if (pid == _FS_LOCK) {
+			_FS_LOCK = 0;
+		}
 
 		MEASUREMENT_FINISH(_sysret_cb, count);
 
