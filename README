@@ -14,7 +14,7 @@ For both Linux and Windows:
 		DOM0> source /tmp/MyEnv/bin/activate
 		DOM0> pip install --upgrade setuptools pip wheel
 		DOM0> pip install IPython
-		DOM0> pip install rekall-agent
+		DOM0> pip install rekall
 
 For Linux DomU (monitoring target running Linux):
 
